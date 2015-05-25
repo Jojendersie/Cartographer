@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Ca {
+namespace MiR {
 	
 	/// Set a new error handler. The default is std::cerr.
 	void setErrorCallback(void (_onError*)(const char* _message));
@@ -8,4 +8,4 @@ namespace Ca {
 	/// Use the error callback.
 	void error(const char* _message);
 		
-} // namespace Ca
+} // namespace MiR

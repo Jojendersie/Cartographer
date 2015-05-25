@@ -1,6 +1,6 @@
 #include "error.hpp"
 
-namespace Ca {
+namespace MiR {
 	
 	void defaultHandler(const char* _message)
 	{
@@ -20,4 +20,4 @@ namespace Ca {
 		s_onError(_message);
 	}
 		
-} // namespace Ca
+} // namespace MiR

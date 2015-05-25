@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Ca {
+namespace MiR {
 	
 	/// Check OpenGL for an error and report it if necessary.
 	/// \details This call may stall the CPU/GPU due to glGetError().
@@ -30,4 +30,4 @@ namespace Ca {
 #endif
 	}
 	
-} // namespace Ca
+} // namespace MiR

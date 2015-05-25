@@ -1,7 +1,7 @@
 #include "core/error.hpp"
 #include "opengl.hpp"
 
-namespace Ca {
+namespace MiR {
 		
 	bool GLError(const char*  _openGLFunctionName)
 	{
@@ -51,4 +51,4 @@ namespace Ca {
 		return false;
 	}
 	
-} // namespace Ca
+} // namespace MiR
