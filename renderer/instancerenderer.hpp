@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ei/vector.hpp>
+
 namespace MiR {
 	
 	/// Batch renderer for models.
@@ -28,7 +30,7 @@ namespace MiR {
 			void put(int _attrIndex, const ei::Vec2& _value);
 			void put(int _attrIndex, const ei::Vec3& _value);
 			void put(int _attrIndex, const ei::Vec4& _value);
-			void put(int _attrIndex, const uint32 _value);
+			void put(int _attrIndex, const ei::uint32 _value);
 			/// Go to the next vertex/primitive. Also checks if the vertex is valid.
 			void emit();
 		/// Upload mesh

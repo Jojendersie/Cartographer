@@ -1,15 +1,19 @@
 #pragma once
 
+#include <gl/glew.h>
+#include <ei/elementarytypes.hpp>
+#include "core/manager.hpp"
+
 namespace MiR {
 	
 	enum class ShaderType
 	{
-		VERTEX		= GL_VERTEX_SHADER,
-		HULL,//?
-		DOMAIN,//?
-		GEOMETRY	= GL_GEOMETRY_SHADER,
-		FRAGMENT	= GL_FRAGMENT_SHADER,
-		COMPUTE 	= GL_COMPUTE_SHADER
+		VERTEX			= GL_VERTEX_SHADER,
+		TESS_CONTROLL   = GL_TESS_CONTROL_SHADER,
+		TESS_EVALUATION = GL_TESS_EVALUATION_SHADER,
+		GEOMETRY		= GL_GEOMETRY_SHADER,
+		FRAGMENT		= GL_FRAGMENT_SHADER,
+		COMPUTE 		= GL_COMPUTE_SHADER
 	};
 
 	/// Base class to load single shader files.
@@ -17,7 +21,7 @@ namespace MiR {
 	class Shader
 	{
 	public:
-		Shader(ShaderType _type, const char* _fileName);
+		Shader(ShaderType _type, const char* _source);
 		
 		~Shader();
 		

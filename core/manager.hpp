@@ -11,12 +11,12 @@ namespace MiR {
 	/// \tparam TLoader a type which must have a static load(string), an unload(handle) method and
 	///		an inner type definition for the handle type: TLoader::Handle and the resource type
 	///		TLoader::Resource itself.
-	template<TLoader>
+	template<typename TLoader>
 	class Manager
 	{
 	public:
 		/// Find a resource and load only if necessary.
-		static TLoader::Handle get(const char* _name);
+		static typename TLoader::Handle get(const char* _name);
 		
 		/// Call to unload all resources. Should always be done on shut-down!
 		static void clear();
@@ -33,7 +33,7 @@ namespace MiR {
 		{
 			char* name;
 			uint32 hash;
-			TLoader::Handle resource;
+			typename TLoader::Handle resource;
 			
 			Entry() : name(nullptr)	{}
 			
@@ -90,29 +90,29 @@ namespace MiR {
 	// ********************************************************************************************* //
 	// IMPLEMENTATION																				 //
 	// ********************************************************************************************* //
-	template<TLoader>
-	Manager::Manager() :
+	template<typename TLoader>
+	Manager<TLoader>::Manager() :
 		m_hashMap(new Bucket[7]),
 		m_size(7)
 	{
 	}
 
-	template<TLoader>
-	Manager::~Manager()
+	template<typename TLoader>
+	Manager<TLoader>::~Manager()
 	{
 		clear();
 		delete[] m_hashMap;
 	}
 
-	template<TLoader>
-	Manager& Manager::inst()
+	template<typename TLoader>
+	Manager<TLoader>& Manager<TLoader>::inst()
 	{
 		static Manager theOnlyInstance;
 		return theOnlyInstance;
 	}
 
-	template<TLoader>
-	TLoader::Handle Manager::get(const char* _name)
+	template<typename TLoader>
+	typename TLoader::Handle Manager<TLoader>::get(const char* _name)
 	{
 		// Search in hash map
 		uint32 h = inst().hash(_name);
@@ -135,8 +135,8 @@ namespace MiR {
 		return bucket.elem[bucket.num-1].resource;
 	}
 
-	template<TLoader>
-	void Manager::clear()
+	template<typename TLoader>
+	void Manager<TLoader>::clear()
 	{
 		// Keep array but clear all buckets
 		for(uint32 b=0; b<inst().m_size; ++b)
@@ -151,8 +151,8 @@ namespace MiR {
 		}
 	}
 
-	template<TLoader>
-	void Manager::resize(uint32 _size)
+	template<typename TLoader>
+	void Manager<TLoader>::resize(uint32 _size)
 	{
 		Bucket* newMap = new Bucket[_size];
 		
@@ -173,8 +173,8 @@ namespace MiR {
 		m_size = _size;
 	}
 		
-	template<TLoader>
-	uint32 Manager::hash(const char* _string)
+	template<typename TLoader>
+	uint32 Manager<TLoader>::hash(const char* _string)
 	{
 		uint32 hashvalue = 208357;
 
