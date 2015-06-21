@@ -62,41 +62,56 @@ namespace MiR {
 		INVERT = GL_INVERT,
 	};
 
-	// Window and state machine.
+	// OpenGL state machine.
 	class Device
 	{
 	public:
+		/// Set all states to a default value
+		//static void init();
 		/// Creates the one window (only one call allowed)
-		static void createWindow(int _width, int _height, bool _fullScreen);
+		//static void createWindow(int _width, int _height, bool _fullScreen);
 		
 		// Optimized state changes (only calls gl.. if necessary)
-		/// \param _operation A valid blend operation.
+		/// \param _operation A valid blend operation. The default is ADD for all targets
 		/// \param _target The render target when MRT are used.
 		static void setBlendOp(BlendOp _operation, int _target = 0);
 		static void setBlendFactor(BlendFactor _srcFactor, BlendFactor _dstFactor, int _target = 0);
 		static void setBlendColor();
+		static void enableBlending(bool _enable);
 		
 		static void setFillMode(FillMode _mode);
 		static void setCullMode(CullMode _mode);
 		
-		static void setStencilReference(int _value);
+		/// Defaults for all is KEEP
 		static void setStencilOp(StencilOp _stencilFailBack, StencilOp _zfailBack, StencilOp _passBack,
 								 StencilOp _stencilFailFront, StencilOp _zfailFront, StencilOp _passFront);
-		static void setStencilFunc(ComparisonFunc _funcFront, ComparisonFunc _funcBack);
+		/// \param [in] _ref Reference value in [0,255]. Default is 0.
+		static void setStencilFunc(ComparisonFunc _funcFront, ComparisonFunc _funcBack, int _ref = 0, int _mask = 0xff);
+		static void enableStencil(bool _enable);
 		static void setZFunc(ComparisonFunc _zFunc);
 		static void setZWrite(bool _enable);
+
+		/// Enables scissor test for the given rectangle in pixel coordinates.
+		/// \param [in] _x Lower-left pixel position.
+		static void scissorTest(int _x, int _y, int _width, int _height);
+		static void disableScissorTest();
 		
 	private:
 		static BlendOp s_blendOp[8];
 		static BlendFactor s_srcFactor[8], s_dstFactor[8];
+		static bool s_blendEnable;
 		static CullMode s_cullMode;
 		static FillMode s_fillMode;
 		static int s_stencilRef;
+		static int s_stencilMask;
 		static StencilOp s_stencilFailBack, s_zfailBack, s_passBack;
 		static StencilOp s_stencilFailFront, s_zfailFront, s_passFront;
 		static ComparisonFunc s_stencilFuncFront, s_stencilFuncBack;
+		static bool s_stencilEnable;
 		static ComparisonFunc s_zFunc;
 		static bool s_zEnable;
+		static bool s_zWriteEnable;
+		static bool s_scissorEnable;
 	};
 	
 } // namespace MiR

@@ -3,25 +3,37 @@
 
 namespace MiR {
 
-	BlendOp Device::s_blendOp[8] 				= {};
-	BlendFactor Device::s_srcFactor[8] 			= {};
-	BlendFactor Device::s_dstFactor[8] 			= {};
-	CullMode Device::s_cullMode 				= ;
-	CullMode Device::s_fillMode 				= ;
-	int Device::s_stencilRef					= ;
-	StencilOp Device::s_stencilFailBack			= ;
-	StencilOp Device::s_zfailBack				= ;
-	StencilOp Device::s_passBack				= ;
-	StencilOp Device::s_stencilFailFront		= ;
-	StencilOp Device::s_zfailFront 				= ;
-	StencilOp Device::s_passFront 				= ;
-	ComparisonFunc Device::s_stencilFuncFront	= ;
-	ComparisonFunc Device::s_stencilFuncBack	= ;
-	ComparisonFunc Device::s_zFunc				= ;
-	bool Device::s_zEnable						= ;
+	BlendOp Device::s_blendOp[8] 				= {BlendOp::ADD};
+	BlendFactor Device::s_srcFactor[8] 			= {BlendFactor::ONE};
+	BlendFactor Device::s_dstFactor[8] 			= {BlendFactor::ZERO};
+	bool Device::s_blendEnable					= false;
+	CullMode Device::s_cullMode 				= CullMode::BACK;
+	FillMode Device::s_fillMode 				= FillMode::SOLID;
+	int Device::s_stencilRef					= 0;
+	int Device::s_stencilMask					= 0xff;
+	StencilOp Device::s_stencilFailBack			= StencilOp::KEEP;
+	StencilOp Device::s_zfailBack				= StencilOp::KEEP;
+	StencilOp Device::s_passBack				= StencilOp::KEEP;
+	StencilOp Device::s_stencilFailFront		= StencilOp::KEEP;
+	StencilOp Device::s_zfailFront 				= StencilOp::KEEP;
+	StencilOp Device::s_passFront 				= StencilOp::KEEP;
+	ComparisonFunc Device::s_stencilFuncFront	= ComparisonFunc::ALWAYS;
+	ComparisonFunc Device::s_stencilFuncBack	= ComparisonFunc::ALWAYS;
+	bool Device::s_stencilEnable				= false;
+	ComparisonFunc Device::s_zFunc				= ComparisonFunc::LESS;
+	bool Device::s_zEnable						= true;
+	bool Device::s_zWriteEnable					= true;
+	bool Device::s_scissorEnable				= true;
+
+
+	/*void Device::init()
+	{
+		for(int i = 0; i < 8; ++i)
+			glCall(glBlendEquationi, i, unsigned(BlendOp::ADD));
+	}*/
 
 	// TODO: glCall(glEnable, GL_BLEND);
-	void Device::setBlendOp(BlendOp _operation, int _target = 0)
+	void Device::setBlendOp(BlendOp _operation, int _target)
 	{
 		if(s_blendOp[_target] != _operation)
 		{
@@ -30,7 +42,7 @@ namespace MiR {
 		}
 	}
 
-	void Device::setBlendFactor(BlendFactor _srcFactor, BlendFactor _dstFactor, int _target = 0)
+	void Device::setBlendFactor(BlendFactor _srcFactor, BlendFactor _dstFactor, int _target)
 	{
 		if(s_srcFactor[_target] != _srcFactor || s_dstFactor[_target] != _dstFactor)
 		{
@@ -39,6 +51,19 @@ namespace MiR {
 			s_dstFactor[_target] = _dstFactor;
 		}
 	}
+
+	void Device::enableBlending(bool _enable)
+	{
+		if(s_blendEnable != _enable)
+		{
+			if(_enable)
+				glCall(glEnable, GL_BLEND);
+			else
+				glCall(glDisable, GL_BLEND);
+			s_blendEnable = _enable;
+		}
+	}
+
 
 
 				
@@ -62,6 +87,110 @@ namespace MiR {
 				glCall(glCullFace, int(_mode));
 			}
 			s_cullMode = _mode;
+		}
+	}
+
+
+
+	void Device::setStencilOp(StencilOp _stencilFailBack, StencilOp _zfailBack, StencilOp _passBack,
+							  StencilOp _stencilFailFront, StencilOp _zfailFront, StencilOp _passFront)
+	{
+		if(s_stencilFailBack != _stencilFailBack || s_zfailBack != _zfailBack || s_passBack != _passBack)
+		{
+			glStencilOpSeparate(GL_BACK, unsigned(_stencilFailBack), unsigned(_zfailBack), unsigned(_passBack));
+			s_stencilFailBack = _stencilFailBack;
+			s_zfailBack = _zfailBack;
+			s_passBack = _passBack;
+		}
+		if(s_stencilFailFront != _stencilFailFront || s_zfailFront != _zfailFront || s_passFront != _passFront)
+		{
+			glStencilOpSeparate(GL_FRONT, unsigned(_stencilFailFront), unsigned(_zfailFront), unsigned(_passFront));
+			s_stencilFailFront = _stencilFailFront;
+			s_zfailFront = _zfailFront;
+			s_passFront = _passFront;
+		}
+	}
+
+	void Device::setStencilFunc(ComparisonFunc _funcFront, ComparisonFunc _funcBack, int _ref, int _mask)
+	{
+		// Call both if either _ref or _mask changed
+		if(s_stencilRef != _ref || s_stencilMask != _mask)
+		{
+			glCall(glStencilFuncSeparate, GL_BACK, unsigned(_funcBack), _ref, _mask);
+			glCall(glStencilFuncSeparate, GL_FRONT, unsigned(_funcFront), _ref, _mask);
+			s_stencilRef = _ref;
+			s_stencilMask = _mask;
+			s_stencilFuncBack = _funcBack;
+			s_stencilFuncFront = _funcFront;
+		} else {
+			if(s_stencilFuncBack != _funcBack)
+			{
+				glCall(glStencilFuncSeparate, GL_BACK, unsigned(_funcBack), _ref, _mask);
+				s_stencilFuncBack = _funcBack;
+			}
+			if(s_stencilFuncFront != _funcFront)
+			{
+				glCall(glStencilFuncSeparate, GL_FRONT, unsigned(_funcFront), _ref, _mask);
+				s_stencilFuncFront = _funcFront;
+			}
+		}
+	}
+
+	void Device::enableStencil(bool _enable)
+	{
+		if(s_stencilEnable != _enable)
+		{
+			if(_enable)
+				glCall(glEnable, GL_STENCIL_TEST);
+			else
+				glCall(glDisable, GL_STENCIL_TEST);
+			s_stencilEnable = _enable;
+		}
+	}
+
+	void Device::setZFunc(ComparisonFunc _zFunc)
+	{
+		if(s_zFunc != _zFunc)
+		{
+			if(_zFunc == ComparisonFunc::ALWAYS)
+			{
+				glDisable(GL_DEPTH_TEST);
+			} else {
+				if(s_zEnable) {
+					glEnable(GL_DEPTH_TEST);
+					s_zEnable = true;
+				}
+				glDepthFunc(unsigned(_zFunc));
+				s_zFunc = _zFunc;
+			}
+		}
+	}
+
+	void Device::setZWrite(bool _enable)
+	{
+		if(s_zWriteEnable != _enable)
+		{
+			glDepthMask(_enable);
+			s_zWriteEnable = _enable;
+		}
+	}
+
+
+
+	void Device::scissorTest(int _x, int _y, int _width, int _height)
+	{
+		if(!s_scissorEnable) {
+			glEnable(GL_SCISSOR_TEST);
+			s_scissorEnable = true;
+		}
+		glCall(glScissor, _x, _y, _width, _height);
+	}
+
+	void Device::disableScissorTest()
+	{
+		if(s_scissorEnable) {
+			glDisable(GL_SCISSOR_TEST);
+			s_scissorEnable = false;
 		}
 	}
 
