@@ -1,5 +1,8 @@
 #pragma once
 
+#include <gl/glew.h>
+#include <type_traits>
+
 namespace MiR {
 	
 	/// Check OpenGL for an error and report it if necessary.
@@ -7,26 +10,26 @@ namespace MiR {
 	/// \returns true if an error occurred.
 	bool GLError(const char*  _openGLFunctionName);
 	
-//#define NAME_OF(GLFunction) (#GLFunction)
-	
+#define NAME_OF(GLFunction) (#GLFunction)
+
 	/// OpenGL call with additional checks.
-	template<typename ReturnType, typename T...>
-	ReturnType glCall(ReturnType (_function*)(T...), T... _args)
+	template<typename FunctionType, typename... Args>
+	auto glCall(FunctionType _function, Args... _args) -> typename std::enable_if<!std::is_same<decltype(_function(_args...)), void>::value, decltype(_function(_args...))>::type
 	{
-		auto ret = _function(_args);
+		auto ret = _function(_args...);
 #ifdef DEBUG
-		GLError(#GLFunction);
+		GLError(NAME_OF(GLFunction));
 #endif
 		return ret;
 	}
 
 	/// No return overload of OpenGL call with additional checks.
-	template<typename T...>
-	void glCall(void (_function*)(T...), T... _args)
+	template<typename FunctionType, typename... Args>
+	auto glCall(FunctionType _function, Args... _args) -> typename std::enable_if<std::is_same<decltype(_function(_args...)), void>::value, decltype(_function(_args...))>::type
 	{
-		_function(_args);
+		_function(_args...);
 #ifdef DEBUG
-		GLError(#GLFunction);
+		GLError(NAME_OF(GLFunction));
 #endif
 	}
 	

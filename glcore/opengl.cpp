@@ -1,6 +1,8 @@
 #include "core/error.hpp"
 #include "opengl.hpp"
 
+#include <string>
+
 namespace MiR {
 		
 	bool GLError(const char*  _openGLFunctionName)
@@ -43,7 +45,7 @@ namespace MiR {
 				description = "Unknown error code.";
 				break;
 			}
-			s_onError((std::string("OpenGL Error during ") + _openGLFunctionName + ": " + errorString + "(" + description + ")").c_str());
+			error((std::string("OpenGL Error during ") + _openGLFunctionName + ": " + errorString + "(" + description + ")").c_str());
 			return true;
 		}
 
