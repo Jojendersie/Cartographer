@@ -20,4 +20,22 @@ bool isFloatFormat(PrimitiveFormat _format)
 		|| _format == PrimitiveFormat::UINTR10G10B10A2;
 }
 
+int attributeSize(const VertexAttribute& _attr)
+{
+	switch(_attr.type)
+	{
+		case PrimitiveFormat::FLOAT: return 4 * _attr.numComponents; break;
+		case PrimitiveFormat::R11G11B10F: return 4; break;
+		case PrimitiveFormat::INT8: return _attr.numComponents; break;
+		case PrimitiveFormat::UINT8: return _attr.numComponents; break;
+		case PrimitiveFormat::INT16: return 2 * _attr.numComponents; break;
+		case PrimitiveFormat::UINT16: return 2 * _attr.numComponents; break;
+		case PrimitiveFormat::INT32: return 4 * _attr.numComponents; break;
+		case PrimitiveFormat::UINT32: return 4 * _attr.numComponents; break;
+		case PrimitiveFormat::INTR10G10B10A2: return 4; break;
+		case PrimitiveFormat::UINTR10G10B10A2: return 4; break;
+	}
+	return -1;
+}
+
 } // namespace MiR

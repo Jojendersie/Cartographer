@@ -31,6 +31,9 @@ namespace MiR {
 		bool normalize;		///< Normalize integer values to [0,1] or [-1,1]
 	};
 
+	/// Compute the size of a single attribute.
+	int attributeSize(const VertexAttribute& _attr);
+
 	enum struct GLPrimitiveType
 	{
 		POINTS = GL_POINTS,
