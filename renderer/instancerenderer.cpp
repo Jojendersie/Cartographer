@@ -1,5 +1,9 @@
 #include "instancerenderer.hpp"
 #include "glcore/opengl.hpp"
+#include "core/error.hpp"
+#include <string>
+
+using namespace ei;
 
 namespace MiR {
 
@@ -10,9 +14,11 @@ InstanceRenderer::InstanceRenderer(PrimitiveType _type, const VertexAttribute* _
 
 	// Create buffer without data for now
 	glCall(glGenBuffers, 1, &m_vbo);
+	glCall(glGenBuffers, 1, &m_vboInstances);
 	glCall(glBindBuffer, GL_ARRAY_BUFFER, m_vbo);
 
 	// Define the vertex format
+	m_vertexSize = 0;
 	for(int i = 0; i < _numAttributes; ++i)
 	{
 		glCall(glEnableVertexAttribArray, i);
@@ -20,20 +26,195 @@ InstanceRenderer::InstanceRenderer(PrimitiveType _type, const VertexAttribute* _
 			glCall(glVertexAttribPointer, unsigned(i), _attributes[i].numComponents, GLenum(_attributes[i].type), GLboolean(_attributes[i].normalize), 0, nullptr);
 		else
 			glCall(glVertexAttribIPointer, unsigned(i), _attributes[i].numComponents, GLenum(_attributes[i].type), 0, nullptr);
+
+		AttributeDefinition internalDef;
+		internalDef.type = _attributes[i].type;
+		internalDef.numComponents = _attributes[i].numComponents;
+		internalDef.offset = m_vertexSize;
+		internalDef.normalize = _attributes[i].normalize;
+		m_attributes.push_back(internalDef);
+		m_vertexSize += attributeSize(_attributes[i]) / 4;
 	}
+	// Buffer for later put() commands.
+	m_currentVertex.resize(m_vertexSize);
+
+	// Add declaration for instance data
+	glCall(glBindBuffer, GL_ARRAY_BUFFER, m_vboInstances);
+	glCall(glEnableVertexAttribArray, _numAttributes);
+	glCall(glVertexAttribPointer, _numAttributes, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glCall(glVertexAttribDivisor, _numAttributes, 1);
+	glCall(glEnableVertexAttribArray, _numAttributes+1);
+	glCall(glVertexAttribPointer, _numAttributes+1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glCall(glVertexAttribDivisor, _numAttributes+1, 1);
+
+	glCall(glGenBuffers, 1, &m_ibo);
+}
+
+int InstanceRenderer::beginDef()
+{
+	// Create new mesh definition without vertices so far.
+	MeshDefinition meshDef;
+	meshDef.indexCount = 0;
+	meshDef.indexOffset = (unsigned)m_indexData.size();
+	meshDef.numInstances = 0;
+	meshDef.vertexCount = 0;
+	meshDef.vertexOffset = (unsigned)m_vertexData.size() / m_vertexSize;
+	m_meshes.push_back(meshDef);
+	return (int)m_meshes.size()-1;
+}
+
+void InstanceRenderer::put(int _attrIndex, const float _value)
+{
+	if( m_attributes[_attrIndex].numComponents != 1 )
+	{
+		error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(float)! The component count is wrong.").c_str());
+		return;
+	}
+
+	if( m_attributes[_attrIndex].type == PrimitiveFormat::FLOAT )
+		*(m_currentVertex.data() + m_attributes[_attrIndex].offset) = _value;
+	else if( m_attributes[_attrIndex].type == PrimitiveFormat::INT32 && m_attributes[_attrIndex].normalize )
+		*reinterpret_cast<int32*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = (int32)(_value * std::numeric_limits<int32>::max());
+	else if( m_attributes[_attrIndex].type == PrimitiveFormat::UINT32 )
+		*reinterpret_cast<uint32*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = (uint32)(_value * std::numeric_limits<uint32>::max());
+	else error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(float)! The format cannot be casted.").c_str());
+}
+
+void InstanceRenderer::put(int _attrIndex, const Vec2& _value)
+{
+	if( m_attributes[_attrIndex].numComponents != 2 )
+	{
+		error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(vec2)! The component count is wrong.").c_str());
+		return;
+	}
+
+	if( m_attributes[_attrIndex].type == PrimitiveFormat::FLOAT )
+		*reinterpret_cast<Vec2*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = _value;
+	else if( m_attributes[_attrIndex].type == PrimitiveFormat::INT32 && m_attributes[_attrIndex].normalize )
+		*reinterpret_cast<IVec2*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = IVec2(_value * std::numeric_limits<int32>::max());
+	else if( m_attributes[_attrIndex].type == PrimitiveFormat::UINT32 && m_attributes[_attrIndex].normalize )
+		*reinterpret_cast<UVec2*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = UVec2(_value * std::numeric_limits<uint32>::max());
+	else if( m_attributes[_attrIndex].type == PrimitiveFormat::INT16 && m_attributes[_attrIndex].normalize )
+		*reinterpret_cast<uint32*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = uint32(_value.x * std::numeric_limits<int16>::max()) << 16 | uint32(_value.y * std::numeric_limits<int16>::max());
+	else if( m_attributes[_attrIndex].type == PrimitiveFormat::UINT16 && m_attributes[_attrIndex].normalize )
+		*reinterpret_cast<uint32*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = uint32(_value.x * std::numeric_limits<uint16>::max()) << 16 | uint32(_value.y * std::numeric_limits<uint16>::max());
+	else error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(vec2)! The format cannot be casted.").c_str());
+}
+
+void InstanceRenderer::put(int _attrIndex, const ei::Vec3& _value)
+{
+	if( m_attributes[_attrIndex].numComponents != 3 )
+	{
+		error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(vec3)! The component count is wrong.").c_str());
+		return;
+	}
+
+	if( m_attributes[_attrIndex].type == PrimitiveFormat::FLOAT )
+		*reinterpret_cast<Vec3*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = _value;
+	else if( m_attributes[_attrIndex].type == PrimitiveFormat::INT32 && m_attributes[_attrIndex].normalize )
+		*reinterpret_cast<IVec3*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = IVec3(_value * std::numeric_limits<int32>::max());
+	else if( m_attributes[_attrIndex].type == PrimitiveFormat::UINT32 && m_attributes[_attrIndex].normalize )
+		*reinterpret_cast<UVec3*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = UVec3(_value * std::numeric_limits<uint32>::max());
+	// TODO allow and convert to R11G11B10F
+	else error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(vec3)! The format cannot be casted.").c_str());
+}
+
+void InstanceRenderer::put(int _attrIndex, const ei::Vec4& _value)
+{
+	if( m_attributes[_attrIndex].numComponents != 4 )
+	{
+		error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(vec4)! The component count is wrong.").c_str());
+		return;
+	}
+
+	if( m_attributes[_attrIndex].type == PrimitiveFormat::FLOAT )
+		*reinterpret_cast<Vec4*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = _value;
+	else if( m_attributes[_attrIndex].type == PrimitiveFormat::INT32 && m_attributes[_attrIndex].normalize )
+		*reinterpret_cast<IVec4*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = IVec4(_value * std::numeric_limits<int32>::max());
+	else if( m_attributes[_attrIndex].type == PrimitiveFormat::UINT32 && m_attributes[_attrIndex].normalize )
+		*reinterpret_cast<UVec4*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = UVec4(_value * std::numeric_limits<uint32>::max());
+	// TODO INT16 and INT8 normalized formats
+	// TODO allow and convert special formats with alpha channel
+	else error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(vec4)! The format cannot be casted.").c_str());
+}
+
+void InstanceRenderer::put(int _attrIndex, const uint32 _value)
+{
+	if( !(m_attributes[_attrIndex].type == PrimitiveFormat::INT8 && m_attributes[_attrIndex].numComponents == 4)
+		&& !(m_attributes[_attrIndex].type == PrimitiveFormat::UINT8 && m_attributes[_attrIndex].numComponents == 4)
+		&& !(m_attributes[_attrIndex].type == PrimitiveFormat::INT16 && m_attributes[_attrIndex].numComponents == 2)
+		&& !(m_attributes[_attrIndex].type == PrimitiveFormat::UINT16 && m_attributes[_attrIndex].numComponents == 2)
+		&& !(m_attributes[_attrIndex].type == PrimitiveFormat::INT32 && m_attributes[_attrIndex].numComponents == 1)
+		&& !(m_attributes[_attrIndex].type == PrimitiveFormat::UINT32 && m_attributes[_attrIndex].numComponents == 1)
+		&& !(m_attributes[_attrIndex].type == PrimitiveFormat::R11G11B10F && m_attributes[_attrIndex].numComponents == 1)
+		&& !(m_attributes[_attrIndex].type == PrimitiveFormat::INTR10G10B10A2 && m_attributes[_attrIndex].numComponents == 1)
+		&& !(m_attributes[_attrIndex].type == PrimitiveFormat::UINTR10G10B10A2 && m_attributes[_attrIndex].numComponents == 1))
+	{
+		error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(uint32)!").c_str());
+		return;
+	}
+
+	*reinterpret_cast<uint32*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = _value;
+}
+
+void InstanceRenderer::emit()
+{
+	m_vertexData.insert(m_vertexData.end(), m_currentVertex.begin(), m_currentVertex.end());
+}
+
+void InstanceRenderer::endDef()
+{
+	// TODO: create index data
+	// TODO: remove redundant vertices
+	// TODO: improve cache order
+
+	// Upload entire buffer because its size changed
+	glCall(glBindBuffer, GL_ARRAY_BUFFER, m_vbo);
+	glCall(glBufferData, GL_ARRAY_BUFFER, m_vertexData.size() * 4, m_vertexData.data(), GL_STATIC_DRAW);
+
+	glCall(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+	glCall(glBufferData, GL_ELEMENT_ARRAY_BUFFER, m_indexData.size() * 4, m_indexData.data(), GL_STATIC_DRAW);
+}
+
+void InstanceRenderer::newInstance(int _meshID, const ei::Vec3& _position, const ei::Quaternion& _rotation)
+{
+	MeshInstance instance;
+	instance.rotation = _rotation;
+	instance.position = _position;
+	// Find the position where to insert, it depends on how many instances are within the other meshes
+	int pos = 0;
+	for(int i = 0; i <= _meshID; ++i)
+		pos += m_meshes[_meshID].numInstances;
+	m_instances.insert(m_instances.begin() + pos, instance);
+	++m_meshes[_meshID].numInstances;
+
+	glCall(glBindBuffer, GL_ARRAY_BUFFER, m_vboInstances);
+	glCall(glBufferData, GL_ARRAY_BUFFER, m_instances.size() * sizeof(MeshInstance), m_instances.data(), GL_DYNAMIC_DRAW);
 }
 
 void InstanceRenderer::draw() const
 {
-	for(auto& it : m_instances)
+	// Update instance data each frame - it could be dynamic
+	// TODO: detect changes and make local updates.
+	//glCall(glBindBuffer, GL_ARRAY_BUFFER, m_vboInstances);
+	//glCall(glBufferData, GL_ARRAY_BUFFER, m_instances.size() * sizeof(MeshInstance), m_instances.data(), GL_DYNAMIC_DRAW);
+
+	glCall(glBindVertexArray, m_vao);
+
+	// TODO: bind shader
+
+	int instanceOffset = 0;
+	for(auto& it : m_meshes)
 	{
-		//glBindBufferBase();//??
-		glCall(glDrawElementsInstanced,
+		// TODO: bind material
+		glCall(glDrawElementsInstancedBaseInstance,
 			unsigned(m_type),
 			it.indexCount,
 			GL_UNSIGNED_INT,
 			(void*)it.indexOffset,
-			it.numInstances);
+			it.numInstances,
+			instanceOffset);
+		instanceOffset += it.numInstances;
 	}
 }
 
