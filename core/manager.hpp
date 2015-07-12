@@ -6,17 +6,20 @@ namespace MiR {
 	/// \details To use this manager declare a new type in some header e.g.
 	///		typedef Manager<Texture> TexMan; and INSTANCE_OF(TexMan) in a single cpp file.
 	///		Then you can access resources TexMan::get("bla.png"). You don't need to unload
-	///		resources. They are loaded permanently. If you want to, there is a clear.
+	///		resources, but if you want to, there is a clear.
 	///		TODO: if a resource is changed during runtime it is reloaded automatically.
-	/// \tparam TLoader a type which must have a static load(string), an unload(handle) method and
-	///		an inner type definition for the handle type: TLoader::Handle and the resource type
-	///		TLoader::Resource itself.
+	/// \tparam TLoader a type which must have a static load(string...), a static
+	///		unload(handle) method and an inner type definition for the handle type:
+	///		TLoader::Handle.
 	template<typename TLoader>
 	class Manager
 	{
 	public:
 		/// Find a resource and load only if necessary.
-		static typename TLoader::Handle get(const char* _name);
+		/// \param [inout] _args Additional arguments which might be required by
+		///		the resource's load() funtion
+		template<typename... Args>
+		static typename TLoader::Handle get(const char* _name, Args... _args);
 		
 		/// Call to unload all resources. Should always be done on shut-down!
 		static void clear();
@@ -63,6 +66,7 @@ namespace MiR {
 				hash = _other.hash;
 				resource = _other.resource;
 				_other.name = nullptr;
+				return *this;
 			}
 		};
 		
@@ -112,27 +116,30 @@ namespace MiR {
 	}
 
 	template<typename TLoader>
-	typename TLoader::Handle Manager<TLoader>::get(const char* _name)
+	template<typename... Args>
+	typename TLoader::Handle Manager<TLoader>::get(const char* _name, Args... _args)
 	{
 		// Search in hash map
 		uint32 h = inst().hash(_name);
-		Bucket& bucket = inst().m_hashMap[h % inst().m_size];
+		Bucket* bucket = &inst().m_hashMap[h % inst().m_size];
 		// Check if it is in the bucket
-		for(int i=0; i<bucket.num; ++i)
+		for(int i=0; i<bucket->num; ++i)
 		{
-			if(strcmp(bucket.elem[i].name, _name) == 0)
-				return bucket.elem[i].resource;
+			if(strcmp(bucket->elem[i].name, _name) == 0)
+				return bucket->elem[i].resource;
 		}
 		// Not in bucket (otherwise the return had left the loop)
-		if(bucket.num == 4) { // Bad it is full -> resize
+		if(bucket->num == 4) { // Bad it is full -> resize
 			inst().resize(inst().m_size * 2 - 1);
-			bucket = inst().m_hashMap[h % inst().m_size];
-			if(bucket.num == 4) throw "Too many hash collisions, resize had no effect!";
+			bucket = &inst().m_hashMap[h % inst().m_size];
+			if(bucket->num == 4) throw "Too many hash collisions, resize had no effect!";
 		}
-		bucket.elem[bucket.num].name = strdup(_name); // ? is this a dublicate
-		bucket.elem[bucket.num].resource = TLoader::load(_name);
-		bucket.num++;
-		return bucket.elem[bucket.num-1].resource;
+		size_t l = strlen(_name);
+		bucket->elem[bucket->num].name = (char*)malloc(l+1);
+		memcpy(bucket->elem[bucket->num].name, _name, l+1);
+		bucket->elem[bucket->num].resource = TLoader::load(_name, _args...);
+		bucket->num++;
+		return bucket->elem[bucket->num-1].resource;
 	}
 
 	template<typename TLoader>
