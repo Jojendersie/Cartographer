@@ -40,12 +40,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>D:\C++\Libraries\Epsilon\include;$(SolutionDir);D:\C++\SDK\glew-1.12.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\C++\Libraries\Epsilon\include;D:\C++\SDK\glew-1.12.0\include;$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
     <LibraryPath>D:\C++\Libraries\Epsilon\lib\Debugx86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>D:\C++\Libraries\Epsilon\include;$(SolutionDir);D:\C++\SDK\glew-1.12.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\C++\Libraries\Epsilon\include;D:\C++\SDK\glew-1.12.0\include;$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
     <LibraryPath>D:\C++\Libraries\Epsilon\lib\Releasex86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -53,7 +53,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>GLEW_STATIC;DEBUG;USE_ELEMENTARIES_WITHOUT_NAMESPACE;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;DEBUG;USE_ELEMENTARIES_WITHOUT_NAMESPACE;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -67,7 +67,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>GLEW_STATIC;USE_ELEMENTARIES_WITHOUT_NAMESPACE;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;USE_ELEMENTARIES_WITHOUT_NAMESPACE;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

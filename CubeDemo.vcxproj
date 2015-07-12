@@ -40,12 +40,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>D:\C++\SDK\glfw-3.1.1\include;D:\C++\Libraries\Epsilon\include;$(SolutionDir);D:\C++\SDK\glfw-3.1.1\include\GLFW;D:\C++\SDK\GLEW-1.10.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\C++\Libraries\MiR;D:\C++\SDK\glfw-3.1.1\include;D:\C++\Libraries\Epsilon\include;D:\C++\SDK\GLEW-1.10.0\include;$(SolutionDir);$(IncludePath)</IncludePath>
     <LibraryPath>D:\C++\SDK\glew-1.12.0\lib\Release\Win32;D:\C++\SDK\glfw-3.1.1\x86\lib-vc2013;D:\C++\Libraries\MiR\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>D:\C++\SDK\glfw-3.1.1\include;D:\C++\Libraries\Epsilon\include;$(SolutionDir);D:\C++\SDK\glfw-3.1.1\include;D:\C++\SDK\GLEW-1.10.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\C++\Libraries\MiR;D:\C++\SDK\glfw-3.1.1\include;D:\C++\Libraries\Epsilon\include;D:\C++\SDK\GLEW-1.10.0\include;$(SolutionDir);$(IncludePath)</IncludePath>
     <LibraryPath>D:\C++\SDK\glew-1.12.0\lib\Release\Win32;D:\C++\SDK\glfw-3.1.1\x86\lib-vc2013;D:\C++\Libraries\MiR\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -53,7 +53,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USE_ELEMENTARIES_WITHOUT_NAMESPACE;GLEW_STATIC;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_ELEMENTARIES_WITHOUT_NAMESPACE;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -67,7 +67,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>USE_ELEMENTARIES_WITHOUT_NAMESPACE;GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_ELEMENTARIES_WITHOUT_NAMESPACE;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
