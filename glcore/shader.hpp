@@ -21,9 +21,15 @@ namespace MiR {
 	class Shader
 	{
 	public:
-		Shader(ShaderType _type, const char* _source);
+		typedef const Shader* Handle;
+
+		Shader(const char* _source, ShaderType _type);
 		
 		~Shader();
+
+		static Handle load(const char* _source, ShaderType _type, bool _isFileName = true);
+
+		static void unload(Handle _shader);
 		
 	private:
 		uint m_shaderID;	///< OpenGL shader ID.
@@ -52,6 +58,9 @@ namespace MiR {
 		void link();
 		
 		/// TODO: reflection and uniform stuff.
+
+		/// Find the location of a uniform variable
+		int getUniform(const char* _uniformName);
 	private:
 		const Shader* m_shaders[5]; 	///< List of attached shaders
 		int m_numShaders;
