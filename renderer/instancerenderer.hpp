@@ -17,8 +17,9 @@ namespace MiR {
 		{
 			POINTS,
 			LINES,
+			LINE_STRIPE,
 			TRIANGLES,
-			QUADS
+			TRIANGLE_STRIPE
 		};
 
 		/// Creation determines the vertex format and primitive type.
@@ -38,6 +39,8 @@ namespace MiR {
 			void put(int _attrIndex, const uint32 _value);
 			/// Go to the next vertex/primitive. Also checks if the vertex is valid.
 			void emit();
+			/// Finish the primitive in case of LINE_STRIPE and TRIANGLE_STRIPE
+			void endPrimitive();
 		/// Upload mesh
 		void endDef();
 		
@@ -77,7 +80,8 @@ namespace MiR {
 		unsigned m_ibo;		///< OpenGL index buffer object with 32bit indices
 		unsigned m_vertexSize;		///< Number of 32bit words per vertex, computed from vertex declaration
 		unsigned m_vboInstances;	///< Instance data
-		GLPrimitiveType m_type;		///< OpenGL primitive type
+		GLPrimitiveType m_glType;	///< OpenGL primitive type
+		PrimitiveType m_type;		///< Primitive type for primitive generation
 		unsigned m_numIndices;	
 		unsigned m_numVertices;
 		std::vector<AttributeDefinition> m_attributes;
@@ -86,6 +90,7 @@ namespace MiR {
 		std::vector<float> m_vertexData;
 		std::vector<uint32> m_indexData;
 		std::vector<float> m_currentVertex;
+		int m_startNewPrimitive;	///< Used to control indexing of stripe typed geometry
 	};
 
 } // namespace MiR

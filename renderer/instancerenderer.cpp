@@ -7,8 +7,16 @@ using namespace ei;
 
 namespace MiR {
 
-InstanceRenderer::InstanceRenderer(PrimitiveType _type, const VertexAttribute* _attributes, int _numAttributes)
+InstanceRenderer::InstanceRenderer(PrimitiveType _type, const VertexAttribute* _attributes, int _numAttributes) :
+	m_startNewPrimitive(0),
+	m_type(_type)
 {
+	if(_type == PrimitiveType::POINTS)
+		m_glType = static_cast<GLPrimitiveType>(GL_POINTS);
+	else if(_type == PrimitiveType::LINES || _type == PrimitiveType::LINE_STRIPE)
+		m_glType = static_cast<GLPrimitiveType>(GL_LINES);
+	else m_glType = static_cast<GLPrimitiveType>(GL_TRIANGLES);
+
 	glCall(glGenVertexArrays, 1, &m_vao);
 	glCall(glBindVertexArray, m_vao);
 
@@ -21,12 +29,6 @@ InstanceRenderer::InstanceRenderer(PrimitiveType _type, const VertexAttribute* _
 	m_vertexSize = 0;
 	for(int i = 0; i < _numAttributes; ++i)
 	{
-		glCall(glEnableVertexAttribArray, i);
-		if( isFloatFormat(_attributes[i].type) || _attributes[i].normalize )
-			glCall(glVertexAttribPointer, unsigned(i), _attributes[i].numComponents, GLenum(_attributes[i].type), GLboolean(_attributes[i].normalize), 0, nullptr);
-		else
-			glCall(glVertexAttribIPointer, unsigned(i), _attributes[i].numComponents, GLenum(_attributes[i].type), 0, nullptr);
-
 		AttributeDefinition internalDef;
 		internalDef.type = _attributes[i].type;
 		internalDef.numComponents = _attributes[i].numComponents;
@@ -35,16 +37,37 @@ InstanceRenderer::InstanceRenderer(PrimitiveType _type, const VertexAttribute* _
 		m_attributes.push_back(internalDef);
 		m_vertexSize += attributeSize(_attributes[i]) / 4;
 	}
+
+	for(int i = 0; i < _numAttributes; ++i)
+	{
+		glCall(glEnableVertexAttribArray, i);
+		if( isFloatFormat(_attributes[i].type) || _attributes[i].normalize )
+			glCall(glVertexAttribPointer,
+					unsigned(i),
+					_attributes[i].numComponents,
+					GLenum(_attributes[i].type),
+					GLboolean(_attributes[i].normalize),
+					m_vertexSize * sizeof(float),
+					(GLvoid*)(m_attributes[i].offset * sizeof(float)));
+		else
+			glCall(glVertexAttribIPointer,
+					unsigned(i),
+					_attributes[i].numComponents,
+					GLenum(_attributes[i].type),
+					m_vertexSize * sizeof(float),
+					(GLvoid*)(m_attributes[i].offset * sizeof(float)));
+		//glCall(glVertexAttribDivisor, unsigned(i), 0);
+	}
 	// Buffer for later put() commands.
 	m_currentVertex.resize(m_vertexSize);
 
 	// Add declaration for instance data
 	glCall(glBindBuffer, GL_ARRAY_BUFFER, m_vboInstances);
 	glCall(glEnableVertexAttribArray, _numAttributes);
-	glCall(glVertexAttribPointer, _numAttributes, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glCall(glVertexAttribPointer, _numAttributes, 4, GL_FLOAT, GL_FALSE, 28, nullptr);
 	glCall(glVertexAttribDivisor, _numAttributes, 1);
 	glCall(glEnableVertexAttribArray, _numAttributes+1);
-	glCall(glVertexAttribPointer, _numAttributes+1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glCall(glVertexAttribPointer, _numAttributes+1, 3, GL_FLOAT, GL_FALSE, 28, (GLvoid*)(4 * sizeof(float)));
 	glCall(glVertexAttribDivisor, _numAttributes+1, 1);
 
 	glCall(glGenBuffers, 1, &m_ibo);
@@ -160,11 +183,44 @@ void InstanceRenderer::put(int _attrIndex, const uint32 _value)
 void InstanceRenderer::emit()
 {
 	m_vertexData.insert(m_vertexData.end(), m_currentVertex.begin(), m_currentVertex.end());
+	unsigned index = m_vertexData.size() / m_vertexSize - 1;
+	// If primitive finished add the indices
+	if(m_type == PrimitiveType::LINES)
+	{
+		m_indexData.push_back(index);
+	} else if(m_type == PrimitiveType::LINE_STRIPE)
+	{
+		// Continue stripe by adding the same index as start index
+		if(m_startNewPrimitive == 2)
+			m_indexData.push_back(index-1);
+		else ++m_startNewPrimitive;
+		m_indexData.push_back(index);
+	} else if(m_type == PrimitiveType::TRIANGLES)
+	{
+		m_indexData.push_back(index);
+	} else if(m_type == PrimitiveType::TRIANGLE_STRIPE)
+	{
+		// Continue stripe by copying the last two indices
+		if(m_startNewPrimitive == 3)
+		{
+			// TODO: face orientation
+			m_indexData.push_back(index-1);
+			m_indexData.push_back(index-2);
+		} else ++m_startNewPrimitive;
+		m_indexData.push_back(index);
+	}
+}
+
+void InstanceRenderer::endPrimitive()
+{
+	m_startNewPrimitive = 0;
 }
 
 void InstanceRenderer::endDef()
 {
-	// TODO: create index data
+	m_meshes.back().vertexCount = (m_vertexData.size() - m_meshes.back().vertexOffset) / m_vertexSize;
+	m_meshes.back().indexCount = m_indexData.size() - m_meshes.back().indexOffset;
+
 	// TODO: remove redundant vertices
 	// TODO: improve cache order
 
@@ -200,15 +256,14 @@ void InstanceRenderer::draw() const
 	//glCall(glBufferData, GL_ARRAY_BUFFER, m_instances.size() * sizeof(MeshInstance), m_instances.data(), GL_DYNAMIC_DRAW);
 
 	glCall(glBindVertexArray, m_vao);
-
-	// TODO: bind shader
+	glCall(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 
 	int instanceOffset = 0;
 	for(auto& it : m_meshes)
 	{
 		// TODO: bind material
 		glCall(glDrawElementsInstancedBaseInstance,
-			unsigned(m_type),
+			unsigned(m_glType),
 			it.indexCount,
 			GL_UNSIGNED_INT,
 			(void*)it.indexOffset,
