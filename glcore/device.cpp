@@ -20,7 +20,7 @@ namespace MiR {
 	ComparisonFunc Device::s_stencilFuncFront	= ComparisonFunc::ALWAYS;
 	ComparisonFunc Device::s_stencilFuncBack	= ComparisonFunc::ALWAYS;
 	bool Device::s_stencilEnable				= false;
-	ComparisonFunc Device::s_zFunc				= ComparisonFunc::LESS;
+	ComparisonFunc Device::s_zFunc				= ComparisonFunc::ALWAYS;
 	bool Device::s_zEnable						= true;
 	bool Device::s_zWriteEnable					= true;
 	bool Device::s_scissorEnable				= true;
