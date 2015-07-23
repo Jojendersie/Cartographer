@@ -1,10 +1,60 @@
 #include "texture.hpp"
 #include "core/error.hpp"
+#include "glcore/opengl.hpp"
 #include <memory.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "dependencies/stb_image.h"
 
 namespace MiR {
 
-	TextureAtlas::TextureAtlas(int _maxWidth, int _maxHeight) :
+	Texture2D::Texture2D(const char* _textureFileName, const Sampler& _sampler, bool _srgb) : 
+		m_bindlessHandle(0),
+		m_sampler(&_sampler)
+	{
+		static GLenum NUM_COMPS_TO_PIXEL_FORMAT[] = {GL_RED, GL_RG, GL_RGB, GL_RGBA};
+		// TODO: srgb?
+		static GLenum NUM_COMPS_TO_INTERNAL_FORMAT[] = {GL_R8, GL_RG8, GL_RGB8, GL_RGBA8};
+		static GLenum NUM_COMPS_TO_INTERNAL_FORMAT_SRGB[] = {GL_SRGB8, GL_SRGB8_ALPHA8};
+		// Load from file
+		stbi_uc* textureData = stbi_load(_textureFileName, &m_width, &m_height, &m_numComponents, 0);
+		// Create openGL - resource
+		glGenTextures(1, &m_textureID);
+		glCall(glBindTexture, GL_TEXTURE_2D, m_textureID);
+		if(_srgb && m_numComponents >= 3)
+			glCall(glTexImage2D, GL_TEXTURE_2D, 0, NUM_COMPS_TO_INTERNAL_FORMAT_SRGB[m_numComponents-3], m_width, m_height, 0, NUM_COMPS_TO_PIXEL_FORMAT[m_numComponents-1], GL_UNSIGNED_BYTE, textureData);
+		else
+			glCall(glTexImage2D, GL_TEXTURE_2D, 0, NUM_COMPS_TO_INTERNAL_FORMAT[m_numComponents-1], m_width, m_height, 0, NUM_COMPS_TO_PIXEL_FORMAT[m_numComponents-1], GL_UNSIGNED_BYTE, textureData);
+		glCall(glGenerateMipmap, GL_TEXTURE_2D);
+
+		stbi_image_free(textureData);
+
+		// Enable bindless access
+		m_bindlessHandle = glCall(glGetTextureSamplerHandleARB, m_textureID, m_sampler->getID());
+		glCall(glMakeTextureHandleResidentARB, m_bindlessHandle);
+	}
+
+	Texture2D::Handle Texture2D::load(const char* _fileName, const Sampler& _sampler, bool _srgb)
+	{
+		return new Texture2D(_fileName, _sampler, _srgb);
+	}
+
+	void Texture2D::unload(Handle _texture)
+	{
+		// The handle is defined as const, so nobody can do damage, but now we need
+		// the real address for deletion
+		delete const_cast<Texture2D*>(_texture);
+	}
+
+	void Texture2D::bind(unsigned _slot) const
+	{
+		// TODO: check binding to avoid rebinds
+		glCall(glActiveTexture, GL_TEXTURE0 + _slot);
+		glCall(glBindTexture, GL_TEXTURE_2D, m_textureID);
+		m_sampler->bind(_slot);
+	}
+
+	/*TextureAtlas::TextureAtlas(int _maxWidth, int _maxHeight) :
 		m_width(_maxWidth),
 		m_height(_maxHeight),
 		m_quadTree(new uint8[341]) // Allocate fixed size quad tree
@@ -85,6 +135,6 @@ namespace MiR {
 											m_quadTree[_off + childidx + 3]);
 			return ret;
 		}
-	}
+	}*/
 
 } // namespace MiR

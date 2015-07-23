@@ -2,6 +2,8 @@
 
 #include <ei/elementarytypes.hpp>
 #include "core/scopedptr.hpp"
+#include "core/manager.hpp"
+#include "glcore/sampler.hpp"
 
 namespace MiR {
 
@@ -10,9 +12,49 @@ namespace MiR {
 	{
 	public:
 		uint getID() const { return m_textureID; }
+
 	protected:
 		uint m_textureID;
 	};
+
+	/// 2D Texture class
+	class Texture2D: public Texture
+	{
+	public:
+		typedef const Texture2D* Handle;
+
+		static Handle load(const char* _fileName, const Sampler& _sampler, bool _srgb = true);
+		static void unload(Handle _texture);
+
+		/// Bind 2D texture to given location
+		void bind(unsigned _slot) const;
+
+		int getWidth() const { return m_width; }
+		int getHeight() const { return m_height; } 
+
+		/// Get the bindless texture handle.
+		uint64 getHandle();
+
+		/// Change the sampler.
+		void setSampler(const Sampler& _sampler);
+	private:
+		/// Load a 2D texture from file.
+		/// \details Allowed file formats are JPG, PNG, TGA, BMP, PSD, GIF, (HDR), PIC.
+		///
+		///		The texture will be always resident and available for bindless access.
+		/// \param [in] _textureFileName The file to load.
+		/// \param [in] _sampler A sampler which will be used with this texture.
+		Texture2D(const char* _textureFileName, const Sampler& _sampler, bool _srgb);
+
+		int m_width;
+		int m_height;
+		int m_numComponents; ///< R, G, B, A?
+		const Sampler* m_sampler;
+		uint64 m_bindlessHandle;
+	};
+
+	/// The manager to load 2D textures to avoid loading the same texture twice.
+	typedef Manager<Texture2D> Texture2DManager;
 
 	/// Class to manage multiple 2D textures.
 	/// \details This texture creates a 2D texture array with dynamic allocation. The inserted
@@ -23,7 +65,7 @@ namespace MiR {
 	///
 	///		A single texture should not be smaller than maxSize / 32, otherwise memory will be
 	///		wasted. If you want too store many very small tiles use a smaller maxSize.
-	class TextureAtlas: public Texture
+/*	class TextureAtlas: public Texture
 	{
 	public:
 		/// Create an empty texture atlas.
@@ -67,6 +109,6 @@ namespace MiR {
 		/// Allocate at least one more layer
 		//TODO: is there a GPU GPU texture copy? Yes: glCopyImageSubData in GL4.3
 		void resize();
-	};
+	};*/
 
 } // namespace MiR
