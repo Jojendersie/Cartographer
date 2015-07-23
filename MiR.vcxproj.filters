@@ -43,6 +43,9 @@
     <ClInclude Include="glcore\vertexformat.hpp">
       <Filter>glcore</Filter>
     </ClInclude>
+    <ClInclude Include="glcore\sampler.hpp">
+      <Filter>glcore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\error.cpp">
@@ -64,6 +67,9 @@
       <Filter>renderer</Filter>
     </ClCompile>
     <ClCompile Include="glcore\vertexformat.cpp">
+      <Filter>glcore</Filter>
+    </ClCompile>
+    <ClCompile Include="glcore\sampler.cpp">
       <Filter>glcore</Filter>
     </ClCompile>
   </ItemGroup>

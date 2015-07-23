@@ -82,6 +82,7 @@
     <ClInclude Include="core\scopedptr.hpp" />
     <ClInclude Include="glcore\device.hpp" />
     <ClInclude Include="glcore\opengl.hpp" />
+    <ClInclude Include="glcore\sampler.hpp" />
     <ClInclude Include="glcore\shader.hpp" />
     <ClInclude Include="glcore\texture.hpp" />
     <ClInclude Include="glcore\vertexformat.hpp" />
@@ -93,6 +94,7 @@
     <ClCompile Include="core\error.cpp" />
     <ClCompile Include="glcore\device.cpp" />
     <ClCompile Include="glcore\opengl.cpp" />
+    <ClCompile Include="glcore\sampler.cpp" />
     <ClCompile Include="glcore\shader.cpp" />
     <ClCompile Include="glcore\texture.cpp" />
     <ClCompile Include="glcore\vertexformat.cpp" />
