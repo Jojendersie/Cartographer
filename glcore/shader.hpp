@@ -23,8 +23,6 @@ namespace MiR {
 	public:
 		typedef const Shader* Handle;
 
-		Shader(const char* _source, ShaderType _type);
-		
 		~Shader();
 
 		static Handle load(const char* _source, ShaderType _type, bool _isFileName = true);
@@ -32,6 +30,11 @@ namespace MiR {
 		static void unload(Handle _shader);
 		
 	private:
+		/// Construction to create a shader from source code.
+		///
+		/// This is private to allow only load() to be used
+		Shader(const char* _source, ShaderType _type);
+
 		uint m_shaderID;	///< OpenGL shader ID.
 		friend class Program;
 	};

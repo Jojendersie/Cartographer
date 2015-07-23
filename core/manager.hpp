@@ -4,7 +4,7 @@ namespace MiR {
 		
 	/// Mixin which creates a singleton resource manager for a specific type.
 	/// \details To use this manager declare a new type in some header e.g.
-	///		typedef Manager<Texture> TexMan; and INSTANCE_OF(TexMan) in a single cpp file.
+	///		typedef Manager<Texture> TexMan;.
 	///		Then you can access resources TexMan::get("bla.png"). You don't need to unload
 	///		resources, but if you want to, there is a clear.
 	///		TODO: if a resource is changed during runtime it is reloaded automatically.
@@ -19,7 +19,7 @@ namespace MiR {
 		/// \param [inout] _args Additional arguments which might be required by
 		///		the resource's load() funtion
 		template<typename... Args>
-		static typename TLoader::Handle get(const char* _name, Args... _args);
+		static typename TLoader::Handle get(const char* _name, const Args&... _args);
 		
 		/// Call to unload all resources. Should always be done on shut-down!
 		static void clear();
@@ -117,7 +117,7 @@ namespace MiR {
 
 	template<typename TLoader>
 	template<typename... Args>
-	typename TLoader::Handle Manager<TLoader>::get(const char* _name, Args... _args)
+	typename TLoader::Handle Manager<TLoader>::get(const char* _name, const Args&... _args)
 	{
 		// Search in hash map
 		uint32 h = inst().hash(_name);
