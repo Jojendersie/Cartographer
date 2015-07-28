@@ -244,16 +244,27 @@ void InstanceRenderer::newInstance(int _meshID, const ei::Vec3& _position, const
 	m_instances.insert(m_instances.begin() + pos, instance);
 	++m_meshes[_meshID].numInstances;
 
-	glCall(glBindBuffer, GL_ARRAY_BUFFER, m_vboInstances);
-	glCall(glBufferData, GL_ARRAY_BUFFER, m_instances.size() * sizeof(MeshInstance), m_instances.data(), GL_DYNAMIC_DRAW);
+	m_dirty = true;
+}
+
+void InstanceRenderer::clearInstances()
+{
+	for(int i = 0; i < (int)m_meshes.size(); ++i)
+		m_meshes[i].numInstances = 0;
+	m_instances.clear();
+	m_dirty = true;
 }
 
 void InstanceRenderer::draw() const
 {
 	// Update instance data each frame - it could be dynamic
 	// TODO: detect changes and make local updates.
-	//glCall(glBindBuffer, GL_ARRAY_BUFFER, m_vboInstances);
-	//glCall(glBufferData, GL_ARRAY_BUFFER, m_instances.size() * sizeof(MeshInstance), m_instances.data(), GL_DYNAMIC_DRAW);
+	if(m_dirty)
+	{
+		glCall(glBindBuffer, GL_ARRAY_BUFFER, m_vboInstances);
+		glCall(glBufferData, GL_ARRAY_BUFFER, m_instances.size() * sizeof(MeshInstance), m_instances.data(), GL_DYNAMIC_DRAW);
+		m_dirty = false;
+	}
 
 	glCall(glBindVertexArray, m_vao);
 	glCall(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, m_ibo);

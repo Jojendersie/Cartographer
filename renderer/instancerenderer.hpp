@@ -47,6 +47,11 @@ namespace MiR {
 		/// \param [in] _position Position in world (x,y) and z for the "layer".
 		/// \param [in] _rotation Angle (radiants) of a rotation around the z-axis).
 		void newInstance(int _meshID, const ei::Vec3& _position, const ei::Quaternion& _rotation);
+
+		//void setInstance()
+
+		/// Clear all existing instances (recommended for fully dynamic buffers)
+		void clearInstances();
 		
 		/// Single instanced draw call for all instances.
 		void draw() const;
@@ -91,6 +96,7 @@ namespace MiR {
 		std::vector<uint32> m_indexData;
 		std::vector<float> m_currentVertex;
 		int m_startNewPrimitive;	///< Used to control indexing of stripe typed geometry
+		mutable bool m_dirty;		///< Is the instace buffer dirty?
 	};
 
 } // namespace MiR
