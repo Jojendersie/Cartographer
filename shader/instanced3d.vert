@@ -10,7 +10,7 @@ layout(location = 0) out vec3 out_position; // World position
 layout(location = 1) out vec3 out_normal;	// World normal
 layout(location = 2) out vec2 out_texCoord;
 
-uniform mat4 c_viewProjection;
+layout(location = 0) uniform mat4 c_viewProjection;
 
 vec3 quaternionRotation(vec4 _q, vec3 _v)
 {

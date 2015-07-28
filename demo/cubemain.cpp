@@ -1,11 +1,10 @@
 #include <mir.hpp>
-#include <iostream>
-#include <string>
 #include <thread>
 #include <ctime>
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include <ei/vector.hpp>
+#include "stdwindow.hpp"
 
 using namespace MiR;
 using namespace ei;
@@ -13,15 +12,9 @@ using namespace ei;
 static InstanceRenderer* s_renderer;
 static Program s_shader;
 static float s_aspectRatio;
-static int s_ViewProjLocation;
 static Sampler* s_sampler;
 static Texture2D::Handle s_texture;
 static int s_meshID;
-
-static void errorCallbackGLFW(int error, const char* description)
-{
-	std::cerr << "GLFW error, code " << std::to_string(error) <<" desc: \"" << description << "\"" << std::endl;
-}
 
 void prepareBoxes()
 {
@@ -75,7 +68,6 @@ void prepareBoxes()
 	s_renderer->endDef();
 
 	s_sampler = new Sampler(Sampler::Filter::LINEAR, Sampler::Filter::LINEAR, Sampler::Filter::LINEAR);
-	// TODO: delete later
 	s_texture = Texture2DManager::get("textures/rope2.png", *s_sampler);
 }
 
@@ -85,9 +77,6 @@ void prepareShader()
 	s_shader.attach( MiR::ShaderManager::get("shader/instanced3d.vert", ShaderType::VERTEX) );
 	s_shader.attach( MiR::ShaderManager::get("shader/simple.frag", ShaderType::FRAGMENT) );
 	s_shader.link();
-
-	// Set a fixed camera
-	s_ViewProjLocation = s_shader.getUniform("c_viewProjection");
 }
 
 void runMainLoop(GLFWwindow* _window)
@@ -106,7 +95,7 @@ void runMainLoop(GLFWwindow* _window)
 		s_texture->bind(0);
 		Mat4x4 viewProj = ei::perspectiveGL(PI/4, s_aspectRatio, 1.1f, 1000.0f)
 			* ei::camera(rotationY(time / 10.0f) * Vec3(0.0f, 100.0f, -220.0f), Vec3(0.0f, -50.0f, 0.0f));
-		glCall(glUniformMatrix4fv, s_ViewProjLocation, 1, GL_FALSE, (GLfloat*)&viewProj);
+		glCall(glUniformMatrix4fv, 0, 1, GL_FALSE, (GLfloat*)&viewProj);
 
 		s_renderer->draw();
 		
@@ -136,50 +125,18 @@ void runMainLoop(GLFWwindow* _window)
 
 int main()
 {
-	glfwSetErrorCallback(errorCallbackGLFW);
-	// Setup glfw
-	if(!glfwInit()) {
-		error("GLFW init failed");
-		return 1;
-	}
-
-	// Create a context
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_SAMPLES, 16);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
-#ifdef _DEBUG
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-#endif
-
-	// Make full screen in debug
-	int count;
-	const GLFWvidmode* modes = glfwGetVideoModes(glfwGetPrimaryMonitor(), &count);
-	int width = modes[count-1].width;
-	int height = modes[count-1].height;
-#ifdef _DEBUG
-	width -= 30;
-	height -= 70;
-	GLFWwindow* window = glfwCreateWindow(width, height, "MiR cube demo.", nullptr, nullptr);
-	glfwSetWindowPos(window, 10, 20);
-#else
-	GLFWwindow* window = glfwCreateWindow(width, height, "MiR cube demo.", glfwGetPrimaryMonitor(), nullptr);
-#endif
+	GLFWwindow* window = setupStdWindow("MiR cube demo.");
+	if(!window) return 1;
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
 	s_aspectRatio = width / (float)height;
-
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1); // VSync
-
-	glewExperimental = GL_TRUE;
-	glewInit();
-	glGetError();
 
 	prepareBoxes();
 	prepareShader();
 	runMainLoop(window);
 
+	delete s_sampler;
+	delete s_renderer;
 	glfwDestroyWindow(window);
 	return 0;
 }

@@ -9,5 +9,13 @@
     <ClCompile Include="demo\cubemain.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="demo\stdwindow.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="demo\stdwindow.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

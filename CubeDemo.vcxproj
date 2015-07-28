@@ -78,6 +78,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="demo\cubemain.cpp" />
+    <ClCompile Include="demo\stdwindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="demo\stdwindow.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,6 +6,9 @@
 #include <string>
 
 namespace MiR {
+
+	/// Load OpenGL functions and set enable debug extension (call after context creation)
+	//init();
 	
 	/// Check OpenGL for an error and report it if necessary.
 	/// \details This call may stall the CPU/GPU due to glGetError().
