@@ -7,6 +7,8 @@
 
 using namespace MiR;
 
+static float s_aspectRatio;
+
 static void errorCallbackGLFW(int error, const char* description)
 {
 	std::cerr << "GLFW error, code " << std::to_string(error) <<" desc: \"" << description << "\"" << std::endl;
@@ -16,6 +18,12 @@ static void stdKeyCallback(GLFWwindow* _window, int _key, int _scancode, int _ac
 {
 	if(_key == GLFW_KEY_ESCAPE)
 		glfwSetWindowShouldClose(_window, GL_TRUE);
+}
+
+static void resizeCallback(GLFWwindow* _window, int _width, int _height)
+{
+	s_aspectRatio = _width / (float)_height;
+	glCall(glViewport, 0, 0, _width, _height);
 }
 
 GLFWwindow* setupStdWindow(const char* _titel)
@@ -51,7 +59,9 @@ GLFWwindow* setupStdWindow(const char* _titel)
 #else
 	GLFWwindow* window = glfwCreateWindow(width, height, _titel, glfwGetPrimaryMonitor(), nullptr);
 #endif
+	s_aspectRatio = width / (float)height;
 	glfwSetKeyCallback(window, stdKeyCallback);
+	glfwSetWindowSizeCallback(window, resizeCallback);
 
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1); // VSync
@@ -61,4 +71,9 @@ GLFWwindow* setupStdWindow(const char* _titel)
 	glGetError();
 
 	return window;
+}
+
+float getCurrentAspectRatio()
+{
+	return s_aspectRatio;
 }

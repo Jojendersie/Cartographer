@@ -11,7 +11,6 @@ using namespace ei;
 
 static InstanceRenderer* s_renderer;
 static Program s_shader;
-static float s_aspectRatio;
 static Sampler* s_sampler;
 static Texture2D::Handle s_texture;
 static int s_meshID;
@@ -93,7 +92,7 @@ void runMainLoop(GLFWwindow* _window)
 
 		s_shader.use();
 		s_texture->bind(0);
-		Mat4x4 viewProj = ei::perspectiveGL(PI/4, s_aspectRatio, 1.1f, 1000.0f)
+		Mat4x4 viewProj = ei::perspectiveGL(PI/4, getCurrentAspectRatio(), 1.1f, 1000.0f)
 			* ei::camera(rotationY(time / 10.0f) * Vec3(0.0f, 100.0f, -220.0f), Vec3(0.0f, -50.0f, 0.0f));
 		glCall(glUniformMatrix4fv, 0, 1, GL_FALSE, (GLfloat*)&viewProj);
 
@@ -127,9 +126,6 @@ int main()
 {
 	GLFWwindow* window = setupStdWindow("MiR cube demo.");
 	if(!window) return 1;
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
-	s_aspectRatio = width / (float)height;
 
 	prepareBoxes();
 	prepareShader();
