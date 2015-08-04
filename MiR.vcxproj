@@ -99,6 +99,7 @@
     <ClCompile Include="glcore\texture.cpp" />
     <ClCompile Include="glcore\vertexformat.cpp" />
     <ClCompile Include="renderer\instancerenderer.cpp" />
+    <ClCompile Include="renderer\spriterenderer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

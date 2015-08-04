@@ -258,7 +258,6 @@ void InstanceRenderer::clearInstances()
 void InstanceRenderer::draw() const
 {
 	// Update instance data each frame - it could be dynamic
-	// TODO: detect changes and make local updates.
 	if(m_dirty)
 	{
 		glCall(glBindBuffer, GL_ARRAY_BUFFER, m_vboInstances);
