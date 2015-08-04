@@ -81,7 +81,7 @@ void prepareShader()
 void runMainLoop(GLFWwindow* _window)
 {
 	//uint64 time0 = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-	Device::setCullMode(CullMode::NONE);
+	Device::setCullMode(CullMode::BACK);
 	Device::setZFunc(ComparisonFunc::LESS);
 	while(!glfwWindowShouldClose(_window))
 	{
