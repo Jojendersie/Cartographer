@@ -10,6 +10,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CubeDemo", "CubeDemo.vcxpro
 		{9E29C1D2-5479-4A71-A693-D5434974B5BA} = {9E29C1D2-5479-4A71-A693-D5434974B5BA}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpriteDemo", "SpriteDemo.vcxproj", "{C3BF63C3-7163-4123-ACC0-C6D2924E9154}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9E29C1D2-5479-4A71-A693-D5434974B5BA} = {9E29C1D2-5479-4A71-A693-D5434974B5BA}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -24,6 +29,10 @@ Global
 		{849A3939-B695-4D5A-A6DF-25B0C39B5A5F}.Debug|Win32.Build.0 = Debug|Win32
 		{849A3939-B695-4D5A-A6DF-25B0C39B5A5F}.Release|Win32.ActiveCfg = Release|Win32
 		{849A3939-B695-4D5A-A6DF-25B0C39B5A5F}.Release|Win32.Build.0 = Release|Win32
+		{C3BF63C3-7163-4123-ACC0-C6D2924E9154}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C3BF63C3-7163-4123-ACC0-C6D2924E9154}.Debug|Win32.Build.0 = Debug|Win32
+		{C3BF63C3-7163-4123-ACC0-C6D2924E9154}.Release|Win32.ActiveCfg = Release|Win32
+		{C3BF63C3-7163-4123-ACC0-C6D2924E9154}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

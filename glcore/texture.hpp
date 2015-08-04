@@ -33,7 +33,7 @@ namespace MiR {
 		int getHeight() const { return m_height; } 
 
 		/// Get the bindless texture handle.
-		uint64 getHandle() const;
+		uint64 getHandle() const { return m_bindlessHandle; }
 
 		/// Change the sampler.
 		void setSampler(const Sampler& _sampler);
