@@ -44,14 +44,20 @@ int SpriteRenderer::defSprite(float _alignX, float _alignY,
 	float w = (float)_textureHandle->getWidth();
 	float h = (float)_textureHandle->getHeight();
 
-	newSprite.sprite.tex0.x = _texX / w;
-	newSprite.sprite.tex0.y = _texY / h;
-	newSprite.sprite.tex1.x = (_texX + _texWidth) / w;
-	newSprite.sprite.tex1.y = (_texY + _texHeight) / h;
-	newSprite.sprite.texture = _textureHandle->getHandle();
-	newSprite.offset.x = _texWidth * _alignX / w;
-	newSprite.offset.y = _texHeight * _alignY / h;
+	if(_texWidth == -1) _texWidth = _textureHandle->getWidth();
+	if(_texHeight == -1) _texHeight = _textureHandle->getHeight();
 
+	newSprite.sprite.texCoords.x = uint16((_texX + 0.0f) / w * 65535);
+	newSprite.sprite.texCoords.w = uint16((_texY + 0.0f) / h * 65535);
+	newSprite.sprite.texCoords.z = uint16((_texX - 0.0f + _texWidth) / w * 65535);
+	newSprite.sprite.texCoords.y = uint16((_texY - 0.0f + _texHeight) / h * 65535);
+	newSprite.sprite.texture = _textureHandle->getHandle();
+	newSprite.offset.x = -_texWidth * _alignX;
+	newSprite.offset.y = -_texHeight * _alignY;
+	newSprite.size.x = _texWidth;
+	newSprite.size.y = _texHeight;
+
+	m_sprites.push_back(newSprite);
 	return spriteID;
 }
 
@@ -60,9 +66,11 @@ void SpriteRenderer::newInstance(int _spriteID, const ei::Vec3& _position, float
 	SpriteInstance instance;
 	const SpriteDef& sp = m_sprites[_spriteID];
 	instance.sprite = sp.sprite;
-	instance.position = _position + Vec3(sp.offset, 0.0f);
+	instance.position = _position + Vec3(sp.offset * _scale, 0.0f);
 	instance.rotation = _rotation;
-	instance.scale = _scale;
+	instance.scale = _scale * sp.size;
+
+	m_instances.push_back(instance);
 	m_dirty = true;
 }
 

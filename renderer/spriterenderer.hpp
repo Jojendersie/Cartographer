@@ -61,8 +61,7 @@ namespace MiR {
 	private:
 		struct Sprite
 		{
-			ei::Vec2 tex0;
-			ei::Vec2 tex1;
+			ei::Vec<uint16, 4> texCoords;
 			uint64 texture;
 		};
 
@@ -70,6 +69,7 @@ namespace MiR {
 		{
 			Sprite sprite;
 			ei::Vec2 offset;
+			ei::IVec2 size;
 		};
 
 		struct SpriteInstance

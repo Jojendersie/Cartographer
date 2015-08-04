@@ -26,7 +26,7 @@ static void resizeCallback(GLFWwindow* _window, int _width, int _height)
 	glCall(glViewport, 0, 0, _width, _height);
 }
 
-GLFWwindow* setupStdWindow(const char* _titel)
+GLFWwindow* setupStdWindow(const char* _titel, bool _vsync)
 {
 	glfwSetErrorCallback(errorCallbackGLFW);
 	// Setup glfw
@@ -64,11 +64,13 @@ GLFWwindow* setupStdWindow(const char* _titel)
 	glfwSetWindowSizeCallback(window, resizeCallback);
 
 	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1); // VSync
+	glfwSwapInterval(_vsync ? 1 : 0); // VSync
 
 	glewExperimental = GL_TRUE;
 	glewInit();
 	glGetError();
+
+	glEnable(GL_FRAMEBUFFER_SRGB);
 
 	return window;
 }
