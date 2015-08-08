@@ -8,6 +8,7 @@
 using namespace MiR;
 
 static float s_aspectRatio;
+static int s_windowWidth, s_windowHeight;
 
 static void errorCallbackGLFW(int error, const char* description)
 {
@@ -23,6 +24,8 @@ static void stdKeyCallback(GLFWwindow* _window, int _key, int _scancode, int _ac
 static void resizeCallback(GLFWwindow* _window, int _width, int _height)
 {
 	s_aspectRatio = _width / (float)_height;
+	s_windowWidth = _width;
+	s_windowHeight = _height;
 	glCall(glViewport, 0, 0, _width, _height);
 }
 
@@ -54,6 +57,8 @@ GLFWwindow* setupStdWindow(const char* _titel, bool _vsync)
 #ifdef _DEBUG
 	width -= 30;
 	height -= 70;
+	s_windowWidth = width;
+	s_windowHeight = height;
 	GLFWwindow* window = glfwCreateWindow(width, height, _titel, nullptr, nullptr);
 	glfwSetWindowPos(window, 10, 20);
 #else
@@ -78,4 +83,14 @@ GLFWwindow* setupStdWindow(const char* _titel, bool _vsync)
 float getCurrentAspectRatio()
 {
 	return s_aspectRatio;
+}
+
+int getWindowWidth()
+{
+	return s_windowWidth;
+}
+
+int getWindowHeight()
+{
+	return s_windowHeight;
 }

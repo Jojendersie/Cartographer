@@ -40,9 +40,12 @@ namespace MiR {
 		///		full texture.
 		/// \param [in] _texWidth The height of the texture region in pixels. The default -1 uses the 
 		///		full texture.
+		/// \param [in] _numX Number of tiles in X-direction. This can be used for animated sprites.
+		/// \param [in] _numX Number of tiles in Y-direction. This can be used for animated sprites.
 		/// \returns The ID of the new sprite which must be used to create instances.
 		int defSprite(float _alignX, float _alignY,
-					  Texture2D::Handle _textureHandle, int _texX=0, int _texY=0, int _texWidth=-1, int _texHeight=-1);
+					  Texture2D::Handle _textureHandle, int _texX = 0, int _texY = 0, int _texWidth = -1, int _texHeight = -1,
+					  int _numX = 1, int _numY = 1);
 		
 		/// \param [in] _position Position in world (x,y) and z for the "layer". You may also use
 		///		the sprites in a 3D environment as billboards. Dependent on the camera z is also
@@ -50,7 +53,13 @@ namespace MiR {
 		/// \param [in] _rotation Angle (radiants) of a rotation around the z-axis).
 		/// \param [in] _scale A relative scale where 1.0 renders the sprite pixel perfect
 		///		(1 screen-pixel = 1 texture-pixel) at a distance of 1.0** or with orthographic projection.
-		void newInstance(int _spriteID, const ei::Vec3& _position, float _rotation, const ei::Vec2& _scale);
+		/// \param [in] _animX Choose a tile in X direction when the sprite was created with more than one.
+		///		E.g. a 1.4f means, that the second and third tile are interpolated with factor 0.4.
+		///		If necessary a modulo operation is applied automatically.
+		/// \param [in] _animY Choose a tile in Y direction when the sprite was created with more than one.
+		///		E.g. a 1.4f means, that the second and third tile are interpolated with factor 0.4.
+		///		If necessary a modulo operation is applied automatically.
+		void newInstance(int _spriteID, const ei::Vec3& _position, float _rotation, const ei::Vec2& _scale, float _animX = 0.0f, float _animY = 0.0f);
 
 		/// Clear all existing instances (recommended for fully dynamic buffers)
 		void clearInstances();
@@ -59,10 +68,12 @@ namespace MiR {
 		void draw() const;
 
 	private:
+#pragma pack(push, 4)
 		struct Sprite
 		{
 			ei::Vec<uint16, 4> texCoords;
 			uint64 texture;
+			ei::Vec<uint16, 2> numTiles;
 		};
 
 		struct SpriteDef
@@ -78,10 +89,12 @@ namespace MiR {
 			ei::Vec3 position;
 			float rotation;
 			ei::Vec2 scale;
+			ei::Vec2 animation;
 		};
+#pragma pack(pop)
 
 		unsigned m_vao;		///< OpenGL vertex array object
-		unsigned m_vbo;		///< OpenGL vertex buffer object
+		unsigned m_vbo;		///< OpenGL vertex buffer for sprites
 
 		std::vector<SpriteDef> m_sprites;
 		std::vector<SpriteInstance> m_instances;
