@@ -30,9 +30,9 @@ SpriteRenderer::SpriteRenderer()
 	// 1 x float rotation
 	glCall(glEnableVertexAttribArray, 4);
 	glCall(glVertexAttribPointer, 4, 1, GLenum(PrimitiveFormat::FLOAT), GL_FALSE, 52, (GLvoid*)(32));
-	// 2 x float scale
+	// 4 x half float scale
 	glCall(glEnableVertexAttribArray, 5);
-	glCall(glVertexAttribPointer, 5, 2, GLenum(PrimitiveFormat::FLOAT), GL_FALSE, 52, (GLvoid*)(36));
+	glCall(glVertexAttribPointer, 5, 4, GLenum(PrimitiveFormat::HALF), GL_FALSE, 52, (GLvoid*)(36));
 	// 2 x float animation
 	glCall(glEnableVertexAttribArray, 6);
 	glCall(glVertexAttribPointer, 6, 2, GLenum(PrimitiveFormat::FLOAT), GL_FALSE, 52, (GLvoid*)(44));
@@ -78,10 +78,12 @@ void SpriteRenderer::newInstance(int _spriteID, const ei::Vec3& _position, float
 	SpriteInstance instance;
 	const SpriteDef& sp = m_sprites[_spriteID];
 	instance.sprite = sp.sprite;
-	instance.position = _position + Vec3(sp.offset * _scale, 0.0f);
+	instance.position = _position;// + Vec3(sp.offset * _scale, 0.0f);
 	//instance.position.z = -1.0f + instance.position.z;
 	instance.rotation = _rotation;
-	instance.scale = _scale * sp.size;
+	Vec2 minPos = _scale * (sp.offset);
+	Vec2 maxPos = _scale * (sp.size + sp.offset);
+	instance.scale = Vec<half,4>(toHalf(minPos.x), toHalf(minPos.y), toHalf(maxPos.x), toHalf(maxPos.y));
 	if(sp.sprite.numTiles.x > 1) instance.animation.x = fmod(_animX, (float)sp.sprite.numTiles.x);
 	else instance.animation.x = 0.0f;
 	if(sp.sprite.numTiles.y > 1) instance.animation.y = fmod(_animY, (float)sp.sprite.numTiles.y);

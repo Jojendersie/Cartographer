@@ -14,6 +14,7 @@ struct Smile
 	Vec3 position;
 	Vec2 anim;
 	float velocity;
+	float rotation;
 };
 
 static SpriteRenderer* s_renderer;
@@ -37,7 +38,10 @@ void prepareSprites()
 	s_renderer->defSprite(0.5f, 0.5f, s_textures[1], 0, 0, 22, 22, 6, 6);
 
 	for(int i = 0; i < NUM_SMILES; ++i)
+	{
 		s_smiles[i].position = Vec3(float(rand() % getWindowWidth()), float(rand() % (getWindowHeight()/2)) + getWindowHeight()/3, 0.01f);
+		s_smiles[i].rotation = (rand() % 1000) / 320.0f;
+	}
 }
 
 void prepareShader(GLFWwindow* _window)
@@ -66,10 +70,11 @@ void update(float _time)
 	{
 		s_smiles[i].anim.x = _time * 2.0f + s_smiles[i].position.x * 0.02f;
 		s_smiles[i].velocity -= 0.01f;
+		s_smiles[i].rotation += 0.005f;
 		s_smiles[i].position.y += s_smiles[i].velocity;
 		if(s_smiles[i].position.y < 20.0f) s_smiles[i].velocity = -s_smiles[i].velocity;
 		s_smiles[i].anim.y = clamp(7.0f * s_smiles[i].position.y / (getWindowHeight()) - 0.5f, 0.0f, 6.0f);
-		s_renderer->newInstance(1, s_smiles[i].position, 0.0f, Vec2(3.0f), s_smiles[i].anim.x, s_smiles[i].anim.y);
+		s_renderer->newInstance(1, s_smiles[i].position, s_smiles[i].rotation, Vec2(3.0f), s_smiles[i].anim.x, s_smiles[i].anim.y);
 	}
 }
 

@@ -23,7 +23,7 @@ void main()
 	} else {
 		vec2 firstTile = floor(in_anim.xy);
 		vec2 tileInterpolation = in_anim.xy - firstTile;
-		color  = texture(tex, in_texCoord +  firstTile                  * in_anim.zw) * (1 - tileInterpolation.x) * (1 - tileInterpolation.y);
+		color  = texture(tex, in_texCoord + firstTile * in_anim.zw) * (1 - tileInterpolation.x) * (1 - tileInterpolation.y);
 		color += texture(tex, in_texCoord + tileOffset(firstTile, 1.0, 0.0)) * (    tileInterpolation.x) * (1 - tileInterpolation.y);
 		color += texture(tex, in_texCoord + tileOffset(firstTile, 0.0, 1.0)) * (1 - tileInterpolation.x) * (    tileInterpolation.y);
 		color += texture(tex, in_texCoord + tileOffset(firstTile, 1.0, 1.0)) * (    tileInterpolation.x) * (    tileInterpolation.y);

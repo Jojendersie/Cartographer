@@ -5,7 +5,7 @@ layout(location = 1) in uvec2 in_textureHandle[1];
 layout(location = 2) in vec2 in_numTiles[1];
 layout(location = 3) in vec3 in_position[1];
 layout(location = 4) in float in_rotation[1];
-layout(location = 5) in vec2 in_scale[1];
+layout(location = 5) in vec4 in_scale[1];
 layout(location = 6) in vec2 in_anim[1];
 
 layout(location = 0) uniform mat4 c_viewProjection;
@@ -26,30 +26,36 @@ void main()
 	out_anim.w = -out_anim.w;
 	out_numTiles = in_numTiles[0];
 	
+	mat2 rot;
+	rot[0][0] = rot[1][1] = cos(in_rotation[0]);
+	rot[1][0] = sin(in_rotation[0]);
+	rot[0][1] = - rot[1][0];
+	
 	// Bottom-Left
 	out_texCoord = in_texCoords[0].xy;
 	vec3 worldPos = in_position[0];
+	worldPos.xy += rot * in_scale[0].xy;
 	gl_Position = vec4(worldPos, 1) * c_viewProjection;
 	EmitVertex();
 
 	// Bottom-Right
 	out_texCoord = in_texCoords[0].zy;
 	worldPos = in_position[0];
-	worldPos.x += in_scale[0].x;
+	worldPos.xy += rot * in_scale[0].zy;
 	gl_Position = vec4(worldPos, 1) * c_viewProjection;
 	EmitVertex();
 
 	// Top-Left
 	out_texCoord = in_texCoords[0].xw;
 	worldPos = in_position[0];
-	worldPos.y += in_scale[0].y;
+	worldPos.xy += rot * in_scale[0].xw;
 	gl_Position = vec4(worldPos, 1) * c_viewProjection;
 	EmitVertex();
 
 	// Top-Right
 	out_texCoord = in_texCoords[0].zw;
 	worldPos = in_position[0];
-	worldPos.xy += in_scale[0].xy;
+	worldPos.xy += rot * in_scale[0].zw;
 	gl_Position = vec4(worldPos, 1) * c_viewProjection;
 	EmitVertex();
 
