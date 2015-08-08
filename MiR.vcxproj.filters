@@ -10,6 +10,9 @@
     <Filter Include="renderer">
       <UniqueIdentifier>{49a0703a-49f3-41f6-8fb3-276e58a8df7e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="utilities">
+      <UniqueIdentifier>{b26e36ee-248a-4dd0-b288-ce9c54695dbf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\manager.hpp">
@@ -46,6 +49,9 @@
     <ClInclude Include="glcore\sampler.hpp">
       <Filter>glcore</Filter>
     </ClInclude>
+    <ClInclude Include="utilities\hrclock.hpp">
+      <Filter>utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\error.cpp">
@@ -74,6 +80,9 @@
     </ClCompile>
     <ClCompile Include="renderer\spriterenderer.cpp">
       <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="utilities\hrclock.cpp">
+      <Filter>utilities</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

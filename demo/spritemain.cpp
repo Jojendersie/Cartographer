@@ -1,6 +1,5 @@
 #include <mir.hpp>
 #include <thread>
-#include <ctime>
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include <ei/vector.hpp>
@@ -41,6 +40,7 @@ void prepareSprites()
 	{
 		s_smiles[i].position = Vec3(float(rand() % getWindowWidth()), float(rand() % (getWindowHeight()/2)) + getWindowHeight()/3, 0.01f);
 		s_smiles[i].rotation = (rand() % 1000) / 320.0f;
+		s_smiles[i].anim.x = s_smiles[i].position.x * 0.02f;
 	}
 }
 
@@ -55,12 +55,11 @@ void prepareShader(GLFWwindow* _window)
 	s_shader.use();
 	int w, h;
 	glfwGetFramebufferSize(_window, &w, &h);
-	Mat4x4 viewProj = ei::orthographicGL(0.0f, (float)w, 0.0f, (float)h, 0.0f, 1.0f);//ei::perspectiveGL(PI/4, getCurrentAspectRatio(), 1.1f, 1000.0f)
-	//	* ei::camera(rotationY(time / 10.0f) * Vec3(0.0f, 100.0f, -220.0f), Vec3(0.0f, -50.0f, 0.0f));
+	Mat4x4 viewProj = ei::orthographicGL(0.0f, (float)w, 0.0f, (float)h, 0.0f, 1.0f);
 	glCall(glUniformMatrix4fv, 0, 1, GL_FALSE, (GLfloat*)&viewProj);
 }
 
-void update(float _time)
+void update(float _deltaTime)
 {
 	s_renderer->clearInstances();
 
@@ -68,11 +67,14 @@ void update(float _time)
 
 	for(int i = 0; i < NUM_SMILES; ++i)
 	{
-		s_smiles[i].anim.x = _time * 2.0f + s_smiles[i].position.x * 0.02f;
-		s_smiles[i].velocity -= 0.01f;
-		s_smiles[i].rotation += 0.005f;
-		s_smiles[i].position.y += s_smiles[i].velocity;
-		if(s_smiles[i].position.y < 20.0f) s_smiles[i].velocity = -s_smiles[i].velocity;
+		s_smiles[i].anim.x += _deltaTime * 0.005f;
+		s_smiles[i].velocity -= _deltaTime * 0.0004f;
+		s_smiles[i].rotation += _deltaTime * 0.0002f;
+		s_smiles[i].position.y += s_smiles[i].velocity * _deltaTime;
+		if(s_smiles[i].position.y < 20.0f) {
+			s_smiles[i].velocity = -s_smiles[i].velocity;
+			s_smiles[i].position.y += 2.0f * (20.0f - s_smiles[i].position.y);
+		}
 		s_smiles[i].anim.y = clamp(7.0f * s_smiles[i].position.y / (getWindowHeight()) - 0.5f, 0.0f, 6.0f);
 		s_renderer->newInstance(1, s_smiles[i].position, s_smiles[i].rotation, Vec2(3.0f), s_smiles[i].anim.x, s_smiles[i].anim.y);
 	}
@@ -80,15 +82,14 @@ void update(float _time)
 
 void runMainLoop(GLFWwindow* _window)
 {
-	//uint64 time0 = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 	Device::setCullMode(CullMode::BACK);
 	Device::setZFunc(ComparisonFunc::LEQUAL);
+	HRClock clock;
 	while(!glfwWindowShouldClose(_window))
 	{
-		//float time = float( std::chrono::high_resolution_clock::now().time_since_epoch().count() - time0 ) / 5000000.0f;
-		float time = clock() / 1000.0f;
+		float deltaTime = (float)clock.deltaTime();
 		glfwPollEvents();
-		update(time);
+		update(deltaTime);
 		glCall(glClearColor, 1.0f, 1.0f, 1.0f, 1.0f);
 		glCall(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

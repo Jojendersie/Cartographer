@@ -9,3 +9,4 @@
 #include "glcore/texture.hpp"
 #include "renderer/instancerenderer.hpp"
 #include "renderer/spriterenderer.hpp"
+#include "utilities/hrclock.hpp"

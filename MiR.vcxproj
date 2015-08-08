@@ -89,6 +89,7 @@
     <ClInclude Include="mir.hpp" />
     <ClInclude Include="renderer\instancerenderer.hpp" />
     <ClInclude Include="renderer\spriterenderer.hpp" />
+    <ClInclude Include="utilities\hrclock.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\error.cpp" />
@@ -100,6 +101,7 @@
     <ClCompile Include="glcore\vertexformat.cpp" />
     <ClCompile Include="renderer\instancerenderer.cpp" />
     <ClCompile Include="renderer\spriterenderer.cpp" />
+    <ClCompile Include="utilities\hrclock.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

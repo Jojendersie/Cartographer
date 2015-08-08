@@ -1,6 +1,5 @@
 #include <mir.hpp>
 #include <thread>
-#include <ctime>
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include <ei/vector.hpp>
@@ -80,13 +79,11 @@ void prepareShader()
 
 void runMainLoop(GLFWwindow* _window)
 {
-	//uint64 time0 = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 	Device::setCullMode(CullMode::BACK);
 	Device::setZFunc(ComparisonFunc::LESS);
 	while(!glfwWindowShouldClose(_window))
 	{
-		//float time = float( std::chrono::high_resolution_clock::now().time_since_epoch().count() - time0 ) / 5000000.0f;
-		float time = clock() / 1000.0f;
+		float time = HRClock::now() / 1000.0f;
 		glCall(glClearColor, 0.0f, 0.0f, 0.0f, 0.0f);
 		glCall(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
