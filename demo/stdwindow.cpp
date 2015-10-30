@@ -1,11 +1,11 @@
-#include <mir.hpp>
+#include <charcoal.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <string>
 #include "stdwindow.hpp"
 
-using namespace MiR;
+using namespace cac;
 
 static float s_aspectRatio;
 static int s_windowWidth, s_windowHeight;

@@ -1,11 +1,11 @@
-#include <mir.hpp>
+#include <charcoal.hpp>
 #include <thread>
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include <ei/vector.hpp>
 #include "stdwindow.hpp"
 
-using namespace MiR;
+using namespace cac;
 using namespace ei;
 
 struct Smile
@@ -47,9 +47,9 @@ void prepareSprites()
 void prepareShader(GLFWwindow* _window)
 {
 	// Load shader from file
-	s_shader.attach( MiR::ShaderManager::get("shader/sprite.vert", ShaderType::VERTEX) );
-	s_shader.attach( MiR::ShaderManager::get("shader/sprite.geom", ShaderType::GEOMETRY) );
-	s_shader.attach( MiR::ShaderManager::get("shader/sprite.frag", ShaderType::FRAGMENT) );
+	s_shader.attach( ShaderManager::get("shader/sprite.vert", ShaderType::VERTEX) );
+	s_shader.attach( ShaderManager::get("shader/sprite.geom", ShaderType::GEOMETRY) );
+	s_shader.attach( ShaderManager::get("shader/sprite.frag", ShaderType::FRAGMENT) );
 	s_shader.link();
 
 	s_shader.use();
@@ -110,7 +110,7 @@ static void cursorCallback(GLFWwindow* _window, double _x, double _y)
 
 int main()
 {
-	GLFWwindow* window = setupStdWindow("MiR sprite demo.", false);
+	GLFWwindow* window = setupStdWindow("Carthographer Charcoal sprite demo.", false);
 	if(!window) return 1;
 	glfwSetCursorPosCallback(window, cursorCallback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);

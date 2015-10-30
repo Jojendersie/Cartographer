@@ -1,6 +1,6 @@
 #pragma once
 
-namespace MiR {
+namespace cac {
 	
 	/// \brief Delete a resource end of scope.
 	/// \details In contrast to a unique_ptr you can duplicate the pointer...
@@ -63,4 +63,4 @@ namespace MiR {
 		void operator = (const ScopedPtr&);
 	};
 	
-} // namespace MiR
+} // namespace cac

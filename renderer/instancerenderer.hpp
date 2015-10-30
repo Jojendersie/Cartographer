@@ -5,7 +5,7 @@
 #include <ei/vector.hpp>
 #include <vector>
 
-namespace MiR {
+namespace cac {
 	
 	/// Batch renderer for models.
 	/// \details This renderer represents exactly one pipeline state and contains one vertex and index
@@ -99,4 +99,4 @@ namespace MiR {
 		mutable bool m_dirty;		///< Is the instace buffer dirty?
 	};
 
-} // namespace MiR
+} // namespace cac

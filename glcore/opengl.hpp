@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <string>
 
-namespace MiR {
+namespace cac {
 
 	/// Load OpenGL functions and set enable debug extension (call after context creation)
 	//init();
@@ -40,4 +40,4 @@ namespace MiR {
 	
 #define glCall(_function, ...) (_glCall(#_function, _function, __VA_ARGS__))
 
-} // namespace MiR
+} // namespace cac

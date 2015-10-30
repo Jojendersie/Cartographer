@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace MiR {
+namespace cac {
 		
 	bool GLError(const char*  _openGLFunctionName)
 	{
@@ -53,4 +53,4 @@ namespace MiR {
 		return false;
 	}
 	
-} // namespace MiR
+} // namespace cac

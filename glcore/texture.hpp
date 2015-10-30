@@ -5,7 +5,7 @@
 #include "core/manager.hpp"
 #include "glcore/sampler.hpp"
 
-namespace MiR {
+namespace cac {
 
 	/// Base class for different (2D, 3D, cube) textures.
 	class Texture
@@ -111,4 +111,4 @@ namespace MiR {
 		void resize();
 	};*/
 
-} // namespace MiR
+} // namespace cac

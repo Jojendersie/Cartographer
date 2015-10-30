@@ -4,7 +4,7 @@
 #include "shader.hpp"
 #include <string>
 
-namespace MiR {
+namespace cac {
 	
 	Shader::Shader(const char* _source, ShaderType _type)
 	{

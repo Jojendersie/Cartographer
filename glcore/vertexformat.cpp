@@ -1,6 +1,6 @@
 #include "vertexformat.hpp"
 
-namespace MiR {
+namespace cac {
 
 bool isIntegerFormat(PrimitiveFormat _format)
 {
@@ -38,4 +38,4 @@ int attributeSize(const VertexAttribute& _attr)
 	return -1;
 }
 
-} // namespace MiR
+} // namespace cac

@@ -3,7 +3,7 @@
 #include <gl/glew.h>
 #include <ei/elementarytypes.hpp>
 
-namespace MiR {
+namespace cac {
 	
 	/// A sampler defines how a texture is sampled (border handling and scaling)
 	class Sampler
@@ -39,4 +39,4 @@ namespace MiR {
 		uint m_maxAnisotropy;
 	};
 
-} // namespace MiR
+} // namespace cac

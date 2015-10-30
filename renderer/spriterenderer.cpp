@@ -5,7 +5,7 @@
 
 using namespace ei;
 
-namespace MiR {
+namespace cac {
 
 SpriteRenderer::SpriteRenderer()
 {
@@ -114,4 +114,4 @@ void SpriteRenderer::draw() const
 	//glCall(glDrawArraysInstanced, GL_POINTS, 0, 1,
 }
 
-} // namespace MiR
+} // namespace cac

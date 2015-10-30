@@ -42,7 +42,6 @@
     <ClInclude Include="renderer\spriterenderer.hpp">
       <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="mir.hpp" />
     <ClInclude Include="glcore\vertexformat.hpp">
       <Filter>glcore</Filter>
     </ClInclude>
@@ -52,6 +51,7 @@
     <ClInclude Include="utilities\hrclock.hpp">
       <Filter>utilities</Filter>
     </ClInclude>
+    <ClInclude Include="charcoal.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\error.cpp">

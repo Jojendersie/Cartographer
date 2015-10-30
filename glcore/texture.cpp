@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "dependencies/stb_image.h"
 
-namespace MiR {
+namespace cac {
 
 	Texture2D::Texture2D(const char* _textureFileName, const Sampler& _sampler, bool _srgb) : 
 		m_bindlessHandle(0),
@@ -137,4 +137,4 @@ namespace MiR {
 		}
 	}*/
 
-} // namespace MiR
+} // namespace cac

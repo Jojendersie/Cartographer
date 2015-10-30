@@ -18,7 +18,7 @@ inline float toFloat(half _x)
 	return *((float*)&f);
 }
 
-namespace MiR {
+namespace cac {
 
 	/// Batch renderer for sprites.
 	/// \details This renderer represents exactly one pipeline state and contains one vertex and index
@@ -114,4 +114,4 @@ namespace MiR {
 		mutable bool m_dirty;
 	};
 
-} // namespace MiR
+} // namespace cac

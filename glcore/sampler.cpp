@@ -1,7 +1,7 @@
 #include "glcore/opengl.hpp"
 #include "sampler.hpp"
 
-namespace MiR {
+namespace cac {
 
 	Sampler::Sampler(Filter _minFilter, Filter _magFilter, Filter _mipFilter, Border _borderHandling, uint _maxAnisotropy) :
 		m_minFilter(_minFilter),
@@ -49,4 +49,4 @@ namespace MiR {
 		glCall(glBindSampler, _textureSlot, m_samplerID);
 	}
 
-} // namespace MiR
+} // namespace cac

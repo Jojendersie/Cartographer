@@ -1,6 +1,6 @@
 #pragma once
 
-namespace MiR {
+namespace cac {
 		
 	/// Mixin which creates a singleton resource manager for a specific type.
 	/// \details To use this manager declare a new type in some header e.g.
@@ -191,4 +191,4 @@ namespace MiR {
 		return hashvalue;
 	}
 
-} // namespace MiR
+} // namespace cac

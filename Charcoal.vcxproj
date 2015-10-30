@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9E29C1D2-5479-4A71-A693-D5434974B5BA}</ProjectGuid>
     <RootNamespace>MiR</RootNamespace>
+    <ProjectName>Charcoal</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -81,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="charcoal.hpp" />
     <ClInclude Include="core\error.hpp" />
     <ClInclude Include="core\manager.hpp" />
     <ClInclude Include="core\scopedptr.hpp" />
@@ -90,7 +92,6 @@
     <ClInclude Include="glcore\shader.hpp" />
     <ClInclude Include="glcore\texture.hpp" />
     <ClInclude Include="glcore\vertexformat.hpp" />
-    <ClInclude Include="mir.hpp" />
     <ClInclude Include="renderer\instancerenderer.hpp" />
     <ClInclude Include="renderer\spriterenderer.hpp" />
     <ClInclude Include="utilities\hrclock.hpp" />

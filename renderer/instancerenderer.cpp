@@ -5,7 +5,7 @@
 
 using namespace ei;
 
-namespace MiR {
+namespace cac {
 
 InstanceRenderer::InstanceRenderer(PrimitiveType _type, const VertexAttribute* _attributes, int _numAttributes) :
 	m_startNewPrimitive(0),
@@ -283,4 +283,4 @@ void InstanceRenderer::draw() const
 	}
 }
 
-} // namespace MiR
+} // namespace cac

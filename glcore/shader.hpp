@@ -4,7 +4,7 @@
 #include <ei/elementarytypes.hpp>
 #include "core/manager.hpp"
 
-namespace MiR {
+namespace cac {
 	
 	enum class ShaderType
 	{
@@ -70,4 +70,4 @@ namespace MiR {
 		uint m_programID;		///< OpenGL program ID
 	};
 
-} // namespace MiR
+} // namespace cac

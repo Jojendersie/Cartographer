@@ -1,11 +1,11 @@
-#include <mir.hpp>
+#include <charcoal.hpp>
 #include <thread>
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include <ei/vector.hpp>
 #include "stdwindow.hpp"
 
-using namespace MiR;
+using namespace cac;
 using namespace ei;
 
 static InstanceRenderer* s_renderer;
@@ -72,8 +72,8 @@ void prepareBoxes()
 void prepareShader()
 {
 	// Load shader from file
-	s_shader.attach( MiR::ShaderManager::get("shader/instanced3d.vert", ShaderType::VERTEX) );
-	s_shader.attach( MiR::ShaderManager::get("shader/simple.frag", ShaderType::FRAGMENT) );
+	s_shader.attach( ShaderManager::get("shader/instanced3d.vert", ShaderType::VERTEX) );
+	s_shader.attach( ShaderManager::get("shader/simple.frag", ShaderType::FRAGMENT) );
 	s_shader.link();
 }
 
@@ -121,7 +121,7 @@ void runMainLoop(GLFWwindow* _window)
 
 int main()
 {
-	GLFWwindow* window = setupStdWindow("MiR cube demo.");
+	GLFWwindow* window = setupStdWindow("Cartographer Charcoal cube demo.");
 	if(!window) return 1;
 
 	prepareBoxes();
