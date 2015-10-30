@@ -57,13 +57,13 @@ GLFWwindow* setupStdWindow(const char* _titel, bool _vsync)
 #ifdef _DEBUG
 	width -= 30;
 	height -= 70;
-	s_windowWidth = width;
-	s_windowHeight = height;
 	GLFWwindow* window = glfwCreateWindow(width, height, _titel, nullptr, nullptr);
 	glfwSetWindowPos(window, 10, 20);
 #else
 	GLFWwindow* window = glfwCreateWindow(width, height, _titel, glfwGetPrimaryMonitor(), nullptr);
 #endif
+	s_windowWidth = width;
+	s_windowHeight = height;
 	s_aspectRatio = width / (float)height;
 	glfwSetKeyCallback(window, stdKeyCallback);
 	glfwSetWindowSizeCallback(window, resizeCallback);

@@ -67,8 +67,8 @@ void update(float _deltaTime)
 
 	for(int i = 0; i < NUM_SMILES; ++i)
 	{
-		s_smiles[i].anim.x += _deltaTime * 0.005f;
-		s_smiles[i].velocity -= _deltaTime * 0.0004f;
+		s_smiles[i].anim.x += _deltaTime * 0.004f;
+		s_smiles[i].velocity -= _deltaTime * 0.0002f;
 		s_smiles[i].rotation += _deltaTime * 0.0002f;
 		s_smiles[i].position.y += s_smiles[i].velocity * _deltaTime;
 		if(s_smiles[i].position.y < 20.0f) {
