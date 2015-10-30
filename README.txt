@@ -1,12 +1,11 @@
-JoGaR
-Johannes' Gamejam Renderer
-Migaren
-Mini Gamejam Renderer
-Johannes' Mini Renderer
-MiR
+Charcoal is the rendering module of the Cartograph library.
 
 DEPENDENCIES:
-Epsilon
+Epsilon (must be provided)
+glfw (must be provided)
+stb_image (contained)
+free_type (contained)
+glew (must be provided)
 
 CONTENT:
 core
