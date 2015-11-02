@@ -13,6 +13,12 @@
     <Filter Include="utilities">
       <UniqueIdentifier>{b26e36ee-248a-4dd0-b288-ce9c54695dbf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="dependencies">
+      <UniqueIdentifier>{8953d5bc-2921-43e3-a36f-911ca7047b1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dependencies\freetype">
+      <UniqueIdentifier>{bbd0afb4-7b04-429a-b222-28077fc69385}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\manager.hpp">
@@ -52,6 +58,9 @@
       <Filter>utilities</Filter>
     </ClInclude>
     <ClInclude Include="charcoal.hpp" />
+    <ClInclude Include="renderer\fontrenderer.hpp">
+      <Filter>renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\error.cpp">
@@ -83,6 +92,135 @@
     </ClCompile>
     <ClCompile Include="utilities\hrclock.cpp">
       <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\type1cid.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\type42.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\winfnt.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\autofit.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\bdf.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\cff.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftbase.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftbbox.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftbdf.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftbitmap.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftbzip2.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftcache.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftcid.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftdebug.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftfntfmt.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftfstype.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftgasp.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftglyph.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftgxval.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftgzip.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftinit.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftlcdfil.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftlzw.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftmm.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftotval.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftpatent.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftpfr.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftstroke.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftsynth.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftsystem.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\fttype1.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\ftwinfnt.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\pcf.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\pfr.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\psaux.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\pshinter.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\psnames.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\raster.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\sfnt.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\smooth.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\truetype.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\freetype\src\type1.c">
+      <Filter>dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\fontrenderer.cpp">
+      <Filter>renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
