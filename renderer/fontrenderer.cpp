@@ -11,9 +11,10 @@ using namespace ei;
 
 namespace cac {
 
-	const int BASE_SIZE = 48;		///< Vertical size in pixels within largest bitmap
-	const int MAP_WIDTH = 512;		///< Default width for textures (height depends on the required space)
-	const int MIP_RANGE = 8;		///< Size factor between largest (BASE_SIZE) and smallest map
+	const int BASE_SIZE = 72;			///< Vertical size in pixels within largest bitmap
+	const int MAP_WIDTH = 1024;			///< Default width for textures (height depends on the required space)
+	const int MIP_LEVELS = 4;			///< Number of smaller mip-maps
+	const int MIP_RANGE = 1<<MIP_LEVELS;///< Size factor between largest (BASE_SIZE) and smallest map
 
 	/*FontRenderer::FontRenderer(const char* _fontFile)
 	{
@@ -163,8 +164,8 @@ namespace cac {
 		}
 
 		// Create MipMaps beginning with the smallest defined one (halfing may round, doubling doesn't).
-		int mipFactor = MIP_RANGE, mipLevel = 3;
-		std::vector<byte> map[4];
+		int mipFactor = MIP_RANGE, mipLevel = MIP_LEVELS;
+		std::vector<byte> map[MIP_LEVELS+1];
 		int texHeight = MIP_RANGE * createMap(map[mipLevel--], _characters, fontFace, BASE_SIZE / MIP_RANGE, MAP_WIDTH / MIP_RANGE, MIP_RANGE / mipFactor);
 		if(!texHeight)
 		{
