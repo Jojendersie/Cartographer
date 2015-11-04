@@ -61,10 +61,9 @@ namespace cac {
 
 	void FontRenderer::draw(const ei::Vec3& _position, const char* _text, float _size, float _alignX, float _alignY)
 	{
-		m_instances.clear();
 		// TEST-CODE
 		// create test vertices which cover the whole texture
-		CharacterVertex v;
+		/*CharacterVertex v;
 		v.position = Vec3(0.0f, 0.0f, 0.1f);
 		v.rotation = 0.0f;
 		v.size = Vec2((float)m_texture->getWidth(), (float)m_texture->getHeight());
@@ -76,24 +75,39 @@ namespace cac {
 			v.position.y += v.size.y;
 			v.size /= 2.0f;
 			m_instances.push_back(v);
-		}
+		}*/
 
-		/*Vec2 cursor(_position.x, _position.y);
-		for(char32_t c = getNext(&_text); c; c = getNext(&_text))
+		// Convert pixel size into a scale factor
+		_size /= BASE_SIZE;
+
+		Vec2 cursor(_position.x, _position.y);
+		// Avoid kerning for the first character
+		char32_t c = getNext(&_text);
+		auto charEntry = m_chars.find(c);
+		if(charEntry != m_chars.end())
+			cursor.x -= charEntry->second.baseX * _size;
+		for(; c; c = getNext(&_text))
 		{
 			auto charEntry = m_chars.find(c);
 			if(charEntry != m_chars.end())
 			{
 				CharacterVertex v;
-				v.position = Vec3(cursor.x + charEntry->second.baseX, cursor.y + charEntry->second.baseY, _position.z);
+				v.position = Vec3(cursor.x + charEntry->second.baseX * _size,
+					cursor.y + charEntry->second.baseY * _size, _position.z);
 				v.rotation = 0.0f;
-				v.size = charEntry->second.texSize * _size / BASE_SIZE;
+				v.size = charEntry->second.texSize * _size;
 				v.texCoords = charEntry->second.texCoords;
 				m_instances.push_back(v);
+				cursor.x += charEntry->second.advance / 64.0f * _size;
 			}
-		}*/
+		}
 
 		m_dirty = true;
+	}
+
+	void FontRenderer::clearText()
+	{
+		m_instances.clear();
 	}
 
 	void FontRenderer::present() const
@@ -188,7 +202,7 @@ namespace cac {
 			{
 				unsigned idx = _left+x + _mapWidth*(_top+y);
 				if(idx < _target.size())
-					_target[idx] = _glyph.buffer[x+_glyph.width*y];
+					_target[idx] = _glyph.buffer[x+_glyph.width*(_glyph.rows-1-y)];
 			}
 		}
 	}
@@ -263,7 +277,7 @@ namespace cac {
 			return;
 		}
 
-		for(auto cEntry : m_chars)
+		for(auto& cEntry : m_chars)
 		{
 			int idx = FT_Get_Char_Index(_fontFace, cEntry.first);
 			FT_Load_Glyph(_fontFace, idx, FT_LOAD_RENDER | FT_LOAD_NO_BITMAP);
@@ -282,7 +296,9 @@ namespace cac {
 
 	void FontRenderer::normalizeCharacters()
 	{
-		for(auto cEntry : m_chars)
+		int8 baseLineOffset = 127;
+		//int8 leftOffset = 127;
+		for(auto& cEntry : m_chars)
 		{
 			// TODO: test half pixel stuff
 			//cEntry.second.texOffset *= MIP_RANGE / float(m_texture->getWidth());
@@ -291,7 +307,18 @@ namespace cac {
 			cEntry.second.texCoords.y = (cEntry.second.texCoords.y * MIP_RANGE * 0xffff) / m_texture->getHeight();
 			cEntry.second.texCoords.z = cEntry.second.texCoords.x + int(cEntry.second.texSize.x * MIP_RANGE * 0xffff / m_texture->getWidth());
 			cEntry.second.texCoords.w = cEntry.second.texCoords.y + int(cEntry.second.texSize.y * MIP_RANGE * 0xffff / m_texture->getHeight());
+			//std::swap(cEntry.second.texCoords.y, cEntry.second.texCoords.w);
 			cEntry.second.texSize *= MIP_RANGE;
+			//if(cEntry.second.baseX < leftOffset)
+			//	leftOffset = cEntry.second.baseX;
+			if(cEntry.second.baseY < baseLineOffset)
+				baseLineOffset = cEntry.second.baseY;
+		}
+
+		for(auto& cEntry : m_chars)
+		{
+			//cEntry.second.baseX -= leftOffset;
+			cEntry.second.baseY -= baseLineOffset;
 		}
 	}
 

@@ -14,8 +14,8 @@ namespace cac {
 
 	/// Renderer for text.
 	/// \details This renderer represents a single font type and a set of texts. It buffers all
-	///		draw-text calls until present. This renderer is non-static, i.e. it discards the
-	///		buffer every frame and the text must be redrawn.
+	///		draw-text calls until present. The text buffer is not cleared automaticall. For
+	///		dynamic text call clearText() once at the beginning of a frame.
 	class FontRenderer
 	{
 	public:
@@ -50,6 +50,9 @@ namespace cac {
 		/// \param [in] _alignY Relative position of the reference point in the string.
 		///		0.0 is on the bottom and 1.0 is on the top.
 		void draw(const ei::Vec3& _position, const char* _text, float _size, float _alignX = 0.0f, float _alignY = 0.0f);
+
+		/// Remove all previously drawn texts
+		void clearText();
 		
 		/// Single instanced draw call for all characters.
 		void present() const;
@@ -76,10 +79,10 @@ namespace cac {
 		ScopedPtr<Sampler> m_sampler;
 		unsigned m_vao;		///< OpenGL vertex array object
 		unsigned m_vbo;		///< OpenGL vertex buffer for sprites
+		mutable bool m_dirty;
 
 		std::unordered_map<char32_t, CharacterDef> m_chars;
 		std::vector<CharacterVertex> m_instances;
-		mutable bool m_dirty;
 
 		/// Create smallest mipmap.
 		/// \param [in] _fontSize Font height in pixels.

@@ -13,7 +13,7 @@ static Program s_shader;
 void prepareFont()
 {
 	s_fontRenderer = new FontRenderer;
-	s_fontRenderer->createFont("calibri.ttf", u8"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,.:!?'(){}[]<>\U000003B5\U000003A9\U0000262F");
+	s_fontRenderer->createFont("calibri.ttf", u8" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,.:!?'(){}[]<>\U000003B5\U000003A9\U0000262F");
 }
 
 void prepareShader(GLFWwindow* _window)
@@ -44,7 +44,15 @@ void runMainLoop(GLFWwindow* _window)
 		glCall(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		s_shader.use();
-		s_fontRenderer->draw(Vec3(0.0f), u8"The quick onyx goblin jumps over the lazy dwarf. [](){}<>;?!\U000003B5\U000003A9\U0000262F", 20.0);
+		s_fontRenderer->clearText();
+		Vec3 pos(1.0f, 1.0f, 0.0f);
+		float size = 68.5f;
+		for(int i=0; i<25; ++i)
+		{
+			s_fontRenderer->draw(pos, u8"The quick onyx goblin jumps over the lazy dwarf. [Hq](VA){}<>;?!\U000003B5\U000003A9\U0000262F", size);
+			pos.y += 1.0f + size;
+			size -= 2.5f;
+		}
 		s_fontRenderer->present();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
