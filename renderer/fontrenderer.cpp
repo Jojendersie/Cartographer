@@ -59,7 +59,7 @@ namespace cac {
 		glCall(glDeleteVertexArrays, 1, &m_vao);
 	}
 
-	void FontRenderer::draw(const ei::Vec3& _position, const char* _text, float _alignX, float _alignY)
+	void FontRenderer::draw(const ei::Vec3& _position, const char* _text, float _size, float _alignX, float _alignY)
 	{
 		m_instances.clear();
 		// TEST-CODE
@@ -77,6 +77,22 @@ namespace cac {
 			v.size /= 2.0f;
 			m_instances.push_back(v);
 		}
+
+		/*Vec2 cursor(_position.x, _position.y);
+		for(char32_t c = getNext(&_text); c; c = getNext(&_text))
+		{
+			auto charEntry = m_chars.find(c);
+			if(charEntry != m_chars.end())
+			{
+				CharacterVertex v;
+				v.position = Vec3(cursor.x + charEntry->second.baseX, cursor.y + charEntry->second.baseY, _position.z);
+				v.rotation = 0.0f;
+				v.size = charEntry->second.texSize * _size / BASE_SIZE;
+				v.texCoords = charEntry->second.texCoords;
+				m_instances.push_back(v);
+			}
+		}*/
+
 		m_dirty = true;
 	}
 
@@ -219,8 +235,8 @@ namespace cac {
 				// the total height is unknown.
 				bmpChar.texSize.x = (float)bmp.width;
 				bmpChar.texSize.y = (float)bmp.rows;
-				bmpChar.texOffset.x = (float)offX;
-				bmpChar.texOffset.y = (float)offY;
+				bmpChar.texCoords.x = offX;
+				bmpChar.texCoords.y = offY;
 				charEntry = m_chars.emplace(c, bmpChar).first;
 			} else {
 				// Character was already there -> do nothing
@@ -259,8 +275,8 @@ namespace cac {
 			cEntry.second.baseY = -_padding - bmp.rows + _fontFace->glyph->bitmap_top;
 			cEntry.second.advance = (uint16)_fontFace->glyph->advance.x;
 			// While copying center the glyph within its padding width
-			copyGlyph(_target, bmp, int(cEntry.second.texOffset.x)*_mipFactor + centeringOff,
-				int(cEntry.second.texOffset.y)*_mipFactor, _mapWidth);
+			copyGlyph(_target, bmp, int(cEntry.second.texCoords.x)*_mipFactor + centeringOff,
+				int(cEntry.second.texCoords.y)*_mipFactor, _mapWidth);
 		}
 	}
 
@@ -269,8 +285,13 @@ namespace cac {
 		for(auto cEntry : m_chars)
 		{
 			// TODO: test half pixel stuff
-			cEntry.second.texOffset *= MIP_RANGE / float(m_texture->getWidth());
-			cEntry.second.texSize *= MIP_RANGE / float(m_texture->getHeight());
+			//cEntry.second.texOffset *= MIP_RANGE / float(m_texture->getWidth());
+			//cEntry.second.texSize *= MIP_RANGE / float(m_texture->getHeight());
+			cEntry.second.texCoords.x = (cEntry.second.texCoords.x * MIP_RANGE * 0xffff) / m_texture->getWidth();
+			cEntry.second.texCoords.y = (cEntry.second.texCoords.y * MIP_RANGE * 0xffff) / m_texture->getHeight();
+			cEntry.second.texCoords.z = cEntry.second.texCoords.x + int(cEntry.second.texSize.x * MIP_RANGE * 0xffff / m_texture->getWidth());
+			cEntry.second.texCoords.w = cEntry.second.texCoords.y + int(cEntry.second.texSize.y * MIP_RANGE * 0xffff / m_texture->getHeight());
+			cEntry.second.texSize *= MIP_RANGE;
 		}
 	}
 
@@ -281,21 +302,20 @@ namespace cac {
 		// First bit set -> multibyte
 		if(ptr[0] & 0x80)
 		{
-			char prefix = ptr[0] & 0xf1;
-			if((ptr[0] & 0xf1) == 0xf0)
+			if((ptr[0] & 0xf8) == 0xf0)
 			{
 				// All three following characters must start with 10xxx...
 				eiAssert(((ptr[1] & 0xc0) == 0x80) && ((ptr[2] & 0xc0) == 0x80) && ((ptr[3] & 0xc0) == 0x80), "Invalid utf8 codepoint!");
 				// Take all the xxxx from the bytes and put them into one character
-				c = ((ptr[0] & 0x07) << 18) || ((ptr[1] & 0x3f) << 12) || ((ptr[2] & 0x3f) << 6) || (ptr[3] & 0x3f);
+				c = ((ptr[0] & 0x07) << 18) | ((ptr[1] & 0x3f) << 12) | ((ptr[2] & 0x3f) << 6) | (ptr[3] & 0x3f);
 				*_textit = ptr + 4;
-			} else if((ptr[0] & 0xf) == 0xe0) {
+			} else if((ptr[0] & 0xf0) == 0xe0) {
 				eiAssert(((ptr[1] & 0xc0) == 0x80) && ((ptr[2] & 0xc0) == 0x80), "Invalid utf8 codepoint!");
-				c = ((ptr[0] & 0x07) << 12) || ((ptr[1] & 0x3f) << 6) || (ptr[2] & 0x3f);
+				c = ((ptr[0] & 0x0f) << 12) | ((ptr[1] & 0x3f) << 6) | (ptr[2] & 0x3f);
 				*_textit = ptr + 3;
-			} else if((ptr[0] & 0xe) == 0xc0) {
+			} else if((ptr[0] & 0xe0) == 0xc0) {
 				eiAssert(((ptr[1] & 0xc0) == 0x80), "Invalid utf8 codepoint!");
-				c = ((ptr[0] & 0x07) << 6) || (ptr[1] & 0x3f);
+				c = ((ptr[0] & 0x1f) << 6) | (ptr[1] & 0x3f);
 				*_textit = ptr + 2;
 			} else
 				eiAssert(false, "Invalid utf8 codepoint! The first byte of an utf8 character cannot start with 10xxx.");

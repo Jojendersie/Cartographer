@@ -44,11 +44,12 @@ namespace cac {
 		///		Use the .z coordinate as layer for depth sorting.
 		/// \param [in] _text Unicode text (UTF8). Type literals as u8"blabla" or risk invalid
 		///		chars.
+		/// \param [in] _size Height of a text line in pixels.
 		/// \param [in] _alignX Relative position of the reference point in the string.
 		///		0.0 is on the left and 1.0 is on the right.
 		/// \param [in] _alignY Relative position of the reference point in the string.
 		///		0.0 is on the bottom and 1.0 is on the top.
-		void draw(const ei::Vec3& _position, const char* _text, float _alignX = 0.0f, float _alignY = 0.0f);
+		void draw(const ei::Vec3& _position, const char* _text, float _size, float _alignX = 0.0f, float _alignY = 0.0f);
 		
 		/// Single instanced draw call for all characters.
 		void present() const;
@@ -57,10 +58,10 @@ namespace cac {
 #pragma pack(push, 4)
 		struct CharacterDef
 		{
-			uint16 advance;			///< Standard space from the beginning to the next character, if kerning does not define something else. In 1/64 pixels.
-			int8 baseX, baseY;		///< Offsets which must be added to the pen position to place the lower left corner of the sprite on largest bitmap size (pixels).
-			ei::Vec2 texOffset;		///< Top-left texture coordinate in the atlas
-			ei::Vec2 texSize;		///< Size of the sprite in the texture atlas
+			uint16 advance;					///< Standard space from the beginning to the next character, if kerning does not define something else. In 1/64 pixels.
+			int8 baseX, baseY;				///< Offsets which must be added to the pen position to place the lower left corner of the sprite on largest bitmap size (pixels).
+			ei::Vec<uint16, 4> texCoords;	///< Texture coordinates in the atlas for lower-left and top-right corner
+			ei::Vec2 texSize;				///< Size of the sprite in the texture atlas (pixels)
 		};
 
 		struct CharacterVertex
