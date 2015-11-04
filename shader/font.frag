@@ -10,9 +10,10 @@ layout(location = 0, index = 0) out vec4 out_color;
 void main()
 {
 	// TODO: test manual lodding
-	float color = texture(tx_character, in_texCoord, -0.5).x;
+	float color = texture(tx_character, in_texCoord, -1.5).x;
 	// TODO: calculate alpha
 	// Alpha-test (this is correct for distance fields and masks)
 	if(color < 0.005) discard;
+	color *= color;
 	out_color = vec4(color, color, color, color);
 }

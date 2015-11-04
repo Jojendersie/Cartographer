@@ -47,7 +47,7 @@ namespace cac {
 		glCall(glEnableVertexAttribArray, 3);
 		glCall(glVertexAttribPointer, 3, 1, GLenum(PrimitiveFormat::FLOAT), GL_FALSE, 32, (GLvoid*)(28));
 
-		m_sampler = new Sampler(Sampler::Filter::POINT, Sampler::Filter::POINT, Sampler::Filter::LINEAR, Sampler::Border::CLAMP);
+		m_sampler = new Sampler(Sampler::Filter::POINT, Sampler::Filter::LINEAR, Sampler::Filter::LINEAR, Sampler::Border::CLAMP);
 	}
 
 	FontRenderer::~FontRenderer()
@@ -94,6 +94,9 @@ namespace cac {
 				CharacterVertex v;
 				v.position = Vec3(cursor.x + charEntry->second.baseX * _size,
 					cursor.y + charEntry->second.baseY * _size, _position.z);
+				// Round pixel coordinates for sharper text
+			//	v.position.x = roundf(v.position.x);
+			//	v.position.y = roundf(v.position.y);
 				v.rotation = 0.0f;
 				v.size = charEntry->second.texSize * _size;
 				v.texCoords = charEntry->second.texCoords;
@@ -127,8 +130,6 @@ namespace cac {
 		m_texture->bind(0);
 		glCall(glBindVertexArray, m_vao);
 		glCall(glDrawArrays, GL_POINTS, 0, m_instances.size());
-		// Clear for next frame
-//		m_instances.clear();
 	}
 
 	void FontRenderer::createFont(const char* _fontFile, const char* _characters)
@@ -294,7 +295,6 @@ namespace cac {
 	void FontRenderer::normalizeCharacters(const FT_Face _fontFace)
 	{
 		int8 baseLineOffset = 127;
-		//int8 leftOffset = 127;
 		for(auto& cEntry : m_chars)
 		{
 			int idx = FT_Get_Char_Index(_fontFace, cEntry.first);
@@ -306,22 +306,16 @@ namespace cac {
 			cEntry.second.baseX = -MIP_RANGE + _fontFace->glyph->bitmap_left;
 			cEntry.second.baseY = -MIP_RANGE - _fontFace->glyph->bitmap.rows + _fontFace->glyph->bitmap_top;
 			cEntry.second.advance = (uint16)_fontFace->glyph->advance.x;
-			// TODO: test half pixel stuff
 			cEntry.second.texCoords.x = (cEntry.second.texCoords.x * 0xffff) / m_texture->getWidth();
 			cEntry.second.texCoords.y = (cEntry.second.texCoords.y * 0xffff) / m_texture->getHeight();
 			cEntry.second.texCoords.z = cEntry.second.texCoords.x + int(cEntry.second.texSize.x * 0xffff / m_texture->getWidth());
 			cEntry.second.texCoords.w = cEntry.second.texCoords.y + int(cEntry.second.texSize.y * 0xffff / m_texture->getHeight());
-			//if(cEntry.second.baseX < leftOffset)
-			//	leftOffset = cEntry.second.baseX;
 			if(cEntry.second.baseY < baseLineOffset)
 				baseLineOffset = cEntry.second.baseY;
 		}
 
 		for(auto& cEntry : m_chars)
-		{
-			//cEntry.second.baseX -= leftOffset;
 			cEntry.second.baseY -= baseLineOffset;
-		}
 	}
 
 	char32_t FontRenderer::getNext(const char** _textit)

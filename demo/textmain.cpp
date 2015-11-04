@@ -45,7 +45,7 @@ void runMainLoop(GLFWwindow* _window)
 
 		s_shader.use();
 		s_fontRenderer->clearText();
-		Vec3 pos(1.0f, 1.0f, 0.0f);
+		Vec3 pos(1.0f + (float)sin(clock.now()/1000.0), 1.0f + (float)cos(clock.now()/1000.0), 0.0f);
 		float size = 68.5f;
 		for(int i=0; i<25; ++i)
 		{
