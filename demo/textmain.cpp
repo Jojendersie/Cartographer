@@ -55,7 +55,8 @@ void runMainLoop(GLFWwindow* _window)
 		}
 		s_fontRenderer->draw(Vec3(1300.0f, 700.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 1.0f));
 		s_fontRenderer->draw(Vec3(1330.0f, 670.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 0.5f + 0.5f*(float)sin(clock.now()/1000.0)));
-		s_fontRenderer->draw(Vec3(1550.0f, 620.0f, 0.0f), u8"(-*-)", 200.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0));
+		s_fontRenderer->draw(Vec3(1630.0f, 600.0f, 0.0f), u8"(-O-)", 200.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.5f, 0.45f);
+		s_fontRenderer->draw(Vec3(1630.0f, 600.0f, 0.0f), u8"(-O-)", 8.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.5f, 0.45f);
 		s_fontRenderer->present();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));

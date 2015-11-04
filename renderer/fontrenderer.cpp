@@ -82,7 +82,7 @@ namespace cac {
 		}*/
 
 		// Convert pixel size into a scale factor
-		_size /= BASE_SIZE;
+		float scale = _size / BASE_SIZE;
 
 		// Compress color to vertex format
 		ei::Vec<uint8, 4> color;
@@ -92,37 +92,47 @@ namespace cac {
 		color.a = (uint8)clamp(_color.a*255.0f, 0.0f, 255.0f);
 
 		// Create a basis based on the rotation
-		Vec3 cursor(_position.x, _position.y, _position.z);
 		float sinAlpha = sin(_rotation), cosAlpha = cos(_rotation);
-		Vec3 adX( cosAlpha * _size,-sinAlpha * _size, 0.0f);
-		Vec3 adY( sinAlpha * _size, cosAlpha * _size, 0.0f);
+		Vec3 adX( cosAlpha * scale,-sinAlpha * scale, 0.0f);
+		Vec3 adY( sinAlpha * scale, cosAlpha * scale, 0.0f);
 
+		size_t firstNewVertex = m_instances.size();
 		// Avoid kerning for the first character
+		Vec3 cursor = _position;
 		char32_t c = getNext(&_text);
 		auto charEntry = m_chars.find(c);
 		if(charEntry != m_chars.end())
-			cursor.x -= charEntry->second.baseX * _size;
+			cursor -= charEntry->second.baseX * adX;
+		Vec3 beginCursor = cursor, endCursor = cursor;
 		for(; c; c = getNext(&_text))
 		{
 			auto charEntry = m_chars.find(c);
 			if(charEntry != m_chars.end())
 			{
 				CharacterVertex v;
-				//v.position = Vec3(cursor.x + charEntry->second.baseX * _size,
-				//	cursor.y + charEntry->second.baseY * _size, _position.z);
 				v.position = cursor + charEntry->second.baseX * adX + charEntry->second.baseY * adY;
 				// Round pixel coordinates for sharper text
 			//	v.position.x = roundf(v.position.x);
 			//	v.position.y = roundf(v.position.y);
 				v.rotation = _rotation;
-				v.size.x = toHalf(charEntry->second.texSize.x * _size);
-				v.size.y = toHalf(charEntry->second.texSize.y * _size);
+				v.size.x = toHalf(charEntry->second.texSize.x * scale);
+				v.size.y = toHalf(charEntry->second.texSize.y * scale);
 				v.color = color;
 				v.texCoords = charEntry->second.texCoords;
 				m_instances.push_back(v);
-				//cursor.x += charEntry->second.advance / 64.0f * _size;
+				endCursor = cursor + adX * charEntry->second.texSize.x;
 				cursor += adX * (charEntry->second.advance / 64.0f);
 			}
+		}
+
+		if(_alignX != 0.0f || _alignY != 0.0f)
+		{
+			// Compute a vector to move the whole text to its alignment
+			Vec3 align = (endCursor - beginCursor) * _alignX;
+			align += adY * BASE_SIZE * _alignY;
+			// Move all new characters to the reference point
+			for(size_t i = firstNewVertex; i < m_instances.size(); ++i)
+				m_instances[i].position -= align;
 		}
 
 		m_dirty = true;
