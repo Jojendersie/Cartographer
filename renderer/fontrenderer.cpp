@@ -91,7 +91,12 @@ namespace cac {
 		color.b = (uint8)clamp(_color.a*_color.b*255.0f, 0.0f, 255.0f);
 		color.a = (uint8)clamp(_color.a*255.0f, 0.0f, 255.0f);
 
-		Vec2 cursor(_position.x, _position.y);
+		// Create a basis based on the rotation
+		Vec3 cursor(_position.x, _position.y, _position.z);
+		float sinAlpha = sin(_rotation), cosAlpha = cos(_rotation);
+		Vec3 adX( cosAlpha * _size,-sinAlpha * _size, 0.0f);
+		Vec3 adY( sinAlpha * _size, cosAlpha * _size, 0.0f);
+
 		// Avoid kerning for the first character
 		char32_t c = getNext(&_text);
 		auto charEntry = m_chars.find(c);
@@ -103,18 +108,20 @@ namespace cac {
 			if(charEntry != m_chars.end())
 			{
 				CharacterVertex v;
-				v.position = Vec3(cursor.x + charEntry->second.baseX * _size,
-					cursor.y + charEntry->second.baseY * _size, _position.z);
+				//v.position = Vec3(cursor.x + charEntry->second.baseX * _size,
+				//	cursor.y + charEntry->second.baseY * _size, _position.z);
+				v.position = cursor + charEntry->second.baseX * adX + charEntry->second.baseY * adY;
 				// Round pixel coordinates for sharper text
 			//	v.position.x = roundf(v.position.x);
 			//	v.position.y = roundf(v.position.y);
-				v.rotation = 0.0f;
+				v.rotation = _rotation;
 				v.size.x = toHalf(charEntry->second.texSize.x * _size);
 				v.size.y = toHalf(charEntry->second.texSize.y * _size);
 				v.color = color;
 				v.texCoords = charEntry->second.texCoords;
 				m_instances.push_back(v);
-				cursor.x += charEntry->second.advance / 64.0f * _size;
+				//cursor.x += charEntry->second.advance / 64.0f * _size;
+				cursor += adX * (charEntry->second.advance / 64.0f);
 			}
 		}
 

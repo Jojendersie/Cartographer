@@ -13,7 +13,7 @@ static Program s_shader;
 void prepareFont()
 {
 	s_fontRenderer = new FontRenderer;
-	s_fontRenderer->createFont("calibri.ttf", u8" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,.:!?'(){}[]<>\U000003B5\U000003A9\U0000262F\U00002713");
+	s_fontRenderer->createFont("calibri.ttf", u8" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,.:!?'~+-*/(){}[]<>\U000003B5\U000003A9\U0000262F\U00002713");
 }
 
 void prepareShader(GLFWwindow* _window)
@@ -55,6 +55,7 @@ void runMainLoop(GLFWwindow* _window)
 		}
 		s_fontRenderer->draw(Vec3(1300.0f, 700.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 1.0f));
 		s_fontRenderer->draw(Vec3(1330.0f, 670.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 0.5f + 0.5f*(float)sin(clock.now()/1000.0)));
+		s_fontRenderer->draw(Vec3(1550.0f, 620.0f, 0.0f), u8"(-*-)", 200.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0));
 		s_fontRenderer->present();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
