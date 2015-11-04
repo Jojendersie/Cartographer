@@ -50,7 +50,7 @@ void runMainLoop(GLFWwindow* _window)
 		for(int i=0; i<25; ++i)
 		{
 			s_fontRenderer->draw(pos, u8"The quick onyx goblin jumps over the lazy dwarf. [Hq](VA){}<>;?!\U000003B5\U000003A9\U0000262F", size);
-			pos.y += 1.0f + size;
+			pos.y += 4.0f + size;
 			size -= 2.5f;
 		}
 		s_fontRenderer->present();

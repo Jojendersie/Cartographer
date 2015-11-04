@@ -173,7 +173,7 @@ namespace cac {
 			++mipLevel;
 		}
 		m_texture = texture->finalize(false, false);
-		normalizeCharacters();
+		normalizeCharacters(fontFace);
 
 		// Free resources
 		if( FT_Done_FreeType(ftlib) )
@@ -285,30 +285,32 @@ namespace cac {
 			FT_Bitmap& bmp = _fontFace->glyph->bitmap;
 			int targetCharWidth = int(cEntry.second.texSize.x)*_mipFactor;
 			int centeringOff = (targetCharWidth - (int)bmp.width) / 2;
-			cEntry.second.baseX = -centeringOff - _padding + _fontFace->glyph->bitmap_left;
-			cEntry.second.baseY = -_padding - bmp.rows + _fontFace->glyph->bitmap_top;
-			cEntry.second.advance = (uint16)_fontFace->glyph->advance.x;
 			// While copying center the glyph within its padding width
 			copyGlyph(_target, bmp, int(cEntry.second.texCoords.x)*_mipFactor + centeringOff,
 				int(cEntry.second.texCoords.y)*_mipFactor, _mapWidth);
 		}
 	}
 
-	void FontRenderer::normalizeCharacters()
+	void FontRenderer::normalizeCharacters(const FT_Face _fontFace)
 	{
 		int8 baseLineOffset = 127;
 		//int8 leftOffset = 127;
 		for(auto& cEntry : m_chars)
 		{
+			int idx = FT_Get_Char_Index(_fontFace, cEntry.first);
+			FT_Load_Glyph(_fontFace, idx, FT_LOAD_RENDER | FT_LOAD_NO_BITMAP);
+			cEntry.second.texCoords.x = cEntry.second.texCoords.x * MIP_RANGE + (int(cEntry.second.texSize.x)*MIP_RANGE - (int)_fontFace->glyph->bitmap.width) / 2;
+			cEntry.second.texCoords.y *= MIP_RANGE;
+			cEntry.second.texSize.y = (float)_fontFace->glyph->bitmap.rows;
+			cEntry.second.texSize.x = (float)_fontFace->glyph->bitmap.width;
+			cEntry.second.baseX = -MIP_RANGE + _fontFace->glyph->bitmap_left;
+			cEntry.second.baseY = -MIP_RANGE - _fontFace->glyph->bitmap.rows + _fontFace->glyph->bitmap_top;
+			cEntry.second.advance = (uint16)_fontFace->glyph->advance.x;
 			// TODO: test half pixel stuff
-			//cEntry.second.texOffset *= MIP_RANGE / float(m_texture->getWidth());
-			//cEntry.second.texSize *= MIP_RANGE / float(m_texture->getHeight());
-			cEntry.second.texCoords.x = (cEntry.second.texCoords.x * MIP_RANGE * 0xffff) / m_texture->getWidth();
-			cEntry.second.texCoords.y = (cEntry.second.texCoords.y * MIP_RANGE * 0xffff) / m_texture->getHeight();
-			cEntry.second.texCoords.z = cEntry.second.texCoords.x + int(cEntry.second.texSize.x * MIP_RANGE * 0xffff / m_texture->getWidth());
-			cEntry.second.texCoords.w = cEntry.second.texCoords.y + int(cEntry.second.texSize.y * MIP_RANGE * 0xffff / m_texture->getHeight());
-			//std::swap(cEntry.second.texCoords.y, cEntry.second.texCoords.w);
-			cEntry.second.texSize *= MIP_RANGE;
+			cEntry.second.texCoords.x = (cEntry.second.texCoords.x * 0xffff) / m_texture->getWidth();
+			cEntry.second.texCoords.y = (cEntry.second.texCoords.y * 0xffff) / m_texture->getHeight();
+			cEntry.second.texCoords.z = cEntry.second.texCoords.x + int(cEntry.second.texSize.x * 0xffff / m_texture->getWidth());
+			cEntry.second.texCoords.w = cEntry.second.texCoords.y + int(cEntry.second.texSize.y * 0xffff / m_texture->getHeight());
 			//if(cEntry.second.baseX < leftOffset)
 			//	leftOffset = cEntry.second.baseX;
 			if(cEntry.second.baseY < baseLineOffset)

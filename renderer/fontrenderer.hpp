@@ -94,7 +94,7 @@ namespace cac {
 		/// Modified version of creatMap, which assumes an existing char-atlas and fits new renderings into it.
 		void createMagMap(std::vector<byte>& _target, const FT_Face _fontFace, int _fontSize, int _mapWidth, int _mapHeight, int _padding, int _mipFactor);
 		/// Compute final character metrics in texture coordinates
-		void normalizeCharacters();
+		void normalizeCharacters(const FT_Face _fontFace);
 
 		/// Iterate through utf8 code points. Returns unicodes of iterated characters.
 		/// \param [in] _textit Iterator for an UTF8-string. For iteration the given pointer will
