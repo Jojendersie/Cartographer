@@ -60,7 +60,7 @@ int SpriteRenderer::defSprite(float _alignX, float _alignY,
 	newSprite.sprite.texCoords.w = uint16((_texY + 0.0f) / h * 65535);
 	newSprite.sprite.texCoords.z = uint16((_texX - 0.0f + _texWidth) / w * 65535);
 	newSprite.sprite.texCoords.y = uint16((_texY - 0.0f + _texHeight) / h * 65535);
-	newSprite.sprite.texture = _textureHandle->getHandle();
+	newSprite.sprite.texture = _textureHandle->getGPUHandle();
 	newSprite.sprite.numTiles.x = _numX;
 	newSprite.sprite.numTiles.y = _numY;
 	newSprite.offset.x = -_texWidth * _alignX;

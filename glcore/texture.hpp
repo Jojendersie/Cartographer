@@ -26,6 +26,16 @@ namespace cac {
 		static Handle load(const char* _fileName, const Sampler& _sampler, bool _srgb = true);
 		static void unload(Handle _texture);
 
+		/// Create a new empty texture.
+		/// \details There is a support for LDR (8-bit) textures only.
+		static Texture2D* create(int _width, int _height, int _numComponents, const Sampler& _sampler);
+		/// Upload information for a single texture layer
+		/// \param [in] _level Mip-map level starting with 0 for the higest resolution.
+		/// \param [in] _data Pixel data with 8-bit per component and N components per pixel.
+		void fillMipMap(int _level, const byte* _data, bool _srgb = false);
+		/// Makes the texture resident and may compute mip-maps.
+		Handle finalize(bool _createMipMaps = false, bool _makeResident = true);
+
 		/// Bind 2D texture to given location
 		void bind(unsigned _slot) const;
 
@@ -33,11 +43,14 @@ namespace cac {
 		int getHeight() const { return m_height; } 
 
 		/// Get the bindless texture handle.
-		uint64 getHandle() const { return m_bindlessHandle; }
+		uint64 getGPUHandle() const { return m_bindlessHandle; }
 
 		/// Change the sampler.
 		void setSampler(const Sampler& _sampler);
 	private:
+		/// Create a 2D texture without data
+		Texture2D(int _width, int _height, int _numComponents, const Sampler& _sampler);
+
 		/// Load a 2D texture from file.
 		/// \details Allowed file formats are JPG, PNG, TGA, BMP, PSD, GIF, (HDR), PIC.
 		///
