@@ -2,6 +2,7 @@
 
 #include "glcore/texture.hpp"
 #include "core/scopedptr.hpp"
+#include "utilities/half.hpp"
 
 #include <ei/vector.hpp>
 #include <vector>
@@ -49,7 +50,7 @@ namespace cac {
 		///		0.0 is on the left and 1.0 is on the right.
 		/// \param [in] _alignY Relative position of the reference point in the string.
 		///		0.0 is on the bottom and 1.0 is on the top.
-		void draw(const ei::Vec3& _position, const char* _text, float _size, float _alignX = 0.0f, float _alignY = 0.0f);
+		void draw(const ei::Vec3& _position, const char* _text, float _size, const ei::Vec4& _color, float _rotation = 0.0f, float _alignX = 0.0f, float _alignY = 0.0f);
 
 		/// Remove all previously drawn texts
 		void clearText();
@@ -70,7 +71,8 @@ namespace cac {
 		struct CharacterVertex
 		{
 			ei::Vec<uint16, 4> texCoords;	/// l, u, r and b texture coordinates.
-			ei::Vec2 size;
+			ei::Vec<half, 2> size;
+			ei::Vec<uint8, 4> color;
 			ei::Vec3 position;
 			float rotation;
 		};

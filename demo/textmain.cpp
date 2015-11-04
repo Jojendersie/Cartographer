@@ -13,7 +13,7 @@ static Program s_shader;
 void prepareFont()
 {
 	s_fontRenderer = new FontRenderer;
-	s_fontRenderer->createFont("calibri.ttf", u8" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,.:!?'(){}[]<>\U000003B5\U000003A9\U0000262F");
+	s_fontRenderer->createFont("calibri.ttf", u8" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,.:!?'(){}[]<>\U000003B5\U000003A9\U0000262F\U00002713");
 }
 
 void prepareShader(GLFWwindow* _window)
@@ -49,10 +49,12 @@ void runMainLoop(GLFWwindow* _window)
 		float size = 68.5f;
 		for(int i=0; i<25; ++i)
 		{
-			s_fontRenderer->draw(pos, u8"The quick onyx goblin jumps over the lazy dwarf. [Hq](VA){}<>;?!\U000003B5\U000003A9\U0000262F", size);
+			s_fontRenderer->draw(pos, u8"The quick onyx goblin jumps over the lazy dwarf. [Hq](VA){}<>;?!\U000003B5\U000003A9\U0000262F", size, Vec4(1.0));
 			pos.y += 4.0f + size;
 			size -= 2.5f;
 		}
+		s_fontRenderer->draw(Vec3(1300.0f, 700.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 1.0f));
+		s_fontRenderer->draw(Vec3(1330.0f, 670.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 0.5f + 0.5f*(float)sin(clock.now()/1000.0)));
 		s_fontRenderer->present();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));

@@ -2,17 +2,21 @@
 
 layout(location = 0) in vec4 in_texCoords[1];
 layout(location = 1) in vec2 in_size[1];
-layout(location = 2) in vec3 in_position[1];
-layout(location = 3) in float in_rotation[1];
+layout(location = 2) in vec4 in_color[1];
+layout(location = 3) in vec3 in_position[1];
+layout(location = 4) in float in_rotation[1];
 
 layout(location = 0) uniform mat4 c_viewProjection;
 
 layout(points) in;
 layout(triangle_strip, max_vertices = 4) out;
 layout(location = 0) out vec2 out_texCoord;
+layout(location = 1) out flat vec4 out_color;
 
 void main()
 {
+	out_color = in_color[0];
+	
 	mat2 rot;
 	rot[0][0] = rot[1][1] = cos(in_rotation[0]);
 	rot[1][0] = sin(in_rotation[0]);

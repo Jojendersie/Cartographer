@@ -96,6 +96,7 @@
     <ClInclude Include="renderer\fontrenderer.hpp" />
     <ClInclude Include="renderer\instancerenderer.hpp" />
     <ClInclude Include="renderer\spriterenderer.hpp" />
+    <ClInclude Include="utilities\half.hpp" />
     <ClInclude Include="utilities\hrclock.hpp" />
   </ItemGroup>
   <ItemGroup>

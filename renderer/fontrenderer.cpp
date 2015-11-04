@@ -37,15 +37,18 @@ namespace cac {
 		// 4 x uint16 for texture l, u, r and b
 		glCall(glEnableVertexAttribArray, 0);
 		glCall(glVertexAttribPointer, 0, 4, GLenum(PrimitiveFormat::UINT16), GL_TRUE, 32, (GLvoid*)(0));
-		// 2 x float for size
+		// 2 x half for size
 		glCall(glEnableVertexAttribArray, 1);
-		glCall(glVertexAttribPointer, 1, 2, GLenum(PrimitiveFormat::FLOAT), GL_FALSE, 32, (GLvoid*)(8));
-		// 3 x float position in world space
+		glCall(glVertexAttribPointer, 1, 2, GLenum(PrimitiveFormat::HALF), GL_FALSE, 32, (GLvoid*)(8));
+		// 4 x uint8 for RGBA color
 		glCall(glEnableVertexAttribArray, 2);
-		glCall(glVertexAttribPointer, 2, 3, GLenum(PrimitiveFormat::FLOAT), GL_FALSE, 32, (GLvoid*)(16));
-		// 1 x float rotation
+		glCall(glVertexAttribPointer, 2, 4, GLenum(PrimitiveFormat::UINT8), GL_TRUE, 32, (GLvoid*)(12));
+		// 3 x float position in world space
 		glCall(glEnableVertexAttribArray, 3);
-		glCall(glVertexAttribPointer, 3, 1, GLenum(PrimitiveFormat::FLOAT), GL_FALSE, 32, (GLvoid*)(28));
+		glCall(glVertexAttribPointer, 3, 3, GLenum(PrimitiveFormat::FLOAT), GL_FALSE, 32, (GLvoid*)(16));
+		// 1 x float rotation
+		glCall(glEnableVertexAttribArray, 4);
+		glCall(glVertexAttribPointer, 4, 1, GLenum(PrimitiveFormat::FLOAT), GL_FALSE, 32, (GLvoid*)(28));
 
 		m_sampler = new Sampler(Sampler::Filter::POINT, Sampler::Filter::LINEAR, Sampler::Filter::LINEAR, Sampler::Border::CLAMP);
 	}
@@ -59,7 +62,7 @@ namespace cac {
 		glCall(glDeleteVertexArrays, 1, &m_vao);
 	}
 
-	void FontRenderer::draw(const ei::Vec3& _position, const char* _text, float _size, float _alignX, float _alignY)
+	void FontRenderer::draw(const ei::Vec3& _position, const char* _text, float _size, const ei::Vec4& _color, float _rotation, float _alignX, float _alignY)
 	{
 		// TEST-CODE
 		// create test vertices which cover the whole texture
@@ -80,6 +83,13 @@ namespace cac {
 		// Convert pixel size into a scale factor
 		_size /= BASE_SIZE;
 
+		// Compress color to vertex format
+		ei::Vec<uint8, 4> color;
+		color.r = (uint8)clamp(_color.a*_color.r*255.0f, 0.0f, 255.0f);
+		color.g = (uint8)clamp(_color.a*_color.g*255.0f, 0.0f, 255.0f);
+		color.b = (uint8)clamp(_color.a*_color.b*255.0f, 0.0f, 255.0f);
+		color.a = (uint8)clamp(_color.a*255.0f, 0.0f, 255.0f);
+
 		Vec2 cursor(_position.x, _position.y);
 		// Avoid kerning for the first character
 		char32_t c = getNext(&_text);
@@ -98,7 +108,9 @@ namespace cac {
 			//	v.position.x = roundf(v.position.x);
 			//	v.position.y = roundf(v.position.y);
 				v.rotation = 0.0f;
-				v.size = charEntry->second.texSize * _size;
+				v.size.x = toHalf(charEntry->second.texSize.x * _size);
+				v.size.y = toHalf(charEntry->second.texSize.y * _size);
+				v.color = color;
 				v.texCoords = charEntry->second.texCoords;
 				m_instances.push_back(v);
 				cursor.x += charEntry->second.advance / 64.0f * _size;
