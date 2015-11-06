@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="properties">
+      <UniqueIdentifier>{3462f046-bc7b-4948-9903-30a92bcc6c0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering">
+      <UniqueIdentifier>{b72fc093-3546-46fc-a72f-19b9dac650a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="widgets">
+      <UniqueIdentifier>{9ef71601-8960-401a-a89c-18cc0b4e4edb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
