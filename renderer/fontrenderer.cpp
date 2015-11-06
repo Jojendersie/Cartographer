@@ -62,9 +62,11 @@ namespace cac {
 		glCall(glBindBuffer, GL_ARRAY_BUFFER, 0);
 		glCall(glDeleteBuffers, 1, &m_vbo);
 		glCall(glDeleteVertexArrays, 1, &m_vao);
+
+		if(m_texture) Texture2D::unload(m_texture);
 	}
 
-	void FontRenderer::draw(const ei::Vec3& _position, const char* _text, float _size, const ei::Vec4& _color, float _rotation, float _alignX, float _alignY)
+	void FontRenderer::draw(const ei::Vec3& _position, const char* _text, float _size, const ei::Vec4& _color, float _rotation, float _alignX, float _alignY, bool _roundToPixel)
 	{
 		// TEST-CODE
 		// create test vertices which cover the whole texture
@@ -104,6 +106,14 @@ namespace cac {
 		auto charEntry = m_chars.find(c);
 		if(charEntry != m_chars.end())
 			cursor -= charEntry->second.baseX * adX;
+		// Round string position (base line) to pixels for sharper rendering
+		if(_roundToPixel)
+		{
+			cursor -= m_baseLineOffset * adY;
+			cursor.x = roundf(cursor.x);
+			cursor.y = roundf(cursor.y);
+			cursor += m_baseLineOffset * adY;
+		}
 		Vec3 beginCursor = cursor, endCursor = cursor;
 		auto lastC = m_chars.end();
 		for(; c; c = getNext(&_text))
@@ -123,9 +133,6 @@ namespace cac {
 				// Create sprite instance
 				CharacterVertex v;
 				v.position = cursor + charEntry->second.baseX * adX + charEntry->second.baseY * adY;
-				// Round pixel coordinates for sharper text
-			//	v.position.x = roundf(v.position.x);
-			//	v.position.y = roundf(v.position.y);
 				v.rotation = _rotation;
 				v.size.x = toHalf(charEntry->second.texSize.x * scale);
 				v.size.y = toHalf(charEntry->second.texSize.y * scale);
@@ -227,12 +234,124 @@ namespace cac {
 		}
 	}
 
+#pragma pack(push, 1)
+	struct CafHeader
+	{
+		uint numCharacters;
+		uint16 textureWidth;
+		uint16 textureHeight;
+		//uint8 numMipMaps;
+		int8 baseLineOffset;
+	};
+	struct CafCharacter
+	{
+		char32_t unicode;
+		uint16 advance;
+		int8 baseX, baseY;
+		ei::Vec<uint16, 4> texCoords;
+		ei::Vec2 texSize;
+		uint16 kerningTableSize;
+	};
+#pragma pack(pop)
+
 	void FontRenderer::storeCaf(const char* _fontFile)
 	{
+		FILE* file = fopen(_fontFile, "wb");
+		if(!file) { error(("Cannot open file "+std::string(_fontFile)+" for writing!").c_str()); return; }
+
+		// Header with number of characters, global metrics and texture dimensions.
+		CafHeader header;
+		header.numCharacters = (unsigned)m_chars.size();
+		header.textureWidth = m_texture->getWidth();
+		header.textureHeight = m_texture->getHeight();
+		//header.numMipMaps = MIP_LEVELS;
+		header.baseLineOffset = m_baseLineOffset;
+		fwrite(&header, sizeof(CafHeader), 1, file);
+
+		// Character metrics
+		for(auto& charEntry : m_chars)
+		{
+			CafCharacter c;
+			c.unicode = charEntry.first;
+			c.advance = charEntry.second.advance;
+			c.baseX = charEntry.second.baseX;
+			c.baseY = charEntry.second.baseY;
+			c.texCoords = charEntry.second.texCoords;
+			c.texSize = charEntry.second.texSize;
+			c.kerningTableSize = (uint16)charEntry.second.kerning.size();
+			fwrite(&c, sizeof(CafCharacter), 1, file);
+			for(auto& kerningPair : charEntry.second.kerning)
+				fwrite(&kerningPair, sizeof(CharacterDef::KerningPair), 1, file);
+		}
+
+		// Texture
+		uint w = m_texture->getWidth();
+		uint h = m_texture->getHeight();
+		std::vector<byte> buffer(w * h);
+		// for all mip levels
+		int mipLevel = 0;
+		while(w > 1 || h > 1)
+		{
+			glGetTextureImage(m_texture->getID(), mipLevel++, GL_RED, GL_UNSIGNED_BYTE, buffer.size(), buffer.data());
+			fwrite(buffer.data(), 1, w * h, file);
+			w = max(1u, w/2);
+			h = max(1u, h/2);
+		}
+
+		fclose(file);
 	}
 
 	void FontRenderer::loadCaf(const char* _fontFile)
 	{
+		// Clear for multiple load calls
+		m_chars.clear();
+		if(m_texture) Texture2D::unload(m_texture);
+
+		FILE* file = fopen(_fontFile, "rb");
+		if(!file) { error(("Cannot open file "+std::string(_fontFile)+" for reading!").c_str()); return; }
+
+		CafHeader header;
+		fread(&header, sizeof(CafHeader), 1, file);
+		m_baseLineOffset = header.baseLineOffset;
+
+		// Load character metrics
+		for(uint i = 0; i < header.numCharacters; ++i)
+		{
+			CafCharacter c;
+			CharacterDef def;
+			fread(&c, sizeof(CafCharacter), 1, file);
+			def.advance = c.advance;
+			def.baseX = c.baseX;
+			def.baseY = c.baseY;
+			def.texCoords = c.texCoords;
+			def.texSize = c.texSize;
+			uint16 kerningTableSize = c.kerningTableSize;
+			def.kerning.reserve(kerningTableSize);
+			for(uint j = 0; j < kerningTableSize; ++j)
+			{
+				CharacterDef::KerningPair kerningPair;
+				fread(&kerningPair, sizeof(CharacterDef::KerningPair), 1, file);
+				def.kerning.push_back(kerningPair);
+			}
+			m_chars.emplace(c.unicode, std::move(def));
+		}
+
+		// Upload texture data
+		Texture2D* texture = Texture2D::create(header.textureWidth, header.textureHeight, 1, *m_sampler);
+		int mipLevel = 0;
+		uint w = header.textureWidth * 2;
+		uint h = header.textureHeight * 2;
+		std::vector<byte> buffer(w * h / 4);
+		while(w > 1 || h > 1)
+		{
+			w = max(1u, w/2);
+			h = max(1u, h/2);
+			fread(buffer.data(), 1, w * h, file);
+			texture->fillMipMap(mipLevel++, buffer.data());
+		}
+		m_texture = texture->finalize(false, false);
+
+		fclose(file);
 	}
 
 	/// Copy a rectangle into the larger target rectangle
@@ -337,7 +456,8 @@ namespace cac {
 
 	void FontRenderer::normalizeCharacters(const FT_Face _fontFace, const char* _characters)
 	{
-		int8 baseLineOffset = 127;
+		//int8 baseLineOffset = 127;
+		m_baseLineOffset = 10000;
 		for(auto& cEntry : m_chars)
 		{
 			// Resize texture sprite to a slim fit
@@ -355,8 +475,8 @@ namespace cac {
 			cEntry.second.texCoords.z = cEntry.second.texCoords.x + int(cEntry.second.texSize.x * 0xffff / m_texture->getWidth());
 			cEntry.second.texCoords.w = cEntry.second.texCoords.y + int(cEntry.second.texSize.y * 0xffff / m_texture->getHeight());
 			// Lift all characters such that the new base-line is entirely below the text (for alignment)
-			if(cEntry.second.baseY < baseLineOffset)
-				baseLineOffset = cEntry.second.baseY;
+			if(cEntry.second.baseY < m_baseLineOffset)
+				m_baseLineOffset = cEntry.second.baseY;
 			// Build a kerning table for all characters with a special spacing
 			const char* charIt = _characters;
 			for(char32_t c = getNext(&charIt); c; c = getNext(&charIt))
@@ -377,7 +497,7 @@ namespace cac {
 		}
 
 		for(auto& cEntry : m_chars)
-			cEntry.second.baseY -= baseLineOffset;
+			cEntry.second.baseY -= m_baseLineOffset;
 	}
 
 	char32_t FontRenderer::getNext(const char** _textit)

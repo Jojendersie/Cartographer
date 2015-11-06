@@ -54,14 +54,14 @@ GLFWwindow* setupStdWindow(const char* _titel, bool _vsync)
 	const GLFWvidmode* modes = glfwGetVideoModes(glfwGetPrimaryMonitor(), &count);
 	int width = modes[count-1].width;
 	int height = modes[count-1].height;
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	width -= 30;
 	height -= 70;
 	GLFWwindow* window = glfwCreateWindow(width, height, _titel, nullptr, nullptr);
 	glfwSetWindowPos(window, 10, 20);
-#else
-	GLFWwindow* window = glfwCreateWindow(width, height, _titel, glfwGetPrimaryMonitor(), nullptr);
-#endif
+//#else
+//	GLFWwindow* window = glfwCreateWindow(width, height, _titel, glfwGetPrimaryMonitor(), nullptr);
+//#endif
 	s_windowWidth = width;
 	s_windowHeight = height;
 	s_aspectRatio = width / (float)height;

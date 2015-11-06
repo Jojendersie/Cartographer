@@ -50,7 +50,9 @@ namespace cac {
 		///		0.0 is on the left and 1.0 is on the right.
 		/// \param [in] _alignY Relative position of the reference point in the string.
 		///		0.0 is on the bottom and 1.0 is on the top.
-		void draw(const ei::Vec3& _position, const char* _text, float _size, const ei::Vec4& _color, float _rotation = 0.0f, float _alignX = 0.0f, float _alignY = 0.0f);
+		/// \param [in] _roundToPixel Move the cursor to an integral pixel position for sharper
+		///		text. Not rounding is better for dynamic moving text (smoother).
+		void draw(const ei::Vec3& _position, const char* _text, float _size, const ei::Vec4& _color, float _rotation = 0.0f, float _alignX = 0.0f, float _alignY = 0.0f, bool _roundToPixel = false);
 
 		/// Remove all previously drawn texts
 		void clearText();
@@ -59,7 +61,7 @@ namespace cac {
 		void present() const;
 
 	private:
-#pragma pack(push, 4)
+#pragma pack(push, 2)
 		struct CharacterDef
 		{
 			uint16 advance;					///< Standard space from the beginning to the next character, if kerning does not define something else. In 1/64 pixels.
@@ -91,6 +93,7 @@ namespace cac {
 
 		std::unordered_map<char32_t, CharacterDef> m_chars;
 		std::vector<CharacterVertex> m_instances;
+		int m_baseLineOffset;				///< Offset to the original text base line (normalization lifts all characters)
 
 		/// Create smallest mipmap.
 		/// \param [in] _fontSize Font height in pixels.

@@ -13,7 +13,7 @@ public:
 	/// The behavior during creation of global variables is undefined.
 	static double now();
 
-	/// Get time since last call or object initialization
+	/// Get time since last call or object initialization in milliseconds
 	double deltaTime();
 
 private:

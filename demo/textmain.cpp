@@ -2,6 +2,7 @@
 #include <thread>
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
+#include <iostream>
 #include "stdwindow.hpp"
 
 using namespace cac;
@@ -12,8 +13,18 @@ static Program s_shader;
 
 void prepareFont()
 {
+	double times[3];
+	HRClock clock;
 	s_fontRenderer = new FontRenderer;
 	s_fontRenderer->createFont("calibri.ttf", u8" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,.:!?'~+-*/(){}[]<>\U000003B5\U000003A9\U0000262F\U00002713");
+	times[0] = clock.deltaTime();
+	s_fontRenderer->storeCaf("calibri.caf");
+	times[1] = clock.deltaTime();
+	s_fontRenderer->loadCaf("calibri.caf");
+	times[2] = clock.deltaTime();
+	std::cout << "Time to create font: " << times[0] << " ms\n";
+	std::cout << "Time to store font: " << times[1] << " ms\n";
+	std::cout << "Time to load font: " << times[2] << " ms\n";
 }
 
 void prepareShader(GLFWwindow* _window)
@@ -46,6 +57,7 @@ void runMainLoop(GLFWwindow* _window)
 		s_shader.use();
 		s_fontRenderer->clearText();
 		Vec3 pos(1.0f + (float)sin(clock.now()/1000.0), 1.0f + (float)cos(clock.now()/1000.0), 0.0f);
+		//Vec3 pos(1.0f, 1.0f, 0.0f);
 		float size = 68.5f;
 		for(int i=0; i<25; ++i)
 		{
