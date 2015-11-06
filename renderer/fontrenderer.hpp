@@ -66,6 +66,12 @@ namespace cac {
 			int8 baseX, baseY;				///< Offsets which must be added to the pen position to place the lower left corner of the sprite on largest bitmap size (pixels).
 			ei::Vec<uint16, 4> texCoords;	///< Texture coordinates in the atlas for lower-left and top-right corner
 			ei::Vec2 texSize;				///< Size of the sprite in the texture atlas (pixels)
+			struct KerningPair {
+				char32_t character;
+				int16 kern;					///< Signed 9.6 distance to the default advance
+				bool operator < (const KerningPair& _rhs) const { return character < _rhs.character; }
+			};
+			std::vector<KerningPair> kerning;	///< Table with spacings for all following chars where spacing is unequal the advance.
 		};
 
 		struct CharacterVertex
@@ -96,7 +102,7 @@ namespace cac {
 		/// Modified version of creatMap, which assumes an existing char-atlas and fits new renderings into it.
 		void createMagMap(std::vector<byte>& _target, const FT_Face _fontFace, int _fontSize, int _mapWidth, int _mapHeight, int _padding, int _mipFactor);
 		/// Compute final character metrics in texture coordinates
-		void normalizeCharacters(const FT_Face _fontFace);
+		void normalizeCharacters(const FT_Face _fontFace, const char* _characters);
 
 		/// Iterate through utf8 code points. Returns unicodes of iterated characters.
 		/// \param [in] _textit Iterator for an UTF8-string. For iteration the given pointer will

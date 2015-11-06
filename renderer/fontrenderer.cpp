@@ -4,6 +4,7 @@
 #include "glcore/vertexformat.hpp"
 
 #include <string>
+#include <algorithm>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -104,11 +105,22 @@ namespace cac {
 		if(charEntry != m_chars.end())
 			cursor -= charEntry->second.baseX * adX;
 		Vec3 beginCursor = cursor, endCursor = cursor;
+		auto lastC = m_chars.end();
 		for(; c; c = getNext(&_text))
 		{
 			auto charEntry = m_chars.find(c);
 			if(charEntry != m_chars.end())
 			{
+				// Add kerning
+				if(lastC != m_chars.end())
+				{
+					CharacterDef::KerningPair p; p.character = charEntry->first;
+					int s = lastC->second.kerning.size();
+					auto it = std::lower_bound(lastC->second.kerning.begin(), lastC->second.kerning.end(), p);
+					if(it != lastC->second.kerning.end() && it->character == p.character)
+						cursor += it->kern / 64.0f * adX;
+				}
+				// Create sprite instance
 				CharacterVertex v;
 				v.position = cursor + charEntry->second.baseX * adX + charEntry->second.baseY * adY;
 				// Round pixel coordinates for sharper text
@@ -123,6 +135,7 @@ namespace cac {
 				endCursor = cursor + adX * charEntry->second.texSize.x;
 				cursor += adX * (charEntry->second.advance / 64.0f);
 			}
+			lastC = charEntry;
 		}
 
 		if(_alignX != 0.0f || _alignY != 0.0f)
@@ -174,7 +187,7 @@ namespace cac {
 
 		// Load regular face (oposed to italic...)
 		FT_Face fontFace;
-		if( FT_New_Face(ftlib, "calibri.ttf", 0, &fontFace) )
+		if( FT_New_Face(ftlib, _fontFile, 0, &fontFace) )
 		{
 			error("Could not open font!");
 			return;
@@ -204,7 +217,7 @@ namespace cac {
 			++mipLevel;
 		}
 		m_texture = texture->finalize(false, false);
-		normalizeCharacters(fontFace);
+		normalizeCharacters(fontFace, _characters);
 
 		// Free resources
 		if( FT_Done_FreeType(ftlib) )
@@ -322,11 +335,12 @@ namespace cac {
 		}
 	}
 
-	void FontRenderer::normalizeCharacters(const FT_Face _fontFace)
+	void FontRenderer::normalizeCharacters(const FT_Face _fontFace, const char* _characters)
 	{
 		int8 baseLineOffset = 127;
 		for(auto& cEntry : m_chars)
 		{
+			// Resize texture sprite to a slim fit
 			int idx = FT_Get_Char_Index(_fontFace, cEntry.first);
 			FT_Load_Glyph(_fontFace, idx, FT_LOAD_RENDER | FT_LOAD_NO_BITMAP);
 			cEntry.second.texCoords.x = cEntry.second.texCoords.x * MIP_RANGE + (int(cEntry.second.texSize.x)*MIP_RANGE - (int)_fontFace->glyph->bitmap.width) / 2;
@@ -340,8 +354,26 @@ namespace cac {
 			cEntry.second.texCoords.y = (cEntry.second.texCoords.y * 0xffff) / m_texture->getHeight();
 			cEntry.second.texCoords.z = cEntry.second.texCoords.x + int(cEntry.second.texSize.x * 0xffff / m_texture->getWidth());
 			cEntry.second.texCoords.w = cEntry.second.texCoords.y + int(cEntry.second.texSize.y * 0xffff / m_texture->getHeight());
+			// Lift all characters such that the new base-line is entirely below the text (for alignment)
 			if(cEntry.second.baseY < baseLineOffset)
 				baseLineOffset = cEntry.second.baseY;
+			// Build a kerning table for all characters with a special spacing
+			const char* charIt = _characters;
+			for(char32_t c = getNext(&charIt); c; c = getNext(&charIt))
+			{
+				FT_Vector kerning;
+				if(!FT_Get_Kerning(_fontFace, FT_Get_Char_Index(_fontFace, cEntry.first), FT_Get_Char_Index(_fontFace, c), FT_KERNING_UNFITTED, &kerning) &&
+					kerning.x != 0)
+				{
+					CharacterDef::KerningPair p;
+					p.character = c;
+					p.kern = (int16)kerning.x;
+					cEntry.second.kerning.push_back(p);
+				}
+			}
+			// Sort kerning table for faster access
+			if(cEntry.second.kerning.size() > 0)
+				std::sort(cEntry.second.kerning.begin(), cEntry.second.kerning.end());
 		}
 
 		for(auto& cEntry : m_chars)
