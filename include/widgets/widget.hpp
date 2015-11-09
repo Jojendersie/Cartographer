@@ -18,16 +18,18 @@ namespace cag {
 		Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable);
 		~Widget();
 
-		/// Draw the image now
+		/// Draw the element now
 		virtual void draw() = 0;
 
-		/// Process mouse input if desired
-		virtual void processInput(const struct MouseState& _mouseState) {}
+		/// Process mouse input if desired.
+		/// \return True if this component absorbed the input. If any compontent returns true
+		///		no other component will be checked afterwards.
+		virtual bool processInput(const struct MouseState& _mouseState) { return false; }
 
 	protected:
 		bool m_active;		///< The element can receive input.
-		bool m_focus;		///< The element has the focus (only active elements can get the focus)
-		bool m_mouseOver;	///< The cursor hovers over the element
+//		bool m_focus;		///< The element has the focus (only active elements can get the focus)
+//		bool m_mouseOver;	///< The cursor hovers over the element
 
 		RefFrame m_refFrame;
 		// List of optional components (can be nullptr)

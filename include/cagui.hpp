@@ -18,9 +18,18 @@ namespace cag {
 		static void onResize(int _width, int _height);
 
 		/// Does a specific element has the focus?
+		/// \details Only one element can have the focus at a time. The focus can be changed by
+		///		by mouse clicks or by different key events. For keys the GUI must define handlers
+		///		on its own (Tab, Arrowkeys...).
 		static bool hasFocus(WidgetPtr& _widget);
+		static bool hasFocus(Widget* _widget);
 		/// Get the element with the focus. Can return a nullptr.
 		static WidgetPtr getFocussed();
+		//static setFocus();
+
+		/// Is a specific element pointed by the mouse.
+		/// \details Only one component can have the mouse-over property. It is the element, which
+		//static bool isMouseOver(WidgetPtr& _widget);
 
 		/// Get the render backend for elementary draw opertations
 		static class IRenderBackend* getRenderBackend();

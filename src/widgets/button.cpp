@@ -61,10 +61,11 @@ namespace cag {
 		);
 
 		// Background
+		bool mouseOver = GUIManagar::hasFocus(this);
 		if(m_backgroundTexture)
 			GUIManagar::getTheme()->drawImage(m_refFrame, m_backgroundTexture);
 		else
-			GUIManagar::getTheme()->drawButton(m_refFrame, m_mouseOver);
+			GUIManagar::getTheme()->drawButton(m_refFrame, mouseOver);
 
 		// Compute text and icon positions
 		Coord iconPos, textPos;
@@ -105,12 +106,12 @@ namespace cag {
 		}
 
 		// Text
-		GUIManagar::getTheme()->drawText(textPos, m_text.c_str(), m_mouseOver);
+		GUIManagar::getTheme()->drawText(textPos, m_text.c_str(), mouseOver);
 	}
 
-	void Button::processInput(const MouseState& _mouseState)
+	bool Button::processInput(const MouseState& _mouseState)
 	{
-		m_clickComponent->processInput(_mouseState);
+		return m_clickComponent->processInput(_mouseState);
 	}
 
 } // namespace cag

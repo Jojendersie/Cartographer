@@ -13,9 +13,10 @@ namespace cag {
 	{
 	public:
 		Clickable(RefFrame* _selfFrame);
+		~Clickable();
 
 		/// Process mouse input (uses the callbacks).
-		virtual void processInput(const struct MouseState& _mouseState);
+		virtual bool processInput(const struct MouseState& _mouseState);
 
 		/// Type for click callbacks.
 		/// \param [in] _where Internal position as info.
@@ -42,8 +43,10 @@ namespace cag {
 	protected:
 		IRegion* m_clickRegion;
 		bool m_deleteRegion;
-		std::vector<OnButtonChange> m_changeFunc;
+		std::vector<OnButtonChange> m_changeFuncs;
 		std::vector<MouseState::ButtonState> m_statesMasks;
+		bool m_buttonDownReceived[5];	// Detect for each button, if it was pressed on this element (for CLICK events)
+		float m_lastClick[5];			// Time stamp for the last click to detect DBL_CLICK events
 	};
 
 	/// Use the reference frame fitted ellipse to detect click events.
@@ -51,9 +54,11 @@ namespace cag {
 	{
 	public:
 		/// \param [in] _selfFrame The reference frame for the clickable area
-		EllipseRegion(class RefFrame* _selfFrame);
+		EllipseRegion(RefFrame* _selfFrame);
 
 		virtual bool isMouseOver(const Coord& _mousePos) override;
+	private:
+		RefFrame* m_selfFrame;
 	};
 
 	/// Use a bitmap mask to detect click events.

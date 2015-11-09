@@ -38,7 +38,7 @@ namespace cag {
 
 		virtual void draw() override;
 		/// Forward to Clickable::processInput
-		virtual void processInput(const struct MouseState& _mouseState) override;
+		virtual bool processInput(const struct MouseState& _mouseState) override;
 		/// Forward to Clickable::addOnButtonChangeFunc
 		void addOnButtonChangeFunc(Clickable::OnButtonChange _callback, MouseState::ButtonState _stateMask) { m_clickComponent->addOnButtonChangeFunc(std::move(_callback), _stateMask); }
 	private:
