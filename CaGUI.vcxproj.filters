@@ -15,69 +15,126 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="properties\clickable.hpp">
+    <ClInclude Include="include\properties\clickable.hpp">
       <Filter>properties</Filter>
     </ClInclude>
-    <ClInclude Include="properties\anchorable.hpp">
+    <ClInclude Include="include\properties\anchorable.hpp">
       <Filter>properties</Filter>
     </ClInclude>
-    <ClInclude Include="widgets\button.hpp">
+    <ClInclude Include="include\widgets\button.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="cagui.hpp" />
-    <ClInclude Include="widgets\frame.hpp">
+    <ClInclude Include="include\cagui.hpp" />
+    <ClInclude Include="include\widgets\frame.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="properties\moveable.hpp">
+    <ClInclude Include="include\properties\moveable.hpp">
       <Filter>properties</Filter>
     </ClInclude>
-    <ClInclude Include="widgets\chechbox.hpp">
+    <ClInclude Include="include\widgets\chechbox.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="widgets\dropdownbox.hpp">
+    <ClInclude Include="include\widgets\dropdownbox.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="widgets\slider.hpp">
+    <ClInclude Include="include\widgets\slider.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="widgets\multilineeditbox.hpp">
+    <ClInclude Include="include\widgets\multilineeditbox.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="widgets\editbox.hpp">
+    <ClInclude Include="include\widgets\editbox.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="widgets\colorpicker.hpp">
+    <ClInclude Include="include\widgets\colorpicker.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="widgets\directionpicker.hpp">
+    <ClInclude Include="include\widgets\directionpicker.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="widgets\treelist.hpp">
+    <ClInclude Include="include\widgets\treelist.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="properties\refframe.hpp">
+    <ClInclude Include="include\properties\refframe.hpp">
       <Filter>properties</Filter>
     </ClInclude>
-    <ClInclude Include="properties\resizeable.hpp">
+    <ClInclude Include="include\properties\resizeable.hpp">
       <Filter>properties</Filter>
     </ClInclude>
-    <ClInclude Include="backend\mouse.hpp">
+    <ClInclude Include="include\backend\mouse.hpp">
       <Filter>backend</Filter>
     </ClInclude>
-    <ClInclude Include="widgets\widget.hpp">
+    <ClInclude Include="include\widgets\widget.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="backend\renderbackend.hpp">
+    <ClInclude Include="include\backend\renderbackend.hpp">
       <Filter>backend</Filter>
     </ClInclude>
-    <ClInclude Include="rendering\theme.hpp">
+    <ClInclude Include="include\rendering\theme.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="rendering\sharp.hpp">
+    <ClInclude Include="include\rendering\sharp.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="rendering\flat.hpp">
+    <ClInclude Include="include\rendering\flat.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\cagui.cpp" />
+    <ClCompile Include="src\widgets\frame.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\multilineeditbox.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\slider.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\treelist.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\widget.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\button.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\chechbox.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\colorpicker.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\directionpicker.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\dropdownbox.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\editbox.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\sharp.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\flat.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\properties\moveable.cpp">
+      <Filter>properties</Filter>
+    </ClCompile>
+    <ClCompile Include="src\properties\refframe.cpp">
+      <Filter>properties</Filter>
+    </ClCompile>
+    <ClCompile Include="src\properties\resizeable.cpp">
+      <Filter>properties</Filter>
+    </ClCompile>
+    <ClCompile Include="src\properties\anchorable.cpp">
+      <Filter>properties</Filter>
+    </ClCompile>
+    <ClCompile Include="src\properties\clickable.cpp">
+      <Filter>properties</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

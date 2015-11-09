@@ -69,10 +69,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include/;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include/;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -123,28 +123,49 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="backend\mouse.hpp" />
-    <ClInclude Include="backend\renderbackend.hpp" />
-    <ClInclude Include="cagui.hpp" />
-    <ClInclude Include="properties\anchorable.hpp" />
-    <ClInclude Include="properties\clickable.hpp" />
-    <ClInclude Include="properties\moveable.hpp" />
-    <ClInclude Include="properties\refframe.hpp" />
-    <ClInclude Include="properties\resizeable.hpp" />
-    <ClInclude Include="rendering\flat.hpp" />
-    <ClInclude Include="rendering\sharp.hpp" />
-    <ClInclude Include="rendering\theme.hpp" />
-    <ClInclude Include="widgets\button.hpp" />
-    <ClInclude Include="widgets\chechbox.hpp" />
-    <ClInclude Include="widgets\colorpicker.hpp" />
-    <ClInclude Include="widgets\directionpicker.hpp" />
-    <ClInclude Include="widgets\dropdownbox.hpp" />
-    <ClInclude Include="widgets\editbox.hpp" />
-    <ClInclude Include="widgets\frame.hpp" />
-    <ClInclude Include="widgets\multilineeditbox.hpp" />
-    <ClInclude Include="widgets\slider.hpp" />
-    <ClInclude Include="widgets\treelist.hpp" />
-    <ClInclude Include="widgets\widget.hpp" />
+    <ClInclude Include="include\backend\mouse.hpp" />
+    <ClInclude Include="include\backend\renderbackend.hpp" />
+    <ClInclude Include="include\cagui.hpp" />
+    <ClInclude Include="include\properties\anchorable.hpp" />
+    <ClInclude Include="include\properties\clickable.hpp" />
+    <ClInclude Include="include\properties\moveable.hpp" />
+    <ClInclude Include="include\properties\refframe.hpp" />
+    <ClInclude Include="include\properties\resizeable.hpp" />
+    <ClInclude Include="include\rendering\flat.hpp" />
+    <ClInclude Include="include\rendering\sharp.hpp" />
+    <ClInclude Include="include\rendering\theme.hpp" />
+    <ClInclude Include="include\widgets\button.hpp" />
+    <ClInclude Include="include\widgets\chechbox.hpp" />
+    <ClInclude Include="include\widgets\colorpicker.hpp" />
+    <ClInclude Include="include\widgets\directionpicker.hpp" />
+    <ClInclude Include="include\widgets\dropdownbox.hpp" />
+    <ClInclude Include="include\widgets\editbox.hpp" />
+    <ClInclude Include="include\widgets\frame.hpp" />
+    <ClInclude Include="include\widgets\multilineeditbox.hpp" />
+    <ClInclude Include="include\widgets\slider.hpp" />
+    <ClInclude Include="include\widgets\treelist.hpp" />
+    <ClInclude Include="include\widgets\widget.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\cagui.cpp" />
+    <ClCompile Include="src\properties\anchorable.cpp" />
+    <ClCompile Include="src\properties\clickable.cpp" />
+    <ClCompile Include="src\properties\moveable.cpp" />
+    <ClCompile Include="src\properties\refframe.cpp" />
+    <ClCompile Include="src\properties\resizeable.cpp" />
+    <ClCompile Include="src\rendering\flat.cpp" />
+    <ClCompile Include="src\rendering\sharp.cpp" />
+    <ClCompile Include="src\widgets\button.cpp" />
+    <ClCompile Include="src\widgets\chechbox.cpp" />
+    <ClCompile Include="src\widgets\colorpicker.cpp" />
+    <ClCompile Include="src\widgets\directionpicker.cpp" />
+    <ClCompile Include="src\widgets\dropdownbox.cpp" />
+    <ClCompile Include="src\widgets\editbox.cpp" />
+    <ClCompile Include="src\widgets\frame.cpp" />
+    <ClCompile Include="src\widgets\multilineeditbox.cpp" />
+    <ClCompile Include="src\widgets\slider.cpp" />
+    <ClCompile Include="src\widgets\treelist.cpp" />
+    <ClCompile Include="src\widgets\widget.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
