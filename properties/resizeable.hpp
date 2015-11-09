@@ -2,18 +2,18 @@
 
 namespace cag {
 
-	/// A moveable component is moved when the mouse is pushed while beeing over the component
-	/// and then moved.
-	class Moveable
+	/// Allow interactive resizing of the component when the mouse cursor is on the border of the
+	/// reference frame.
+	class Resizeable
 	{
 	public:
-		/// Make a reference frame moveable.
+		/// Make a reference frame resizeable.
 		/// \param [in,opt] _anchorable Since positioning of anchorables is done automaically
-		///		it must be reset/disabled by the moveable. Non-anchorable widgets can pass a
+		///		it must be reset/disabled by the resizeable. Non-anchorable widgets can pass a
 		///		nullptr others should always provide access to their anchorable component.
-		Moveable(RefFrame* _selfFrame, Anchorable* _anchorable);
+		Resizeable(RefFrame* _selfFrame, Anchorable* _anchorable);
 
-		/// Process mouse input for drag & drop like movement.
+		/// Process mouse input for interactive resizing.
 		/// \param [in] _mouseState State of the mouse buttons and position. Required to start/end
 		///		movements.
 		void processInput(const struct MouseState& _mouseState);

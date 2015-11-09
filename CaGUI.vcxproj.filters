@@ -10,5 +10,74 @@
     <Filter Include="widgets">
       <UniqueIdentifier>{9ef71601-8960-401a-a89c-18cc0b4e4edb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="backend">
+      <UniqueIdentifier>{cbffbc80-ce64-4792-b6e2-9682887e844a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="properties\clickable.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
+    <ClInclude Include="properties\anchorable.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
+    <ClInclude Include="widgets\button.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="cagui.hpp" />
+    <ClInclude Include="widgets\frame.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="properties\moveable.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
+    <ClInclude Include="widgets\chechbox.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="widgets\dropdownbox.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="widgets\slider.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="widgets\multilineeditbox.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="widgets\editbox.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="widgets\colorpicker.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="widgets\directionpicker.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="widgets\treelist.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="properties\refframe.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
+    <ClInclude Include="properties\resizeable.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
+    <ClInclude Include="backend\mouse.hpp">
+      <Filter>backend</Filter>
+    </ClInclude>
+    <ClInclude Include="widgets\widget.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="backend\renderbackend.hpp">
+      <Filter>backend</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\theme.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\sharp.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\flat.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

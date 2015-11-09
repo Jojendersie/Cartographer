@@ -68,7 +68,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -118,6 +123,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="backend\mouse.hpp" />
+    <ClInclude Include="backend\renderbackend.hpp" />
+    <ClInclude Include="cagui.hpp" />
+    <ClInclude Include="properties\anchorable.hpp" />
+    <ClInclude Include="properties\clickable.hpp" />
+    <ClInclude Include="properties\moveable.hpp" />
+    <ClInclude Include="properties\refframe.hpp" />
+    <ClInclude Include="properties\resizeable.hpp" />
+    <ClInclude Include="rendering\flat.hpp" />
+    <ClInclude Include="rendering\sharp.hpp" />
+    <ClInclude Include="rendering\theme.hpp" />
+    <ClInclude Include="widgets\button.hpp" />
+    <ClInclude Include="widgets\chechbox.hpp" />
+    <ClInclude Include="widgets\colorpicker.hpp" />
+    <ClInclude Include="widgets\directionpicker.hpp" />
+    <ClInclude Include="widgets\dropdownbox.hpp" />
+    <ClInclude Include="widgets\editbox.hpp" />
+    <ClInclude Include="widgets\frame.hpp" />
+    <ClInclude Include="widgets\multilineeditbox.hpp" />
+    <ClInclude Include="widgets\slider.hpp" />
+    <ClInclude Include="widgets\treelist.hpp" />
+    <ClInclude Include="widgets\widget.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
