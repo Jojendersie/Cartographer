@@ -10,10 +10,10 @@ namespace cag {
 		/// Position in [0,1]^2 screen space.
 		/// \details Coordinates outside [0,1] are possible if the mouse leaves the window while
 		///		being pressed or if the window was resized and the mouse is not yet repositioned.
-		Vec2 position;
+		ei::Vec2 position;
 
 		/// Change of the position since last frame.
-		Vec2 deltaPos;
+		ei::Vec2 deltaPos;
 
 		/// Flags of a mouse button state.
 		/// \details It is possible that multiple flags are set in a single frame. This happens

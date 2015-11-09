@@ -17,7 +17,7 @@ namespace cag {
 		/// \param [in] _where Screenspace position as info.
 		/// \param [in] _button Index of the changed mouse button.
 		/// \param [in] _state New state of the changed mouse button.
-		typedef std::function<void(const Vec2& _where, int _button, MouseState::ButtonState _state)> OnButtonChange;
+		typedef std::function<void(const ei::Vec2& _where, int _button, MouseState::ButtonState _state)> OnButtonChange;
 
 		/// Attach another callback to the element.
 		/// \details It is not possible to detach function pointers.
@@ -37,6 +37,9 @@ namespace cag {
 	class RectClickable: public IClickable
 	{
 	public:
+		/// \param [in] _selfFrame The reference frame for the clickable area
+		RectClickable(class RefFrame* _selfFrame);
+
 		void processInput(const struct MouseState& _mouseState) override;
 	};
 

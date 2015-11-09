@@ -9,10 +9,10 @@ namespace cag {
 	{
 	public:
 		/// Convert a pixel position to [0,1]^2 screen position.
-		static Vec2 pixelToScreen(const Vec2& _pixel);
+		static ei::Vec2 pixelToScreen(const ei::Vec2& _pixel);
 
 		/// Convert a [0,1]^2 screen position to pixel position.
-		static Vec2 screenToPixel(const Vec2& _screenPos);
+		static ei::Vec2 screenToPixel(const ei::Vec2& _screenPos);
 
 		/// Resize/Repositioninng of all GUI components.
 		static void onResize(int _width, int _height);

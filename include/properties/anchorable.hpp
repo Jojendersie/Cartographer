@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ei/elementarytypes.hpp>
+#include <ei/vector.hpp>
 
 namespace cag {
 
@@ -40,7 +40,7 @@ namespace cag {
 
 		/// Make a reference frame anchorable.
 		/// \param [in] _selfFrame The reference frame which is modified based on the anchoring.
-		Anchorable(RefFrame* _selfFrame);
+		Anchorable(class RefFrame* _selfFrame);
 
 		/// Attach/detach an anchor on a side. To detach pass a nullptr.
 		/// \details Setting the anchor computes a relativ anchor for the current state. I.e. the

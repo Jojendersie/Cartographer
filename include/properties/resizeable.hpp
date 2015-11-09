@@ -11,7 +11,7 @@ namespace cag {
 		/// \param [in,opt] _anchorable Since positioning of anchorables is done automaically
 		///		it must be reset/disabled by the resizeable. Non-anchorable widgets can pass a
 		///		nullptr others should always provide access to their anchorable component.
-		Resizeable(RefFrame* _selfFrame, Anchorable* _anchorable);
+		Resizeable(class RefFrame* _selfFrame, class Anchorable* _anchorable);
 
 		/// Process mouse input for interactive resizing.
 		/// \param [in] _mouseState State of the mouse buttons and position. Required to start/end
