@@ -132,6 +132,7 @@
     <ClInclude Include="include\cagui.hpp" />
     <ClInclude Include="include\properties\anchorable.hpp" />
     <ClInclude Include="include\properties\clickable.hpp" />
+    <ClInclude Include="include\properties\coordinate.hpp" />
     <ClInclude Include="include\properties\moveable.hpp" />
     <ClInclude Include="include\properties\refframe.hpp" />
     <ClInclude Include="include\properties\resizeable.hpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="src\cagui.cpp" />
     <ClCompile Include="src\properties\anchorable.cpp" />
     <ClCompile Include="src\properties\clickable.cpp" />
+    <ClCompile Include="src\properties\coordinate.cpp" />
     <ClCompile Include="src\properties\moveable.cpp" />
     <ClCompile Include="src\properties\refframe.cpp" />
     <ClCompile Include="src\properties\resizeable.cpp" />

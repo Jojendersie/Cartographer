@@ -13,7 +13,7 @@ namespace cag {
 		if(_anchorable)
 			m_anchorComponent = new Anchorable(&m_refFrame);
 		if(_clickable)
-			m_clickComponent = new RectClickable(&m_refFrame);
+			m_clickComponent = new Clickable(&m_refFrame);
 		if(_moveable)
 			m_moveComponent = new Moveable(&m_refFrame, m_anchorComponent);
 		if(_resizeable)

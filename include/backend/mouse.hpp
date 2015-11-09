@@ -1,19 +1,19 @@
 #pragma once
 
-#include <ei/vector.hpp>
+#include "properties/coordinate.hpp"
 
 namespace cag {
 
 	/// Descriptor for the current mouse state.
 	struct MouseState
 	{
-		/// Position in [0,1]^2 screen space.
+		/// Cursor position in internal coordinates.
 		/// \details Coordinates outside [0,1] are possible if the mouse leaves the window while
 		///		being pressed or if the window was resized and the mouse is not yet repositioned.
-		ei::Vec2 position;
+		Coord position;
 
 		/// Change of the position since last frame.
-		ei::Vec2 deltaPos;
+		Coord deltaPos;
 
 		/// Flags of a mouse button state.
 		/// \details It is possible that multiple flags are set in a single frame. This happens

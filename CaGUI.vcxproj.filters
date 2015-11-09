@@ -79,6 +79,9 @@
     <ClInclude Include="include\rendering\flat.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
+    <ClInclude Include="include\properties\coordinate.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\cagui.cpp" />
@@ -134,6 +137,9 @@
       <Filter>properties</Filter>
     </ClCompile>
     <ClCompile Include="src\properties\clickable.cpp">
+      <Filter>properties</Filter>
+    </ClCompile>
+    <ClCompile Include="src\properties\coordinate.cpp">
       <Filter>properties</Filter>
     </ClCompile>
   </ItemGroup>

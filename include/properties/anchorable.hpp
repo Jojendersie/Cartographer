@@ -1,6 +1,7 @@
 #pragma once
 
-#include <ei/vector.hpp>
+#include "coordinate.hpp"
+#include "refframe.hpp"
 
 namespace cag {
 
@@ -8,7 +9,7 @@ namespace cag {
 	struct AnchorPoint
 	{
 		void* host;			///< Who is responsible for this point? If the host object is deleted it must set this to nullptr. Then anchors are released automatic.
-		ei::Vec2 position;	///< Relative screenspace position [0,1]^2.
+		Coord position;		///< Current position.
 	};
 
 	/// Anchorable classes are moved/resized dependent on the movement of anchor points.
@@ -22,14 +23,6 @@ namespace cag {
 	class Anchorable
 	{
 	public:
-		enum SIDE
-		{
-			LEFT = 0,
-			RIGHT = 1,
-			BOTTOM = 2,
-			TOP = 3
-		};
-
 		/// A component may or may not be resized to satisfy the anchoring.
 		enum Mode
 		{
@@ -40,7 +33,7 @@ namespace cag {
 
 		/// Make a reference frame anchorable.
 		/// \param [in] _selfFrame The reference frame which is modified based on the anchoring.
-		Anchorable(class RefFrame* _selfFrame);
+		Anchorable(RefFrame* _selfFrame);
 
 		/// Attach/detach an anchor on a side. To detach pass a nullptr.
 		/// \details Setting the anchor computes a relativ anchor for the current state. I.e. the
@@ -57,12 +50,12 @@ namespace cag {
 
 		/// Resize/renew position the object dependent on the current anchor points
 		/// \return True if any property was changed by the refit method.
-		bool refitAnchors();
+		bool refitToAnchors();
 	private:
 		struct Anchor
 		{
 			const AnchorPoint* reference;	///< Any anchor point
-			ei::Vec2 relativePosition;	///< Relative position of the component's anchor to the reference point.
+			Coord relativePosition;			///< Difference of the component's anchor to the reference point.
 		};
 		Anchor m_anchors[4];			///< The four reference points (l, r, t, b)
 		Mode m_horizontalMode;			///< The component can be rescaled in horizontal direction to satisfy left/right anchors
