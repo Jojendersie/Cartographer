@@ -94,8 +94,8 @@ namespace cag {
 	bool EllipseRegion::isMouseOver(const Coord& _mousePos)
 	{
 		// Convert _mousePos to [-1,1] positions inside the frame
-		Coord pos = _mousePos - Coord(m_selfFrame->bottom, m_selfFrame->left);
-		pos /= Coord(m_selfFrame->top - m_selfFrame->bottom, m_selfFrame->right - m_selfFrame->left);
+		Coord pos = _mousePos - Coord(m_selfFrame->bottom(), m_selfFrame->left());
+		pos /= Coord(m_selfFrame->height(), m_selfFrame->width());
 		pos = pos * 2.0f - 1.0f;
 		// Check if the position is inside a circle
 		return lensq(pos) <= 1.0f;

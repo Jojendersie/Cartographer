@@ -28,6 +28,7 @@ namespace cag {
 
 	protected:
 		bool m_active;		///< The element can receive input.
+		bool m_focusAble;	///< Can this object have the focus?
 //		bool m_focus;		///< The element has the focus (only active elements can get the focus)
 //		bool m_mouseOver;	///< The cursor hovers over the element
 

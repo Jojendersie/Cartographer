@@ -40,7 +40,7 @@ namespace cag {
 		///		position of the new anchor is fixed relativ to the anchor-point.
 		/// \param [in] _side Which anchor should be reseted?
 		/// \param [in] _anchorPoint New reference point or nullptr to fix or release the anchor.
-		void setAnchor(SIDE _side, const AnchorPoint* _anchorPoint);
+		void setAnchor(SIDE::Val _side, const AnchorPoint* _anchorPoint);
 
 		/// Recompute relative positioning. E.g. if a component was moved manually.
 		void resetAnchors();
@@ -55,9 +55,11 @@ namespace cag {
 		struct Anchor
 		{
 			const AnchorPoint* reference;	///< Any anchor point
-			Coord relativePosition;			///< Difference of the component's anchor to the reference point.
+			Range relativePosition;			///< Difference of the component's anchor to the reference point.
+			Anchor() : reference(nullptr) {}
 		};
 		Anchor m_anchors[4];			///< The four reference points (l, r, t, b)
+		RefFrame* m_selfFrame;
 		Mode m_horizontalMode;			///< The component can be rescaled in horizontal direction to satisfy left/right anchors
 		Mode m_verticalMode;			///< The component can be rescaled in vertical direction to satisfy bottom/top anchors
 	};

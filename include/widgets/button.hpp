@@ -30,7 +30,7 @@ namespace cag {
 		/// \param [in] _size Target size of the icon. If necessary the icon size is reduced
 		///		automatically.
 		/// \param [in] _padding Distance of the icon to the border and to the text.
-		void setIcon(const char* _textureFile, SIDE _side, const Coord& _size, Range _padding = 2.0f);
+		void setIcon(const char* _textureFile, SIDE::Val _side, const Coord& _size, Range _padding = 2.0f);
 
 		/// Set a custom look instead of the themes button rendering.
 		/// \param [in] _textureFile Name of an image file.
@@ -44,7 +44,7 @@ namespace cag {
 	private:
 		std::string m_text;
 		Coord m_textSize;	///< Precomputed size of the text for placement of the icon
-		SIDE m_iconPos;
+		SIDE::Val m_iconPos;
 		Coord m_iconSize;
 		Range m_iconPadding;
 		uint64 m_iconTexture;

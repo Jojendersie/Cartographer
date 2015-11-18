@@ -8,11 +8,8 @@ namespace cag {
 	class GUIManagar
 	{
 	public:
-		/// Convert a pixel position to [0,1]^2 screen position.
-		//static ei::Vec2 pixelToScreen(const ei::Vec2& _pixel);
-
-		/// Convert a [0,1]^2 screen position to pixel position.
-		//static ei::Vec2 screenToPixel(const ei::Vec2& _screenPos);
+		static void init(class IRenderBackend* _renderer, class ITheme* _theme);
+		static void exit();
 
 		/// Resize/Repositioninng of all GUI components.
 		static void onResize(int _width, int _height);
@@ -25,11 +22,8 @@ namespace cag {
 		static bool hasFocus(Widget* _widget);
 		/// Get the element with the focus. Can return a nullptr.
 		static WidgetPtr getFocussed();
-		//static setFocus();
-
-		/// Is a specific element pointed by the mouse.
-		/// \details Only one component can have the mouse-over property. It is the element, which
-		//static bool isMouseOver(WidgetPtr& _widget);
+		/// Set an element as the focussed one and release the last one.
+		static void setFocus(WidgetPtr _widget);
 
 		/// Get the render backend for elementary draw opertations
 		static class IRenderBackend* getRenderBackend();
