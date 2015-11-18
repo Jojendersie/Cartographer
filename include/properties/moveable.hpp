@@ -2,8 +2,8 @@
 
 namespace cag {
 
-	/// A moveable component is moved when the mouse is pushed while beeing over the component
-	/// and then moved.
+	/// A moveable component is moved when the left mouse button is pushed while beeing over the
+	/// component and then moved.
 	class Moveable
 	{
 	public:
@@ -17,6 +17,10 @@ namespace cag {
 		/// \param [in] _mouseState State of the mouse buttons and position. Required to start/end
 		///		movements.
 		void processInput(const struct MouseState& _mouseState);
+	private:
+		class RefFrame* m_refFrame;
+		class Anchorable* m_anchorable;
+		bool m_floating;	/// Currently actively moving
 	};
 
 } // namespace cag
