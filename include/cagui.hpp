@@ -1,6 +1,7 @@
 #pragma once
 
 #include "widgets/widget.hpp"
+#include <stack>
 
 namespace cag {
 
@@ -24,6 +25,13 @@ namespace cag {
 
 		/// Render all content
 		static void draw();
+
+		/// Restrict rendering to a subarea.
+		/// \details Clipping areas are handled on a stack. The current real region is the minimum
+		///		over all elements.
+		/// \return true if the new set region is non-empty (due to recursive restrictions).
+		static bool pushClipRegion(Coord _l, Coord _r, Coord _b, Coord _t);
+		static void popClipRegion();
 
 		/// Process mouse input.
 		/// \return true if the input was consumed by any element in the GUI.
@@ -61,6 +69,8 @@ namespace cag {
 		std::shared_ptr<class IRenderBackend> m_renderer;
 		std::shared_ptr<class ITheme> m_theme;
 		std::shared_ptr<class Frame> m_topFrame;
+
+		std::stack<ei::IVec4, std::vector<ei::IVec4>> m_clipRegionStack;
 	};
 
 } // namespace cag

@@ -12,11 +12,14 @@ namespace cag {
 	public:
 		Button();
 
+		/// Implement the draw method
+		void draw() override;
+
 		/// Set the button width and heigh (resets anchoring)
-		void setSize(const Coord& _size);
+		void setSize(const Coord2& _size);
 
 		/// Set the position (resets anchoring)
-		void setPosition(const Coord& _position);
+		void setPosition(const Coord2& _position);
 
 		/// Set the button text (utf8 w/o BOM)
 		/// \param [in] _text New text for the button (utf8 w/o BOM). The text is copied internally.
@@ -30,23 +33,22 @@ namespace cag {
 		/// \param [in] _size Target size of the icon. If necessary the icon size is reduced
 		///		automatically.
 		/// \param [in] _padding Distance of the icon to the border and to the text.
-		void setIcon(const char* _textureFile, SIDE::Val _side, const Coord& _size, Range _padding = 2.0f);
+		void setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, Coord _padding = 2.0f);
 
 		/// Set a custom look instead of the themes button rendering.
 		/// \param [in] _textureFile Name of an image file.
 		void setBackgroundTexture(const char* _textureFile);
 
-		virtual void draw() override;
 		/// Forward to Clickable::processInput
 		//virtual bool processInput(const struct MouseState& _mouseState) override;
 		/// Forward to Clickable::addOnButtonChangeFunc
 		void addOnButtonChangeFunc(Clickable::OnButtonChange _callback, MouseState::ButtonState _stateMask) { m_clickComponent->addOnButtonChangeFunc(std::move(_callback), _stateMask); }
 	private:
 		std::string m_text;
-		Coord m_textSize;	///< Precomputed size of the text for placement of the icon
+		Coord2 m_textSize;	///< Precomputed size of the text for placement of the icon
 		SIDE::Val m_iconPos;
-		Coord m_iconSize;
-		Range m_iconPadding;
+		Coord2 m_iconSize;
+		Coord m_iconPadding;
 		uint64 m_iconTexture;
 		uint64 m_backgroundTexture;
 	};

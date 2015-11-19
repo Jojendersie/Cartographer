@@ -22,7 +22,7 @@ namespace cag {
 		/// \param [in] _where Internal position as info.
 		/// \param [in] _button Index of the changed mouse button.
 		/// \param [in] _state New state of the changed mouse button.
-		typedef std::function<void(const Coord& _where, int _button, MouseState::ButtonState _state)> OnButtonChange;
+		typedef std::function<void(const Coord2& _where, int _button, MouseState::ButtonState _state)> OnButtonChange;
 
 		/// Attach another callback to the element.
 		/// \details It is not possible to detach function pointers.
@@ -56,7 +56,7 @@ namespace cag {
 		/// \param [in] _selfFrame The reference frame for the clickable area
 		EllipseRegion(RefFrame* _selfFrame);
 
-		virtual bool isMouseOver(const Coord& _mousePos) override;
+		virtual bool isMouseOver(const Coord2& _mousePos) override;
 	private:
 		RefFrame* m_selfFrame;
 	};
@@ -65,7 +65,7 @@ namespace cag {
 	class MaskRegion: public IRegion
 	{
 	public:
-		virtual bool isMouseOver(const Coord& _mousePos) override;
+		virtual bool isMouseOver(const Coord2& _mousePos) override;
 	};
 
 } // namespace cag

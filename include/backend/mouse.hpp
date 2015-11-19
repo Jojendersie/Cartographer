@@ -10,10 +10,10 @@ namespace cag {
 		/// Cursor position in internal coordinates.
 		/// \details Coordinates outside [0,1] are possible if the mouse leaves the window while
 		///		being pressed or if the window was resized and the mouse is not yet repositioned.
-		Coord position;
+		Coord2 position;
 
 		/// Change of the position since last frame.
-		Coord deltaPos;
+		Coord2 deltaPos;
 
 		/// Flags of a mouse button state.
 		/// \details It is possible that multiple flags are set in a single frame. This happens

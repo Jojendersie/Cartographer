@@ -2,11 +2,16 @@
 
 #include "widgets/frame.hpp"
 #include "backend/mouse.hpp"
+#include "backend/renderbackend.hpp"
+#include "cagui.hpp"
+#include "rendering/theme.hpp"
 
 namespace cag {
 
 	Frame::Frame(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable) :
-		Widget(_anchorable, _clickable, _moveable, _resizeable, true, true)
+		Widget(_anchorable, _clickable, _moveable, _resizeable, true, true),
+		m_opacity(0.0f),
+		m_texture(0)
 	{
 	}
 
@@ -14,10 +19,28 @@ namespace cag {
 	{
 		if(m_visible)
 		{
-			for(const auto& e : m_activeChildren)
-				e->draw();
-			for(const auto& e : m_passiveChildren)
-				e->draw();
+			// Set clipping region for this and all subelements
+			bool vis = GUIManager::pushClipRegion(
+				m_refFrame.left(), m_refFrame.right(),
+				m_refFrame.bottom(), m_refFrame.top()
+			);
+			if(vis)
+			{
+				// Draw the frame background
+				if(m_texture)
+					GUIManager::getTheme()->drawImage(m_refFrame, m_texture, m_opacity);
+				else
+					GUIManager::getTheme()->drawBackgroundArea(m_opacity);
+
+				for(const auto& i : m_passiveChildren)
+					i->draw();
+				// Draw all active components in reverse order (the first one has the focus and should
+				// be on top)
+				for(auto i = m_activeChildren.rbegin(); i != m_activeChildren.rend(); ++i)
+					(*i)->draw();
+			}
+
+			GUIManager::popClipRegion();
 		}
 	}
 
@@ -76,6 +99,17 @@ namespace cag {
 	{
 		// TODO: Assert m_activeChildren.size() > 0
 		return m_activeChildren[0].get() == _child && _child->isFocusable();
+	}
+
+	void Frame::setBackground(const char* _imageFile, float _opacity)
+	{
+		m_texture = GUIManager::getRenderBackend()->getTexture(_imageFile);
+		m_opacity = _opacity;
+	}
+
+	void Frame::setBackgroundOpacity(float _opacity)
+	{
+		m_opacity = _opacity;
 	}
 
 	void Frame::focusOn(size_t _index)

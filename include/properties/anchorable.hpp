@@ -9,7 +9,7 @@ namespace cag {
 	struct AnchorPoint
 	{
 		void* host;			///< Who is responsible for this point? If the host object is deleted it must set this to nullptr. Then anchors are released automatic.
-		Coord position;		///< Current position.
+		Coord2 position;		///< Current position.
 	};
 
 	/// Anchorable classes are moved/resized dependent on the movement of anchor points.
@@ -55,7 +55,7 @@ namespace cag {
 		struct Anchor
 		{
 			const AnchorPoint* reference;	///< Any anchor point
-			Range relativePosition;			///< Difference of the component's anchor to the reference point.
+			Coord relativePosition;			///< Difference of the component's anchor to the reference point.
 			Anchor() : reference(nullptr) {}
 		};
 		Anchor m_anchors[4];			///< The four reference points (l, r, t, b)

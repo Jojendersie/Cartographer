@@ -18,14 +18,14 @@ namespace cag {
 		m_clickComponent->setClickRegion(&m_refFrame, false);
 	}
 
-	void Button::setSize(const Coord& _size)
+	void Button::setSize(const Coord2& _size)
 	{
 		m_refFrame.sides[SIDE::RIGHT] = m_refFrame.left() + _size.x;
 		m_refFrame.sides[SIDE::TOP] = m_refFrame.right() + _size.y;
 		m_anchorComponent->resetAnchors();
 	}
 
-	void Button::setPosition(const Coord& _position)
+	void Button::setPosition(const Coord2& _position)
 	{
 		m_refFrame.sides[SIDE::LEFT]   = _position.x;
 		m_refFrame.sides[SIDE::BOTTOM] = _position.y;
@@ -40,7 +40,7 @@ namespace cag {
 		m_textSize;// TODO
 	}
 
-	void Button::setIcon(const char* _textureFile, SIDE::Val _side, const Coord& _size, Range _padding)
+	void Button::setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, Coord _padding)
 	{
 		m_iconPos = _side;
 		m_iconTexture = GUIManager::getRenderBackend()->getTexture(_textureFile);
@@ -54,11 +54,14 @@ namespace cag {
 
 	void Button::draw()
 	{
+		if(!isVisible()) return;
+
 		// Set clip region to avoid overdraw (which should be impossible due to downsize?)
-		GUIManager::getRenderBackend()->setClippingRegion(
-			ei::round(m_refFrame.left()), ei::round(m_refFrame.right()),
-			ei::round(m_refFrame.bottom()), ei::round(m_refFrame.top())
+		bool vis = GUIManager::pushClipRegion(
+			m_refFrame.left(), m_refFrame.right(),
+			m_refFrame.bottom(), m_refFrame.top()
 		);
+		if(!vis) { GUIManager::popClipRegion(); return; }
 
 		// Background
 		bool mouseOver = GUIManager::hasFocus(this);
@@ -68,7 +71,7 @@ namespace cag {
 			GUIManager::getTheme()->drawButton(m_refFrame, mouseOver);
 
 		// Compute text and icon positions
-		Coord iconPos, textPos;
+		Coord2 iconPos, textPos;
 		float downScale = 1.0f;
 		if(m_iconPos == SIDE::LEFT || m_iconPos == SIDE::RIGHT)
 		{

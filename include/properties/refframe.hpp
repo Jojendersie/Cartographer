@@ -9,7 +9,7 @@ namespace cag {
 	public:
 		/// Check if the mouse position is over this element.
 		/// \param [in] _mousePos Position of the cursor in screenspace [0,1]^2.
-		virtual bool isMouseOver(const Coord& _mousePos) = 0;
+		virtual bool isMouseOver(const Coord2& _mousePos) = 0;
 	};
 
 	/// A general purpose enum to define positioning schemes
@@ -41,7 +41,7 @@ namespace cag {
 
 		/// Check if the mouse cursor is on this reference frame.
 		/// \param [in] _mousePos Position of the cursor in screenspace [0,1]^2.
-		virtual bool isMouseOver(const Coord& _mousePos) override;
+		virtual bool isMouseOver(const Coord2& _mousePos) override;
 	};
 
 } // namespace cag
