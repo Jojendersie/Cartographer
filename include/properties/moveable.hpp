@@ -16,7 +16,7 @@ namespace cag {
 		/// Process mouse input for drag & drop like movement.
 		/// \param [in] _mouseState State of the mouse buttons and position. Required to start/end
 		///		movements.
-		void processInput(const struct MouseState& _mouseState);
+		bool processInput(const struct MouseState& _mouseState);
 	private:
 		class RefFrame* m_refFrame;
 		class Anchorable* m_anchorable;

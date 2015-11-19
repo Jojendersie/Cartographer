@@ -15,7 +15,7 @@ namespace cag {
 		// TODO: assert _selfFrame != nullptr
 	}
 
-	void Moveable::processInput(const MouseState& _mouseState)
+	bool Moveable::processInput(const MouseState& _mouseState)
 	{
 		if(m_floating)
 		{
@@ -31,11 +31,13 @@ namespace cag {
 				if(m_anchorable)
 					m_anchorable->resetAnchors();
 			} else m_floating = false;
+			return true;
 		} else {
 			// Is the mouse over the component and is the left button pressed?
 			m_floating = _mouseState.buttons[0] == MouseState::DOWN
 				&& m_refFrame->isMouseOver(_mouseState.position);
 		}
+		return m_floating;
 	}
 
 } // namespace cag

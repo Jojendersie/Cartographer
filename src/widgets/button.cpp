@@ -8,7 +8,7 @@
 namespace cag {
 
 	Button::Button() :
-		Widget(true, true, false, false),
+		Widget(true, true, false, false, true, true),
 		m_backgroundTexture(0),
 		m_iconTexture(0),
 		m_textSize(0.0f),
@@ -109,9 +109,9 @@ namespace cag {
 		GUIManagar::getTheme()->drawText(textPos, m_text.c_str(), mouseOver);
 	}
 
-	bool Button::processInput(const MouseState& _mouseState)
+	/*bool Button::processInput(const MouseState& _mouseState)
 	{
 		return m_clickComponent->processInput(_mouseState);
-	}
+	}*/
 
 } // namespace cag
