@@ -14,7 +14,7 @@ namespace cag {
 		m_textSize(0.0f),
 		m_iconSize(0.0f)
 	{
-		m_active = true;
+		m_enabled = true;
 		m_clickComponent->setClickRegion(&m_refFrame, false);
 	}
 
@@ -43,29 +43,29 @@ namespace cag {
 	void Button::setIcon(const char* _textureFile, SIDE::Val _side, const Coord& _size, Range _padding)
 	{
 		m_iconPos = _side;
-		m_iconTexture = GUIManagar::getRenderBackend()->getTexture(_textureFile);
+		m_iconTexture = GUIManager::getRenderBackend()->getTexture(_textureFile);
 		m_iconSize = _size;
 	}
 
 	void Button::setBackgroundTexture(const char* _textureFile)
 	{
-		m_backgroundTexture = GUIManagar::getRenderBackend()->getTexture(_textureFile);
+		m_backgroundTexture = GUIManager::getRenderBackend()->getTexture(_textureFile);
 	}
 
 	void Button::draw()
 	{
 		// Set clip region to avoid overdraw (which should be impossible due to downsize?)
-		GUIManagar::getRenderBackend()->setClippingRegion(
+		GUIManager::getRenderBackend()->setClippingRegion(
 			ei::round(m_refFrame.left()), ei::round(m_refFrame.right()),
 			ei::round(m_refFrame.bottom()), ei::round(m_refFrame.top())
 		);
 
 		// Background
-		bool mouseOver = GUIManagar::hasFocus(this);
+		bool mouseOver = GUIManager::hasFocus(this);
 		if(m_backgroundTexture)
-			GUIManagar::getTheme()->drawImage(m_refFrame, m_backgroundTexture);
+			GUIManager::getTheme()->drawImage(m_refFrame, m_backgroundTexture);
 		else
-			GUIManagar::getTheme()->drawButton(m_refFrame, mouseOver);
+			GUIManager::getTheme()->drawButton(m_refFrame, mouseOver);
 
 		// Compute text and icon positions
 		Coord iconPos, textPos;
@@ -102,11 +102,11 @@ namespace cag {
 			rect.sides[SIDE::RIGHT]  = iconPos.x + m_iconSize.x * downScale * 0.5f;
 			rect.sides[SIDE::BOTTOM] = iconPos.y - m_iconSize.y * downScale * 0.5f;
 			rect.sides[SIDE::TOP]    = iconPos.y + m_iconSize.y * downScale * 0.5f;
-			GUIManagar::getTheme()->drawImage(rect, m_iconTexture);
+			GUIManager::getTheme()->drawImage(rect, m_iconTexture);
 		}
 
 		// Text
-		GUIManagar::getTheme()->drawText(textPos, m_text.c_str(), mouseOver);
+		GUIManager::getTheme()->drawText(textPos, m_text.c_str(), mouseOver);
 	}
 
 	/*bool Button::processInput(const MouseState& _mouseState)

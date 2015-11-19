@@ -136,8 +136,8 @@
     <ClInclude Include="include\properties\moveable.hpp" />
     <ClInclude Include="include\properties\refframe.hpp" />
     <ClInclude Include="include\properties\resizeable.hpp" />
-    <ClInclude Include="include\rendering\flat.hpp" />
-    <ClInclude Include="include\rendering\sharp.hpp" />
+    <ClInclude Include="include\rendering\flattheme.hpp" />
+    <ClInclude Include="include\rendering\sharp3dtheme.hpp" />
     <ClInclude Include="include\rendering\theme.hpp" />
     <ClInclude Include="include\widgets\button.hpp" />
     <ClInclude Include="include\widgets\chechbox.hpp" />
@@ -159,8 +159,8 @@
     <ClCompile Include="src\properties\moveable.cpp" />
     <ClCompile Include="src\properties\refframe.cpp" />
     <ClCompile Include="src\properties\resizeable.cpp" />
-    <ClCompile Include="src\rendering\flat.cpp" />
-    <ClCompile Include="src\rendering\sharp.cpp" />
+    <ClCompile Include="src\rendering\flattheme.cpp" />
+    <ClCompile Include="src\rendering\sharp3dtheme.cpp" />
     <ClCompile Include="src\widgets\button.cpp" />
     <ClCompile Include="src\widgets\chechbox.cpp" />
     <ClCompile Include="src\widgets\colorpicker.cpp" />

@@ -10,7 +10,7 @@ namespace cag {
 		m_moveComponent(nullptr),
 		m_resizeComponent(nullptr),
 		m_inputReceivable(_inputReceivable),
-		m_active(_inputReceivable),
+		m_enabled(_inputReceivable),
 		m_focusable(_focusable)
 	{
 		if(_anchorable)

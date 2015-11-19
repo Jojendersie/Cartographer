@@ -32,20 +32,32 @@ namespace cag {
 		bool isInputReceivable() const { return m_inputReceivable; }
 
 		/// Can this element currently receive input (enabled)?
-		bool isActive() const { return m_active; }
-		void enable() { m_active = true; }
-		void disable() { m_active = false; }
-		void setActive(bool _state) { m_active = _state; }
+		bool isEnabled() const { return m_enabled; }
+		void enable() { m_enabled = true; }
+		void disable() { m_enabled = false; }
+		void setEnabled(bool _state) { m_enabled = _state; }
+
+		/// Is the current element visible/hidden?
+		bool isVisible() const { return m_visible; }
+		void show() { m_visible = true; }
+		void hide() { m_visible = false; }
+		void setVisible(bool _state) { m_visible = _state; }
 
 		/// Can this element get the focus?
 		bool isFocusable() const { return m_focusable; }
 
+		const Widget* parent() const { return m_parent; }
+		Widget* parent() { return m_parent; }
+
+		/// Elements which contain other elements should implement this check for the focus of a
+		/// contained element.
+		virtual bool isChildFocused(const Widget* _child) const { return false; }
+
 	protected:
 		const bool m_inputReceivable;	///< The element can receive input.
-		bool m_active;		///< The element can currently receive input (not disabled).
+		bool m_enabled;		///< The element can currently receive input (not disabled).
 		bool m_focusable;	///< Can this object have the focus?
-//		bool m_focus;		///< The element has the focus (only active elements can get the focus)
-//		bool m_mouseOver;	///< The cursor hovers over the element
+		bool m_visible;		///< Draw the element if visible and mask input otherwise.
 
 		RefFrame m_refFrame;
 		// List of optional components (can be nullptr)

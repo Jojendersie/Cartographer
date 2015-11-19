@@ -73,14 +73,14 @@
     <ClInclude Include="include\rendering\theme.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="include\rendering\sharp.hpp">
-      <Filter>rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="include\rendering\flat.hpp">
-      <Filter>rendering</Filter>
-    </ClInclude>
     <ClInclude Include="include\properties\coordinate.hpp">
       <Filter>properties</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rendering\sharp3dtheme.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rendering\flattheme.hpp">
+      <Filter>rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -118,12 +118,6 @@
     <ClCompile Include="src\widgets\editbox.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\sharp.cpp">
-      <Filter>rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\flat.cpp">
-      <Filter>rendering</Filter>
-    </ClCompile>
     <ClCompile Include="src\properties\moveable.cpp">
       <Filter>properties</Filter>
     </ClCompile>
@@ -141,6 +135,12 @@
     </ClCompile>
     <ClCompile Include="src\properties\coordinate.cpp">
       <Filter>properties</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\flattheme.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\sharp3dtheme.cpp">
+      <Filter>rendering</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -10,6 +10,17 @@ namespace cag {
 	{
 	}
 
+	void Frame::draw()
+	{
+		if(m_visible)
+		{
+			for(const auto& e : m_activeChildren)
+				e->draw();
+			for(const auto& e : m_passiveChildren)
+				e->draw();
+		}
+	}
+
 	void Frame::add(WidgetPtr _widget)
 	{
 		_widget->m_parent = this;
@@ -43,11 +54,13 @@ namespace cag {
 
 	bool Frame::processInput(const MouseState& _mouseState)
 	{
+		// Component disabled?
+		if(!isEnabled() || !isVisible()) return false;
 		// Forward to subelements
 		for(size_t i = 0; i < m_activeChildren.size(); ++i)
 		{
 			WidgetPtr& e = m_activeChildren[i];
-			if(e->isActive() && e->processInput(_mouseState))
+			if(e->isEnabled() && e->processInput(_mouseState))
 			{
 				// The one who took the input gets the focus
 				if(e->isFocusable()) focusOn(i);
@@ -57,6 +70,12 @@ namespace cag {
 		// Input was not consumed by an element.
 		// If there are properties try them.
 		return Widget::processInput(_mouseState);
+	}
+
+	bool Frame::isChildFocused(const Widget* _child) const
+	{
+		// TODO: Assert m_activeChildren.size() > 0
+		return m_activeChildren[0].get() == _child && _child->isFocusable();
 	}
 
 	void Frame::focusOn(size_t _index)

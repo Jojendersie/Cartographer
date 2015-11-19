@@ -5,21 +5,36 @@
 namespace cag {
 
 	/// Manages global properties like look-and-feel and forwards input to the GUIs.
-	class GUIManagar
+	class GUIManager
 	{
 	public:
-		static void init(class IRenderBackend* _renderer, class ITheme* _theme);
+		/// Init the manager with existing backends.
+		static void init(std::shared_ptr<class IRenderBackend> _renderer, std::shared_ptr<class ITheme> _theme);
 		static void exit();
 
 		/// Resize/Repositioninng of all GUI components.
 		static void onResize(int _width, int _height);
 
+		/// Add a new child element. It is recommended to add single top level frames as entire
+		/// GUIs. Those program state switches can be done by simple hide/show top level widgets.
+		static void add(WidgetPtr _widget);
+
+		/// Find and remove a widget (O(n) with n = number of elements)
+		static void remove(WidgetPtr _widget);
+
+		/// Render all content
+		static void draw();
+
+		/// Process mouse input.
+		/// \return true if the input was consumed by any element in the GUI.
+		static bool processInput(const struct MouseState& _mouseState);
+
 		/// Does a specific element has the focus?
 		/// \details Only one element can have the focus at a time. The focus can be changed by
 		///		by mouse clicks or by different key events. For keys the GUI must define handlers
 		///		on its own (Tab, Arrowkeys...).
-		static bool hasFocus(WidgetPtr& _widget);
-		static bool hasFocus(Widget* _widget);
+		static bool hasFocus(const WidgetPtr& _widget);
+		static bool hasFocus(const Widget* _widget);
 		/// Get the element with the focus. Can return a nullptr.
 		static WidgetPtr getFocussed();
 		/// Set an element as the focussed one and release the last one.
@@ -41,6 +56,11 @@ namespace cag {
 		///		created for a part of the real app, but usually it is expected to cover the entire
 		///		frame buffer.
 		static int getHeight();
+
+	private:
+		std::shared_ptr<class IRenderBackend> m_renderer;
+		std::shared_ptr<class ITheme> m_theme;
+		std::shared_ptr<class Frame> m_topFrame;
 	};
 
 } // namespace cag
