@@ -1,4 +1,4 @@
-#include "spriterenderer.hpp"
+#include "renderer/spriterenderer.hpp"
 #include "glcore/opengl.hpp"
 #include "glcore/vertexformat.hpp"
 #include "core/error.hpp"

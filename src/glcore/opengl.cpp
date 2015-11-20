@@ -1,5 +1,5 @@
 #include "core/error.hpp"
-#include "opengl.hpp"
+#include "glcore/opengl.hpp"
 
 #include <string>
 

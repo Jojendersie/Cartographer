@@ -1,4 +1,4 @@
-#include "texture.hpp"
+#include "glcore/texture.hpp"
 #include "core/error.hpp"
 #include "glcore/opengl.hpp"
 #include <memory.h>

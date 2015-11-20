@@ -1,5 +1,5 @@
-#include "opengl.hpp"
-#include "device.hpp"
+#include "glcore/opengl.hpp"
+#include "glcore/device.hpp"
 
 namespace ca { namespace cc {
 

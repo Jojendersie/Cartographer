@@ -1,4 +1,4 @@
-#include "instancerenderer.hpp"
+#include "renderer/instancerenderer.hpp"
 #include "glcore/opengl.hpp"
 #include "core/error.hpp"
 #include <string>

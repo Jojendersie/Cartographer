@@ -46,12 +46,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(ProjectDir);$(SolutionDir);$(ProjectDir)/dependencies/freetype/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)/include;$(ProjectDir)/dependencies/freetype/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(ProjectDir);$(SolutionDir);$(ProjectDir)/dependencies/freetype/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)/include;$(ProjectDir)/dependencies/freetype/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -83,24 +83,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="charcoal.hpp" />
-    <ClInclude Include="core\error.hpp" />
-    <ClInclude Include="core\manager.hpp" />
-    <ClInclude Include="core\scopedptr.hpp" />
-    <ClInclude Include="glcore\device.hpp" />
-    <ClInclude Include="glcore\opengl.hpp" />
-    <ClInclude Include="glcore\sampler.hpp" />
-    <ClInclude Include="glcore\shader.hpp" />
-    <ClInclude Include="glcore\texture.hpp" />
-    <ClInclude Include="glcore\vertexformat.hpp" />
-    <ClInclude Include="renderer\fontrenderer.hpp" />
-    <ClInclude Include="renderer\instancerenderer.hpp" />
-    <ClInclude Include="renderer\spriterenderer.hpp" />
-    <ClInclude Include="utilities\half.hpp" />
-    <ClInclude Include="utilities\hrclock.hpp" />
+    <ClInclude Include="include\charcoal.hpp" />
+    <ClInclude Include="include\core\error.hpp" />
+    <ClInclude Include="include\core\manager.hpp" />
+    <ClInclude Include="include\core\scopedptr.hpp" />
+    <ClInclude Include="include\glcore\device.hpp" />
+    <ClInclude Include="include\glcore\opengl.hpp" />
+    <ClInclude Include="include\glcore\sampler.hpp" />
+    <ClInclude Include="include\glcore\shader.hpp" />
+    <ClInclude Include="include\glcore\texture.hpp" />
+    <ClInclude Include="include\glcore\vertexformat.hpp" />
+    <ClInclude Include="include\renderer\fontrenderer.hpp" />
+    <ClInclude Include="include\renderer\instancerenderer.hpp" />
+    <ClInclude Include="include\renderer\spriterenderer.hpp" />
+    <ClInclude Include="include\utilities\half.hpp" />
+    <ClInclude Include="include\utilities\hrclock.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="core\error.cpp" />
     <ClCompile Include="dependencies\freetype\src\autofit.c" />
     <ClCompile Include="dependencies\freetype\src\bdf.c" />
     <ClCompile Include="dependencies\freetype\src\cff.c" />
@@ -143,16 +142,17 @@
     <ClCompile Include="dependencies\freetype\src\type1cid.c" />
     <ClCompile Include="dependencies\freetype\src\type42.c" />
     <ClCompile Include="dependencies\freetype\src\winfnt.c" />
-    <ClCompile Include="glcore\device.cpp" />
-    <ClCompile Include="glcore\opengl.cpp" />
-    <ClCompile Include="glcore\sampler.cpp" />
-    <ClCompile Include="glcore\shader.cpp" />
-    <ClCompile Include="glcore\texture.cpp" />
-    <ClCompile Include="glcore\vertexformat.cpp" />
-    <ClCompile Include="renderer\fontrenderer.cpp" />
-    <ClCompile Include="renderer\instancerenderer.cpp" />
-    <ClCompile Include="renderer\spriterenderer.cpp" />
-    <ClCompile Include="utilities\hrclock.cpp" />
+    <ClCompile Include="src\core\error.cpp" />
+    <ClCompile Include="src\glcore\device.cpp" />
+    <ClCompile Include="src\glcore\opengl.cpp" />
+    <ClCompile Include="src\glcore\sampler.cpp" />
+    <ClCompile Include="src\glcore\shader.cpp" />
+    <ClCompile Include="src\glcore\texture.cpp" />
+    <ClCompile Include="src\glcore\vertexformat.cpp" />
+    <ClCompile Include="src\renderer\fontrenderer.cpp" />
+    <ClCompile Include="src\renderer\instancerenderer.cpp" />
+    <ClCompile Include="src\renderer\spriterenderer.cpp" />
+    <ClCompile Include="src\utilities\hrclock.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
