@@ -30,6 +30,9 @@ namespace cag {
 	class RefFrame: public IRegion
 	{
 	public:
+		RefFrame() = default;
+		RefFrame(float _l, float _r, float _b, float _t);
+
 		float sides[4];	/// An array of the four side coordinates sorted after SIDE
 
 		float left() const { return sides[SIDE::LEFT]; }

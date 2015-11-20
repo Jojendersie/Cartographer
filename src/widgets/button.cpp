@@ -57,10 +57,7 @@ namespace cag {
 		if(!isVisible()) return;
 
 		// Set clip region to avoid overdraw (which should be impossible due to downsize?)
-		bool vis = GUIManager::pushClipRegion(
-			m_refFrame.left(), m_refFrame.right(),
-			m_refFrame.bottom(), m_refFrame.top()
-		);
+		bool vis = GUIManager::pushClipRegion( m_refFrame );
 		if(!vis) { GUIManager::popClipRegion(); return; }
 
 		// Background

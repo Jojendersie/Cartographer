@@ -30,7 +30,7 @@ namespace cag {
 		/// \details Clipping areas are handled on a stack. The current real region is the minimum
 		///		over all elements.
 		/// \return true if the new set region is non-empty (due to recursive restrictions).
-		static bool pushClipRegion(Coord _l, Coord _r, Coord _b, Coord _t);
+		static bool pushClipRegion(const RefFrame& _rect);
 		static void popClipRegion();
 
 		/// Process mouse input.

@@ -53,15 +53,15 @@ namespace cag {
 		// TODO: Assert g_manager->m_clipRegionStack.size() == 1
 	}
 
-	bool GUIManager::pushClipRegion(Coord _l, Coord _r, Coord _b, Coord _t)
+	bool GUIManager::pushClipRegion(const RefFrame& _rect)
 	{
 		auto& top = g_manager->m_clipRegionStack.top();
 		// Convert Coord to pixels and compute a minimum between the current top and the new rect.
 		ei::IVec4 area;
-		area.x = ei::max(ei::round(_l), top.x);
-		area.y = ei::min(ei::round(_r), top.y);
-		area.z = ei::max(ei::round(_b), top.z);
-		area.w = ei::min(ei::round(_t), top.w);
+		area.x = ei::max(ei::round(_rect.left()), top.x);
+		area.y = ei::min(ei::round(_rect.right()), top.y);
+		area.z = ei::max(ei::round(_rect.bottom()), top.z);
+		area.w = ei::min(ei::round(_rect.top()), top.w);
 		g_manager->m_clipRegionStack.push(area);
 		return ei::max(0, area.y - area.x) * ei::max(0, area.z - area.w) > 0;
 	}

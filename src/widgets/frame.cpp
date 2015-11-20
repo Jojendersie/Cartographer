@@ -20,17 +20,14 @@ namespace cag {
 		if(m_visible)
 		{
 			// Set clipping region for this and all subelements
-			bool vis = GUIManager::pushClipRegion(
-				m_refFrame.left(), m_refFrame.right(),
-				m_refFrame.bottom(), m_refFrame.top()
-			);
+			bool vis = GUIManager::pushClipRegion(m_refFrame);
 			if(vis)
 			{
 				// Draw the frame background
 				if(m_texture)
 					GUIManager::getTheme()->drawImage(m_refFrame, m_texture, m_opacity);
 				else
-					GUIManager::getTheme()->drawBackgroundArea(m_opacity);
+					GUIManager::getTheme()->drawBackgroundArea(m_refFrame, m_opacity);
 
 				for(const auto& i : m_passiveChildren)
 					i->draw();
