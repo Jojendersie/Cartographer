@@ -1,4 +1,4 @@
 #pragma once
 
-namespace cag {
-} // namespace cag
+namespace ca { namespace gui {
+}} // namespace ca::gui

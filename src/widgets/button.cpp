@@ -5,7 +5,7 @@
 #include "rendering/theme.hpp"
 #include "backend/renderbackend.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	Button::Button() :
 		Widget(true, true, false, false, true, true),
@@ -114,4 +114,4 @@ namespace cag {
 		return m_clickComponent->processInput(_mouseState);
 	}*/
 
-} // namespace cag
+}} // namespace ca::gui

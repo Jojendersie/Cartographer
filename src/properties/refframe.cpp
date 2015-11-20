@@ -2,7 +2,7 @@
 
 #include "properties/refframe.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	RefFrame::RefFrame(float _l, float _r, float _b, float _t)
 	{
@@ -19,4 +19,4 @@ namespace cag {
 			&& _mousePos.y >= bottom() && _mousePos.y <= top();
 	}
 
-} // namespace cag
+}} // namespace ca::gui

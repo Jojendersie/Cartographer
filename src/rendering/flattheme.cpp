@@ -6,7 +6,7 @@
 
 using namespace ei;
 
-namespace cag {
+namespace ca { namespace gui {
 
 	FlatTheme::FlatTheme(const FlatProperties& _desc) :
 		m_properties(_desc)
@@ -95,4 +95,4 @@ namespace cag {
 		GUIManager::getRenderBackend()->drawTriangle(triangle, _mouseOver ? m_properties.hoverTextColor : m_properties.textColor);
 	}
 
-} // namespace cag
+}} // namespace ca::gui

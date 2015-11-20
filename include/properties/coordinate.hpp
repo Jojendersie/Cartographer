@@ -2,7 +2,7 @@
 
 #include <ei/vector.hpp>
 
-namespace cag {
+namespace ca { namespace gui {
 
 	// Internal coordinate format: pixels with fractional parts
 	typedef ei::Vec2 Coord2;
@@ -27,4 +27,4 @@ namespace cag {
 		Coord pixel(int _pixels);
 
 	} // namespace coord
-} // namespace cag
+}} // namespace ca::gui

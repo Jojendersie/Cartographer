@@ -4,10 +4,10 @@
 #include "widget.hpp"
 #include "properties/coordinate.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	/// A standard clickable button with text and optional icon
-	class Button: public Widget
+	class Button : public Widget
 	{
 	public:
 		Button();
@@ -53,4 +53,4 @@ namespace cag {
 		uint64 m_backgroundTexture;
 	};
 
-} // namespace cag
+}} // namespace ca::gui

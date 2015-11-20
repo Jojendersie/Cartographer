@@ -93,6 +93,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>CHARCOAL_BACKEND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -119,6 +120,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>CHARCOAL_BACKEND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -127,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\backend\charcoal.hpp" />
     <ClInclude Include="include\backend\mouse.hpp" />
     <ClInclude Include="include\backend\renderbackend.hpp" />
     <ClInclude Include="include\cagui.hpp" />
@@ -152,6 +155,7 @@
     <ClInclude Include="include\widgets\widget.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\backend\charcoal.cpp" />
     <ClCompile Include="src\cagui.cpp" />
     <ClCompile Include="src\properties\anchorable.cpp" />
     <ClCompile Include="src\properties\clickable.cpp" />

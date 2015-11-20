@@ -2,7 +2,7 @@
 
 #include "properties/resizeable.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	Resizeable::Resizeable(RefFrame* _selfFrame, Anchorable* _anchorable)
 	{
@@ -13,4 +13,4 @@ namespace cag {
 		return false;
 	}
 
-} // namespace cag
+}} // namespace ca::gui

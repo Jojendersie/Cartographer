@@ -3,7 +3,7 @@
 #include "properties/coordinate.hpp"
 #include "properties/refframe.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	/// Interface for different rendering implementations (look).
 	/// \details Dependent on the generality a new theme does not ever need a new implementation.
@@ -30,4 +30,4 @@ namespace cag {
 		// more are following...
 	};
 
-} // namespace cag
+}} // namespace ca::gui

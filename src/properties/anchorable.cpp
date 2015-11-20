@@ -2,7 +2,7 @@
 
 #include "properties/anchorable.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	Anchorable::Anchorable(RefFrame* _selfFrame) : m_selfFrame(_selfFrame)
 	{
@@ -132,4 +132,4 @@ namespace cag {
 		return false;
 	}
 
-} // namespace cag
+}} // namespace ca::gui

@@ -5,7 +5,7 @@
 #include "backend/mouse.hpp"
 #include "refframe.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	/// Interface for clickable objects defining input and callback handling.
 	/// \details Per default a clickable uses the objects reference frame as input region.
@@ -68,4 +68,4 @@ namespace cag {
 		virtual bool isMouseOver(const Coord2& _mousePos) override;
 	};
 
-} // namespace cag
+}} // namespace ca::gui

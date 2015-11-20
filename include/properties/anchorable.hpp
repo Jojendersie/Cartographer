@@ -3,7 +3,7 @@
 #include "coordinate.hpp"
 #include "refframe.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	/// A position which can be used as reference for any anchor of an anchorable object.
 	struct AnchorPoint
@@ -63,4 +63,4 @@ namespace cag {
 		Mode m_horizontalMode;			///< The component can be rescaled in horizontal direction to satisfy left/right anchors
 		Mode m_verticalMode;			///< The component can be rescaled in vertical direction to satisfy bottom/top anchors
 	};
-} // namespace cag
+}} // namespace ca::gui

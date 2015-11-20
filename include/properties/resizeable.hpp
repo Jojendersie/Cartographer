@@ -1,6 +1,6 @@
 #pragma once
 
-namespace cag {
+namespace ca { namespace gui {
 
 	/// Allow interactive resizing of the component when the mouse cursor is on the border of the
 	/// reference frame.
@@ -19,4 +19,4 @@ namespace cag {
 		bool processInput(const struct MouseState& _mouseState);
 	};
 
-} // namespace cag
+}} // namespace ca::gui

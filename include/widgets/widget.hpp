@@ -7,7 +7,7 @@
 #include "properties/refframe.hpp"
 #include "properties/resizeable.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	/// Base class with mandatory attributes for all widgets.
 	/// \details A widget only contains the state. State handling in general is up to the derived
@@ -72,4 +72,4 @@ namespace cag {
 
 	typedef std::shared_ptr<Widget> WidgetPtr;
 
-} // namespace cag
+}} // namespace ca::gui

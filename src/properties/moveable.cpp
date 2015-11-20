@@ -5,7 +5,7 @@
 #include "properties/moveable.hpp"
 #include "backend/mouse.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	Moveable::Moveable(RefFrame* _selfFrame, Anchorable* _anchorable) :
 		m_refFrame(_selfFrame),
@@ -40,4 +40,4 @@ namespace cag {
 		return m_floating;
 	}
 
-} // namespace cag
+}} // namespace ca::gui

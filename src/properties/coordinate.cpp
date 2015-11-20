@@ -1,7 +1,7 @@
 #include "properties/coordinate.hpp"
 #include "cagui.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	namespace coord {
 
@@ -47,4 +47,4 @@ namespace cag {
 
 	} // namespace coord
 
-} // namespace cag
+}} // namespace ca::gui

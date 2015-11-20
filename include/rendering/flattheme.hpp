@@ -3,7 +3,7 @@
 #include <ei/vector.hpp>
 #include "theme.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	struct FlatProperties
 	{
@@ -17,7 +17,7 @@ namespace cag {
 	};
 
 	/// Super simple look without borders or gradients.
-	class FlatTheme: public ITheme
+	class FlatTheme : public ITheme
 	{
 	public:
 		FlatTheme(const FlatProperties& _desc);
@@ -33,4 +33,4 @@ namespace cag {
 		FlatProperties m_properties;
 	};
 
-} // namespace cag
+}} // namespace ca::gui

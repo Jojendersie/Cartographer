@@ -2,7 +2,7 @@
 
 #include <ei/2dtypes.hpp>
 
-namespace cag {
+namespace ca { namespace gui {
 
 	/// Interface for elementary rendering opertions.
 	/// \details The renderer must support the rendering of graphic primitives up to text. This
@@ -43,4 +43,4 @@ namespace cag {
 		virtual uint64 getTexture(const char* _textureFile) = 0;
 	};
 
-} // namespace cag
+}} // namespace ca::gui

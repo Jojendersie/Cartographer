@@ -2,7 +2,7 @@
 
 #include "theme.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	struct Sharp3DProperties
 	{
@@ -17,4 +17,4 @@ namespace cag {
 		Sharp3DTheme(const Sharp3DProperties& _desc);
 	};
 
-} // namespace cag
+}} // namespace ca::gui

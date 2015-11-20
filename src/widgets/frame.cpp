@@ -6,7 +6,7 @@
 #include "cagui.hpp"
 #include "rendering/theme.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	Frame::Frame(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable) :
 		Widget(_anchorable, _clickable, _moveable, _resizeable, true, true),
@@ -120,4 +120,4 @@ namespace cag {
 		}
 	}
 
-} // namespace cag
+}} // namespace ca::gui

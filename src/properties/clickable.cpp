@@ -2,7 +2,7 @@
 
 #include "properties/clickable.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	Clickable::Clickable(RefFrame* _selfFrame) :
 		m_clickRegion(_selfFrame),
@@ -101,4 +101,4 @@ namespace cag {
 		return lensq(pos) <= 1.0f;
 	}
 
-} // namespace cag
+}} // namespace ca::gui

@@ -2,6 +2,6 @@
 
 #include "rendering/sharp3dtheme.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 	
-} // namespace cag
+}} // namespace ca::gui

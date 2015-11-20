@@ -3,10 +3,10 @@
 #include <vector>
 #include "widget.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	/// The frame is the simplest form of a element container.
-	class Frame: public Widget
+	class Frame : public Widget
 	{
 	public:
 		Frame(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable);
@@ -45,4 +45,4 @@ namespace cag {
 		uint64 m_texture;
 	};
 
-} // namespace cag
+}} // namespace ca::gui

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace cag {
+namespace ca { namespace gui {
 
 	/// A moveable component is moved when the left mouse button is pushed while beeing over the
 	/// component and then moved.
@@ -23,4 +23,4 @@ namespace cag {
 		bool m_floating;	/// Currently actively moving
 	};
 
-} // namespace cag
+}} // namespace ca::gui

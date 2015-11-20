@@ -4,7 +4,7 @@
 #include "widgets/frame.hpp"
 #include "backend/renderbackend.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 	std::unique_ptr<GUIManager> g_manager;
 
 	void GUIManager::init(std::shared_ptr<class IRenderBackend> _renderer, std::shared_ptr<class ITheme> _theme)
@@ -127,4 +127,4 @@ namespace cag {
 		return 0;
 	}
 
-} // namespace cag
+}} // namespace ca::gui

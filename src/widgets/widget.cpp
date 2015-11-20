@@ -2,7 +2,7 @@
 
 #include "widgets/widget.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	Widget::Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable, bool _inputReceivable, bool _focusable) : 
 		m_anchorComponent(nullptr),
@@ -47,4 +47,4 @@ namespace cag {
 		return false;
 	}
 
-} // namespace cag
+}} // namespace ca::gui

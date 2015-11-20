@@ -3,7 +3,7 @@
 #include "widgets/widget.hpp"
 #include <stack>
 
-namespace cag {
+namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++17
 
 	/// Manages global properties like look-and-feel and forwards input to the GUIs.
 	class GUIManager
@@ -73,4 +73,4 @@ namespace cag {
 		std::stack<ei::IVec4, std::vector<ei::IVec4>> m_clipRegionStack;
 	};
 
-} // namespace cag
+}} // namespace ca::gui

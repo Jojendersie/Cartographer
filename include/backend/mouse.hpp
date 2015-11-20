@@ -2,7 +2,7 @@
 
 #include "properties/coordinate.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	/// Descriptor for the current mouse state.
 	struct MouseState
@@ -36,4 +36,4 @@ namespace cag {
 		ButtonState buttons[5];
 	};
 
-} // namespace cag
+}} // namespace ca::gui

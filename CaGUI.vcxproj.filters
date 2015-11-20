@@ -82,6 +82,9 @@
     <ClInclude Include="include\rendering\flattheme.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
+    <ClInclude Include="include\backend\charcoal.hpp">
+      <Filter>backend</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\cagui.cpp" />
@@ -141,6 +144,9 @@
     </ClCompile>
     <ClCompile Include="src\rendering\sharp3dtheme.cpp">
       <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\backend\charcoal.cpp">
+      <Filter>backend</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

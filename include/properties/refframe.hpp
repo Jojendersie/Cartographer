@@ -2,7 +2,7 @@
 
 #include "coordinate.hpp"
 
-namespace cag {
+namespace ca { namespace gui {
 
 	class IRegion
 	{
@@ -47,4 +47,4 @@ namespace cag {
 		virtual bool isMouseOver(const Coord2& _mousePos) override;
 	};
 
-} // namespace cag
+}} // namespace ca::gui
