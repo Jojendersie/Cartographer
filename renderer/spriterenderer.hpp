@@ -6,7 +6,7 @@
 #include <ei/vector.hpp>
 #include <vector>
 
-namespace cac {
+namespace ca { namespace cc {
 
 	/// Batch renderer for sprites.
 	/// \details This renderer represents exactly one pipeline state and contains one vertex and index
@@ -102,4 +102,4 @@ namespace cac {
 		mutable bool m_dirty;
 	};
 
-} // namespace cac
+}} // namespace ca::cc

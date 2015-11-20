@@ -1,6 +1,6 @@
 #pragma once
 
-namespace cac {
+namespace ca { namespace cc {
 		
 	/// Mixin which creates a singleton resource manager for a specific type.
 	/// \details To use this manager declare a new type in some header e.g.
@@ -191,4 +191,4 @@ namespace cac {
 		return hashvalue;
 	}
 
-} // namespace cac
+}} // namespace ca::cc

@@ -2,7 +2,7 @@
 
 #include <gl/glew.h>
 
-namespace cac {
+namespace ca { namespace cc {
 
 	enum struct PrimitiveFormat
 	{
@@ -42,4 +42,4 @@ namespace cac {
 		TRIANGLES = GL_TRIANGLES,
 	};
 
-} // namespace cac
+}} // namespace ca::cc

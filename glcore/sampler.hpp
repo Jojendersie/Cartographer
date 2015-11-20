@@ -3,7 +3,7 @@
 #include <gl/glew.h>
 #include <ei/elementarytypes.hpp>
 
-namespace cac {
+namespace ca { namespace cc {
 	
 	/// A sampler defines how a texture is sampled (border handling and scaling)
 	class Sampler
@@ -39,4 +39,4 @@ namespace cac {
 		uint m_maxAnisotropy;
 	};
 
-} // namespace cac
+}} // namespace ca::cc

@@ -5,7 +5,7 @@
 #include "core/manager.hpp"
 #include "glcore/sampler.hpp"
 
-namespace cac {
+namespace ca { namespace cc {
 
 	/// Base class for different (2D, 3D, cube) textures.
 	class Texture
@@ -124,4 +124,4 @@ namespace cac {
 		void resize();
 	};*/
 
-} // namespace cac
+}} // namespace ca::cc

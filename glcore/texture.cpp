@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "dependencies/stb_image.h"
 
-namespace cac {
+namespace ca { namespace cc {
 
 	static GLenum NUM_COMPS_TO_PIXEL_FORMAT[] = {GL_RED, GL_RG, GL_RGB, GL_RGBA};
 	static GLenum NUM_COMPS_TO_INTERNAL_FORMAT[] = {GL_R8, GL_RG8, GL_RGB8, GL_RGBA8};
@@ -177,4 +177,4 @@ namespace cac {
 		}
 	}*/
 
-} // namespace cac
+}} // namespace ca::cc

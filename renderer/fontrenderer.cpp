@@ -10,7 +10,7 @@
 
 using namespace ei;
 
-namespace cac {
+namespace ca { namespace cc {
 
 	const int BASE_SIZE = 72;			///< Vertical size in pixels within largest bitmap
 	const int MAP_WIDTH = 1024;			///< Default width for textures (height depends on the required space)
@@ -531,4 +531,4 @@ namespace cac {
 		return c;
 	}
 
-} // namespace cac
+}} // namespace ca::cc

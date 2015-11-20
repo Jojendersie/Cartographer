@@ -5,7 +5,7 @@
 #include <ei/vector.hpp>
 #include "stdwindow.hpp"
 
-using namespace cac;
+using namespace ca::cc;
 using namespace ei;
 
 struct Smile

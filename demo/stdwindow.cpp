@@ -5,7 +5,7 @@
 #include <string>
 #include "stdwindow.hpp"
 
-using namespace cac;
+using namespace ca::cc;
 
 static float s_aspectRatio;
 static int s_windowWidth, s_windowHeight;

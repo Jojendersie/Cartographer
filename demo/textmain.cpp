@@ -5,7 +5,7 @@
 #include <iostream>
 #include "stdwindow.hpp"
 
-using namespace cac;
+using namespace ca::cc;
 using namespace ei;
 
 static FontRenderer* s_fontRenderer;

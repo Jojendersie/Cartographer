@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <string>
 
-namespace cac {
+namespace ca { namespace cc {
 
 	/// Load OpenGL functions and set enable debug extension (call after context creation)
 	//init();
@@ -40,4 +40,4 @@ namespace cac {
 	
 #define glCall(_function, ...) (_glCall(#_function, _function, __VA_ARGS__))
 
-} // namespace cac
+}} // namespace ca::cc

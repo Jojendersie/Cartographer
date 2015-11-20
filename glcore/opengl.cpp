@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace cac {
+namespace ca { namespace cc {
 		
 	bool GLError(const char*  _openGLFunctionName)
 	{
@@ -53,4 +53,4 @@ namespace cac {
 		return false;
 	}
 	
-} // namespace cac
+}} // namespace ca::cc

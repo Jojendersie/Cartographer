@@ -11,7 +11,7 @@
 // Predeclarations
 typedef struct FT_FaceRec_*  FT_Face;
 
-namespace cac {
+namespace ca { namespace cc {
 
 	/// Renderer for text.
 	/// \details This renderer represents a single font type and a set of texts. It buffers all
@@ -114,4 +114,4 @@ namespace cac {
 		char32_t getNext(const char** _textit);
 	};
 
-} // namespace cac
+}} // namespace ca::cc

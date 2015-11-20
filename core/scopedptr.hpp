@@ -1,6 +1,6 @@
 #pragma once
 
-namespace cac {
+namespace ca { namespace cc {
 	
 	/// \brief Delete a resource end of scope.
 	/// \details In contrast to a unique_ptr you can duplicate the pointer...
@@ -63,4 +63,4 @@ namespace cac {
 		void operator = (const ScopedPtr&);
 	};
 	
-} // namespace cac
+}} // namespace ca::cc

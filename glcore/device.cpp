@@ -1,7 +1,7 @@
 #include "opengl.hpp"
 #include "device.hpp"
 
-namespace cac {
+namespace ca { namespace cc {
 
 	BlendOp Device::s_blendOp[8] 				= {BlendOp::ADD};
 	BlendFactor Device::s_srcFactor[8] 			= {BlendFactor::ONE};
@@ -194,4 +194,4 @@ namespace cac {
 		}
 	}
 
-} // namespace cac
+}} // namespace ca::cc

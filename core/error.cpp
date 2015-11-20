@@ -1,7 +1,7 @@
 #include "error.hpp"
 #include <iostream>
 
-namespace cac {
+namespace ca { namespace cc {
 	
 	void defaultHandler(const char* _message)
 	{
@@ -21,4 +21,4 @@ namespace cac {
 		s_onError(_message);
 	}
 		
-} // namespace cac
+}} // namespace ca::cc

@@ -5,7 +5,7 @@
 
 using namespace ei;
 
-namespace cac {
+namespace ca { namespace cc {
 
 InstanceRenderer::InstanceRenderer(PrimitiveType _type, const VertexAttribute* _attributes, int _numAttributes) :
 	m_startNewPrimitive(0),
@@ -283,4 +283,4 @@ void InstanceRenderer::draw() const
 	}
 }
 
-} // namespace cac
+}} // namespace ca::cc

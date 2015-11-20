@@ -4,7 +4,7 @@
 #include "shader.hpp"
 #include <string>
 
-namespace cac {
+namespace ca { namespace cc {
 	
 	Shader::Shader(const char* _source, ShaderType _type)
 	{
@@ -119,4 +119,4 @@ namespace cac {
 		return glCall(glGetUniformLocation, m_programID, _uniformName);
 	}
 	
-} // namespace Ca
+}} // namespace ca::cc

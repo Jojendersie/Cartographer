@@ -1,6 +1,6 @@
 #pragma once
 
-namespace cac {
+namespace ca { namespace cc {
 	
 	/// Set a new error handler. The default is std::cerr.
 	/// \details The error handler should insert line-breaks on its own.
@@ -9,4 +9,4 @@ namespace cac {
 	/// Use the error callback. You don't need line breaks.
 	void error(const char* _message);
 		
-} // namespace cac
+}} // namespace ca::cc

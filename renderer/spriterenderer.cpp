@@ -5,7 +5,7 @@
 
 using namespace ei;
 
-namespace cac {
+namespace ca { namespace cc {
 
 SpriteRenderer::SpriteRenderer()
 {
@@ -114,4 +114,4 @@ void SpriteRenderer::draw() const
 	//glCall(glDrawArraysInstanced, GL_POINTS, 0, 1,
 }
 
-} // namespace cac
+}} // namespace ca::cc

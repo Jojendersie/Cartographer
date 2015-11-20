@@ -2,7 +2,7 @@
 
 #include <gl/glew.h>
 
-namespace cac {
+namespace ca { namespace cc {
 
 	enum class BlendOp
 	{
@@ -114,4 +114,4 @@ namespace cac {
 		static bool s_scissorEnable;
 	};
 	
-} // namespace cac
+}} // namespace ca::cc
