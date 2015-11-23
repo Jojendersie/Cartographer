@@ -38,6 +38,6 @@ namespace ca { namespace cc {
 #endif
 	}
 	
-#define glCall(_function, ...) (_glCall(#_function, _function, __VA_ARGS__))
+#define glCall(_function, ...) _glCall(#_function, _function, __VA_ARGS__)
 
 }} // namespace ca::cc
