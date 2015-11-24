@@ -2,7 +2,7 @@
 
 #include "rendering/flattheme.hpp"
 #include "backend/renderbackend.hpp"
-#include "cagui.hpp"
+#include "guimanager.hpp"
 
 using namespace ei;
 

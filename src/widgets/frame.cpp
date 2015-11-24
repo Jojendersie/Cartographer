@@ -3,7 +3,7 @@
 #include "widgets/frame.hpp"
 #include "backend/mouse.hpp"
 #include "backend/renderbackend.hpp"
-#include "cagui.hpp"
+#include "guimanager.hpp"
 #include "rendering/theme.hpp"
 
 namespace ca { namespace gui {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "widgets/button.hpp"
-#include "cagui.hpp"
+#include "guimanager.hpp"
 #include "rendering/theme.hpp"
 #include "backend/renderbackend.hpp"
 

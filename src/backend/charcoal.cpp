@@ -1,7 +1,8 @@
 #ifdef CHARCOAL_BACKEND
 #include "backend/charcoal.hpp"
 #include "properties/refframe.hpp"
-#include "cagui.hpp"
+#include "guimanager.hpp"
+#include <glcore/opengl.hpp>
 
 using namespace ei;
 
@@ -241,7 +242,7 @@ namespace ca { namespace gui {
 		m_clipRegion = ei::Vec<uint16, 4>(0xffff);
 		// Create projection matrix and set in the program
 		Mat4x4 viewProj = ei::orthographicGL(0.0f, (float)GUIManager::getWidth(), 0.0f, (float)GUIManager::getHeight(), 0.0f, 1.0f);
-		cc::glCall(glProgramUniformMatrix4fv, m_spriteShader.getID(), 0, 1, GL_FALSE, (GLfloat*)&viewProj);
+		m_spriteShader.setUniform(0, viewProj);
 	}
 
 	void CharcoalBackend::endDraw()

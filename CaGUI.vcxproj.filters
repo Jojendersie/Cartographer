@@ -24,7 +24,6 @@
     <ClInclude Include="include\widgets\button.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="include\cagui.hpp" />
     <ClInclude Include="include\widgets\frame.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
@@ -85,9 +84,10 @@
     <ClInclude Include="include\backend\charcoal.hpp">
       <Filter>backend</Filter>
     </ClInclude>
+    <ClInclude Include="include\guimanager.hpp" />
+    <ClInclude Include="include\cagui.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\cagui.cpp" />
     <ClCompile Include="src\widgets\frame.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
@@ -148,5 +148,6 @@
     <ClCompile Include="src\backend\charcoal.cpp">
       <Filter>backend</Filter>
     </ClCompile>
+    <ClCompile Include="src\guimanager.cpp" />
   </ItemGroup>
 </Project>
