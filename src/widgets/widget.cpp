@@ -12,7 +12,8 @@ namespace ca { namespace gui {
 		m_inputReceivable(_inputReceivable),
 		m_enabled(_inputReceivable),
 		m_focusable(_focusable),
-		m_visible(true)
+		m_visible(true),
+		m_parent(nullptr)
 	{
 		if(_anchorable)
 			m_anchorComponent = new Anchorable(&m_refFrame);

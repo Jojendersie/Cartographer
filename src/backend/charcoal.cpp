@@ -259,8 +259,8 @@ namespace ca { namespace gui {
 
 	void gui::CharcoalBackend::setClippingRegion(const ei::IVec4& _clippingRect)
 	{
-		eiAssertWeak(_clippingRect.x >= 0 && _clippingRect.y >= 0
-			&& _clippingRect.z < GUIManager::getWidth() && _clippingRect.w < GUIManager::getHeight(),
+		eiAssertWeak(_clippingRect.x >= 0 && _clippingRect.z >= 0
+			&& _clippingRect.y <= GUIManager::getWidth() && _clippingRect.w <= GUIManager::getHeight(),
 			"Clipping region is (partially) not visible.");
 		m_clipRegion = ei::Vec<uint16, 4>(_clippingRect);
 	}
