@@ -18,7 +18,7 @@ namespace ca { namespace gui {
 	};
 
 	const char* VS_SPRITE = R"(
-		#version 330
+		#version 410
 
 		layout(location = 0) in vec4 in_texCoords;
 		layout(location = 1) in uvec2 in_textureHandle;
@@ -54,7 +54,7 @@ namespace ca { namespace gui {
 		}
 	)";
 	const char* GS_SPRITE = R"(
-		#version 330
+		#version 430
 
 		layout(location = 0) in vec4 in_texCoords[1];
 		layout(location = 1) in uvec2 in_textureHandle[1];
@@ -76,7 +76,7 @@ namespace ca { namespace gui {
 		layout(location = 3) out flat vec4 out_posAB;
 		layout(location = 4) out flat vec4 out_colorA;
 		layout(location = 5) out flat vec4 out_colorB;
-		layout(location = 6) out flat int out_gradientMode
+		layout(location = 6) out flat int out_gradientMode;
 
 		void main()
 		{
@@ -85,16 +85,16 @@ namespace ca { namespace gui {
 			out_posAB = in_posAB[0];
 			out_colorA = in_colorA[0];
 			out_colorB = in_colorB[0];
-			out_gradintMode = in_gradientMode[0];
+			out_gradientMode = in_gradientMode[0];
 
 			// Triangle mode?
-			if(in_gradientMode == 4)
+			if(in_gradientMode[0] == 4)
 			{
-				gl_Position = vec4(worldPos, 1) * c_projection;
+				gl_Position = vec4(in_position[0].xy, 0, 1) * c_projection;
 				EmitVertex();
-				gl_Position = vec4(in_posAB.xy, 0, 1) * c_projection;
+				gl_Position = vec4(in_posAB[0].xy, 0, 1) * c_projection;
 				EmitVertex();
-				gl_Position = vec4(in_posAB.zw, 0, 1) * c_projection;
+				gl_Position = vec4(in_posAB[0].zw, 0, 1) * c_projection;
 				EmitVertex();
 			} else {
 				// Bottom-Left
@@ -155,25 +155,25 @@ namespace ca { namespace gui {
 			switch(in_gradientMode)
 			{
 			case 0: // Uniform color
-			case 4:
+			case 4: {
 				color = in_colorA;
-				break;
-			case 1: // IRenderBackend::GradientMode::LINEAR
+				break; }
+			case 1: { // IRenderBackend::GradientMode::LINEAR
 				// Project to a line between A and B
 				vec2 AtoB = in_posAB.zw - in_posAB.xy;
 				float t = dot(AtoB, in_texCoord - in_posAB.xy) / dot(AtoB, AtoB);
 				t = clamp(t, 0.0, 1.0);
 				color = mix(in_colorA, in_colorB, t);
-				break;
-			case 2: // IRenderBackend::GradientMode::CIRCULAR
+				break; }
+			case 2: { // IRenderBackend::GradientMode::CIRCULAR
 				// Compute relative distance to A
 				vec2 AtoX = in_texCoord - in_posAB.xy;
 				vec2 AtoB = in_posAB.zw - in_posAB.xy;
 				float dsq = dot(AtoX, AtoX) / dot(AtoB, AtoB);
 				float t = min(sqrt(dsq), 1.0);
 				color = mix(in_colorA, in_colorB, t);
-				break;
-			case 3: // IRenderBackend::GradientMode::RECTANGULAR
+				break; }
+			case 3: { // IRenderBackend::GradientMode::RECTANGULAR
 				// Get smallest distance to one of the borders
 				float mindist;
 				mindist = max(0.0, in_texCoord.x - in_posAB.x);
@@ -183,7 +183,7 @@ namespace ca { namespace gui {
 				// Normalize to maximal possible distance
 				mindist /= min(in_posAB.z - in_posAB.x, in_posAB.w - in_posAB.y) * 0.5;
 				color = mix(in_colorA, in_colorB, mindist);
-				break;
+				break; }
 			}
 			// Is there a texture?
 			if(in_textureHandle.x != 0 || in_textureHandle.y != 0)
