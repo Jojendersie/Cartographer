@@ -15,12 +15,6 @@ namespace ca { namespace gui {
 		/// Implement the draw method
 		void draw() override;
 
-		/// Set the button width and heigh (resets anchoring)
-		void setSize(const Coord2& _size);
-
-		/// Set the position (resets anchoring)
-		void setPosition(const Coord2& _position);
-
 		/// Set the button text (utf8 w/o BOM)
 		/// \param [in] _text New text for the button (utf8 w/o BOM). The text is copied internally.
 		void setText(const char* _text);
@@ -54,5 +48,7 @@ namespace ca { namespace gui {
 		uint64 m_iconTexture;
 		uint64 m_backgroundTexture;
 	};
+
+	typedef std::shared_ptr<Button> ButtonPtr;
 
 }} // namespace ca::gui

@@ -46,4 +46,6 @@ namespace ca { namespace gui {
 		uint64 m_texture;
 	};
 
+	typedef std::shared_ptr<Frame> FramePtr;
+
 }} // namespace ca::gui

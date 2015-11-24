@@ -17,7 +17,7 @@ namespace ca { namespace gui {
 
 	void Anchorable::resetAnchors()
 	{
-		for(int i = 0; i < 4; ++i)
+		for(int i = 0; i < 4; ++i) if(m_anchors[i].reference)
 			m_anchors[i].relativePosition = m_selfFrame->sides[i] - m_anchors[i].reference->position[i/2];
 	}
 

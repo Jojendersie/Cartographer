@@ -11,7 +11,8 @@ namespace ca { namespace gui {
 		m_resizeComponent(nullptr),
 		m_inputReceivable(_inputReceivable),
 		m_enabled(_inputReceivable),
-		m_focusable(_focusable)
+		m_focusable(_focusable),
+		m_visible(true)
 	{
 		if(_anchorable)
 			m_anchorComponent = new Anchorable(&m_refFrame);
@@ -29,6 +30,41 @@ namespace ca { namespace gui {
 		delete m_moveComponent;
 		delete m_clickComponent;
 		delete m_anchorComponent;
+	}
+
+	void Widget::setSize(const Coord2& _size)
+	{
+		m_refFrame.sides[SIDE::RIGHT] = m_refFrame.left() + _size.x;
+		m_refFrame.sides[SIDE::TOP] = m_refFrame.bottom() + _size.y;
+		if(m_anchorComponent) m_anchorComponent->resetAnchors();
+	}
+
+	Coord2 Widget::getSize() const
+	{
+		return Coord2(m_refFrame.width(), m_refFrame.height());
+	}
+
+	void Widget::setPosition(const Coord2& _position)
+	{
+		m_refFrame.sides[SIDE::RIGHT]  = _position.x + m_refFrame.width();
+		m_refFrame.sides[SIDE::TOP]    = _position.y + m_refFrame.height();
+		m_refFrame.sides[SIDE::LEFT]   = _position.x;
+		m_refFrame.sides[SIDE::BOTTOM] = _position.y;
+		if(m_anchorComponent) m_anchorComponent->resetAnchors();
+	}
+
+	Coord2 Widget::getPosition() const
+	{
+		return Coord2(m_refFrame.left(), m_refFrame.bottom());
+	}
+
+	void Widget::setExtent(const Coord2& _position, const Coord2& _size)
+	{
+		m_refFrame.sides[SIDE::LEFT]   = _position.x;
+		m_refFrame.sides[SIDE::BOTTOM] = _position.y;
+		m_refFrame.sides[SIDE::RIGHT]  = _position.x + _size.x;
+		m_refFrame.sides[SIDE::TOP]    = _position.y + _size.y;
+		if(m_anchorComponent) m_anchorComponent->resetAnchors();
 	}
 
 	bool Widget::processInput(const struct MouseState& _mouseState)

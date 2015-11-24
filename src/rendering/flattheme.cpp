@@ -15,20 +15,20 @@ namespace ca { namespace gui {
 
 	void FlatTheme::drawTextArea(const class RefFrame& _rect)
 	{
-		GUIManager::getRenderBackend()->drawRect(_rect, m_properties.textBackColor);
+		GUIManager::renderBackend().drawRect(_rect, m_properties.textBackColor);
 	}
 
 	void FlatTheme::drawBackgroundArea(const class RefFrame& _rect, float _opacity)
 	{
-		GUIManager::getRenderBackend()->drawRect(_rect, m_properties.backgroundColor);
+		GUIManager::renderBackend().drawRect(_rect, m_properties.backgroundColor);
 	}
 
 	void FlatTheme::drawButton(const RefFrame& _rect, bool _mouseOver)
 	{
 		if(_mouseOver)
-			GUIManager::getRenderBackend()->drawRect(_rect, m_properties.hoverBackgroundColor);
+			GUIManager::renderBackend().drawRect(_rect, m_properties.hoverBackgroundColor);
 		else 
-			GUIManager::getRenderBackend()->drawRect(_rect, m_properties.backgroundColor);
+			GUIManager::renderBackend().drawRect(_rect, m_properties.backgroundColor);
 	}
 
 	void FlatTheme::drawCheckbox(const class RefFrame& _rect, bool _checked, bool _mouseOver)
@@ -36,19 +36,19 @@ namespace ca { namespace gui {
 		const Vec4& color = _mouseOver ? m_properties.hoverTextColor : m_properties.textColor;
 		// Draw three different sized rectangles (border, background and a smaller one for the
 		// checkmark).
-		GUIManager::getRenderBackend()->drawRect(_rect, color);
+		GUIManager::renderBackend().drawRect(_rect, color);
 		RefFrame backRect(_rect.left() - 1, _rect.right() - 1, _rect.bottom() - 1, _rect.top() - 1);
-		GUIManager::getRenderBackend()->drawRect(backRect, m_properties.textBackColor);
+		GUIManager::renderBackend().drawRect(backRect, m_properties.textBackColor);
 		if(_checked)
 		{
 			RefFrame checkRect(_rect.left() - 3, _rect.right() - 3, _rect.bottom() - 3, _rect.top() - 3);
-			GUIManager::getRenderBackend()->drawRect(checkRect, color);
+			GUIManager::renderBackend().drawRect(checkRect, color);
 		}
 	}
 
 	void FlatTheme::drawText(const Coord2& _position, const char* _text, bool _mouseOver, float _alignX, float _alignY)
 	{
-		GUIManager::getRenderBackend()->drawText(_position, _text,
+		GUIManager::renderBackend().drawText(_position, _text,
 					m_properties.textSize,
 					_mouseOver ? m_properties.hoverTextColor : m_properties.textColor,
 					_alignX, _alignY,
@@ -58,12 +58,12 @@ namespace ca { namespace gui {
 
 	void FlatTheme::drawImage(const RefFrame& _rect, uint64 _texHandle, float _opacity)
 	{
-		GUIManager::getRenderBackend()->drawTextureRect(_rect, _texHandle, _opacity);
+		GUIManager::renderBackend().drawTextureRect(_rect, _texHandle, _opacity);
 	}
 
 	void FlatTheme::drawArrowButton(const class RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver)
 	{
-		GUIManager::getRenderBackend()->drawRect(_rect, _mouseOver ? m_properties.hoverBackgroundColor : m_properties.backgroundColor);
+		GUIManager::renderBackend().drawRect(_rect, _mouseOver ? m_properties.hoverBackgroundColor : m_properties.backgroundColor);
 		// Use the minimum possible size to create a triangle without stretch
 		float size = min(_rect.width(), _rect.height()) - 2.0f;
 		float sizeh = size/2.0f;
@@ -92,7 +92,7 @@ namespace ca { namespace gui {
 			triangle.v2 = Vec2(center.x + sizeh, center.y - sizeh);
 			break;
 		}
-		GUIManager::getRenderBackend()->drawTriangle(triangle, _mouseOver ? m_properties.hoverTextColor : m_properties.textColor);
+		GUIManager::renderBackend().drawTriangle(triangle, _mouseOver ? m_properties.hoverTextColor : m_properties.textColor);
 	}
 
 }} // namespace ca::gui

@@ -10,7 +10,11 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 	{
 	public:
 		/// Init the manager with existing backends.
-		static void init(std::shared_ptr<class IRenderBackend> _renderer, std::shared_ptr<class ITheme> _theme);
+		/// \param [in] _width Window width in pixels. This should be the same number as used in
+		///		onResize().
+		/// \param [in] _height Window height in pixels. This should be the same number as used in
+		///		onResize().
+		static void init(std::shared_ptr<class IRenderBackend> _renderer, std::shared_ptr<class ITheme> _theme, int _width, int _height);
 		static void exit();
 
 		/// Resize/Repositioninng of all GUI components.
@@ -48,10 +52,10 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		/// Set an element as the focussed one and release the last one.
 		static void setFocus(WidgetPtr _widget);
 
-		/// Get the render backend for elementary draw opertations
-		static class IRenderBackend* getRenderBackend();
-		/// Get the theme which handles high level draw operations
-		static class ITheme* getTheme();
+		/// Access the render backend for elementary draw opertations
+		static class IRenderBackend& renderBackend();
+		/// Access the theme which handles high level draw operations
+		static class ITheme& theme();
 
 		/// Get the current GUI width in pixels.
 		/// \details The GUI size is the size which was given in onResize. A GUI may also be

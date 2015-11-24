@@ -18,22 +18,6 @@ namespace ca { namespace gui {
 		m_clickComponent->setClickRegion(&m_refFrame, false);
 	}
 
-	void Button::setSize(const Coord2& _size)
-	{
-		m_refFrame.sides[SIDE::RIGHT] = m_refFrame.left() + _size.x;
-		m_refFrame.sides[SIDE::TOP] = m_refFrame.right() + _size.y;
-		m_anchorComponent->resetAnchors();
-	}
-
-	void Button::setPosition(const Coord2& _position)
-	{
-		m_refFrame.sides[SIDE::LEFT]   = _position.x;
-		m_refFrame.sides[SIDE::BOTTOM] = _position.y;
-		m_refFrame.sides[SIDE::RIGHT]  = _position.x + m_refFrame.width();
-		m_refFrame.sides[SIDE::TOP]    = _position.y + m_refFrame.height();
-		m_anchorComponent->resetAnchors();
-	}
-
 	void Button::setText(const char* _text)
 	{
 		m_text = _text;
@@ -43,13 +27,13 @@ namespace ca { namespace gui {
 	void Button::setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, bool _smooth, Coord _padding)
 	{
 		m_iconPos = _side;
-		m_iconTexture = GUIManager::getRenderBackend()->getTexture(_textureFile, _smooth);
+		m_iconTexture = GUIManager::renderBackend().getTexture(_textureFile, _smooth);
 		m_iconSize = _size;
 	}
 
 	void Button::setBackgroundTexture(const char* _textureFile, bool _smooth)
 	{
-		m_backgroundTexture = GUIManager::getRenderBackend()->getTexture(_textureFile, _smooth);
+		m_backgroundTexture = GUIManager::renderBackend().getTexture(_textureFile, _smooth);
 	}
 
 	void Button::draw()
@@ -63,9 +47,9 @@ namespace ca { namespace gui {
 		// Background
 		bool mouseOver = GUIManager::hasFocus(this);
 		if(m_backgroundTexture)
-			GUIManager::getTheme()->drawImage(m_refFrame, m_backgroundTexture);
+			GUIManager::theme().drawImage(m_refFrame, m_backgroundTexture);
 		else
-			GUIManager::getTheme()->drawButton(m_refFrame, mouseOver);
+			GUIManager::theme().drawButton(m_refFrame, mouseOver);
 
 		// Compute text and icon positions
 		Coord2 iconPos, textPos;
@@ -102,11 +86,11 @@ namespace ca { namespace gui {
 			rect.sides[SIDE::RIGHT]  = iconPos.x + m_iconSize.x * downScale * 0.5f;
 			rect.sides[SIDE::BOTTOM] = iconPos.y - m_iconSize.y * downScale * 0.5f;
 			rect.sides[SIDE::TOP]    = iconPos.y + m_iconSize.y * downScale * 0.5f;
-			GUIManager::getTheme()->drawImage(rect, m_iconTexture);
+			GUIManager::theme().drawImage(rect, m_iconTexture);
 		}
 
 		// Text
-		GUIManager::getTheme()->drawText(textPos, m_text.c_str(), mouseOver);
+		GUIManager::theme().drawText(textPos, m_text.c_str(), mouseOver);
 	}
 
 	/*bool Button::processInput(const MouseState& _mouseState)

@@ -25,9 +25,9 @@ namespace ca { namespace gui {
 			{
 				// Draw the frame background
 				if(m_texture)
-					GUIManager::getTheme()->drawImage(m_refFrame, m_texture, m_opacity);
+					GUIManager::theme().drawImage(m_refFrame, m_texture, m_opacity);
 				else
-					GUIManager::getTheme()->drawBackgroundArea(m_refFrame, m_opacity);
+					GUIManager::theme().drawBackgroundArea(m_refFrame, m_opacity);
 
 				for(const auto& i : m_passiveChildren)
 					i->draw();
@@ -100,7 +100,7 @@ namespace ca { namespace gui {
 
 	void Frame::setBackground(const char* _imageFile, bool _smooth, float _opacity)
 	{
-		m_texture = GUIManager::getRenderBackend()->getTexture(_imageFile, _smooth);
+		m_texture = GUIManager::renderBackend().getTexture(_imageFile, _smooth);
 		m_opacity = _opacity;
 	}
 

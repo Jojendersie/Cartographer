@@ -18,6 +18,17 @@ namespace ca { namespace gui {
 		Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable, bool _inputReceivable, bool _focusable);
 		virtual ~Widget();
 
+		/// Set the button width and heigh (resets anchoring)
+		void setSize(const Coord2& _size);
+		Coord2 getSize() const;
+
+		/// Set the position (resets anchoring)
+		void setPosition(const Coord2& _position);
+		Coord2 getPosition() const;
+
+		/// Set both: position and size (resets anchoring)
+		void setExtent(const Coord2& _position, const Coord2& _size);
+
 		/// Draw the element now
 		virtual void draw() = 0;
 

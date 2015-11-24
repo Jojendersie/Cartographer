@@ -8,7 +8,7 @@
 namespace ca { namespace gui {
 	std::unique_ptr<GUIManager> g_manager;
 
-	void GUIManager::init(std::shared_ptr<class IRenderBackend> _renderer, std::shared_ptr<class ITheme> _theme)
+	void GUIManager::init(std::shared_ptr<class IRenderBackend> _renderer, std::shared_ptr<class ITheme> _theme, int _width, int _height)
 	{
 		g_manager.reset(new GUIManager);
 		if(!_renderer)
@@ -20,6 +20,7 @@ namespace ca { namespace gui {
 		// Use an internal light-weight frame as container
 		g_manager->m_topFrame = std::make_shared<Frame>(false, false, false, false);
 		g_manager->m_topFrame->setBackgroundOpacity(0.0f);
+		g_manager->m_topFrame->setExtent(ei::Vec2(0.0f), ei::Vec2((float)_width, (float)_height));
 		// Push some (infinite) initial top-level clip region
 		g_manager->m_clipRegionStack.push(ei::IVec4(0x80000000, 0x7fffffff, 0x80000000, 0x7fffffff));
 	}
@@ -116,24 +117,24 @@ namespace ca { namespace gui {
 	{
 	}
 
-	IRenderBackend* GUIManager::getRenderBackend()
+	IRenderBackend& GUIManager::renderBackend()
 	{
-		return nullptr;
+		return *g_manager->m_renderer;
 	}
 
-	ITheme* GUIManager::getTheme()
+	ITheme& GUIManager::theme()
 	{
-		return nullptr;
+		return *g_manager->m_theme;
 	}
 
 	int GUIManager::getWidth()
 	{
-		return 0;
+		return (int)g_manager->m_topFrame->getSize().x;
 	}
 
 	int GUIManager::getHeight()
 	{
-		return 0;
+		return (int)g_manager->m_topFrame->getSize().y;
 	}
 
 }} // namespace ca::gui
