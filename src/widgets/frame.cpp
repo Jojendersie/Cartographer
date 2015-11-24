@@ -98,9 +98,9 @@ namespace ca { namespace gui {
 		return m_activeChildren[0].get() == _child && _child->isFocusable();
 	}
 
-	void Frame::setBackground(const char* _imageFile, float _opacity)
+	void Frame::setBackground(const char* _imageFile, bool _smooth, float _opacity)
 	{
-		m_texture = GUIManager::getRenderBackend()->getTexture(_imageFile);
+		m_texture = GUIManager::getRenderBackend()->getTexture(_imageFile, _smooth);
 		m_opacity = _opacity;
 	}
 

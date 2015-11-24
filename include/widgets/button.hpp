@@ -32,12 +32,14 @@ namespace ca { namespace gui {
 		///		if there is no text the icon is always centered.
 		/// \param [in] _size Target size of the icon. If necessary the icon size is reduced
 		///		automatically.
+		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
 		/// \param [in] _padding Distance of the icon to the border and to the text.
-		void setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, Coord _padding = 2.0f);
+		void setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, bool _smooth = true, Coord _padding = 2.0f);
 
 		/// Set a custom look instead of the themes button rendering.
 		/// \param [in] _textureFile Name of an image file.
-		void setBackgroundTexture(const char* _textureFile);
+		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
+		void setBackgroundTexture(const char* _textureFile, bool _smooth = true);
 
 		/// Forward to Clickable::processInput
 		//virtual bool processInput(const struct MouseState& _mouseState) override;

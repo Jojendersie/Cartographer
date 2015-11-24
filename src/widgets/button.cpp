@@ -40,16 +40,16 @@ namespace ca { namespace gui {
 		m_textSize;// TODO
 	}
 
-	void Button::setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, Coord _padding)
+	void Button::setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, bool _smooth, Coord _padding)
 	{
 		m_iconPos = _side;
-		m_iconTexture = GUIManager::getRenderBackend()->getTexture(_textureFile);
+		m_iconTexture = GUIManager::getRenderBackend()->getTexture(_textureFile, _smooth);
 		m_iconSize = _size;
 	}
 
-	void Button::setBackgroundTexture(const char* _textureFile)
+	void Button::setBackgroundTexture(const char* _textureFile, bool _smooth)
 	{
-		m_backgroundTexture = GUIManager::getRenderBackend()->getTexture(_textureFile);
+		m_backgroundTexture = GUIManager::getRenderBackend()->getTexture(_textureFile, _smooth);
 	}
 
 	void Button::draw()

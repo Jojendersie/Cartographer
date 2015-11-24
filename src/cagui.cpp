@@ -63,7 +63,10 @@ namespace ca { namespace gui {
 		area.z = ei::max(ei::round(_rect.bottom()), top.z);
 		area.w = ei::min(ei::round(_rect.top()), top.w);
 		g_manager->m_clipRegionStack.push(area);
-		return ei::max(0, area.y - area.x) * ei::max(0, area.z - area.w) > 0;
+		bool nonEmpty = ei::max(0, area.y - area.x) * ei::max(0, area.z - area.w) > 0;
+		if(nonEmpty)
+			g_manager->m_renderer->setClippingRegion(area);
+		return nonEmpty;
 	}
 
 	void GUIManager::popClipRegion()
@@ -71,7 +74,7 @@ namespace ca { namespace gui {
 		g_manager->m_clipRegionStack.pop();
 		// Set old clip region (there is at least our initial one)
 		auto& top = g_manager->m_clipRegionStack.top();
-		g_manager->m_renderer->setClippingRegion(top.x, top.y, top.z, top.w);
+//		g_manager->m_renderer->setClippingRegion(top.x, top.y, top.z, top.w);
 	}
 
 	bool GUIManager::processInput(const MouseState& _mouseState)

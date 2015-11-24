@@ -16,7 +16,7 @@ namespace ca { namespace gui {
 	{
 	public:
 		Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable, bool _inputReceivable, bool _focusable);
-		~Widget();
+		virtual ~Widget();
 
 		/// Draw the element now
 		virtual void draw() = 0;

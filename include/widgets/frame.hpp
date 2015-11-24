@@ -28,9 +28,10 @@ namespace ca { namespace gui {
 
 		/// Set an image as background. It is streched automatically.
 		/// \param [in] _imageFile Name of a texture file loadable by the render-backend.
+		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
 		/// \param [in] _opacity An [0,1] transparents value (alpha). The value is multiplied with
 		///		the image during rendering. The default alpha is opaque (1).
-		void setBackground(const char* _imageFile, float _opacity = 1.0f);
+		void setBackground(const char* _imageFile, bool _smooth = true, float _opacity = 1.0f);
 		// TODO: recursive transparency?
 		void setBackgroundOpacity(float _opacity);
 	protected:
