@@ -64,6 +64,9 @@ namespace ca { namespace cc {
 
 		/// Find the location of a uniform variable
 		int getUniform(const char* _uniformName);
+
+		/// Get OpenGL handle
+		uint getID() const { return m_programID; }
 	private:
 		const Shader* m_shaders[5]; 	///< List of attached shaders
 		int m_numShaders;

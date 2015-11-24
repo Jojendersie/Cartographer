@@ -45,6 +45,9 @@ namespace ca { namespace cc {
 		/// Get the bindless texture handle.
 		uint64 getGPUHandle() const { return m_bindlessHandle; }
 
+		/// Get the OpenGL handle
+		uint getID() const { return m_textureID; }
+
 		/// Change the sampler.
 		void setSampler(const Sampler& _sampler);
 	private:
