@@ -1,6 +1,5 @@
 #pragma once
 
-#include <gl/glew.h>
 #include <ei/elementarytypes.hpp>
 
 namespace ca { namespace cc {
@@ -17,10 +16,10 @@ namespace ca { namespace cc {
 
 		enum class Border
 		{
-			REPEAT = GL_REPEAT,
-			MIRROR = GL_MIRRORED_REPEAT,
-			CLAMP = GL_CLAMP_TO_EDGE,
-			BORDER = GL_CLAMP_TO_BORDER
+			REPEAT = 0x2901,	///< GL_REPEAT
+			MIRROR = 0x8370,	///< GL_MIRRORED_REPEAT
+			CLAMP  = 0x812F,	///< GL_CLAMP_TO_EDGE
+			BORDER = 0x812D,	///< GL_CLAMP_TO_BORDER
 		};
 
 		Sampler(Filter _minFilter, Filter _magFilter, Filter _mipFilter, Border _borderHandling = Border::REPEAT, uint _maxAnisotropy = 1);

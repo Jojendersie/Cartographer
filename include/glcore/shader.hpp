@@ -1,6 +1,5 @@
 #pragma once
 
-#include <gl/glew.h>
 #include <ei/elementarytypes.hpp>
 #include "core/manager.hpp"
 
@@ -8,12 +7,12 @@ namespace ca { namespace cc {
 	
 	enum class ShaderType
 	{
-		VERTEX			= GL_VERTEX_SHADER,
-		TESS_CONTROLL   = GL_TESS_CONTROL_SHADER,
-		TESS_EVALUATION = GL_TESS_EVALUATION_SHADER,
-		GEOMETRY		= GL_GEOMETRY_SHADER,
-		FRAGMENT		= GL_FRAGMENT_SHADER,
-		COMPUTE 		= GL_COMPUTE_SHADER
+		VERTEX			= 0x8B31,	///< GL_VERTEX_SHADER
+		TESS_CONTROLL   = 0x8E88,	///< GL_TESS_CONTROL_SHADER
+		TESS_EVALUATION = 0x8E87,	///< GL_TESS_EVALUATION_SHADER
+		GEOMETRY		= 0x8DD9,	///< GL_GEOMETRY_SHADER
+		FRAGMENT		= 0x8B30,	///< GL_FRAGMENT_SHADER
+		COMPUTE 		= 0x91B9,	///< GL_COMPUTE_SHADER
 	};
 
 	/// Base class to load single shader files.

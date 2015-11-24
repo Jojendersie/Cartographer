@@ -1,65 +1,63 @@
 #pragma once
 
-#include <gl/glew.h>
-
 namespace ca { namespace cc {
 
 	enum class BlendOp
 	{
-		ADD = GL_FUNC_ADD,
-		SUBTRACT = GL_FUNC_SUBTRACT,
-		REVERSE_SUBTRACT = GL_FUNC_REVERSE_SUBTRACT,
-		MIN = GL_MIN,
-		MAX = GL_MAX
+		ADD = 0x8006,				///< GL_FUNC_ADD
+		SUBTRACT = 0x800A,			///< GL_FUNC_SUBTRACT
+		REVERSE_SUBTRACT = 0x800B,	///< GL_FUNC_REVERSE_SUBTRACT
+		MIN = 0x8007,				///< GL_MIN
+		MAX = 0x8008,				///< GL_MAX
 	};
 
 	enum class BlendFactor {
-		ZERO = GL_ZERO,
-		ONE = GL_ONE,
-		SRC_ALPHA = GL_SRC_ALPHA,
-		INV_SRC_ALPHA = GL_ONE_MINUS_SRC_ALPHA,
-		DST_ALPHA = GL_DST_ALPHA,
-		INV_DST_ALPHA = GL_ONE_MINUS_DST_ALPHA,
-		SRC_COLOR = GL_SRC_COLOR,
-		INV_SRC_COLOR = GL_ONE_MINUS_SRC_COLOR,
-		DST_COLOR = GL_DST_COLOR,
-		INV_DST_COLOR = GL_ONE_MINUS_DST_COLOR,
+		ZERO = 0,					///< GL_ZERO
+		ONE = 1,					///< GL_ONE
+		SRC_ALPHA = 0x0302,			///< GL_SRC_ALPHA
+		INV_SRC_ALPHA = 0x0303,		///< GL_ONE_MINUS_SRC_ALPHA
+		DST_ALPHA = 0x0304,			///< GL_DST_ALPHA
+		INV_DST_ALPHA = 0x0305,		///< GL_ONE_MINUS_DST_ALPHA
+		SRC_COLOR = 0x0300,			///< GL_SRC_COLOR
+		INV_SRC_COLOR = 0x0301,		///< GL_ONE_MINUS_SRC_COLOR
+		DST_COLOR = 0x0306,			///< GL_DST_COLOR
+		INV_DST_COLOR = 0x0307,		///< GL_ONE_MINUS_DST_COLOR,
 		// TODO Color
 	};
 
 	enum class CullMode
 	{
-		FRONT = GL_FRONT,
-		BACK = GL_BACK,
+		FRONT = 0x0404,			///< GL_FRONT
+		BACK = 0x0405,			///< GL_BACK
 		NONE
 	};
 
 	enum class FillMode
 	{
-		SOLID = GL_FILL,
-		WIREFRAME = GL_LINE
+		SOLID = 0x1B02,			///< GL_FILL
+		WIREFRAME = 0x1B01,		///< GL_LINE
 	};
 
 	enum struct ComparisonFunc {
-		NEVER = GL_NEVER,		///< Fail always
-		LESS = GL_LESS,			///< Comparison function less '<'
-		EQUAL = GL_EQUAL,		///< Comparison function equal '=='
-		LEQUAL = GL_LEQUAL,		///< Comparison function less equal '<='
-		GREATER = GL_GREATER,	///< Comparison function greater '>'
-		GEQUAL = GL_GEQUAL,		///< Comparison function greater equal '>='
-		NOTEQUAL = GL_NOTEQUAL,	///< Comparison function not equal '!='
-		ALWAYS = GL_ALWAYS		///< Disables z-Testing / stencil test
+		NEVER = 0x0200,			///< GL_NEVER Fail always
+		LESS = 0x0201,			///< GL_LESS Comparison function less '<'
+		EQUAL = 0x0202,			///< GL_EQUAL Comparison function equal '=='
+		LEQUAL = 0x0203,		///< GL_LEQUAL Comparison function less equal '<='
+		GREATER = 0x0204,		///< GL_GREATER Comparison function greater '>'
+		GEQUAL = 0x0206,		///< GL_GEQUAL Comparison function greater equal '>='
+		NOTEQUAL = 0x0205,		///< GL_NOTEQUAL Comparison function not equal '!='
+		ALWAYS = 0x0207			///< GL_ALWAYS Disables z-Testing / stencil test
 	};
 
 	enum struct StencilOp {
-		KEEP = GL_KEEP,
-		ZERO = GL_ZERO,
-		REPLACE = GL_REPLACE,
-		INC_WARP = GL_INCR_WRAP,
-		DEC_WARP = GL_DECR_WRAP,
-		INC_SAT = GL_INCR,
-		DEC_SAT = GL_DECR,
-		INVERT = GL_INVERT,
+		KEEP = 0x1E00,			///< GL_KEEP
+		ZERO = 0,				///< GL_ZERO
+		REPLACE = 0x1E01,		///< GL_REPLACE
+		INC_WARP = 0x8507,		///< GL_INCR_WRAP
+		DEC_WARP = 0x8508,		///< GL_DECR_WRAP
+		INC_SAT = 0x1E02,		///< GL_INCR
+		DEC_SAT = 0x1E03,		///< GL_DECR
+		INVERT = 0x150A,		///< GL_INVERT
 	};
 
 	// OpenGL state machine.

@@ -1,5 +1,6 @@
 #include "glcore/opengl.hpp"
 #include "glcore/device.hpp"
+#include <gl/glew.h>
 
 namespace ca { namespace cc {
 

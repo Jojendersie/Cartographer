@@ -1,22 +1,20 @@
 #pragma once
 
-#include <gl/glew.h>
-
 namespace ca { namespace cc {
 
 	enum struct PrimitiveFormat
 	{
-		FLOAT = GL_FLOAT,
-		R11G11B10F = GL_UNSIGNED_INT_10F_11F_11F_REV,
-		INT8 = GL_BYTE,
-		UINT8 = GL_UNSIGNED_BYTE,
-		INT16 = GL_SHORT,
-		UINT16 = GL_UNSIGNED_SHORT,
-		INT32 = GL_INT,
-		UINT32 = GL_UNSIGNED_INT,
-		INTR10G10B10A2 = GL_INT_2_10_10_10_REV,
-		UINTR10G10B10A2 = GL_UNSIGNED_INT_2_10_10_10_REV,
-		HALF = GL_HALF_FLOAT
+		FLOAT = 0x1406,				///< GL_FLOAT
+		R11G11B10F = 0x8C3B,		///< GL_UNSIGNED_INT_10F_11F_11F_REV
+		INT8 = 0x1400,				///< GL_BYTE
+		UINT8 = 0x1401,				///< GL_UNSIGNED_BYTE
+		INT16 = 0x1402,				///< GL_SHORT
+		UINT16 = 0x1403,			///< GL_UNSIGNED_SHORT
+		INT32 = 0x1404,				///< GL_INT
+		UINT32 = 0x1405,			///< GL_UNSIGNED_INT
+		INTR10G10B10A2 = 0x8D9F,	///< GL_INT_2_10_10_10_REV
+		UINTR10G10B10A2 = 0x8368,	///< GL_UNSIGNED_INT_2_10_10_10_REV
+		HALF = 0x140B,				///< GL_HALF_FLOAT
 	};
 
 	/// Check if glVertexAttribIPointer must be used
@@ -37,9 +35,9 @@ namespace ca { namespace cc {
 
 	enum struct GLPrimitiveType
 	{
-		POINTS = GL_POINTS,
-		LINES = GL_LINES,
-		TRIANGLES = GL_TRIANGLES,
+		POINTS = 0x0000,	///< GL_POINTS
+		LINES = 0x0001,		///< GL_LINES
+		TRIANGLES = 0x0004,	///< GL_TRIANGLES
 	};
 
 }} // namespace ca::cc

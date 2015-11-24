@@ -3,7 +3,6 @@
 #include "core/error.hpp"
 #include "core/scopedptr.hpp"
 #include "glcore/device.hpp"
-#include "glcore/opengl.hpp"
 #include "glcore/shader.hpp"
 #include "glcore/sampler.hpp"
 #include "glcore/texture.hpp"
