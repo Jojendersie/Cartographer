@@ -36,11 +36,10 @@ void prepareShader(GLFWwindow* _window)
 	s_shader.attach( ShaderManager::get("shader/font.frag", ShaderType::FRAGMENT) );
 	s_shader.link();
 
-	s_shader.use();
 	int w, h;
 	glfwGetFramebufferSize(_window, &w, &h);
 	Mat4x4 viewProj = ei::orthographicGL(0.0f, (float)w, 0.0f, (float)h, 0.0f, 1.0f);
-	glCall(glUniformMatrix4fv, 0, 1, GL_FALSE, (GLfloat*)&viewProj);
+	s_shader.setUniform(0, viewProj);
 }
 
 void runMainLoop(GLFWwindow* _window)

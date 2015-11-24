@@ -92,7 +92,7 @@ void runMainLoop(GLFWwindow* _window)
 		s_texture->bind(0);
 		Mat4x4 viewProj = ei::perspectiveGL(PI/4, getCurrentAspectRatio(), 1.1f, 1000.0f)
 			* ei::camera(rotationY(time / 10.0f) * Vec3(0.0f, 100.0f, -220.0f), Vec3(0.0f, -50.0f, 0.0f));
-		glCall(glUniformMatrix4fv, 0, 1, GL_FALSE, (GLfloat*)&viewProj);
+		s_shader.setUniform(0, viewProj);
 
 		s_renderer->draw();
 		

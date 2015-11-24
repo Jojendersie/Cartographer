@@ -114,9 +114,74 @@ namespace ca { namespace cc {
 		}
 	}
 
-	int Program::getUniform(const char* _uniformName)
+	int Program::getUniformLoc(const char* _uniformName)
 	{
 		return glCall(glGetUniformLocation, m_programID, _uniformName);
+	}
+
+	void Program::setUniform(int _location, float _value)
+	{
+		glCall(glProgramUniform1f, m_programID, _location, _value);
+	}
+
+	void Program::setUniform(int _location, const ei::Vec2& _value)
+	{
+		glCall(glProgramUniform2fv, m_programID, _location, 1, (const float*)&_value);
+	}
+
+	void Program::setUniform(int _location, const ei::Vec3& _value)
+	{
+		glCall(glProgramUniform3fv, m_programID, _location, 1, (const float*)&_value);
+	}
+
+	void Program::setUniform(int _location, const ei::Vec4& _value)
+	{
+		glCall(glProgramUniform4fv, m_programID, _location, 1, (const float*)&_value);
+	}
+
+	void Program::setUniform(int _location, const ei::Mat4x4& _value)
+	{
+		glCall(glProgramUniformMatrix4fv, m_programID, _location, 1, GL_FALSE, (const float*)&_value);
+	}
+
+	void Program::setUniform(int _location, int _value)
+	{
+		glCall(glProgramUniform1i, m_programID, _location, _value);
+	}
+
+	void Program::setUniform(int _location, const ei::IVec2 & _value)
+	{
+		glCall(glProgramUniform2iv, m_programID, _location, 1, (const GLint*)&_value);
+	}
+
+	void Program::setUniform(int _location, const ei::IVec3 & _value)
+	{
+		glCall(glProgramUniform3iv, m_programID, _location, 1, (const GLint*)&_value);
+	}
+
+	void Program::setUniform(int _location, const ei::IVec4 & _value)
+	{
+		glCall(glProgramUniform4iv, m_programID, _location, 1, (const GLint*)&_value);
+	}
+
+	void Program::setUniform(int _location, uint _value)
+	{
+		glCall(glProgramUniform1ui, m_programID, _location, _value);
+	}
+
+	void Program::setUniform(int _location, const ei::UVec2 & _value)
+	{
+		glCall(glProgramUniform2uiv, m_programID, _location, 1, (const GLuint*)&_value);
+	}
+
+	void Program::setUniform(int _location, const ei::UVec3 & _value)
+	{
+		glCall(glProgramUniform3uiv, m_programID, _location, 1, (const GLuint*)&_value);
+	}
+
+	void Program::setUniform(int _location, const ei::UVec4 & _value)
+	{
+		glCall(glProgramUniform4uiv, m_programID, _location, 1, (const GLuint*)&_value);
 	}
 	
 }} // namespace ca::cc

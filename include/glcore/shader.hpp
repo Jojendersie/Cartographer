@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ei/elementarytypes.hpp>
+#include <ei/vector.hpp>
 #include "core/manager.hpp"
 
 namespace ca { namespace cc {
@@ -62,7 +62,21 @@ namespace ca { namespace cc {
 		/// TODO: reflection and uniform stuff.
 
 		/// Find the location of a uniform variable
-		int getUniform(const char* _uniformName);
+		int getUniformLoc(const char* _uniformName);
+
+		void setUniform(int _location, float _value);
+		void setUniform(int _location, const ei::Vec2& _value);
+		void setUniform(int _location, const ei::Vec3& _value);
+		void setUniform(int _location, const ei::Vec4& _value);
+		void setUniform(int _location, const ei::Mat4x4& _value);
+		void setUniform(int _location, int _value);
+		void setUniform(int _location, const ei::IVec2& _value);
+		void setUniform(int _location, const ei::IVec3& _value);
+		void setUniform(int _location, const ei::IVec4& _value);
+		void setUniform(int _location, uint _value);
+		void setUniform(int _location, const ei::UVec2& _value);
+		void setUniform(int _location, const ei::UVec3& _value);
+		void setUniform(int _location, const ei::UVec4& _value);
 
 		/// Get OpenGL handle
 		uint getID() const { return m_programID; }
