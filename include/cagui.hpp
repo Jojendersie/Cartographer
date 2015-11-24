@@ -13,3 +13,5 @@
 #include "widgets/treelist.hpp"
 
 #include "backend/charcoal.hpp"
+
+#include "rendering/flattheme.hpp"

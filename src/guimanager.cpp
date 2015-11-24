@@ -3,6 +3,7 @@
 #include "cagui.hpp"
 #include "widgets/frame.hpp"
 #include "backend/renderbackend.hpp"
+#include "ca/gui/core/error.hpp"
 
 namespace ca { namespace gui {
 	std::unique_ptr<GUIManager> g_manager;
@@ -11,21 +12,16 @@ namespace ca { namespace gui {
 	{
 		g_manager.reset(new GUIManager);
 		if(!_renderer)
-		{
-			// TODO Error
-			return;
-		}
+			return error("No renderer given for initialization!");
 		if(!_theme)
-		{
-			// TODO Error
-			return;
-		}
+			return error("No theme given for initialization!");
 		g_manager->m_renderer = _renderer;
 		g_manager->m_theme = _theme;
 		// Use an internal light-weight frame as container
 		g_manager->m_topFrame = std::make_shared<Frame>(false, false, false, false);
 		g_manager->m_topFrame->setBackgroundOpacity(0.0f);
-		// TODO: push some initial top-level clip region
+		// Push some (infinite) initial top-level clip region
+		g_manager->m_clipRegionStack.push(ei::IVec4(0x80000000, 0x7fffffff, 0x80000000, 0x7fffffff));
 	}
 
 	void GUIManager::exit()
@@ -39,16 +35,22 @@ namespace ca { namespace gui {
 
 	void GUIManager::add(WidgetPtr _widget)
 	{
+		if(!g_manager)
+			return error("Uninitialized GUIManager! Cannot add components!");
 		g_manager->m_topFrame->add(_widget);
 	}
 
 	void GUIManager::remove(WidgetPtr _widget)
 	{
+		if(!g_manager)
+			return error("Uninitialized GUIManager! Cannot remove components!");
 		g_manager->m_topFrame->remove(_widget);
 	}
 
 	void GUIManager::draw()
 	{
+		if(!g_manager)
+			return error("Uninitialized GUIManager! Cannot draw a GUI!");
 		g_manager->m_topFrame->draw();
 		// TODO: Assert g_manager->m_clipRegionStack.size() == 1
 	}
@@ -79,6 +81,10 @@ namespace ca { namespace gui {
 
 	bool GUIManager::processInput(const MouseState& _mouseState)
 	{
+		if(!g_manager) {
+			error("Uninitialized GUIManager! Cannot process input!");
+			return false;
+		}
 		return g_manager->m_topFrame->processInput( _mouseState );
 	}
 

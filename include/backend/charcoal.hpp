@@ -8,7 +8,7 @@
 namespace ca { namespace gui {
 
 	/// Backend implementation that uses the Cartographer-Charcoal renderer.
-	class CharcoalBackend : IRenderBackend
+	class CharcoalBackend : public IRenderBackend
 	{
 	public:
 		CharcoalBackend();
