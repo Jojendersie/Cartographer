@@ -50,17 +50,17 @@ int SpriteRenderer::defSprite(float _alignX, float _alignY,
 	int spriteID = (int)m_sprites.size();
 	SpriteDef newSprite;
 
-	float w = (float)_textureHandle->getWidth();
-	float h = (float)_textureHandle->getHeight();
+	float w = _textureHandle ? (float)_textureHandle->getWidth() : 1.0f;
+	float h = _textureHandle ? (float)_textureHandle->getHeight() : 1.0f;
 
-	if(_texWidth == -1) _texWidth = _textureHandle->getWidth();
-	if(_texHeight == -1) _texHeight = _textureHandle->getHeight();
+	if(_texWidth == -1) _texWidth = _textureHandle ? _textureHandle->getWidth() : 1;
+	if(_texHeight == -1) _texHeight = _textureHandle ? _textureHandle->getHeight() : 1;
 
 	newSprite.sprite.texCoords.x = uint16((_texX + 0.0f) / w * 65535);
 	newSprite.sprite.texCoords.w = uint16((_texY + 0.0f) / h * 65535);
 	newSprite.sprite.texCoords.z = uint16((_texX - 0.0f + _texWidth) / w * 65535);
 	newSprite.sprite.texCoords.y = uint16((_texY - 0.0f + _texHeight) / h * 65535);
-	newSprite.sprite.texture = _textureHandle->getGPUHandle();
+	newSprite.sprite.texture = _textureHandle ? _textureHandle->getGPUHandle() : 0;
 	newSprite.sprite.numTiles.x = _numX;
 	newSprite.sprite.numTiles.y = _numY;
 	newSprite.offset.x = -_texWidth * _alignX;
