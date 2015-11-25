@@ -21,6 +21,18 @@ static void cursorPosFunc(GLFWwindow*, double _x, double _y)
 	g_mouseState.position = newPos;
 }
 
+void mouseButtonFunc(GLFWwindow* _window, int _button, int _action, int _mods)
+{
+	if(_button < 5)
+	{
+		if(_action == GLFW_PRESS)
+			g_mouseState.buttons[_button] = MouseState::DOWN;
+		else if(_action == GLFW_RELEASE)
+			g_mouseState.buttons[_button] = MouseState::UP;
+	}
+}
+
+
 void createGUI(GLFWwindow* _window)
 {
 	// Create an instance for all themes
@@ -55,7 +67,8 @@ void createGUI(GLFWwindow* _window)
 		b0->setExtent(f0->getPosition() + Vec2(10.0f, 10.0f + i*25.0f), Vec2(80.0f, 20.0f));
 		std::string name = "Test " + std::to_string(i);
 		b0->setText(name.c_str());
-		b0->addOnButtonChangeFunc([i,&name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " clicked.\n"; }, MouseState::CLICKED);
+		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " clicked.\n"; }, MouseState::CLICKED);
+		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " double clicked.\n"; }, MouseState::DBL_CLICKED);
 		f0->add(b0);
 	}
 }
@@ -66,11 +79,20 @@ void runMainLoop(GLFWwindow* _window)
 	while(!glfwWindowShouldClose(_window))
 	{
 		float deltaTime = (float)clock.deltaTime();
+
+		// Change the mouse button input states from last frame
+		for(int i = 0; i < 5; ++i)
+		{
+			if(g_mouseState.buttons[i] & MouseState::DOWN)
+				g_mouseState.buttons[i] = MouseState::PRESSED;
+			if(g_mouseState.buttons[i] & MouseState::UP)
+				g_mouseState.buttons[i] = MouseState::RELEASED;
+		}
 		glfwPollEvents();
 		ca::gui::GUIManager::processInput(g_mouseState);
+
 		ca::cc::glCall(glClearColor, 0.01f, 0.01f, 0.01f, 1.0f);
 		ca::cc::glCall(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		ca::gui::GUIManager::draw();
 
 		//std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -84,6 +106,7 @@ int main()
 	if(!window) return 1;
 
 	glfwSetCursorPosCallback(window, cursorPosFunc);
+	glfwSetMouseButtonCallback(window, mouseButtonFunc);
 
 	createGUI(window);
 	runMainLoop(window);

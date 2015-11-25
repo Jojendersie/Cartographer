@@ -28,6 +28,8 @@ namespace ca { namespace gui {
 			DOWN = 1,			///< Button was clicked in the current frame
 			PRESSED = 4,		///< Button is still pressed (was clicked in the past)
 			UP = 2,				///< Button was released in the current frame
+			// The following meta events are handled by the gui itself.
+			// There is no need for a backend to set these values.
 			CLICKED = 8,		///< Metastate (UP and DOWN where done on the same component)
 			DBL_CLICKED = 16,	///< Metastate Two CLICK events occured in a short period
 		};
