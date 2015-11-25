@@ -4,6 +4,8 @@
 
 namespace ca { namespace gui {
 
+	const Widget* Widget::m_mouseFocus = nullptr;
+
 	Widget::Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable, bool _inputReceivable, bool _focusable) : 
 		m_anchorComponent(nullptr),
 		m_clickComponent(nullptr),
@@ -71,16 +73,25 @@ namespace ca { namespace gui {
 	bool Widget::processInput(const struct MouseState& _mouseState)
 	{
 		if(m_clickComponent)
-			if(m_clickComponent->processInput(_mouseState))
+			if(m_clickComponent->processInput(_mouseState)) {
+				m_mouseFocus = this;
 				return true;
+			}
 		// Do resize before move, because it adds a little different behavior if the same input
 		// is done close to the border.
 		if(m_resizeComponent)
-			if(m_resizeComponent->processInput(_mouseState))
+			if(m_resizeComponent->processInput(_mouseState)) {
+				m_mouseFocus = this;
 				return true;
+			}
 		if(m_moveComponent)
 			if(m_moveComponent->processInput(_mouseState))
+			{
+				m_mouseFocus = this;
 				return true;
+			}
+		if(m_refFrame.isMouseOver(_mouseState.position))
+			m_mouseFocus = this;
 		return false;
 	}
 

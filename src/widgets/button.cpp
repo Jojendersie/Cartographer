@@ -43,7 +43,7 @@ namespace ca { namespace gui {
 		if(GUIManager::isClipped( m_refFrame )) return;
 
 		// Background
-		bool mouseOver = m_clickComponent->isMouseOver();
+		bool mouseOver = hasMouseFocus();
 		if(m_backgroundTexture)
 			GUIManager::theme().drawImage(m_refFrame, m_backgroundTexture);
 		else

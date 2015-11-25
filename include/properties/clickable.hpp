@@ -40,13 +40,9 @@ namespace ca { namespace gui {
 		///		If nothing is set/the nullptr is given, the own reference frame defines the region.
 		/// \param [in] _delete The region object must be deleted.
 		void setClickRegion(IRegion* _region, bool _delete = true);
-
-		/// Check if a cursor position was on the click region last time (uses IRegion.isMouseOver() in processInput);
-		bool isMouseOver() const { return m_mouseOver; }
 	protected:
 		IRegion* m_clickRegion;
 		bool m_deleteRegion;
-		bool m_mouseOver;
 		std::vector<OnButtonChange> m_changeFuncs;
 		std::vector<MouseState::ButtonState> m_statesMasks;
 		bool m_buttonDownReceived[5];	// Detect for each button, if it was pressed on this element (for CLICK events)

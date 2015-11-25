@@ -64,11 +64,14 @@ namespace ca { namespace gui {
 		/// contained element.
 		virtual bool isChildFocused(const Widget* _child) const { return false; }
 
+		/// Check if this widget consumed the last mouse input
+		bool hasMouseFocus() const { return m_mouseFocus == this; }
 	protected:
 		const bool m_inputReceivable;	///< The element can receive input.
 		bool m_enabled;		///< The element can currently receive input (not disabled).
 		bool m_focusable;	///< Can this object have the focus?
 		bool m_visible;		///< Draw the element if visible and mask input otherwise.
+		static const Widget* m_mouseFocus;	///< Shared register for the component which has the mouse focus last time
 
 		RefFrame m_refFrame;
 		// List of optional components (can be nullptr)
