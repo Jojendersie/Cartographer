@@ -36,6 +36,8 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		/// \return true if the new set region is non-empty (due to recursive restrictions).
 		static bool pushClipRegion(const RefFrame& _rect);
 		static void popClipRegion();
+		/// Check if a rectangle is entirely clipped by the current region
+		static bool isClipped(const RefFrame& _rect);
 
 		/// Process mouse input.
 		/// \return true if the input was consumed by any element in the GUI.

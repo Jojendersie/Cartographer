@@ -16,11 +16,11 @@ void createGUI(GLFWwindow* _window)
 	FlatProperties themeProps;
 	themeProps.backgroundColor = Vec4(0.05f, 0.05f, 0.05f, 1.0f);
 	themeProps.foregroundColor = Vec4(0.25f, 0.25f, 0.25f, 1.0f);
-	themeProps.textColor = Vec4(0.9f, 0.9f, 0.75f, 1.0f);
+	themeProps.textColor = Vec4(0.8f, 0.8f, 0.7f, 1.0f);
 	themeProps.textBackColor = Vec4(0.01f, 0.01f, 0.01f, 1.0f);
 	themeProps.hoverBackgroundColor = Vec4(0.15f, 0.15f, 0.15f, 1.0f);
 	themeProps.hoverTextColor = Vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	themeProps.textSize = 12.0f;
+	themeProps.textSize = 14.0f;
 	g_flatTheme = std::make_shared<FlatTheme>(themeProps);
 
 	// Initialize GUI system itself

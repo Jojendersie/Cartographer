@@ -81,6 +81,15 @@ namespace ca { namespace gui {
 		auto& top = g_manager->m_clipRegionStack.top();
 	}
 
+	bool GUIManager::isClipped(const RefFrame& _rect)
+	{
+		auto& top = g_manager->m_clipRegionStack.top();
+		return ei::round(_rect.left()) >= top.y
+			|| ei::round(_rect.right()) <= top.x
+			|| ei::round(_rect.bottom()) >= top.w
+			|| ei::round(_rect.top()) <= top.z;
+	}
+
 	bool GUIManager::processInput(const MouseState& _mouseState)
 	{
 		if(!g_manager) {

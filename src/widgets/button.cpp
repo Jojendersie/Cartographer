@@ -40,10 +40,7 @@ namespace ca { namespace gui {
 	void Button::draw()
 	{
 		if(!isVisible()) return;
-
-		// Set clip region to avoid overdraw (which should be impossible due to downsize?)
-		bool vis = GUIManager::pushClipRegion( m_refFrame );
-		if(!vis) { GUIManager::popClipRegion(); return; }
+		if(GUIManager::isClipped( m_refFrame )) return;
 
 		// Background
 		bool mouseOver = GUIManager::hasFocus(this);
