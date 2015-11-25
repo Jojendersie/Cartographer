@@ -77,20 +77,23 @@ namespace ca { namespace gui {
 		// Component disabled?
 		if(!isEnabled() || !isVisible()) return false;
 		// Only use mouse input if the mouse is on this component
-		if(!m_refFrame.isMouseOver(_mouseState.position)) return false;
-		// Forward to subelements
-		for(size_t i = 0; i < m_activeChildren.size(); ++i)
+		if(m_refFrame.isMouseOver(_mouseState.position))
 		{
-			WidgetPtr& e = m_activeChildren[i];
-			if(e->isEnabled() && e->processInput(_mouseState))
+			// Forward to subelements
+			for(size_t i = 0; i < m_activeChildren.size(); ++i)
 			{
-				// The one who took the input gets the focus
-				if(e->isFocusable()) focusOn(i);
-				return true;
+				WidgetPtr& e = m_activeChildren[i];
+				if(e->isEnabled() && e->processInput(_mouseState))
+				{
+					// The one who took the input gets the focus
+					if(e->isFocusable()) focusOn(i);
+					return true;
+				}
 			}
 		}
 		// Input was not consumed by an element.
-		// If there are properties try them.
+		// If there are properties try them. Since move and resize require input handling outside
+		// the reference frame this is not inside the isMouseOver-block.
 		return Widget::processInput(_mouseState);
 	}
 

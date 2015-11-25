@@ -88,6 +88,7 @@ void runMainLoop(GLFWwindow* _window)
 			if(g_mouseState.buttons[i] & MouseState::UP)
 				g_mouseState.buttons[i] = MouseState::RELEASED;
 		}
+		g_mouseState.deltaPos = Coord2(0.0f);
 		glfwPollEvents();
 		ca::gui::GUIManager::processInput(g_mouseState);
 
