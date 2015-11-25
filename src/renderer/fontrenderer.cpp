@@ -106,14 +106,6 @@ namespace ca { namespace cc {
 		auto charEntry = m_chars.find(c);
 		if(charEntry != m_chars.end())
 			cursor -= charEntry->second.baseX * adX;
-		// Round string position (base line) to pixels for sharper rendering
-		if(_roundToPixel)
-		{
-			cursor -= m_baseLineOffset * adY;
-			cursor.x = roundf(cursor.x);
-			cursor.y = roundf(cursor.y);
-			cursor += m_baseLineOffset * adY;
-		}
 		Vec3 beginCursor = cursor, endCursor = cursor;
 		auto lastC = m_chars.end();
 		for(; c; c = getNext(&_text))
@@ -133,6 +125,12 @@ namespace ca { namespace cc {
 				// Create sprite instance
 				CharacterVertex v;
 				v.position = cursor + charEntry->second.baseX * adX + charEntry->second.baseY * adY;
+				// Round to pixels for sharper rendering (floor gives better results with kerning than roundf)
+				if(_roundToPixel)
+				{
+					v.position.x = floorf(v.position.x);
+					v.position.y = floorf(v.position.y);
+				}
 				v.rotation = _rotation;
 				v.size.x = toHalf(charEntry->second.texSize.x * scale);
 				v.size.y = toHalf(charEntry->second.texSize.y * scale);
@@ -158,7 +156,7 @@ namespace ca { namespace cc {
 		m_dirty = true;
 	}
 
-	ei::Rect2D FontRenderer::getBoundingBox(const ei::Vec3& _position, const char* _text, float _size, float _rotation, float _alignX, float _alignY, bool _roundToPixel)
+	ei::Rect2D FontRenderer::getBoundingBox(const ei::Vec3& _position, const char* _text, float _size, float _rotation, float _alignX, float _alignY)
 	{
 		ei::Rect2D out;
 
@@ -176,14 +174,6 @@ namespace ca { namespace cc {
 		auto charEntry = m_chars.find(c);
 		if(charEntry != m_chars.end())
 			cursor -= charEntry->second.baseX * adX;
-		// Round string position (base line) to pixels for sharper rendering
-		if(_roundToPixel)
-		{
-			cursor -= m_baseLineOffset * adY;
-			cursor.x = roundf(cursor.x);
-			cursor.y = roundf(cursor.y);
-			cursor += m_baseLineOffset * adY;
-		}
 		out.min = cursor, out.max = cursor;
 		auto lastC = m_chars.end();
 		for(; c; c = getNext(&_text))
