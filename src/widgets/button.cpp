@@ -12,7 +12,8 @@ namespace ca { namespace gui {
 		m_backgroundTexture(0),
 		m_iconTexture(0),
 		m_textSize(0.0f),
-		m_iconSize(0.0f)
+		m_iconSize(0.0f),
+		m_iconPos(SIDE::LEFT)
 	{
 		m_enabled = true;
 		m_clickComponent->setClickRegion(&m_refFrame, false);
@@ -54,7 +55,12 @@ namespace ca { namespace gui {
 		// Compute text and icon positions
 		Coord2 iconPos, textPos;
 		float downScale = 1.0f;
-		if(m_iconPos == SIDE::LEFT || m_iconPos == SIDE::RIGHT)
+		if(!m_iconTexture)
+		{
+			textPos.x = (m_refFrame.left() + m_refFrame.right()) * 0.5f;
+			textPos.y = (m_refFrame.bottom() + m_refFrame.top()) * 0.5f;
+			textPos -= m_textSize * downScale * 0.5f;
+		} else if(m_iconPos == SIDE::LEFT || m_iconPos == SIDE::RIGHT)
 		{
 			float width = m_iconSize.x + m_textSize.x + m_iconPadding * 2.0f;
 			float height = ei::max(m_iconSize.y, m_textSize.y);

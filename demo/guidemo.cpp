@@ -27,12 +27,12 @@ void createGUI(GLFWwindow* _window)
 	int w, h;
 	glfwGetFramebufferSize(_window, &w, &h);
 	GUIManager::init(
-		std::make_shared<CharcoalBackend>(),
+		std::make_shared<CharcoalBackend>("calibri.caf"),
 		g_flatTheme,
 		w, h );
 
 	// Create GUI-elements
-	// A resizeabe frame with different anchored buttons
+	// A resizeable frame with different anchored buttons
 	FramePtr f0 = std::make_shared<Frame>(true, false, true, true);
 	f0->setExtent(Vec2(5.0f), Vec2(100.0f));
 	GUIManager::add(f0);
@@ -41,6 +41,11 @@ void createGUI(GLFWwindow* _window)
 	b0->setExtent(f0->getPosition() + Vec2(10.0f), Vec2(80.0f, 20.0f));
 	b0->setText("Test0");
 	f0->add(b0);
+
+	ButtonPtr b1 = std::make_shared<Button>();
+	b1->setExtent(f0->getPosition() + Vec2(10.0f, 35.0f), Vec2(80.0f, 20.0f));
+	b1->setText("Test1");
+	f0->add(b1);
 }
 
 void runMainLoop(GLFWwindow* _window)

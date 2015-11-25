@@ -11,7 +11,7 @@ namespace ca { namespace gui {
 	class CharcoalBackend : public IRenderBackend
 	{
 	public:
-		CharcoalBackend();
+		CharcoalBackend(const char* _fontFile);
 		~CharcoalBackend();
 
 		virtual void beginDraw() override;
@@ -41,6 +41,7 @@ namespace ca { namespace gui {
 		std::unique_ptr<cc::FontRenderer> m_fontRenderer;
 		std::unique_ptr<cc::SpriteRenderer> m_spriteRenderer;	///< Uber-shader for textured, colored and gradient rectangles/triangles
 		cc::Program m_spriteShader;
+		cc::Program m_fontShader;
 		cc::Sampler m_linearSampler;
 		cc::Sampler m_pointSampler;
 		uint m_extraVBO;

@@ -52,7 +52,9 @@ namespace ca { namespace gui {
 	{
 		if(!g_manager)
 			return error("Uninitialized GUIManager! Cannot draw a GUI!");
+		g_manager->m_renderer->beginDraw();
 		g_manager->m_topFrame->draw();
+		g_manager->m_renderer->endDraw();
 		// TODO: Assert g_manager->m_clipRegionStack.size() == 1
 	}
 
@@ -77,7 +79,6 @@ namespace ca { namespace gui {
 		g_manager->m_clipRegionStack.pop();
 		// Set old clip region (there is at least our initial one)
 		auto& top = g_manager->m_clipRegionStack.top();
-//		g_manager->m_renderer->setClippingRegion(top.x, top.y, top.z, top.w);
 	}
 
 	bool GUIManager::processInput(const MouseState& _mouseState)
@@ -104,6 +105,7 @@ namespace ca { namespace gui {
 			if(!_widget->parent()) return true; // Reached the root TODO: check list of roots in GUIManager
 			if(_widget->parent()->isChildFocused(_widget))
 				_widget = _widget->parent();
+			else return false;
 		}
 		return false;
 	}

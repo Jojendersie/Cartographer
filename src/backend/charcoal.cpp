@@ -197,7 +197,114 @@ namespace ca { namespace gui {
 		}
 	)";
 
-	CharcoalBackend::CharcoalBackend() :
+	const char* VS_FONT = R"(
+		#version 450
+
+		layout(location = 0) in vec4 in_texCoords;
+		layout(location = 1) in vec2 in_size;
+		layout(location = 2) in vec4 in_color;
+		layout(location = 3) in vec3 in_position;
+		layout(location = 4) in float in_rotation;
+
+		layout(location = 0) out vec4 out_texCoords;
+		layout(location = 1) out vec2 out_size;
+		layout(location = 2) out vec4 out_color;
+		layout(location = 3) out vec3 out_position;
+		layout(location = 4) out float out_rotation;
+
+		void main()
+		{
+			out_texCoords = in_texCoords;
+			out_size = in_size;
+			out_color = in_color;
+			out_position = in_position;
+			out_rotation = in_rotation;
+		}
+	)";
+	const char* GS_FONT = R"(
+		#version 450
+
+		layout(location = 0) in vec4 in_texCoords[1];
+		layout(location = 1) in vec2 in_size[1];
+		layout(location = 2) in vec4 in_color[1];
+		layout(location = 3) in vec3 in_position[1];
+		layout(location = 4) in float in_rotation[1];
+
+		layout(location = 0) uniform mat4 c_viewProjection;
+
+		layout(points) in;
+		layout(triangle_strip, max_vertices = 4) out;
+		layout(location = 0) out vec2 out_texCoord;
+		layout(location = 1) out flat vec4 out_color;
+
+		void main()
+		{
+			out_color = in_color[0];
+	
+			mat2 rot;
+			rot[0][0] = rot[1][1] = cos(in_rotation[0]);
+			rot[1][0] = sin(in_rotation[0]);
+			rot[0][1] = - rot[1][0];
+	
+			vec2 toRight = rot * vec2(in_size[0].x, 0);
+			vec2 toTop   = rot * vec2(0, in_size[0].y);
+	
+			// Bottom-Left
+			out_texCoord = in_texCoords[0].xy;
+			vec3 worldPos = in_position[0];
+			gl_Position = vec4(worldPos, 1) * c_viewProjection;
+			EmitVertex();
+
+			// Bottom-Right
+			out_texCoord = in_texCoords[0].zy;
+			worldPos = in_position[0];
+			worldPos.xy += toRight;
+			gl_Position = vec4(worldPos, 1) * c_viewProjection;
+			EmitVertex();
+
+			// Top-Left
+			out_texCoord = in_texCoords[0].xw;
+			worldPos = in_position[0];
+			worldPos.xy += toTop;
+			gl_Position = vec4(worldPos, 1) * c_viewProjection;
+			EmitVertex();
+
+			// Top-Right
+			out_texCoord = in_texCoords[0].zw;
+			worldPos = in_position[0];
+			worldPos.xy += toRight + toTop;
+			gl_Position = vec4(worldPos, 1) * c_viewProjection;
+			EmitVertex();
+
+			EndPrimitive();
+		}
+	)";
+	const char* PS_FONT = R"(
+		#version 450
+
+		layout(location = 0) in vec2 in_texCoord;
+		layout(location = 1) in flat vec4 in_color;
+
+		// A distance field or mask
+		layout(binding = 0) uniform sampler2D tx_character;
+
+		layout(location = 0, index = 0) out vec4 out_color;
+
+		void main()
+		{
+			// Use the bitmap-font as if it is a distance field.
+			// Compute the antialiasing-alpha based on the distance to 0.5.
+			// https://www.reddit.com/r/gamedev/comments/2879jd/just_found_out_about_signed_distance_field_text/
+			float dist = texture(tx_character, in_texCoord, -2.0).x - 0.5;
+			float aa = length( vec2(dFdx(dist), dFdy(dist)) );
+			float alpha = smoothstep( -aa, aa, dist );
+			// Alpha-test (this is correct for distance fields and masks)
+			if(alpha < 0.005) discard;
+			out_color = in_color * alpha;
+		}
+	)";
+
+	CharcoalBackend::CharcoalBackend(const char* _fontFile) :
 		m_fontRenderer(new cc::FontRenderer),
 		m_linearSampler(cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR),
 		m_pointSampler(cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT),
@@ -208,6 +315,12 @@ namespace ca { namespace gui {
 		m_spriteShader.attach( cc::ShaderManager::get(PS_SPRITE, cc::ShaderType::FRAGMENT, false) );
 		m_spriteShader.link();
 
+		m_fontShader.attach( cc::ShaderManager::get(VS_FONT, cc::ShaderType::VERTEX, false) );
+		m_fontShader.attach( cc::ShaderManager::get(GS_FONT, cc::ShaderType::GEOMETRY, false) );
+		m_fontShader.attach( cc::ShaderManager::get(PS_FONT, cc::ShaderType::FRAGMENT, false) );
+		m_fontShader.link();
+
+		m_fontRenderer->loadCaf(_fontFile);
 		m_spriteRenderer.reset(new cc::SpriteRenderer);
 		// Define geometry for triangles and rectangles
 		m_spriteRenderer->defSprite(0.0f, 0.0f, 0); // Standard rect without texture
@@ -243,6 +356,9 @@ namespace ca { namespace gui {
 		// Create projection matrix and set in the program
 		Mat4x4 viewProj = ei::orthographicGL(0.0f, (float)GUIManager::getWidth(), 0.0f, (float)GUIManager::getHeight(), 0.0f, 1.0f);
 		m_spriteShader.setUniform(0, viewProj);
+		m_fontShader.setUniform(0, viewProj);
+		cc::Device::setCullMode(cc::CullMode::BACK);
+		cc::Device::setZFunc(cc::ComparisonFunc::LEQUAL);
 	}
 
 	void CharcoalBackend::endDraw()
@@ -340,6 +456,7 @@ namespace ca { namespace gui {
 		cc::glCall(glBufferData, GL_ARRAY_BUFFER, m_perInstanceData.size() * 8, m_perInstanceData.data(), GL_DYNAMIC_DRAW);
 		m_spriteShader.use();
 		m_spriteRenderer->draw();
+		m_fontShader.use();
 		m_fontRenderer->present();
 
 		m_spriteRenderer->clearInstances();
