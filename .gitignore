@@ -1,7 +1,9 @@
 Debug/
 Release/
+lib/
 
 *.suo
 *.opensdf
 *.sdf
 *.user
+*.props

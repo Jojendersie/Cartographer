@@ -48,11 +48,14 @@
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(ProjectDir);$(ProjectDir)/include;$(ProjectDir)/dependencies/freetype/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)lib\</OutDir>
+    <TargetName>$(ProjectName)D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(ProjectDir);$(ProjectDir)/include;$(ProjectDir)/dependencies/freetype/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)lib\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
