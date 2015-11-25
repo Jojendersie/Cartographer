@@ -17,7 +17,7 @@ void prepareFont()
 	double times[3];
 	HRClock clock;
 	s_fontRenderer = new FontRenderer;
-	s_fontRenderer->createFont("calibri.ttf", u8" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,.:!?'~+-*/(){}[]<>\U000003B5\U000003A9\U0000262F\U00002713");
+	s_fontRenderer->createFont("calibri.ttf", u8" 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,.:!?'~+-*/(){}[]<>\U000003B5\U000003A9\U0000262F\U00002713");
 	times[0] = clock.deltaTime();
 	s_fontRenderer->storeCaf("calibri.caf");
 	times[1] = clock.deltaTime();
@@ -65,10 +65,18 @@ void runMainLoop(GLFWwindow* _window)
 			pos.y += 4.0f + size;
 			size -= 2.5f;
 		}
-		s_fontRenderer->draw(Vec3(1300.0f, 700.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 1.0f));
-		s_fontRenderer->draw(Vec3(1330.0f, 670.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 0.5f + 0.5f*(float)sin(clock.now()/1000.0)));
-		s_fontRenderer->draw(Vec3(1630.0f, 600.0f, 0.0f), u8"(-O-)", 200.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.5f, 0.45f);
-		s_fontRenderer->draw(Vec3(1630.0f, 600.0f, 0.0f), u8"(-O-)", 8.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.5f, 0.45f);
+		size = 68.5f;
+		pos = Vec3(1880.0f + (float)sin(clock.now()/1000.0), 1120.0f + (float)cos(clock.now()/1000.0), 0.0f);
+		for(int i=0; i<23; ++i)
+		{
+			s_fontRenderer->draw(pos, u8"0123456789", size, Vec4(0.5f, 0.5f, 0.4f, 1.0f), 0.0f, 1.0f, 1.0f);
+			pos.y -= 4.0f + size;
+			size -= 3.0f;
+		}
+		s_fontRenderer->draw(Vec3(1400.0f, 550.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 1.0f));
+		s_fontRenderer->draw(Vec3(1430.0f, 520.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 0.5f + 0.5f*(float)sin(clock.now()/1000.0)));
+		s_fontRenderer->draw(Vec3(1270.0f, 900.0f, 0.0f), u8"(-O-)", 200.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.5f, 0.45f);
+		s_fontRenderer->draw(Vec3(1270.0f, 900.0f, 0.0f), u8"(-O-)", 8.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.5f, 0.45f);
 		s_fontRenderer->present();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
