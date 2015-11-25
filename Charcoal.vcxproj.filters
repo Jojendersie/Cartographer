@@ -225,5 +225,8 @@
     <ClCompile Include="src\utilities\hrclock.cpp">
       <Filter>utilities</Filter>
     </ClCompile>
+    <ClCompile Include="src\utilities\half.cpp">
+      <Filter>utilities</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -155,6 +155,7 @@
     <ClCompile Include="src\renderer\fontrenderer.cpp" />
     <ClCompile Include="src\renderer\instancerenderer.cpp" />
     <ClCompile Include="src\renderer\spriterenderer.cpp" />
+    <ClCompile Include="src\utilities\half.cpp" />
     <ClCompile Include="src\utilities\hrclock.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

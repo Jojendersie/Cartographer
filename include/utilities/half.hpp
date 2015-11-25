@@ -1,11 +1,9 @@
 #pragma once
 
+#include <ei/elementarytypes.hpp>
+
 typedef uint16 half;
-inline half toHalf(float _x)
-{
-	uint32 x = *((uint32*)&_x);
-	return ((x>>16)&0x8000)|((((x&0x7f800000)-0x38000000)>>13)&0x7c00)|((x>>13)&0x03ff);
-}
+half toHalf(float _x);
 
 inline float toFloat(half _x)
 {
