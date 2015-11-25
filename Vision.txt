@@ -1,0 +1,12 @@
+Render GUI for tools and games, general goals:
+- tweakbar-like property lists
+- node based designes
+- animation/effect possibilities
+- fast
+
+Special decisions:
+- Draw order guarantees: between layers, GPU-given one between sprites
+- Caching: OPEN DECISION//No textures, No Batching over frames (might come if not fast enough)
+  - for now prototype the simplest possible solution!
+- Clipping: use Scissor (because text is difficult otherwise) -> clip only for components where necessary
+- Coordinates: start at the lower-left (0,0) and have unit pixels, RefFrame & ClippingAreas include the left/bottom and exclude the right/top pixels
