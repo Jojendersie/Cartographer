@@ -24,21 +24,19 @@ namespace ca { namespace gui {
 		layout(location = 1) in uvec2 in_textureHandle;
 		layout(location = 3) in vec3 in_position;
 		layout(location = 5) in vec4 in_scale;
-		layout(location = 7) in uvec4 in_clippingRect;
-		layout(location = 8) in vec4 in_posAB;
-		layout(location = 9) in vec4 in_colorA;
-		layout(location = 10) in vec4 in_colorB;
-		layout(location = 11) in int in_gradientMode;
+		layout(location = 7) in vec4 in_posAB;
+		layout(location = 8) in vec4 in_colorA;
+		layout(location = 9) in vec4 in_colorB;
+		layout(location = 10) in int in_gradientMode;
 	
 		layout(location = 0) out vec4 out_texCoords;
 		layout(location = 1) out uvec2 out_textureHandle;
 		layout(location = 2) out vec3 out_position;
 		layout(location = 3) out vec4 out_scale;
-		layout(location = 4) out uvec4 out_clippingRect;
-		layout(location = 5) out vec4 out_posAB;
-		layout(location = 6) out vec4 out_colorA;
-		layout(location = 7) out vec4 out_colorB;
-		layout(location = 8) out int out_gradientMode;
+		layout(location = 4) out vec4 out_posAB;
+		layout(location = 5) out vec4 out_colorA;
+		layout(location = 6) out vec4 out_colorB;
+		layout(location = 7) out int out_gradientMode;
 
 		void main()
 		{
@@ -46,7 +44,6 @@ namespace ca { namespace gui {
 			out_textureHandle = in_textureHandle;
 			out_position = in_position;
 			out_scale = in_scale;
-			out_clippingRect = in_clippingRect;
 			out_posAB = in_posAB;
 			out_colorA = in_colorA;
 			out_colorB = in_colorB;
@@ -60,11 +57,10 @@ namespace ca { namespace gui {
 		layout(location = 1) in uvec2 in_textureHandle[1];
 		layout(location = 2) in vec3 in_position[1];
 		layout(location = 3) in vec4 in_scale[1];
-		layout(location = 4) in uvec4 in_clippingRect[1];
-		layout(location = 5) in vec4 in_posAB[1];
-		layout(location = 6) in vec4 in_colorA[1];
-		layout(location = 7) in vec4 in_colorB[1];
-		layout(location = 8) in int in_gradientMode[1];
+		layout(location = 4) in vec4 in_posAB[1];
+		layout(location = 5) in vec4 in_colorA[1];
+		layout(location = 6) in vec4 in_colorB[1];
+		layout(location = 7) in int in_gradientMode[1];
 
 		layout(location = 0) uniform mat4 c_projection;
 
@@ -72,16 +68,14 @@ namespace ca { namespace gui {
 		layout(triangle_strip, max_vertices = 4) out;
 		layout(location = 0) out vec2 out_texCoord;
 		layout(location = 1) out flat uvec2 out_textureHandle;
-		layout(location = 2) out flat uvec4 out_clippingRect;
-		layout(location = 3) out flat vec4 out_posAB;
-		layout(location = 4) out flat vec4 out_colorA;
-		layout(location = 5) out flat vec4 out_colorB;
-		layout(location = 6) out flat int out_gradientMode;
+		layout(location = 2) out flat vec4 out_posAB;
+		layout(location = 3) out flat vec4 out_colorA;
+		layout(location = 4) out flat vec4 out_colorB;
+		layout(location = 5) out flat int out_gradientMode;
 
 		void main()
 		{
 			out_textureHandle = in_textureHandle[0];
-			out_clippingRect = in_clippingRect[0];
 			out_posAB = in_posAB[0];
 			out_colorA = in_colorA[0];
 			out_colorB = in_colorB[0];
@@ -137,21 +131,15 @@ namespace ca { namespace gui {
 
 		layout(location = 0) in vec2 in_texCoord;
 		layout(location = 1) in flat uvec2 in_textureHandle;
-		layout(location = 2) in flat uvec4 in_clippingRect;
-		layout(location = 3) in flat vec4 in_posAB;
-		layout(location = 4) in flat vec4 in_colorA;
-		layout(location = 5) in flat vec4 in_colorB;
-		layout(location = 6) in flat int in_gradientMode;
+		layout(location = 2) in flat vec4 in_posAB;
+		layout(location = 3) in flat vec4 in_colorA;
+		layout(location = 4) in flat vec4 in_colorB;
+		layout(location = 5) in flat int in_gradientMode;
 
 		layout(location = 0, index = 0) out vec4 out_color;
 
 		void main()
 		{
-			// Pixel inside clipping region?
-		//	if( gl_FragCoord.x < in_clippingRect.x || gl_FragCoord.x >= in_clippingRect.y
-		//	  || gl_FragCoord.y < in_clippingRect.z || gl_FragCoord.y >= in_clippingRect.w )
-		//		discard;
-
 			vec4 color;
 			// position A and B are given in sprite relative coordinates (i.e. texture coordinates)
 			switch(in_gradientMode)
@@ -311,8 +299,7 @@ namespace ca { namespace gui {
 	CharcoalBackend::CharcoalBackend(const char* _fontFile) :
 		m_fontRenderer(new cc::FontRenderer),
 		m_linearSampler(cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR),
-		m_pointSampler(cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT),
-		m_clipRegion(0xffff)
+		m_pointSampler(cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT)
 	{
 		m_spriteShader.attach( cc::ShaderManager::get(VS_SPRITE, cc::ShaderType::VERTEX, false) );
 		m_spriteShader.attach( cc::ShaderManager::get(GS_SPRITE, cc::ShaderType::GEOMETRY, false) );
@@ -330,21 +317,18 @@ namespace ca { namespace gui {
 		// Create extra VBO for clipping rectangles
 		cc::glCall(glGenBuffers, 1, &m_extraVBO);
 		cc::glCall(glBindBuffer, GL_ARRAY_BUFFER, m_extraVBO);
-		// 4 x uint16 for clipping l, r, b and t
-		cc::glCall(glEnableVertexAttribArray, 7);
-		cc::glCall(glVertexAttribPointer, 7, 4, GLenum(cc::PrimitiveFormat::UINT16), GL_FALSE, 36, (GLvoid*)(0));
 		// 4 x float for posA and posB
-		cc::glCall(glEnableVertexAttribArray, 8);
-		cc::glCall(glVertexAttribPointer, 8, 4, GLenum(cc::PrimitiveFormat::FLOAT), GL_FALSE, 36, (GLvoid*)(8));
+		cc::glCall(glEnableVertexAttribArray, 7);
+		cc::glCall(glVertexAttribPointer, 7, 4, GLenum(cc::PrimitiveFormat::FLOAT), GL_FALSE, 28, (GLvoid*)(0));
 		// 4 x uint8 normalized as colorA
-		cc::glCall(glEnableVertexAttribArray, 9);
-		cc::glCall(glVertexAttribPointer, 9, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 36, (GLvoid*)(24));
+		cc::glCall(glEnableVertexAttribArray, 8);
+		cc::glCall(glVertexAttribPointer, 8, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 28, (GLvoid*)(16));
 		// 4 x uint8 normalized as colorB
-		cc::glCall(glEnableVertexAttribArray, 10);
-		cc::glCall(glVertexAttribPointer, 10, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 36, (GLvoid*)(28));
+		cc::glCall(glEnableVertexAttribArray, 9);
+		cc::glCall(glVertexAttribPointer, 9, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 28, (GLvoid*)(20));
 		// 1 x int32 gradient mode
-		cc::glCall(glEnableVertexAttribArray, 11);
-		cc::glCall(glVertexAttribPointer, 11, 4, GLenum(cc::PrimitiveFormat::INT32), GL_FALSE, 36, (GLvoid*)(32));
+		cc::glCall(glEnableVertexAttribArray, 10);
+		cc::glCall(glVertexAttribPointer, 10, 4, GLenum(cc::PrimitiveFormat::INT32), GL_FALSE, 28, (GLvoid*)(24));
 
 		// Define geometry for triangles and rectangles
 		m_spriteRenderer->defSprite(0.0f, 0.0f, 0); // Standard rect without texture
@@ -357,11 +341,12 @@ namespace ca { namespace gui {
 
 	void CharcoalBackend::beginDraw()
 	{
-		m_clipRegion = ei::Vec<uint16, 4>(0xffff);
 		// Create projection matrix and set in the program
 		Mat4x4 viewProj = ei::orthographicGL(0.0f, (float)GUIManager::getWidth(), 0.0f, (float)GUIManager::getHeight(), 0.0f, 1.0f);
 		m_spriteShader.setUniform(0, viewProj);
 		m_fontShader.setUniform(0, viewProj);
+
+		// Prepare pipeline
 		cc::Device::setCullMode(cc::CullMode::BACK);
 		cc::Device::setZFunc(cc::ComparisonFunc::ALWAYS);
 		cc::Device::setZWrite(false);
@@ -371,20 +356,20 @@ namespace ca { namespace gui {
 	{
 		// Execute pending draw calls
 		flush();
+
+		// Reset unusual pipeline states
+		cc::Device::disableScissorTest();
 	}
 
-	void CharcoalBackend::beginLayer()
-	{
-		// TODO: less flush by detecting overlaps
-		flush();
-	}
-
-	void gui::CharcoalBackend::setClippingRegion(const ei::IVec4& _clippingRect)
+	void gui::CharcoalBackend::beginLayer(const ei::IVec4& _clippingRect)
 	{
 		eiAssertWeak(_clippingRect.x >= 0 && _clippingRect.z >= 0
 			&& _clippingRect.y <= GUIManager::getWidth() && _clippingRect.w <= GUIManager::getHeight(),
 			"Clipping region is (partially) not visible.");
-		m_clipRegion = ei::Vec<uint16, 4>(_clippingRect);
+		// The upcomming state change avoids more buffering
+		flush();
+		cc::Device::scissorTest(_clippingRect.x, _clippingRect.z,
+			_clippingRect.y - _clippingRect.x, _clippingRect.w - _clippingRect.z);
 	}
 
 	void gui::CharcoalBackend::drawText(const Vec2& _position, const char* _text, float _size, const Vec4& _color, float _alignX, float _alignY, float _rotation, bool _roundToPixel)
@@ -402,7 +387,6 @@ namespace ca { namespace gui {
 		m_spriteRenderer->newInstance(0, Vec3(_rect.left(), _rect.bottom(), 0.0f), 0.0f, Vec2(_rect.width(), _rect.height()));
 
 		AdditionalVertexInfo info;
-		info.clipRegion = m_clipRegion;
 		info.a = Vec2(0.0f);
 		info.b = Vec2(0.0f);
 		info.colorA = Vec<uint8, 4>(_color * 255.0f);
@@ -416,7 +400,6 @@ namespace ca { namespace gui {
 		m_spriteRenderer->newInstance(0, Vec3(_rect.left(), _rect.bottom(), 0.0f), 0.0f, Vec2(_rect.width(), _rect.height()));
 
 		AdditionalVertexInfo info;
-		info.clipRegion = m_clipRegion;
 		info.a = _a;
 		info.b = _b;
 		info.colorA = Vec<uint8, 4>(_colorA * 255.0f);
@@ -430,7 +413,6 @@ namespace ca { namespace gui {
 		m_spriteRenderer->newInstance((int)_texture, Vec3(_rect.left(), _rect.bottom(), 0.0f), 0.0f, Vec2(_rect.width(), _rect.height()));
 
 		AdditionalVertexInfo info;
-		info.clipRegion = m_clipRegion;
 		info.a = Vec2(0.0f);
 		info.b = Vec2(0.0f);
 		info.colorA = Vec<uint8, 4>(0, 0, 0, uint8(_opacity * 255.0f));
@@ -444,7 +426,6 @@ namespace ca { namespace gui {
 		m_spriteRenderer->newInstance(0, Vec3(_triangle.v0, 0.0f), 0.0f, Vec2(0.0f));
 
 		AdditionalVertexInfo info;
-		info.clipRegion = m_clipRegion;
 		info.a = _triangle.v1;
 		info.b = _triangle.v2;
 		info.colorA = Vec<uint8, 4>(_color * 255.0f);

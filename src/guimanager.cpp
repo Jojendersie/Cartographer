@@ -70,7 +70,7 @@ namespace ca { namespace gui {
 		g_manager->m_clipRegionStack.push(area);
 		bool nonEmpty = ei::max(0, area.y - area.x) * ei::max(0, area.w - area.z) > 0;
 		if(nonEmpty)
-			g_manager->m_renderer->setClippingRegion(area);
+			g_manager->m_renderer->beginLayer(area);
 		return nonEmpty;
 	}
 

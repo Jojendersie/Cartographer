@@ -39,13 +39,11 @@ namespace ca { namespace gui {
 		///		after the call. Due to transparancies in the GUI or at least in the font rendering
 		///		a Z or Stencil buffer cannot be used to achieve this, except you know your theme
 		///		allows at most binary alpha-tests and no transparency otherwise.
-		virtual void beginLayer() {}
-
-		/// Restrict rendering to a rectangular region.
-		/// \details Clipping regions are used frequently among all elements to guarantee that
-		///		subelements do not overlap the parents. E.g. if a scrollbar forces the half-
-		///		visibility of any component inside the container.
-		virtual void setClippingRegion(const ei::IVec4& _clippingRect) = 0;
+		///
+		///		Additionally a clipping region is defined to allow correct clipping at container
+		///		borders.
+		/// \param [in] _clippingRect Left, right, bottom, top clipping coordinate (in this order).
+		virtual void beginLayer(const ei::IVec4& _clippingRect) = 0;
 
 		virtual void drawText(const ei::Vec2& _position, const char* _text, float _size, const ei::Vec4& _color, float _alignX = 0.0f, float _alignY = 0.0f, float _rotation = 0.0f, bool _roundToPixel = false) = 0;
 		/// Simulate a text rendering and get the bounding box of the resulting drawn text.

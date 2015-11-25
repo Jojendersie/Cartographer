@@ -16,8 +16,7 @@ namespace ca { namespace gui {
 
 		virtual void beginDraw() override;
 		virtual void endDraw() override;
-		virtual void beginLayer() override;
-		virtual void setClippingRegion(const ei::IVec4& _clippingRect) override;
+		virtual void beginLayer(const ei::IVec4& _clippingRect) override;
 		virtual void drawText(const ei::Vec2& _position, const char* _text, float _size, const ei::Vec4& _color, float _alignX = 0.0f, float _alignY = 0.0f, float _rotation = 0.0f, bool _roundToPixel = false) override;
 		virtual ei::Rect2D getTextBB(const ei::Vec2& _position, const char* _text, float _size, float _alignX = 0.0f, float _alignY = 0.0f, float _rotation = 0.0f) override;
 		virtual void drawRect(const class RefFrame& _rect, const ei::Vec4& _color) override;
@@ -30,7 +29,6 @@ namespace ca { namespace gui {
 #pragma pack(push, 1)
 		struct AdditionalVertexInfo
 		{
-			ei::Vec<uint16, 4> clipRegion;
 			ei::Vec2 a;
 			ei::Vec2 b;
 			ei::Vec<uint8, 4> colorA;
@@ -47,7 +45,6 @@ namespace ca { namespace gui {
 		cc::Sampler m_pointSampler;
 		uint m_extraVBO;
 		std::vector<AdditionalVertexInfo> m_perInstanceData;
-		ei::Vec<uint16, 4> m_clipRegion;
 
 		// Drawcalls are batched in the three renderers. This command makes the real drawcalls
 		// and clears the renderers.
