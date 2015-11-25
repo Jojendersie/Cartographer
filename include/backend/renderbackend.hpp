@@ -49,7 +49,7 @@ namespace ca { namespace gui {
 
 		virtual void drawText(const ei::Vec2& _position, const char* _text, float _size, const ei::Vec4& _color, float _alignX = 0.0f, float _alignY = 0.0f, float _rotation = 0.0f, bool _roundToPixel = false) = 0;
 		/// Simulate a text rendering and get the bounding box of the resulting drawn text.
-		virtual ei::Rect2D getTextBB(const ei::Vec2& _position, const char* _text, float _size, float _alignX = 0.0f, float _alignY = 0.0f, float _rotation = 0.0f, bool _roundToPixel = false) = 0;
+		virtual ei::Rect2D getTextBB(const ei::Vec2& _position, const char* _text, float _size, float _alignX = 0.0f, float _alignY = 0.0f, float _rotation = 0.0f) = 0;
 
 		virtual void drawRect(const class RefFrame& _rect, const ei::Vec4& _color) = 0;
 		/// \param [in] _a Reference rect relative coordinate in [0,1]^2 as gradient source.

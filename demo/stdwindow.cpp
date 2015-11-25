@@ -56,8 +56,8 @@ GLFWwindow* setupStdWindow(const char* _titel, bool _vsync)
 	int width = modes[count-1].width;
 	int height = modes[count-1].height;
 //#ifdef _DEBUG
-	width -= 30;
-	height -= 70;
+	width -= 32;
+	height -= 72;
 	GLFWwindow* window = glfwCreateWindow(width, height, _titel, nullptr, nullptr);
 	glfwSetWindowPos(window, 10, 20);
 //#else

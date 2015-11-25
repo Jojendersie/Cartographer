@@ -45,6 +45,7 @@ void createGUI(GLFWwindow* _window)
 	// A resizeable frame with different anchored buttons
 	FramePtr f0 = std::make_shared<Frame>(true, false, true, true);
 	f0->setExtent(Vec2(5.0f), Vec2(100.0f));
+	f0->setBackgroundOpacity(0.5f);
 	GUIManager::add(f0);
 
 	ButtonPtr b0 = std::make_shared<Button>();

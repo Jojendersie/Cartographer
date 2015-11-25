@@ -10,7 +10,7 @@ namespace ca { namespace gui {
 
 	Frame::Frame(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable) :
 		Widget(_anchorable, _clickable, _moveable, _resizeable, true, true),
-		m_opacity(0.0f),
+		m_opacity(1.0f),
 		m_texture(0)
 	{
 	}

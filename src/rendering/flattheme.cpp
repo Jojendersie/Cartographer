@@ -21,7 +21,11 @@ namespace ca { namespace gui {
 	void FlatTheme::drawBackgroundArea(const class RefFrame& _rect, float _opacity)
 	{
 		if(_opacity > 0.0f)
-			GUIManager::renderBackend().drawRect(_rect, m_properties.backgroundColor);
+		{
+			ei::Vec4 color = m_properties.backgroundColor;
+			color.a *= _opacity;
+			GUIManager::renderBackend().drawRect(_rect, color);
+		}
 	}
 
 	void FlatTheme::drawButton(const RefFrame& _rect, bool _mouseOver)
@@ -53,7 +57,7 @@ namespace ca { namespace gui {
 					m_properties.textSize,
 					_mouseOver ? m_properties.hoverTextColor : m_properties.textColor,
 					_alignX, _alignY,
-					0.0f, true // TODO: true or false?
+					0.0f, true // TODO: dynamic rounding mode for moving components
 			);
 	}
 
@@ -62,8 +66,7 @@ namespace ca { namespace gui {
 		return GUIManager::renderBackend().getTextBB(_position, _text,
 			m_properties.textSize,
 			_alignX, _alignY,
-			0.0f, true // TODO: true or false?
-			);
+			0.0f );
 	}
 
 	void FlatTheme::drawImage(const RefFrame& _rect, uint64 _texHandle, float _opacity)

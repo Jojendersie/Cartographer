@@ -97,30 +97,32 @@ namespace ca { namespace gui {
 				gl_Position = vec4(in_posAB[0].zw, 0, 1) * c_projection;
 				EmitVertex();
 			} else {
+				vec3 worldBasePos = in_position[0];
+				worldBasePos.y += 1/16.0f; // Offset helps with pixel perfect rendering
 				// Bottom-Left
 				out_texCoord = in_texCoords[0].xy;
-				vec3 worldPos = in_position[0];
+				vec3 worldPos = worldBasePos;
 				worldPos.xy += in_scale[0].xy;
 				gl_Position = vec4(worldPos, 1) * c_projection;
 				EmitVertex();
 
 				// Bottom-Right
 				out_texCoord = in_texCoords[0].zy;
-				worldPos = in_position[0];
+				worldPos = worldBasePos;
 				worldPos.xy += in_scale[0].zy;
 				gl_Position = vec4(worldPos, 1) * c_projection;
 				EmitVertex();
 
 				// Top-Left
 				out_texCoord = in_texCoords[0].xw;
-				worldPos = in_position[0];
+				worldPos = worldBasePos;
 				worldPos.xy += in_scale[0].xw;
 				gl_Position = vec4(worldPos, 1) * c_projection;
 				EmitVertex();
 
 				// Top-Right
 				out_texCoord = in_texCoords[0].zw;
-				worldPos = in_position[0];
+				worldPos = worldBasePos;
 				worldPos.xy += in_scale[0].zw;
 				gl_Position = vec4(worldPos, 1) * c_projection;
 				EmitVertex();
@@ -185,6 +187,8 @@ namespace ca { namespace gui {
 				color = mix(in_colorA, in_colorB, mindist);
 				break; }
 			}
+			// Premultiply color alpha
+			color.rgb *= color.a;
 			// Is there a texture?
 			if(in_textureHandle.x != 0 || in_textureHandle.y != 0)
 			{
@@ -388,9 +392,9 @@ namespace ca { namespace gui {
 		m_fontRenderer->draw(Vec3(_position, 0.0f), _text, _size, _color, _rotation, _alignX, _alignY, _roundToPixel);
 	}
 
-	ei::Rect2D CharcoalBackend::getTextBB(const ei::Vec2& _position, const char* _text, float _size, float _alignX, float _alignY, float _rotation, bool _roundToPixel)
+	ei::Rect2D CharcoalBackend::getTextBB(const ei::Vec2& _position, const char* _text, float _size, float _alignX, float _alignY, float _rotation)
 	{
-		return m_fontRenderer->getBoundingBox(Vec3(_position, 0.0f), _text, _size, _rotation, _alignX, _alignY, _roundToPixel);
+		return m_fontRenderer->getBoundingBox(Vec3(_position, 0.0f), _text, _size, _rotation, _alignX, _alignY);
 	}
 
 	void gui::CharcoalBackend::drawRect(const RefFrame& _rect, const Vec4& _color)
@@ -461,6 +465,9 @@ namespace ca { namespace gui {
 		// TODO: only if there are instances (is this checked by draw itself?)
 		cc::glCall(glBindBuffer, GL_ARRAY_BUFFER, m_extraVBO);
 		cc::glCall(glBufferData, GL_ARRAY_BUFFER, m_perInstanceData.size() * sizeof(AdditionalVertexInfo), m_perInstanceData.data(), GL_DYNAMIC_DRAW);
+		// Enable alpha blending (permultiplied)
+		cc::glCall(glEnable, GL_BLEND);
+		cc::glCall(glBlendFunci, 0, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		m_spriteShader.use();
 		m_spriteRenderer->draw();
 
