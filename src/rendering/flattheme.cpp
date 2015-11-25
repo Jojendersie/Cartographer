@@ -57,6 +57,15 @@ namespace ca { namespace gui {
 			);
 	}
 
+	ei::Rect2D FlatTheme::getTextBB(const Coord2& _position, const char* _text, float _alignX, float _alignY)
+	{
+		return GUIManager::renderBackend().getTextBB(_position, _text,
+			m_properties.textSize,
+			_alignX, _alignY,
+			0.0f, true // TODO: true or false?
+			);
+	}
+
 	void FlatTheme::drawImage(const RefFrame& _rect, uint64 _texHandle, float _opacity)
 	{
 		if(_opacity > 0.0f)

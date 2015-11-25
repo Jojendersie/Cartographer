@@ -2,6 +2,7 @@
 
 #include "properties/coordinate.hpp"
 #include "properties/refframe.hpp"
+#include <ei/2dtypes.hpp>
 
 namespace ca { namespace gui {
 
@@ -22,6 +23,8 @@ namespace ca { namespace gui {
 		virtual void drawCheckbox(const class RefFrame& _rect, bool _checked, bool _mouseOver) = 0;
 		/// Draw a string
 		virtual void drawText(const Coord2& _position, const char* _text, bool _mouseOver, float _alignX = 0.0f, float _alignY = 0.0f) = 0;
+		/// Get the width and the height of a string
+		virtual ei::Rect2D getTextBB(const Coord2& _position, const char* _text, float _alignX = 0.0f, float _alignY = 0.0f) = 0;
 		/// Draw an image
 		virtual void drawImage(const class RefFrame& _rect, uint64 _texHandle, float _opacity = 1.0f) = 0;
 		/// Draw an arrow for sliders, scrollbars or drop down menus

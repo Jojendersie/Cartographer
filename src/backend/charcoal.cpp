@@ -388,6 +388,11 @@ namespace ca { namespace gui {
 		m_fontRenderer->draw(Vec3(_position, 0.0f), _text, _size, _color, _rotation, _alignX, _alignY, _roundToPixel);
 	}
 
+	ei::Rect2D CharcoalBackend::getTextBB(const ei::Vec2& _position, const char* _text, float _size, float _alignX, float _alignY, float _rotation, bool _roundToPixel)
+	{
+		return m_fontRenderer->getBoundingBox(Vec3(_position, 0.0f), _text, _size, _rotation, _alignX, _alignY, _roundToPixel);
+	}
+
 	void gui::CharcoalBackend::drawRect(const RefFrame& _rect, const Vec4& _color)
 	{
 		m_spriteRenderer->newInstance(0, Vec3(_rect.left(), _rect.bottom(), 0.0f), 0.0f, Vec2(_rect.width(), _rect.height()));

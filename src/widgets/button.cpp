@@ -22,7 +22,7 @@ namespace ca { namespace gui {
 	void Button::setText(const char* _text)
 	{
 		m_text = _text;
-		m_textSize;// TODO
+		m_textSize = GUIManager::theme().getTextBB(Coord2(0.0f), _text).max;
 	}
 
 	void Button::setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, bool _smooth, Coord _padding)
