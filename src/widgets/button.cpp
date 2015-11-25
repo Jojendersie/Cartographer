@@ -8,7 +8,7 @@
 namespace ca { namespace gui {
 
 	Button::Button() :
-		Widget(true, true, false, false, true, true),
+		Widget(true, true, false, false, true, false),
 		m_backgroundTexture(0),
 		m_iconTexture(0),
 		m_textSize(0.0f),
@@ -43,7 +43,7 @@ namespace ca { namespace gui {
 		if(GUIManager::isClipped( m_refFrame )) return;
 
 		// Background
-		bool mouseOver = GUIManager::hasFocus(this);
+		bool mouseOver = m_clickComponent->isOnClickRegion( GUIManager::getMouseState().position );
 		if(m_backgroundTexture)
 			GUIManager::theme().drawImage(m_refFrame, m_backgroundTexture);
 		else

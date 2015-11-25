@@ -96,7 +96,13 @@ namespace ca { namespace gui {
 			error("Uninitialized GUIManager! Cannot process input!");
 			return false;
 		}
+		g_manager->m_mouseState = _mouseState;
 		return g_manager->m_topFrame->processInput( _mouseState );
+	}
+
+	const MouseState& GUIManager::getMouseState()
+	{
+		return g_manager->m_mouseState;
 	}
 
 	bool GUIManager::hasFocus(const WidgetPtr& _widget)

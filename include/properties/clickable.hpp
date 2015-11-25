@@ -40,6 +40,9 @@ namespace ca { namespace gui {
 		///		If nothing is set/the nullptr is given, the own reference frame defines the region.
 		/// \param [in] _delete The region object must be deleted.
 		void setClickRegion(IRegion* _region, bool _delete = true);
+
+		/// Check if a position is on the click region (uses IRegion.isMouseOver());
+		bool isOnClickRegion(const Coord2& _coord) const { return m_clickRegion->isMouseOver(_coord); }
 	protected:
 		IRegion* m_clickRegion;
 		bool m_deleteRegion;

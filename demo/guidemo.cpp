@@ -8,7 +8,17 @@
 using namespace ei;
 using namespace ca::gui;
 
-std::shared_ptr<ca::gui::FlatTheme> g_flatTheme;
+static std::shared_ptr<ca::gui::FlatTheme> g_flatTheme;
+static MouseState g_mouseState;
+
+static void cursorPosFunc(GLFWwindow*, double _x, double _y)
+{
+	Coord2 newPos;
+	newPos.x = (float)_x;
+	newPos.y = GUIManager::getHeight() - (float)_y;
+	g_mouseState.deltaPos = newPos - g_mouseState.position;
+	g_mouseState.position = newPos;
+}
 
 void createGUI(GLFWwindow* _window)
 {
@@ -55,6 +65,7 @@ void runMainLoop(GLFWwindow* _window)
 	{
 		float deltaTime = (float)clock.deltaTime();
 		glfwPollEvents();
+		ca::gui::GUIManager::processInput(g_mouseState);
 		ca::cc::glCall(glClearColor, 0.01f, 0.01f, 0.01f, 1.0f);
 		ca::cc::glCall(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -69,6 +80,8 @@ int main()
 {
 	GLFWwindow* window = setupStdWindow("Carthographer GUI demo.", false);
 	if(!window) return 1;
+
+	glfwSetCursorPosCallback(window, cursorPosFunc);
 
 	createGUI(window);
 	runMainLoop(window);

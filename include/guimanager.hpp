@@ -43,6 +43,8 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		/// \return true if the input was consumed by any element in the GUI.
 		static bool processInput(const struct MouseState& _mouseState);
 
+		static const struct MouseState& getMouseState();
+
 		/// Does a specific element has the focus?
 		/// \details Only one element can have the focus at a time. The focus can be changed by
 		///		by mouse clicks or by different key events. For keys the GUI must define handlers
@@ -77,6 +79,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		std::shared_ptr<class Frame> m_topFrame;
 
 		std::stack<ei::IVec4, std::vector<ei::IVec4>> m_clipRegionStack;
+		MouseState m_mouseState;		///< Buffer the last seen mouse state
 	};
 
 }} // namespace ca::gui
