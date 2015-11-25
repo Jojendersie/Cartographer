@@ -158,6 +158,66 @@ namespace ca { namespace cc {
 		m_dirty = true;
 	}
 
+	ei::Rect2D FontRenderer::getBoundingBox(const ei::Vec3& _position, const char* _text, float _size, float _rotation, float _alignX, float _alignY, bool _roundToPixel)
+	{
+		ei::Rect2D out;
+
+		// Convert pixel size into a scale factor
+		float scale = _size / BASE_SIZE;
+
+		// Create a basis based on the rotation
+		float sinAlpha = sin(_rotation), cosAlpha = cos(_rotation);
+		Vec2 adX( cosAlpha * scale,-sinAlpha * scale);
+		Vec2 adY( sinAlpha * scale, cosAlpha * scale);
+
+		// Avoid kerning for the first character
+		Vec2 cursor(_position.x, _position.y);
+		char32_t c = getNext(&_text);
+		auto charEntry = m_chars.find(c);
+		if(charEntry != m_chars.end())
+			cursor -= charEntry->second.baseX * adX;
+		// Round string position (base line) to pixels for sharper rendering
+		if(_roundToPixel)
+		{
+			cursor -= m_baseLineOffset * adY;
+			cursor.x = roundf(cursor.x);
+			cursor.y = roundf(cursor.y);
+			cursor += m_baseLineOffset * adY;
+		}
+		out.min = cursor, out.max = cursor;
+		auto lastC = m_chars.end();
+		for(; c; c = getNext(&_text))
+		{
+			auto charEntry = m_chars.find(c);
+			if(charEntry != m_chars.end())
+			{
+				// Add kerning
+				if(lastC != m_chars.end())
+				{
+					CharacterDef::KerningPair p; p.character = charEntry->first;
+					int s = lastC->second.kerning.size();
+					auto it = std::lower_bound(lastC->second.kerning.begin(), lastC->second.kerning.end(), p);
+					if(it != lastC->second.kerning.end() && it->character == p.character)
+						cursor += it->kern / 64.0f * adX;
+				}
+				out.max = cursor + adX * charEntry->second.texSize.x + adY * BASE_SIZE;
+				cursor += adX * (charEntry->second.advance / 64.0f);
+			}
+			lastC = charEntry;
+		}
+
+		if(_alignX != 0.0f || _alignY != 0.0f)
+		{
+			// Compute a vector to move the whole text to its alignment
+			Vec2 align = (out.max - out.min) * _alignX;
+			align += adY * BASE_SIZE * _alignY;
+			out.min -= align;
+			out.max -= align;
+		}
+
+		return out;
+	}
+
 	void FontRenderer::clearText()
 	{
 		m_instances.clear();
