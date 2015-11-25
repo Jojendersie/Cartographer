@@ -62,7 +62,7 @@ namespace ca { namespace gui {
 		layout(location = 3) in vec4 in_scale[1];
 		layout(location = 4) in uvec4 in_clippingRect[1];
 		layout(location = 5) in vec4 in_posAB[1];
-		layout(location = 5) in vec4 in_colorA[1];
+		layout(location = 6) in vec4 in_colorA[1];
 		layout(location = 7) in vec4 in_colorB[1];
 		layout(location = 8) in int in_gradientMode[1];
 
@@ -146,9 +146,9 @@ namespace ca { namespace gui {
 		void main()
 		{
 			// Pixel inside clipping region?
-			if( gl_FragCoord.x < in_clippingRect.x || gl_FragCoord.x >= in_clippingRect.y
-			  || gl_FragCoord.y < in_clippingRect.z || gl_FragCoord.y >= in_clippingRect.w )
-				discard;
+		//	if( gl_FragCoord.x < in_clippingRect.x || gl_FragCoord.x >= in_clippingRect.y
+		//	  || gl_FragCoord.y < in_clippingRect.z || gl_FragCoord.y >= in_clippingRect.w )
+		//		discard;
 
 			vec4 color;
 			// position A and B are given in sprite relative coordinates (i.e. texture coordinates)
@@ -322,27 +322,28 @@ namespace ca { namespace gui {
 
 		m_fontRenderer->loadCaf(_fontFile);
 		m_spriteRenderer.reset(new cc::SpriteRenderer);
-		// Define geometry for triangles and rectangles
-		m_spriteRenderer->defSprite(0.0f, 0.0f, 0); // Standard rect without texture
 
 		// Create extra VBO for clipping rectangles
 		cc::glCall(glGenBuffers, 1, &m_extraVBO);
 		cc::glCall(glBindBuffer, GL_ARRAY_BUFFER, m_extraVBO);
 		// 4 x uint16 for clipping l, r, b and t
 		cc::glCall(glEnableVertexAttribArray, 7);
-		cc::glCall(glVertexAttribPointer, 7, 4, GLenum(cc::PrimitiveFormat::UINT16), GL_FALSE, 33, (GLvoid*)(0));
+		cc::glCall(glVertexAttribPointer, 7, 4, GLenum(cc::PrimitiveFormat::UINT16), GL_FALSE, 36, (GLvoid*)(0));
 		// 4 x float for posA and posB
 		cc::glCall(glEnableVertexAttribArray, 8);
-		cc::glCall(glVertexAttribPointer, 8, 4, GLenum(cc::PrimitiveFormat::FLOAT), GL_FALSE, 33, (GLvoid*)(8));
+		cc::glCall(glVertexAttribPointer, 8, 4, GLenum(cc::PrimitiveFormat::FLOAT), GL_FALSE, 36, (GLvoid*)(8));
 		// 4 x uint8 normalized as colorA
 		cc::glCall(glEnableVertexAttribArray, 9);
-		cc::glCall(glVertexAttribPointer, 9, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 33, (GLvoid*)(24));
+		cc::glCall(glVertexAttribPointer, 9, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 36, (GLvoid*)(24));
 		// 4 x uint8 normalized as colorB
 		cc::glCall(glEnableVertexAttribArray, 10);
-		cc::glCall(glVertexAttribPointer, 10, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 33, (GLvoid*)(28));
-		// 1 x uint8 gradient mode
+		cc::glCall(glVertexAttribPointer, 10, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 36, (GLvoid*)(28));
+		// 1 x int32 gradient mode
 		cc::glCall(glEnableVertexAttribArray, 11);
-		cc::glCall(glVertexAttribPointer, 11, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_FALSE, 33, (GLvoid*)(28));
+		cc::glCall(glVertexAttribPointer, 11, 4, GLenum(cc::PrimitiveFormat::INT32), GL_FALSE, 36, (GLvoid*)(32));
+
+		// Define geometry for triangles and rectangles
+		m_spriteRenderer->defSprite(0.0f, 0.0f, 0); // Standard rect without texture
 	}
 
 	CharcoalBackend::~CharcoalBackend()
@@ -358,7 +359,8 @@ namespace ca { namespace gui {
 		m_spriteShader.setUniform(0, viewProj);
 		m_fontShader.setUniform(0, viewProj);
 		cc::Device::setCullMode(cc::CullMode::BACK);
-		cc::Device::setZFunc(cc::ComparisonFunc::LEQUAL);
+		cc::Device::setZFunc(cc::ComparisonFunc::ALWAYS);
+		cc::Device::setZWrite(false);
 	}
 
 	void CharcoalBackend::endDraw()
@@ -453,9 +455,10 @@ namespace ca { namespace gui {
 	{
 		// TODO: only if there are instances (is this checked by draw itself?)
 		cc::glCall(glBindBuffer, GL_ARRAY_BUFFER, m_extraVBO);
-		cc::glCall(glBufferData, GL_ARRAY_BUFFER, m_perInstanceData.size() * 8, m_perInstanceData.data(), GL_DYNAMIC_DRAW);
+		cc::glCall(glBufferData, GL_ARRAY_BUFFER, m_perInstanceData.size() * sizeof(AdditionalVertexInfo), m_perInstanceData.data(), GL_DYNAMIC_DRAW);
 		m_spriteShader.use();
 		m_spriteRenderer->draw();
+
 		m_fontShader.use();
 		m_fontRenderer->present();
 

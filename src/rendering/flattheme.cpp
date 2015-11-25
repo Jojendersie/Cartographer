@@ -20,7 +20,8 @@ namespace ca { namespace gui {
 
 	void FlatTheme::drawBackgroundArea(const class RefFrame& _rect, float _opacity)
 	{
-		GUIManager::renderBackend().drawRect(_rect, m_properties.backgroundColor);
+		if(_opacity > 0.0f)
+			GUIManager::renderBackend().drawRect(_rect, m_properties.backgroundColor);
 	}
 
 	void FlatTheme::drawButton(const RefFrame& _rect, bool _mouseOver)
@@ -58,7 +59,8 @@ namespace ca { namespace gui {
 
 	void FlatTheme::drawImage(const RefFrame& _rect, uint64 _texHandle, float _opacity)
 	{
-		GUIManager::renderBackend().drawTextureRect(_rect, _texHandle, _opacity);
+		if(_opacity > 0.0f)
+			GUIManager::renderBackend().drawTextureRect(_rect, _texHandle, _opacity);
 	}
 
 	void FlatTheme::drawArrowButton(const class RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver)

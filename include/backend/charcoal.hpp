@@ -34,7 +34,7 @@ namespace ca { namespace gui {
 			ei::Vec2 b;
 			ei::Vec<uint8, 4> colorA;
 			ei::Vec<uint8, 4> colorB;
-			uint8 gradientType;				///< Uniform=0, IRenderBackend::GradientMode, Triangle=4
+			int32 gradientType;				///< Uniform=0, IRenderBackend::GradientMode, Triangle=4
 		};
 #pragma pack(pop)
 
