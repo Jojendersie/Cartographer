@@ -35,8 +35,6 @@ namespace ca { namespace gui {
 		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
 		void setBackgroundTexture(const char* _textureFile, bool _smooth = true);
 
-		/// Forward to Clickable::processInput
-		//virtual bool processInput(const struct MouseState& _mouseState) override;
 		/// Forward to Clickable::addOnButtonChangeFunc
 		void addOnButtonChangeFunc(Clickable::OnButtonChange _callback, MouseState::ButtonState _stateMask) { m_clickComponent->addOnButtonChangeFunc(std::move(_callback), _stateMask); }
 	private:

@@ -76,6 +76,8 @@ namespace ca { namespace gui {
 	{
 		// Component disabled?
 		if(!isEnabled() || !isVisible()) return false;
+		// Only use mouse input if the mouse is on this component
+		if(!m_refFrame.isMouseOver(_mouseState.position)) return false;
 		// Forward to subelements
 		for(size_t i = 0; i < m_activeChildren.size(); ++i)
 		{

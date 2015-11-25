@@ -6,7 +6,8 @@ namespace ca { namespace gui {
 
 	Clickable::Clickable(RefFrame* _selfFrame) :
 		m_clickRegion(_selfFrame),
-		m_deleteRegion(false)
+		m_deleteRegion(false),
+		m_mouseOver(false)
 	{
 		for(int b = 0; b < 5; ++b)
 		{
@@ -23,7 +24,8 @@ namespace ca { namespace gui {
 
 	bool Clickable::processInput(const MouseState& _mouseState)
 	{
-		if(m_clickRegion->isMouseOver(_mouseState.position))
+		m_mouseOver = m_clickRegion->isMouseOver(_mouseState.position);
+		if(m_mouseOver)
 		{
 			// Handle each button
 			for(int b = 0; b < 5; ++b)
