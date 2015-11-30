@@ -10,6 +10,7 @@ namespace ca { namespace gui {
 	{
 	public:
 		Frame(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable);
+		~Frame();
 
 		/// Implement the draw method
 		void draw() override;
@@ -34,6 +35,12 @@ namespace ca { namespace gui {
 		void setBackground(const char* _imageFile, bool _smooth = true, float _opacity = 1.0f);
 		// TODO: recursive transparency?
 		void setBackgroundOpacity(float _opacity);
+
+		/// Get one of the four side-centered anchor points
+		AnchorPtr getAnchor(SIDE::Val _side) const { return m_anchors[_side]; }
+
+		/// Recursive refit
+		virtual void refitToAnchors() override;
 	protected:
 		std::vector<WidgetPtr> m_activeChildren;	///< List of subelements which can receive input. The list is sorted after last focus time (first element has the focus)
 		std::vector<WidgetPtr> m_passiveChildren;	///< List of subelements which are only drawn
@@ -42,8 +49,11 @@ namespace ca { namespace gui {
 		/// Resort active list to bring focussed element to the front.
 		void focusOn(size_t _index);
 
+		virtual void onExtentChanged() override;
+
 		float m_opacity;
 		uint64 m_texture;
+		std::shared_ptr<AnchorPoint> m_anchors[4];	///< One anchor on each side
 	};
 
 	typedef std::shared_ptr<Frame> FramePtr;

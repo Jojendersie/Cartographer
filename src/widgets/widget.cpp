@@ -1,6 +1,7 @@
 #pragma once
 
 #include "widgets/widget.hpp"
+#include "ca/gui/core/error.hpp"
 
 namespace ca { namespace gui {
 
@@ -40,6 +41,7 @@ namespace ca { namespace gui {
 		m_refFrame.sides[SIDE::RIGHT] = m_refFrame.left() + _size.x;
 		m_refFrame.sides[SIDE::TOP] = m_refFrame.bottom() + _size.y;
 		if(m_anchorComponent) m_anchorComponent->resetAnchors();
+		onExtentChanged();
 	}
 
 	Coord2 Widget::getSize() const
@@ -54,6 +56,7 @@ namespace ca { namespace gui {
 		m_refFrame.sides[SIDE::LEFT]   = _position.x;
 		m_refFrame.sides[SIDE::BOTTOM] = _position.y;
 		if(m_anchorComponent) m_anchorComponent->resetAnchors();
+		onExtentChanged();
 	}
 
 	Coord2 Widget::getPosition() const
@@ -68,6 +71,7 @@ namespace ca { namespace gui {
 		m_refFrame.sides[SIDE::RIGHT]  = _position.x + _size.x;
 		m_refFrame.sides[SIDE::TOP]    = _position.y + _size.y;
 		if(m_anchorComponent) m_anchorComponent->resetAnchors();
+		onExtentChanged();
 	}
 
 	bool Widget::processInput(const struct MouseState& _mouseState)
@@ -82,17 +86,34 @@ namespace ca { namespace gui {
 		if(m_resizeComponent)
 			if(m_resizeComponent->processInput(_mouseState)) {
 				m_mouseFocus = this;
+				onExtentChanged();
 				return true;
 			}
 		if(m_moveComponent)
 			if(m_moveComponent->processInput(_mouseState))
 			{
 				m_mouseFocus = this;
+				onExtentChanged();
 				return true;
 			}
 		if(m_refFrame.isMouseOver(_mouseState.position))
 			m_mouseFocus = this;
 		return false;
+	}
+
+	void Widget::setAnchor(SIDE::Val _side, AnchorPtr _anchor)
+	{
+		if(m_anchorComponent)
+		{
+			m_anchorComponent->setAnchor(_side, _anchor);
+		} else
+			error("Cannot set an anchor for a non-anchorable component!");
+	}
+
+	void Widget::refitToAnchors()
+	{
+		if(m_anchorComponent)
+			m_anchorComponent->refitToAnchors();
 	}
 
 }} // namespace ca::gui

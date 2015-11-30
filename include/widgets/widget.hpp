@@ -66,6 +66,13 @@ namespace ca { namespace gui {
 
 		/// Check if this widget consumed the last mouse input
 		bool hasMouseFocus() const { return m_mouseFocus == this; }
+
+		/// Attach one of the four reference sides to an anchor point
+		/// \details If the element was created without anchoring this fails with an error message.
+		void setAnchor(SIDE::Val _side, AnchorPtr _anchor);
+
+		/// Realign component to its anchors. If there is no anchor-component do nothing.
+		virtual void refitToAnchors();
 	protected:
 		const bool m_inputReceivable;	///< The element can receive input.
 		bool m_enabled;		///< The element can currently receive input (not disabled).
@@ -82,6 +89,9 @@ namespace ca { namespace gui {
 
 		Widget* m_parent;
 		friend class Frame; // Parent must be set from someone
+
+		/// Optional method to react on resize events. This is necessary to reset provided anchors.
+		virtual void onExtentChanged() {}
 	};
 
 	typedef std::shared_ptr<Widget> WidgetPtr;

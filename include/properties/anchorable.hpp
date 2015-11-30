@@ -2,15 +2,19 @@
 
 #include "coordinate.hpp"
 #include "refframe.hpp"
+#include <memory>
 
 namespace ca { namespace gui {
 
 	/// A position which can be used as reference for any anchor of an anchorable object.
 	struct AnchorPoint
 	{
-		void* host;			///< Who is responsible for this point? If the host object is deleted it must set this to nullptr. Then anchors are released automatic.
+		const void* host;		///< Who is responsible for this point? If the host object is deleted it must set this to nullptr. Then anchors are released automatic.
 		Coord2 position;		///< Current position.
+		AnchorPoint(const void* _host) : host(_host) {}
 	};
+
+	typedef std::shared_ptr<const AnchorPoint> AnchorPtr;
 
 	/// Anchorable classes are moved/resized dependent on the movement of anchor points.
 	/// \details Anchor points are provided by other components and snapping grids. An anchorable
@@ -40,7 +44,7 @@ namespace ca { namespace gui {
 		///		position of the new anchor is fixed relativ to the anchor-point.
 		/// \param [in] _side Which anchor should be reseted?
 		/// \param [in] _anchorPoint New reference point or nullptr to fix or release the anchor.
-		void setAnchor(SIDE::Val _side, const AnchorPoint* _anchorPoint);
+		void setAnchor(SIDE::Val _side, AnchorPtr _anchorPoint);
 
 		/// Recompute relative positioning. E.g. if a component was moved manually.
 		void resetAnchors();
@@ -54,9 +58,10 @@ namespace ca { namespace gui {
 	private:
 		struct Anchor
 		{
-			const AnchorPoint* reference;	///< Any anchor point
+			AnchorPtr reference;			///< Any anchor point
 			Coord relativePosition;			///< Difference of the component's anchor to the reference point.
 			Anchor() : reference(nullptr) {}
+			void checkReference();			///< Memory management of the anchorpoint (detach if host is gone)
 		};
 		Anchor m_anchors[4];			///< The four reference points (l, r, t, b)
 		RefFrame* m_selfFrame;

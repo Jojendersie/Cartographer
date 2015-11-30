@@ -8,7 +8,7 @@ namespace ca { namespace gui {
 	{
 	}
 
-	void Anchorable::setAnchor(SIDE::Val _side, const AnchorPoint* _anchorPoint)
+	void Anchorable::setAnchor(SIDE::Val _side, std::shared_ptr<const AnchorPoint> _anchorPoint)
 	{
 		int si = (int)_side;
 		m_anchors[si].reference = _anchorPoint;
@@ -17,8 +17,12 @@ namespace ca { namespace gui {
 
 	void Anchorable::resetAnchors()
 	{
-		for(int i = 0; i < 4; ++i) if(m_anchors[i].reference)
-			m_anchors[i].relativePosition = m_selfFrame->sides[i] - m_anchors[i].reference->position[i/2];
+		for(int i = 0; i < 4; ++i)
+		{
+			m_anchors[i].checkReference();
+			if(m_anchors[i].reference)
+				m_anchors[i].relativePosition = m_selfFrame->sides[i] - m_anchors[i].reference->position[i/2];
+		}
 	}
 
 	void Anchorable::setHorizontalAnchorMode(Mode _mode)
@@ -33,6 +37,10 @@ namespace ca { namespace gui {
 
 	bool Anchorable::refitToAnchors()
 	{
+		// If host vanished detach this element
+		for(int i = 0; i < 4; ++i)
+			m_anchors[i].checkReference();
+
 		// Fit horizontal and vertical independent
 		// horizontal ****************************
 		if(m_anchors[SIDE::LEFT].reference || m_anchors[SIDE::RIGHT].reference)
@@ -130,6 +138,12 @@ namespace ca { namespace gui {
 			}
 		}
 		return false;
+	}
+
+	void gui::Anchorable::Anchor::checkReference()
+	{
+		if(reference && !reference->host)
+			reference = nullptr;
 	}
 
 }} // namespace ca::gui

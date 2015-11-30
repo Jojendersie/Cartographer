@@ -10,3 +10,6 @@ Special decisions:
   - for now prototype the simplest possible solution!
 - Clipping: use Scissor (because text is difficult otherwise) -> clip only for components where necessary
 - Coordinates: start at the lower-left (0,0) and have unit pixels, RefFrame & ClippingAreas include the left/bottom and exclude the right/top pixels
+- Anchoring System:
+  - Components are streched/moved relative to others if anchored
+  - anchors are only sparsely provided to avoid clutter (frames, seperators)

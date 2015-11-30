@@ -52,6 +52,7 @@ namespace ca { namespace gui {
 	{
 		if(!g_manager)
 			return error("Uninitialized GUIManager! Cannot draw a GUI!");
+		refitAllToAnchors();
 		g_manager->m_renderer->beginDraw();
 		g_manager->m_topFrame->draw();
 		g_manager->m_renderer->endDraw();
@@ -96,6 +97,7 @@ namespace ca { namespace gui {
 			error("Uninitialized GUIManager! Cannot process input!");
 			return false;
 		}
+		refitAllToAnchors();
 		g_manager->m_mouseState = _mouseState;
 		return g_manager->m_topFrame->processInput( _mouseState );
 	}
@@ -152,6 +154,27 @@ namespace ca { namespace gui {
 	int GUIManager::getHeight()
 	{
 		return (int)g_manager->m_topFrame->getSize().y;
+	}
+
+	void GUIManager::refitAllToAnchors()
+	{
+		static int s_numRunningRefits = 0;
+		static int s_currentRefit = 0;
+		if(s_numRunningRefits > 0)
+		{
+			// Already in progress, try later or break for more than 3 calls
+			if(s_numRunningRefits >= 3) return;
+			++s_numRunningRefits;
+		} else s_numRunningRefits = 1;
+		// Work through all pending refits. The right number might increase while performing
+		// the current iteration.
+		while(++s_currentRefit <= s_numRunningRefits)
+		{
+			// Recursively call for all components
+			g_manager->m_topFrame->refitToAnchors();
+		}
+		s_numRunningRefits = 0;
+		s_currentRefit = 0;
 	}
 
 }} // namespace ca::gui

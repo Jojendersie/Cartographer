@@ -73,6 +73,10 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		///		frame buffer.
 		static int getHeight();
 
+		/// Globally check all elements for changes and cause a refiting of sizes and positions.
+		/// \details This method blocks recursive calls. I.e. if a resize causes another refit
+		///		this is logged and executed later until convergence or at most three times.
+		static void refitAllToAnchors();
 	private:
 		std::shared_ptr<class IRenderBackend> m_renderer;
 		std::shared_ptr<class ITheme> m_theme;

@@ -61,7 +61,7 @@ void createGUI(GLFWwindow* _window)
 	f0->setBackgroundOpacity(0.5f);
 	GUIManager::add(f0);
 
-	for(int i = 0; i < 5; ++i)
+	for(int i = 0; i < 4; ++i)
 	{
 		ButtonPtr b0 = std::make_shared<Button>();
 		b0->setExtent(f0->getPosition() + Vec2(10.0f, 10.0f + i*25.0f), Vec2(80.0f, 20.0f));
@@ -69,6 +69,8 @@ void createGUI(GLFWwindow* _window)
 		b0->setText(name.c_str());
 		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " clicked.\n"; }, MouseState::CLICKED);
 		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " double clicked.\n"; }, MouseState::DBL_CLICKED);
+		b0->setAnchor(SIDE::LEFT, f0->getAnchor(SIDE::LEFT));
+		b0->setAnchor(SIDE::BOTTOM, f0->getAnchor(SIDE::BOTTOM));
 		f0->add(b0);
 	}
 }
