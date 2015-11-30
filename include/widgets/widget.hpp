@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "properties/anchorable.hpp"
+#include "properties/anchorprovider.hpp"
 #include "properties/clickable.hpp"
 #include "properties/moveable.hpp"
 #include "properties/refframe.hpp"
@@ -16,7 +17,7 @@ namespace ca { namespace gui {
 	{
 	public:
 		Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable, bool _inputReceivable, bool _focusable);
-		virtual ~Widget();
+		virtual ~Widget() = default;
 
 		/// Set the button width and heigh (resets anchoring)
 		void setSize(const Coord2& _size);
@@ -82,16 +83,17 @@ namespace ca { namespace gui {
 
 		RefFrame m_refFrame;
 		// List of optional components (can be nullptr)
-		Anchorable* m_anchorComponent;
-		Clickable* m_clickComponent;
-		Moveable* m_moveComponent;
-		Resizeable* m_resizeComponent;
+		std::unique_ptr<Anchorable> m_anchorComponent;
+		std::unique_ptr<Clickable> m_clickComponent;
+		std::unique_ptr<Moveable> m_moveComponent;
+		std::unique_ptr<Resizeable> m_resizeComponent;
+		std::unique_ptr<IAnchorProvider> m_anchorProvider;
 
 		Widget* m_parent;
 		friend class Frame; // Parent must be set from someone
 
 		/// Optional method to react on resize events. This is necessary to reset provided anchors.
-		virtual void onExtentChanged() {}
+		virtual void onExtentChanged();
 	};
 
 	typedef std::shared_ptr<Widget> WidgetPtr;

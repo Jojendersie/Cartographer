@@ -159,6 +159,7 @@
     <ClInclude Include="include\ca\gui\core\error.hpp" />
     <ClInclude Include="include\guimanager.hpp" />
     <ClInclude Include="include\properties\anchorable.hpp" />
+    <ClInclude Include="include\properties\anchorprovider.hpp" />
     <ClInclude Include="include\properties\clickable.hpp" />
     <ClInclude Include="include\properties\coordinate.hpp" />
     <ClInclude Include="include\properties\moveable.hpp" />
@@ -184,6 +185,7 @@
     <ClCompile Include="src\core\error.cpp" />
     <ClCompile Include="src\guimanager.cpp" />
     <ClCompile Include="src\properties\anchorable.cpp" />
+    <ClCompile Include="src\properties\anchorprovider.cpp" />
     <ClCompile Include="src\properties\clickable.cpp" />
     <ClCompile Include="src\properties\coordinate.cpp" />
     <ClCompile Include="src\properties\moveable.cpp" />

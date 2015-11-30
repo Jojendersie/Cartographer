@@ -37,7 +37,7 @@ namespace ca { namespace gui {
 		void setBackgroundOpacity(float _opacity);
 
 		/// Get one of the four side-centered anchor points
-		AnchorPtr getAnchor(SIDE::Val _side) const { return m_anchors[_side]; }
+		AnchorPtr getAnchor(SIDE::Val _side) const { return static_cast<const BorderAnchorProvider*>(m_anchorProvider.get())->getAnchor(_side); }
 
 		/// Recursive refit
 		virtual void refitToAnchors() override;
@@ -49,11 +49,8 @@ namespace ca { namespace gui {
 		/// Resort active list to bring focussed element to the front.
 		void focusOn(size_t _index);
 
-		virtual void onExtentChanged() override;
-
 		float m_opacity;
 		uint64 m_texture;
-		std::shared_ptr<AnchorPoint> m_anchors[4];	///< One anchor on each side
 	};
 
 	typedef std::shared_ptr<Frame> FramePtr;

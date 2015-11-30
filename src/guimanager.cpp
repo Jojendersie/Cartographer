@@ -160,21 +160,21 @@ namespace ca { namespace gui {
 	{
 		static int s_numRunningRefits = 0;
 		static int s_currentRefit = 0;
-		if(s_numRunningRefits > 0)
+		if(IAnchorProvider::someAnchorChanged())
 		{
-			// Already in progress, try later or break for more than 3 calls
-			if(s_numRunningRefits >= 3) return;
 			++s_numRunningRefits;
-		} else s_numRunningRefits = 1;
-		// Work through all pending refits. The right number might increase while performing
-		// the current iteration.
-		while(++s_currentRefit <= s_numRunningRefits)
-		{
-			// Recursively call for all components
-			g_manager->m_topFrame->refitToAnchors();
+			while(++s_currentRefit <= s_numRunningRefits)
+			{
+				IAnchorProvider::resetChangedStatus();
+				// Recursively call for all components
+				g_manager->m_topFrame->refitToAnchors();
+				// Changing components might have changed anchor points again
+				if(IAnchorProvider::someAnchorChanged() && s_numRunningRefits < 3)
+					++s_numRunningRefits;
+			}
+			s_numRunningRefits = 0;
+			s_currentRefit = 0;
 		}
-		s_numRunningRefits = 0;
-		s_currentRefit = 0;
 	}
 
 }} // namespace ca::gui

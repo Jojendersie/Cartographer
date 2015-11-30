@@ -72,11 +72,6 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		///		created for a part of the real app, but usually it is expected to cover the entire
 		///		frame buffer.
 		static int getHeight();
-
-		/// Globally check all elements for changes and cause a refiting of sizes and positions.
-		/// \details This method blocks recursive calls. I.e. if a resize causes another refit
-		///		this is logged and executed later until convergence or at most three times.
-		static void refitAllToAnchors();
 	private:
 		std::shared_ptr<class IRenderBackend> m_renderer;
 		std::shared_ptr<class ITheme> m_theme;
@@ -84,6 +79,11 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 
 		std::stack<ei::IVec4, std::vector<ei::IVec4>> m_clipRegionStack;
 		MouseState m_mouseState;		///< Buffer the last seen mouse state
+
+		/// Globally check all elements for changes and cause a refiting of sizes and positions.
+		/// \details This method blocks recursive calls. I.e. if a resize causes another refit
+		///		this is logged and executed later until convergence or at most three times.
+		static void refitAllToAnchors();
 	};
 
 }} // namespace ca::gui

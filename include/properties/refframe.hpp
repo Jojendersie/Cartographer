@@ -45,6 +45,8 @@ namespace ca { namespace gui {
 		/// Check if the mouse cursor is on this reference frame.
 		/// \param [in] _mousePos Position of the cursor in screenspace [0,1]^2.
 		virtual bool isMouseOver(const Coord2& _mousePos) override;
+
+		bool operator != (const RefFrame& _rhs) const;
 	};
 
 }} // namespace ca::gui

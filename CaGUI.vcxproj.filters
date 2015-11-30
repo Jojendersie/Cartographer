@@ -92,6 +92,9 @@
     <ClInclude Include="include\ca\gui\core\error.hpp">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="include\properties\anchorprovider.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\widgets\frame.cpp">
@@ -157,6 +160,9 @@
     <ClCompile Include="src\guimanager.cpp" />
     <ClCompile Include="src\core\error.cpp">
       <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\properties\anchorprovider.cpp">
+      <Filter>properties</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

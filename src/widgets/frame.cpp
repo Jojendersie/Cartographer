@@ -13,15 +13,11 @@ namespace ca { namespace gui {
 		m_opacity(1.0f),
 		m_texture(0)
 	{
-		for(int i = 0; i < 4; ++i)
-			m_anchors[i] = std::make_shared<AnchorPoint>(this);
+		m_anchorProvider = std::make_unique<BorderAnchorProvider>();
 	}
 
 	Frame::~Frame()
 	{
-		// Cause a future deletion of the four anchors
-		for(int i = 0; i < 4; ++i)
-			m_anchors[i]->host = nullptr;
 	}
 
 	void Frame::draw()
@@ -141,14 +137,6 @@ namespace ca { namespace gui {
 				m_activeChildren.begin() + _index,
 				m_activeChildren.begin() + _index );
 		}
-	}
-
-	void Frame::onExtentChanged()
-	{
-		m_anchors[SIDE::LEFT]->position = Coord2(m_refFrame.left(), (m_refFrame.bottom() + m_refFrame.top()) * 0.5f);
-		m_anchors[SIDE::RIGHT]->position = Coord2(m_refFrame.right(), (m_refFrame.bottom() + m_refFrame.top()) * 0.5f);
-		m_anchors[SIDE::BOTTOM]->position = Coord2((m_refFrame.left() + m_refFrame.right()) * 0.5f, m_refFrame.bottom());
-		m_anchors[SIDE::TOP]->position = Coord2((m_refFrame.left() + m_refFrame.right()) * 0.5f, m_refFrame.top());
 	}
 
 }} // namespace ca::gui
