@@ -25,7 +25,7 @@ namespace ca { namespace gui {
 		virtual bool processInput(const struct MouseState& _mouseState) override;
 
 		/// Check if the given child is the first one
-		virtual bool isChildFocused(const Widget* _child) const override;
+//		virtual bool isChildFocused(const Widget* _child) const override;
 
 		/// Set an image as background. It is streched automatically.
 		/// \param [in] _imageFile Name of a texture file loadable by the render-backend.

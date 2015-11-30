@@ -81,18 +81,22 @@ namespace ca { namespace gui {
 	{
 		// Component disabled?
 		if(!isEnabled() || !isVisible()) return false;
-		// Only use mouse input if the mouse is on this component
-		if(m_refFrame.isMouseOver(_mouseState.position))
+		// Exclusive input?
+		if(GUIManager::getStickyMouseFocussed() != this)
 		{
-			// Forward to subelements
-			for(size_t i = 0; i < m_activeChildren.size(); ++i)
+			// Only use mouse input if the mouse is on this component
+			if(m_refFrame.isMouseOver(_mouseState.position))
 			{
-				WidgetPtr& e = m_activeChildren[i];
-				if(e->isEnabled() && e->processInput(_mouseState))
+				// Forward to subelements
+				for(size_t i = 0; i < m_activeChildren.size(); ++i)
 				{
-					// The one who took the input gets the focus
-					if(e->isFocusable()) focusOn(i);
-					return true;
+					WidgetPtr& e = m_activeChildren[i];
+					if(e->isEnabled() && e->processInput(_mouseState))
+					{
+						// The one who took the input gets the focus
+						if(e->isFocusable()) focusOn(i);
+						return true;
+					}
 				}
 			}
 		}
@@ -102,11 +106,11 @@ namespace ca { namespace gui {
 		return Widget::processInput(_mouseState);
 	}
 
-	bool Frame::isChildFocused(const Widget* _child) const
+	/*bool Frame::isChildFocused(const Widget* _child) const
 	{
 		// TODO: Assert m_activeChildren.size() > 0
 		return m_activeChildren[0].get() == _child && _child->isFocusable();
-	}
+	}*/
 
 	void Frame::setBackground(const char* _imageFile, bool _smooth, float _opacity)
 	{

@@ -1,11 +1,10 @@
 #pragma once
 
 #include "widgets/widget.hpp"
+#include "guimanager.hpp"
 #include "ca/gui/core/error.hpp"
 
 namespace ca { namespace gui {
-
-	const Widget* Widget::m_mouseFocus = nullptr;
 
 	Widget::Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable, bool _inputReceivable, bool _focusable) : 
 		m_anchorComponent(nullptr),
@@ -74,7 +73,7 @@ namespace ca { namespace gui {
 	{
 		if(m_clickComponent)
 			if(m_clickComponent->processInput(_mouseState)) {
-				m_mouseFocus = this;
+				GUIManager::setMouseFocus(this);
 				return true;
 			}
 		RefFrame oldFrame = m_refFrame;
@@ -82,7 +81,7 @@ namespace ca { namespace gui {
 		// is done close to the border.
 		if(m_resizeComponent)
 			if(m_resizeComponent->processInput(_mouseState)) {
-				m_mouseFocus = this;
+				GUIManager::setMouseFocus(this, true);
 				if(oldFrame != m_refFrame)
 					onExtentChanged();
 				return true;
@@ -90,13 +89,16 @@ namespace ca { namespace gui {
 		if(m_moveComponent)
 			if(m_moveComponent->processInput(_mouseState))
 			{
-				m_mouseFocus = this;
+				GUIManager::setMouseFocus(this, true);
 				if(oldFrame != m_refFrame)
 					onExtentChanged();
 				return true;
 			}
 		if(m_refFrame.isMouseOver(_mouseState.position))
-			m_mouseFocus = this;
+			GUIManager::setMouseFocus(this);
+		// The current element has the focus but now reson to keep it.
+		else if(GUIManager::hasMouseFocus(this))
+			GUIManager::setMouseFocus(nullptr);
 		return false;
 	}
 

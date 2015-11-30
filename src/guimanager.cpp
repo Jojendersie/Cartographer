@@ -23,6 +23,11 @@ namespace ca { namespace gui {
 		g_manager->m_topFrame->setExtent(ei::Vec2(0.0f), ei::Vec2((float)_width, (float)_height));
 		// Push some (infinite) initial top-level clip region
 		g_manager->m_clipRegionStack.push(ei::IVec4(0x80000000, 0x7fffffff, 0x80000000, 0x7fffffff));
+
+		g_manager->m_keyboardFocus = nullptr;
+		g_manager->m_mouseFocus = nullptr;
+		g_manager->m_stickyKeyboardFocus = false;
+		g_manager->m_stickyMouseFocus = false;
 	}
 
 	void GUIManager::exit()
@@ -99,7 +104,9 @@ namespace ca { namespace gui {
 		}
 		refitAllToAnchors();
 		g_manager->m_mouseState = _mouseState;
-		return g_manager->m_topFrame->processInput( _mouseState );
+		if(g_manager->m_stickyMouseFocus && g_manager->m_mouseFocus)
+			return g_manager->m_mouseFocus->processInput( _mouseState );
+		else return g_manager->m_topFrame->processInput( _mouseState );
 	}
 
 	const MouseState& GUIManager::getMouseState()
@@ -107,7 +114,51 @@ namespace ca { namespace gui {
 		return g_manager->m_mouseState;
 	}
 
-	bool GUIManager::hasFocus(const WidgetPtr& _widget)
+	bool GUIManager::hasKeyboardFocus(const WidgetPtr& _widget)
+	{
+		return g_manager->m_keyboardFocus == _widget.get();
+	}
+
+	bool GUIManager::hasKeyboardFocus(const Widget* _widget)
+	{
+		return g_manager->m_keyboardFocus == _widget;
+	}
+
+	bool GUIManager::hasMouseFocus(const WidgetPtr& _widget)
+	{
+		return g_manager->m_mouseFocus == _widget.get();
+	}
+
+	bool GUIManager::hasMouseFocus(const Widget* _widget)
+	{
+		return g_manager->m_mouseFocus == _widget;
+	}
+
+	Widget* GUIManager::getKeyboardFocussed()
+	{
+		return g_manager->m_keyboardFocus;
+	}
+
+	Widget * GUIManager::getStickyKeyboardFocussed()
+	{
+		if(g_manager->m_stickyKeyboardFocus)
+			return g_manager->m_keyboardFocus;
+		return nullptr;
+	}
+
+	Widget* GUIManager::getMouseFocussed()
+	{
+		return g_manager->m_mouseFocus;
+	}
+
+	Widget * GUIManager::getStickyMouseFocussed()
+	{
+		if(g_manager->m_stickyMouseFocus)
+			return g_manager->m_mouseFocus;
+		return nullptr;
+	}
+
+/*	bool GUIManager::hasFocus(const WidgetPtr& _widget)
 	{
 		return hasFocus(_widget.get());
 	}
@@ -134,6 +185,18 @@ namespace ca { namespace gui {
 
 	void GUIManager::setFocus(WidgetPtr _widget)
 	{
+	}*/
+
+	void GUIManager::setKeyboardFocus(Widget* _widget, bool _sticky)
+	{
+		g_manager->m_keyboardFocus = _widget;
+		g_manager->m_stickyKeyboardFocus = _sticky;
+	}
+
+	void GUIManager::setMouseFocus(Widget* _widget, bool _sticky)
+	{
+		g_manager->m_mouseFocus = _widget;
+		g_manager->m_stickyMouseFocus = _sticky;
 	}
 
 	IRenderBackend& GUIManager::renderBackend()

@@ -49,12 +49,22 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		/// \details Only one element can have the focus at a time. The focus can be changed by
 		///		by mouse clicks or by different key events. For keys the GUI must define handlers
 		///		on its own (Tab, Arrowkeys...).
-		static bool hasFocus(const WidgetPtr& _widget);
-		static bool hasFocus(const Widget* _widget);
+		static bool hasKeyboardFocus(const WidgetPtr& _widget);
+		static bool hasKeyboardFocus(const Widget* _widget);
+		static bool hasMouseFocus(const WidgetPtr& _widget);
+		static bool hasMouseFocus(const Widget* _widget);
 		/// Get the element with the focus. Can return a nullptr.
-		static WidgetPtr getFocussed();
+		static Widget* getKeyboardFocussed();
+		static Widget* getStickyKeyboardFocussed();
+		static Widget* getMouseFocussed();
+		static Widget* getStickyMouseFocussed();
+		//static WidgetPtr getFocussed();
 		/// Set an element as the focussed one and release the last one.
-		static void setFocus(WidgetPtr _widget);
+		//static void setFocus(WidgetPtr _widget);
+
+		/// Set an element as the focussed one and release the last one.
+		static void setKeyboardFocus(Widget* _widget, bool _sticky = false);
+		static void setMouseFocus(Widget* _widget, bool _sticky = false);
 
 		/// Access the render backend for elementary draw opertations
 		static class IRenderBackend& renderBackend();
@@ -76,6 +86,11 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		std::shared_ptr<class IRenderBackend> m_renderer;
 		std::shared_ptr<class ITheme> m_theme;
 		std::shared_ptr<class Frame> m_topFrame;
+
+		Widget* m_keyboardFocus;		///< The element with the keyboard-focus or nullptr
+		Widget* m_mouseFocus;			///< The element with the mouse-focus or nullptr
+		bool m_stickyKeyboardFocus;		///< The focus guarantees exclusive input handling by the element. The element must release this active.
+		bool m_stickyMouseFocus;		///< The focus guarantees exclusive input handling by the element. The element must release this active.
 
 		std::stack<ei::IVec4, std::vector<ei::IVec4>> m_clipRegionStack;
 		MouseState m_mouseState;		///< Buffer the last seen mouse state
