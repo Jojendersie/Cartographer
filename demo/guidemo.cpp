@@ -76,13 +76,45 @@ void createGUI(GLFWwindow* _window)
 
 	// Second frame with image buttons
 	FramePtr f1 = std::make_shared<Frame>(true, false, true, true);
-	f1->setExtent(Vec2(5.0f, 120.0f), Vec2(100.0f));
+	f1->setExtent(Vec2(5.0f, 120.0f), Vec2(100.0f, 230.0f));
 	f1->setBackgroundOpacity(0.5f);
 	GUIManager::add(f1);
 
 	ButtonPtr b1 = std::make_shared<Button>();
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 5.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::LEFT, coord::pixel(32,32), false);
+	b1->setAnchor(SIDE::LEFT, f1->getAnchor(SIDE::LEFT));
+	b1->setAnchor(SIDE::BOTTOM, f1->getAnchor(SIDE::BOTTOM));
+	f1->add(b1);
+
+	b1 = std::make_shared<Button>();
+	b1->setExtent(f1->getPosition() + Vec2(5.0f, 50.0f), Vec2(90.0f, 40.0f));
+	b1->setIcon("textures/ca_icon32.png", SIDE::LEFT, coord::pixel(20,20), false, 5.0f);
+	b1->setText("Icon Left");
+	b1->setAnchor(SIDE::LEFT, f1->getAnchor(SIDE::LEFT));
+	b1->setAnchor(SIDE::BOTTOM, f1->getAnchor(SIDE::BOTTOM));
+	f1->add(b1);
+
+	b1 = std::make_shared<Button>();
+	b1->setExtent(f1->getPosition() + Vec2(5.0f, 95.0f), Vec2(90.0f, 40.0f));
+	b1->setIcon("textures/ca_icon32.png", SIDE::RIGHT, coord::pixel(20,20), false, 2.0f);
+	b1->setText("Icon Right");
+	b1->setAnchor(SIDE::LEFT, f1->getAnchor(SIDE::LEFT));
+	b1->setAnchor(SIDE::BOTTOM, f1->getAnchor(SIDE::BOTTOM));
+	f1->add(b1);
+
+	b1 = std::make_shared<Button>();
+	b1->setExtent(f1->getPosition() + Vec2(5.0f, 140.0f), Vec2(90.0f, 40.0f));
+	b1->setIcon("textures/ca_icon32.png", SIDE::BOTTOM, coord::pixel(20,20), false, 2.0f);
+	b1->setText("Icon Bottom");
+	b1->setAnchor(SIDE::LEFT, f1->getAnchor(SIDE::LEFT));
+	b1->setAnchor(SIDE::BOTTOM, f1->getAnchor(SIDE::BOTTOM));
+	f1->add(b1);
+
+	b1 = std::make_shared<Button>();
+	b1->setExtent(f1->getPosition() + Vec2(5.0f, 185.0f), Vec2(90.0f, 40.0f));
+	b1->setIcon("textures/ca_icon32.png", SIDE::TOP, coord::pixel(20,20), false, 2.0f);
+	b1->setText("Icon Top");
 	b1->setAnchor(SIDE::LEFT, f1->getAnchor(SIDE::LEFT));
 	b1->setAnchor(SIDE::BOTTOM, f1->getAnchor(SIDE::BOTTOM));
 	f1->add(b1);

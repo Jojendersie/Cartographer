@@ -51,20 +51,20 @@ namespace ca { namespace gui {
 		}
 	}
 
-	void FlatTheme::drawText(const Coord2& _position, const char* _text, bool _mouseOver, float _alignX, float _alignY)
+	void FlatTheme::drawText(const Coord2& _position, const char* _text, float _relativeScale, bool _mouseOver, float _alignX, float _alignY)
 	{
 		GUIManager::renderBackend().drawText(_position, _text,
-					m_properties.textSize,
+					m_properties.textSize * _relativeScale,
 					_mouseOver ? m_properties.hoverTextColor : m_properties.textColor,
 					_alignX, _alignY,
 					0.0f, true // TODO: dynamic rounding mode for moving components
 			);
 	}
 
-	ei::Rect2D FlatTheme::getTextBB(const Coord2& _position, const char* _text, float _alignX, float _alignY)
+	ei::Rect2D FlatTheme::getTextBB(const Coord2& _position, const char* _text, float _relativeScale, float _alignX, float _alignY)
 	{
 		return GUIManager::renderBackend().getTextBB(_position, _text,
-			m_properties.textSize,
+			m_properties.textSize * _relativeScale,
 			_alignX, _alignY,
 			0.0f );
 	}

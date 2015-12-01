@@ -12,7 +12,7 @@ namespace ca { namespace gui {
 		m_textSize(0.0f),
 		m_iconPos(SIDE::LEFT),
 		m_iconSize(0.0f),
-		m_iconPadding(0.0f),
+		m_iconPadding(2.0f),
 		m_iconTexture(0),
 		m_backgroundTexture(0)
 	{
@@ -23,7 +23,7 @@ namespace ca { namespace gui {
 	void Button::setText(const char* _text)
 	{
 		m_text = _text;
-		m_textSize = GUIManager::theme().getTextBB(Coord2(0.0f), _text).max;
+		m_textSize = GUIManager::theme().getTextBB(Coord2(0.0f), _text, 1.0f).max;
 	}
 
 	void Button::setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, bool _smooth, Coord _padding)
@@ -79,34 +79,46 @@ namespace ca { namespace gui {
 			iconPos.y = textPos.y = (m_refFrame.bottom() + m_refFrame.top()) * 0.5f;
 			textPos.y -= m_textSize.y * downScale * 0.5f;
 			iconPos.y -= m_iconSize.y * downScale * 0.5f;
-			if(m_iconTexture && m_iconPos == SIDE::LEFT)
+			if(m_iconPos == SIDE::LEFT)
 			{
 				iconPos.x = m_refFrame.left() + m_iconPadding * downScale;
 				textPos.x = m_refFrame.left() + (m_iconPadding * 2.0f + m_iconSize.x) * downScale;
-			} else if(m_iconTexture && m_iconPos == SIDE::RIGHT) {
-				iconPos.x = m_refFrame.right() - m_iconPadding * downScale;
+			} else {
+				iconPos.x = m_refFrame.right() - (m_iconPadding + m_iconSize.x) * downScale;
 				textPos.x = m_refFrame.right() - (m_iconPadding * 2.0f + m_iconSize.x + m_textSize.x) * downScale;
-			} else // Center text
-				textPos.x = (m_refFrame.left() + m_refFrame.right()) * 0.5f - m_textSize.x * downScale * 0.5f;
+			}
 		} else {
-			// TODO...
+			float width = ei::max(m_iconSize.x, m_textSize.x) + m_iconPadding * 2.0f;
+			float height = m_iconSize.y + m_textSize.y + m_iconPadding * 3.0f;
+			// autoscale if width or height is greater then the reference frame.
+			downScale = ei::min(1.0f, m_refFrame.width() / width,
+				m_refFrame.height() / height);
 			iconPos.x = textPos.x = (m_refFrame.left() + m_refFrame.right()) * 0.5f;
+			textPos.x -= m_textSize.x * downScale * 0.5f;
+			iconPos.x -= m_iconSize.x * downScale * 0.5f;
+			if(m_iconPos == SIDE::BOTTOM)
+			{
+				iconPos.y = m_refFrame.bottom() + m_iconPadding * downScale;
+				textPos.y = m_refFrame.bottom() + (m_iconPadding * 2.0f + m_iconSize.y) * downScale;
+			} else {
+				iconPos.y = m_refFrame.top() - (m_iconPadding + m_iconSize.y) * downScale;
+				textPos.y = m_refFrame.top() - (m_iconPadding * 2.0f + m_iconSize.y + m_textSize.y) * downScale;
+			}
 		}
 
 		// Icon
 		if(m_iconTexture)
 		{
 			RefFrame rect;
-			// TODO: rounding?
-			rect.sides[SIDE::LEFT]   = iconPos.x;
-			rect.sides[SIDE::RIGHT]  = iconPos.x + m_iconSize.x * downScale;
-			rect.sides[SIDE::BOTTOM] = iconPos.y;
-			rect.sides[SIDE::TOP]    = iconPos.y + m_iconSize.y * downScale;
+			rect.sides[SIDE::LEFT]   = floorf(iconPos.x);
+			rect.sides[SIDE::RIGHT]  = floorf(iconPos.x + m_iconSize.x * downScale);
+			rect.sides[SIDE::BOTTOM] = floorf(iconPos.y);
+			rect.sides[SIDE::TOP]    = floorf(iconPos.y + m_iconSize.y * downScale);
 			GUIManager::theme().drawImage(rect, m_iconTexture);
 		}
 
 		// Text
-		GUIManager::theme().drawText(textPos, m_text.c_str(), mouseOver);
+		GUIManager::theme().drawText(textPos, m_text.c_str(), downScale, mouseOver);
 	}
 
 	/*bool Button::processInput(const MouseState& _mouseState)
