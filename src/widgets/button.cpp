@@ -9,11 +9,12 @@ namespace ca { namespace gui {
 
 	Button::Button() :
 		Widget(true, true, false, false, true, false),
-		m_backgroundTexture(0),
-		m_iconTexture(0),
 		m_textSize(0.0f),
+		m_iconPos(SIDE::LEFT),
 		m_iconSize(0.0f),
-		m_iconPos(SIDE::LEFT)
+		m_iconPadding(0.0f),
+		m_iconTexture(0),
+		m_backgroundTexture(0)
 	{
 		m_enabled = true;
 		m_clickComponent->setClickRegion(&m_refFrame, false);
@@ -30,6 +31,7 @@ namespace ca { namespace gui {
 		m_iconPos = _side;
 		m_iconTexture = GUIManager::renderBackend().getTexture(_textureFile, _smooth);
 		m_iconSize = _size;
+		m_iconPadding = _padding;
 	}
 
 	void Button::setBackgroundTexture(const char* _textureFile, bool _smooth)
@@ -54,18 +56,29 @@ namespace ca { namespace gui {
 		float downScale = 1.0f;
 		if(!m_iconTexture)
 		{
+			// autoscale if width or height is greater then the reference frame.
+			downScale = ei::min(1.0f, m_refFrame.width() / m_textSize.x,
+									  m_refFrame.height() / m_textSize.y);
 			textPos.x = (m_refFrame.left() + m_refFrame.right()) * 0.5f;
 			textPos.y = (m_refFrame.bottom() + m_refFrame.top()) * 0.5f;
 			textPos -= m_textSize * downScale * 0.5f;
+		} else if(m_text.empty()) {
+			// autoscale if width or height is greater then the reference frame.
+			downScale = ei::min(1.0f, m_refFrame.width() / (m_iconSize.x + m_iconPadding * 2.0f),
+									  m_refFrame.height() / (m_iconSize.y + m_iconPadding * 2.0f));
+			iconPos.x = (m_refFrame.left() + m_refFrame.right()) * 0.5f;
+			iconPos.y = (m_refFrame.bottom() + m_refFrame.top()) * 0.5f;
+			iconPos -= m_iconSize * downScale * 0.5f;
 		} else if(m_iconPos == SIDE::LEFT || m_iconPos == SIDE::RIGHT)
 		{
 			float width = m_iconSize.x + m_textSize.x + m_iconPadding * 2.0f;
-			float height = ei::max(m_iconSize.y, m_textSize.y);
+			float height = ei::max(m_iconSize.y, m_textSize.y) + m_iconPadding * 2.0f;
 			// autoscale if width or height is greater then the reference frame.
 			downScale = ei::min(1.0f, m_refFrame.width() / width,
 									  m_refFrame.height() / height);
 			iconPos.y = textPos.y = (m_refFrame.bottom() + m_refFrame.top()) * 0.5f;
 			textPos.y -= m_textSize.y * downScale * 0.5f;
+			iconPos.y -= m_iconSize.y * downScale * 0.5f;
 			if(m_iconTexture && m_iconPos == SIDE::LEFT)
 			{
 				iconPos.x = m_refFrame.left() + m_iconPadding * downScale;
@@ -85,10 +98,10 @@ namespace ca { namespace gui {
 		{
 			RefFrame rect;
 			// TODO: rounding?
-			rect.sides[SIDE::LEFT]   = iconPos.x - m_iconSize.x * downScale * 0.5f;
-			rect.sides[SIDE::RIGHT]  = iconPos.x + m_iconSize.x * downScale * 0.5f;
-			rect.sides[SIDE::BOTTOM] = iconPos.y - m_iconSize.y * downScale * 0.5f;
-			rect.sides[SIDE::TOP]    = iconPos.y + m_iconSize.y * downScale * 0.5f;
+			rect.sides[SIDE::LEFT]   = iconPos.x;
+			rect.sides[SIDE::RIGHT]  = iconPos.x + m_iconSize.x * downScale;
+			rect.sides[SIDE::BOTTOM] = iconPos.y;
+			rect.sides[SIDE::TOP]    = iconPos.y + m_iconSize.y * downScale;
 			GUIManager::theme().drawImage(rect, m_iconTexture);
 		}
 

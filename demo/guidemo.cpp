@@ -57,14 +57,14 @@ void createGUI(GLFWwindow* _window)
 	// Create GUI-elements
 	// A resizeable frame with different anchored buttons
 	FramePtr f0 = std::make_shared<Frame>(true, false, true, true);
-	f0->setExtent(Vec2(5.0f), Vec2(100.0f));
+	f0->setExtent(Vec2(5.0f), Vec2(100.0f, 105.0f));
 	f0->setBackgroundOpacity(0.5f);
 	GUIManager::add(f0);
 
 	for(int i = 0; i < 4; ++i)
 	{
 		ButtonPtr b0 = std::make_shared<Button>();
-		b0->setExtent(f0->getPosition() + Vec2(10.0f, 10.0f + i*25.0f), Vec2(80.0f, 20.0f));
+		b0->setExtent(f0->getPosition() + Vec2(5.0f, 5.0f + i*25.0f), Vec2(90.0f, 20.0f));
 		std::string name = "Test " + std::to_string(i);
 		b0->setText(name.c_str());
 		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " clicked.\n"; }, MouseState::CLICKED);
@@ -73,6 +73,19 @@ void createGUI(GLFWwindow* _window)
 		b0->setAnchor(SIDE::BOTTOM, f0->getAnchor(SIDE::BOTTOM));
 		f0->add(b0);
 	}
+
+	// Second frame with image buttons
+	FramePtr f1 = std::make_shared<Frame>(true, false, true, true);
+	f1->setExtent(Vec2(5.0f, 120.0f), Vec2(100.0f));
+	f1->setBackgroundOpacity(0.5f);
+	GUIManager::add(f1);
+
+	ButtonPtr b1 = std::make_shared<Button>();
+	b1->setExtent(f1->getPosition() + Vec2(5.0f, 5.0f), Vec2(90.0f, 40.0f));
+	b1->setIcon("textures/ca_icon32.png", SIDE::LEFT, coord::pixel(32,32), false);
+	b1->setAnchor(SIDE::LEFT, f1->getAnchor(SIDE::LEFT));
+	b1->setAnchor(SIDE::BOTTOM, f1->getAnchor(SIDE::BOTTOM));
+	f1->add(b1);
 }
 
 void runMainLoop(GLFWwindow* _window)

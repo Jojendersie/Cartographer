@@ -58,9 +58,6 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		static Widget* getStickyKeyboardFocussed();
 		static Widget* getMouseFocussed();
 		static Widget* getStickyMouseFocussed();
-		//static WidgetPtr getFocussed();
-		/// Set an element as the focussed one and release the last one.
-		//static void setFocus(WidgetPtr _widget);
 
 		/// Set an element as the focussed one and release the last one.
 		static void setKeyboardFocus(Widget* _widget, bool _sticky = false);

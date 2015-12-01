@@ -332,6 +332,7 @@ namespace ca { namespace gui {
 
 		// Define geometry for triangles and rectangles
 		m_spriteRenderer->defSprite(0.0f, 0.0f, 0); // Standard rect without texture
+		m_spriteSizes.push_back( Vec2(1.0f) );
 	}
 
 	CharcoalBackend::~CharcoalBackend()
@@ -410,12 +411,13 @@ namespace ca { namespace gui {
 
 	void gui::CharcoalBackend::drawTextureRect(const RefFrame& _rect, uint64 _texture, float _opacity)
 	{
-		m_spriteRenderer->newInstance((int)_texture, Vec3(_rect.left(), _rect.bottom(), 0.0f), 0.0f, Vec2(_rect.width(), _rect.height()));
+		m_spriteRenderer->newInstance((int)_texture, Vec3(_rect.left(), _rect.bottom(), 0.0f), 0.0f,
+			Vec2(_rect.width() / m_spriteSizes[(int)_texture].x, _rect.height() / m_spriteSizes[(int)_texture].y));
 
 		AdditionalVertexInfo info;
 		info.a = Vec2(0.0f);
 		info.b = Vec2(0.0f);
-		info.colorA = Vec<uint8, 4>(0, 0, 0, uint8(_opacity * 255.0f));
+		info.colorA = Vec<uint8, 4>(255, 255, 255, uint8(_opacity * 255.0f));
 		info.colorB = Vec<uint8, 4>(0);
 		info.gradientType = 0;
 		m_perInstanceData.push_back(info);
@@ -438,6 +440,7 @@ namespace ca { namespace gui {
 	{
 		cc::Texture2D::Handle tex = cc::Texture2DManager::get(_textureFile,
 			_smooth ? m_linearSampler : m_pointSampler);
+		m_spriteSizes.push_back( Vec2((float)tex->getWidth(), (float)tex->getHeight()) );
 		return m_spriteRenderer->defSprite(0.0f, 0.0f, tex);
 	}
 

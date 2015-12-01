@@ -39,6 +39,7 @@ namespace ca { namespace gui {
 
 		std::unique_ptr<cc::FontRenderer> m_fontRenderer;
 		std::unique_ptr<cc::SpriteRenderer> m_spriteRenderer;	///< Uber-shader for textured, colored and gradient rectangles/triangles
+		std::vector<ei::Vec2> m_spriteSizes;
 		cc::Program m_spriteShader;
 		cc::Program m_fontShader;
 		cc::Sampler m_linearSampler;
