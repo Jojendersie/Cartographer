@@ -159,6 +159,9 @@ int main()
 	createGUI(window);
 	runMainLoop(window);
 
+	GUIManager::exit();
+	ca::cc::ShaderManager::clear();
+	ca::cc::Texture2DManager::clear();
 	glfwDestroyWindow(window);
 	return 0;
 }
