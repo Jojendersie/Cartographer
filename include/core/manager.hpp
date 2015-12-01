@@ -154,7 +154,9 @@ namespace ca { namespace cc {
 				TLoader::unload(bucket.elem[i].resource);
 				free(bucket.elem[i].name);
 				bucket.elem[i].name = nullptr;
+				bucket.elem[i].resource = static_cast<TLoader::Handle>(0);
 			}
+			bucket.num = 0;
 		}
 	}
 

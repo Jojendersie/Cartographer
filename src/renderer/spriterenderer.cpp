@@ -74,7 +74,6 @@ int SpriteRenderer::defSprite(float _alignX, float _alignY,
 
 void SpriteRenderer::newInstance(int _spriteID, const ei::Vec3& _position, float _rotation, const ei::Vec2& _scale, float _animX, float _animY)
 {
-	int t = sizeof(SpriteRenderer::Sprite);
 	SpriteInstance instance;
 	const SpriteDef& sp = m_sprites[_spriteID];
 	instance.sprite = sp.sprite;
