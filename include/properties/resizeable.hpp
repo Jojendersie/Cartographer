@@ -17,6 +17,12 @@ namespace ca { namespace gui {
 		/// \param [in] _mouseState State of the mouse buttons and position. Required to start/end
 		///		movements.
 		bool processInput(const struct MouseState& _mouseState);
+
+	private:
+		class RefFrame* m_refFrame;
+		class Anchorable* m_anchorable;
+		bool m_active;			/// Currently actively resizing
+		bool m_resizing[4];		/// Flag for each resizing direction L,R,B,T
 	};
 
 }} // namespace ca::gui

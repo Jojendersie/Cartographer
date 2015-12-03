@@ -1,16 +1,67 @@
 #pragma once
 
 #include "properties/resizeable.hpp"
+#include "properties/refframe.hpp"
+#include "properties/anchorable.hpp"
+#include "backend/mouse.hpp"
+#include "guimanager.hpp"
 
 namespace ca { namespace gui {
 
-	Resizeable::Resizeable(RefFrame* _selfFrame, Anchorable* _anchorable)
+	Resizeable::Resizeable(RefFrame* _selfFrame, Anchorable* _anchorable) :
+		m_refFrame(_selfFrame),
+		m_anchorable(_anchorable)
 	{
+	}
+
+	static void chooseCursor(bool _flags[4])
+	{
+		if(_flags[0] && _flags[2])		GUIManager::setCursorType(CursorType::RESIZE_DUP);
+		else if(_flags[0] && _flags[3])	GUIManager::setCursorType(CursorType::RESIZE_DDOWN);
+		else if(_flags[1] && _flags[3])	GUIManager::setCursorType(CursorType::RESIZE_DUP);
+		else if(_flags[1] && _flags[2])	GUIManager::setCursorType(CursorType::RESIZE_DDOWN);
+		else if(_flags[0] || _flags[1]) GUIManager::setCursorType(CursorType::RESIZE_H);
+		else if(_flags[2] || _flags[3]) GUIManager::setCursorType(CursorType::RESIZE_V);
 	}
 
 	bool Resizeable::processInput(const MouseState& _mouseState)
 	{
-		return false;
+		if(m_active)
+		{
+			chooseCursor(m_resizing);
+			// If key was released stop floating
+			if(_mouseState.buttons[0] == MouseState::PRESSED)
+			{
+				if(m_resizing[SIDE::LEFT]) m_refFrame->sides[SIDE::LEFT] += _mouseState.deltaPos.x;
+				if(m_resizing[SIDE::RIGHT]) m_refFrame->sides[SIDE::RIGHT] += _mouseState.deltaPos.x;
+				if(m_resizing[SIDE::BOTTOM]) m_refFrame->sides[SIDE::BOTTOM] += _mouseState.deltaPos.y;
+				if(m_resizing[SIDE::TOP]) m_refFrame->sides[SIDE::TOP] += _mouseState.deltaPos.y;
+				// Make sure the anchoring does not reset the object
+				if(m_anchorable)
+					m_anchorable->resetAnchors();
+			} else m_active = false;
+			return true;
+		} else {
+			// Is the cursor within range?
+			if(_mouseState.position.x >= m_refFrame->left()-2.0f
+				&& _mouseState.position.x <= m_refFrame->right()+2.0f
+				&& _mouseState.position.y >= m_refFrame->bottom()-2.0f
+				&& _mouseState.position.y <= m_refFrame->top()+2.0f)
+			{
+				// Is the mouse cursor within a margin around the reference frame?
+				m_resizing[SIDE::LEFT] = abs(m_refFrame->left() - _mouseState.position.x) <= 2.0f;
+				m_resizing[SIDE::RIGHT] = abs(m_refFrame->right() - _mouseState.position.x) <= 2.0f;
+				m_resizing[SIDE::BOTTOM] = abs(m_refFrame->bottom() - _mouseState.position.y) <= 2.0f;
+				m_resizing[SIDE::TOP] = abs(m_refFrame->top() - _mouseState.position.y) <= 2.0f;
+
+				// Set a cursor if in margin
+				chooseCursor(m_resizing);
+
+				m_active = _mouseState.buttons[0] == MouseState::DOWN
+					&& (m_resizing[0] || m_resizing[1] || m_resizing[2] || m_resizing[3]);
+			}
+		}
+		return m_active;
 	}
 
 }} // namespace ca::gui
