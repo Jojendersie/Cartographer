@@ -36,9 +36,6 @@ namespace ca { namespace gui {
 		// TODO: recursive transparency?
 		void setBackgroundOpacity(float _opacity);
 
-		/// Get one of the four side-centered anchor points
-		AnchorPtr getAnchor(SIDE::Val _side) const { return static_cast<const BorderAnchorProvider*>(m_anchorProvider.get())->getAnchor(_side); }
-
 		/// Recursive refit
 		virtual void refitToAnchors() override;
 	protected:

@@ -67,9 +67,14 @@ namespace ca { namespace gui {
 
 		/// Attach one of the four reference sides to an anchor point
 		/// \details If the element was created without anchoring this fails with an error message.
-		void setAnchor(SIDE::Val _side, AnchorPtr _anchor);
+		void setAnchoring(SIDE::Val _side, AnchorPtr _anchor);
 		void setHorizontalAnchorMode(Anchorable::Mode _mode);
 		void setVerticalAnchorMode(Anchorable::Mode _mode);
+
+		/// Let this widget create anchors for others
+		void setAnchorProvider(std::unique_ptr<IAnchorProvider> _anchorProvider);
+		/// Get the anchor component (can be nullptr)
+		IAnchorProvider* getAnchorProvider() const	{ return m_anchorProvider.get(); }
 
 		/// Realign component to its anchors. If there is no anchor-component do nothing.
 		virtual void refitToAnchors();

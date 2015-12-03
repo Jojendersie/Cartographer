@@ -89,6 +89,8 @@ void createGUI(GLFWwindow* _window)
 	FramePtr f0 = std::make_shared<Frame>(true, false, true, true);
 	f0->setExtent(Vec2(5.0f), Vec2(100.0f, 105.0f));
 	f0->setBackgroundOpacity(0.5f);
+	f0->setAnchorProvider( std::make_unique<GridAnchorProvider>(2, 5) );
+	GridAnchorProvider* anchors = static_cast<GridAnchorProvider*>(f0->getAnchorProvider());
 	GUIManager::add(f0);
 
 	for(int i = 0; i < 4; ++i)
@@ -99,10 +101,10 @@ void createGUI(GLFWwindow* _window)
 		b0->setText(name.c_str());
 		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " clicked.\n"; }, MouseState::CLICKED);
 		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " double clicked.\n"; }, MouseState::DBL_CLICKED);
-		b0->setAnchor(SIDE::LEFT, f0->getAnchor(SIDE::LEFT));
-		b0->setAnchor(SIDE::BOTTOM, f0->getAnchor(SIDE::BOTTOM));
-		b0->setAnchor(SIDE::RIGHT, f0->getAnchor(SIDE::RIGHT));
-		b0->setAnchor(SIDE::TOP, f0->getAnchor(SIDE::TOP));
+		b0->setAnchoring(SIDE::LEFT, anchors->getHAnchor(0));
+		b0->setAnchoring(SIDE::BOTTOM, anchors->getVAnchor(i));
+		b0->setAnchoring(SIDE::RIGHT, anchors->getHAnchor(1));
+		b0->setAnchoring(SIDE::TOP, anchors->getVAnchor(i+1));
 		b0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
 		b0->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
 		f0->add(b0);
@@ -112,45 +114,47 @@ void createGUI(GLFWwindow* _window)
 	FramePtr f1 = std::make_shared<Frame>(true, false, true, true);
 	f1->setExtent(Vec2(5.0f, 120.0f), Vec2(100.0f, 230.0f));
 	f1->setBackgroundOpacity(0.5f);
+	f1->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
+	BorderAnchorProvider* anchorsf1 = static_cast<BorderAnchorProvider*>(f1->getAnchorProvider());
 	GUIManager::add(f1);
 
 	ButtonPtr b1 = std::make_shared<Button>();
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 5.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::LEFT, coord::pixel(32,32), false);
-	b1->setAnchor(SIDE::LEFT, f1->getAnchor(SIDE::LEFT));
-	b1->setAnchor(SIDE::BOTTOM, f1->getAnchor(SIDE::BOTTOM));
+	b1->setAnchoring(SIDE::LEFT, anchorsf1->getAnchor(SIDE::LEFT));
+	b1->setAnchoring(SIDE::BOTTOM, anchorsf1->getAnchor(SIDE::BOTTOM));
 	f1->add(b1);
 
 	b1 = std::make_shared<Button>();
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 50.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::LEFT, coord::pixel(20,20), false, 5.0f);
 	b1->setText("Icon Left");
-	b1->setAnchor(SIDE::LEFT, f1->getAnchor(SIDE::LEFT));
-	b1->setAnchor(SIDE::BOTTOM, f1->getAnchor(SIDE::BOTTOM));
+	b1->setAnchoring(SIDE::LEFT, anchorsf1->getAnchor(SIDE::LEFT));
+	b1->setAnchoring(SIDE::BOTTOM, anchorsf1->getAnchor(SIDE::BOTTOM));
 	f1->add(b1);
 
 	b1 = std::make_shared<Button>();
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 95.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::RIGHT, coord::pixel(20,20), false, 2.0f);
 	b1->setText("Icon Right");
-	b1->setAnchor(SIDE::LEFT, f1->getAnchor(SIDE::LEFT));
-	b1->setAnchor(SIDE::BOTTOM, f1->getAnchor(SIDE::BOTTOM));
+	b1->setAnchoring(SIDE::LEFT, anchorsf1->getAnchor(SIDE::LEFT));
+	b1->setAnchoring(SIDE::BOTTOM, anchorsf1->getAnchor(SIDE::BOTTOM));
 	f1->add(b1);
 
 	b1 = std::make_shared<Button>();
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 140.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::BOTTOM, coord::pixel(20,20), false, 2.0f);
 	b1->setText("Icon Bottom");
-	b1->setAnchor(SIDE::LEFT, f1->getAnchor(SIDE::LEFT));
-	b1->setAnchor(SIDE::BOTTOM, f1->getAnchor(SIDE::BOTTOM));
+	b1->setAnchoring(SIDE::LEFT, anchorsf1->getAnchor(SIDE::LEFT));
+	b1->setAnchoring(SIDE::BOTTOM, anchorsf1->getAnchor(SIDE::BOTTOM));
 	f1->add(b1);
 
 	b1 = std::make_shared<Button>();
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 185.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::TOP, coord::pixel(20,20), false, 2.0f);
 	b1->setText("Icon Top");
-	b1->setAnchor(SIDE::LEFT, f1->getAnchor(SIDE::LEFT));
-	b1->setAnchor(SIDE::BOTTOM, f1->getAnchor(SIDE::BOTTOM));
+	b1->setAnchoring(SIDE::LEFT, anchorsf1->getAnchor(SIDE::LEFT));
+	b1->setAnchoring(SIDE::BOTTOM, anchorsf1->getAnchor(SIDE::BOTTOM));
 	f1->add(b1);
 }
 

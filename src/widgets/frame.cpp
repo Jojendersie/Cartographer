@@ -13,7 +13,6 @@ namespace ca { namespace gui {
 		m_opacity(1.0f),
 		m_texture(0)
 	{
-		m_anchorProvider = std::make_unique<BorderAnchorProvider>();
 	}
 
 	Frame::~Frame()

@@ -103,7 +103,7 @@ namespace ca { namespace gui {
 		return false;
 	}
 
-	void Widget::setAnchor(SIDE::Val _side, AnchorPtr _anchor)
+	void Widget::setAnchoring(SIDE::Val _side, AnchorPtr _anchor)
 	{
 		if(m_anchorComponent)
 		{
@@ -130,6 +130,13 @@ namespace ca { namespace gui {
 			error("Cannot set vertical anchor mode for a non-anchorable component!");
 	}
 
+	void Widget::setAnchorProvider(std::unique_ptr<IAnchorProvider> _anchorProvider)
+	{
+		m_anchorProvider = move(_anchorProvider);
+		if(m_anchorProvider)
+			m_anchorProvider->recomputeAnchors(m_refFrame);
+	}
+
 	void Widget::refitToAnchors()
 	{
 		if(m_anchorComponent)
@@ -143,7 +150,7 @@ namespace ca { namespace gui {
 		if(m_anchorComponent)
 			m_anchorComponent->resetAnchors();
 		if(m_anchorProvider)
-			m_anchorProvider->replaceAnchors( m_refFrame );
+			m_anchorProvider->recomputeAnchors( m_refFrame );
 	}
 
 }} // namespace ca::gui
