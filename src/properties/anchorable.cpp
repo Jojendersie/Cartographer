@@ -4,7 +4,10 @@
 
 namespace ca { namespace gui {
 
-	Anchorable::Anchorable(RefFrame* _selfFrame) : m_selfFrame(_selfFrame)
+	Anchorable::Anchorable(RefFrame* _selfFrame) :
+		m_selfFrame(_selfFrame),
+		m_horizontalMode(NO_RESIZE),
+		m_verticalMode(NO_RESIZE)
 	{
 	}
 
@@ -51,10 +54,20 @@ namespace ca { namespace gui {
 				if(m_anchors[SIDE::LEFT].reference && m_anchors[SIDE::RIGHT].reference)
 				{
 					// Both borders are set -> center the object
+					float center = (m_selfFrame->sides[SIDE::LEFT] + m_selfFrame->sides[SIDE::RIGHT]) * 0.5f;
+					float oldLeftAnchor = m_selfFrame->sides[SIDE::LEFT] - m_anchors[SIDE::LEFT].relativePosition;
+					float oldRightAnchor = m_selfFrame->sides[SIDE::RIGHT] - m_anchors[SIDE::RIGHT].relativePosition;
+					float relativeLeftPosition = (center - oldLeftAnchor) / (oldRightAnchor - oldLeftAnchor);
+					float delta = (m_anchors[SIDE::LEFT].reference->position.y + m_anchors[SIDE::LEFT].relativePosition - m_selfFrame->sides[SIDE::LEFT]) * (1.0f - relativeLeftPosition)
+								+ (m_anchors[SIDE::RIGHT].reference->position.y + m_anchors[SIDE::RIGHT].relativePosition - m_selfFrame->sides[SIDE::RIGHT]) * relativeLeftPosition;
+					m_selfFrame->sides[SIDE::LEFT] += delta;
+					m_selfFrame->sides[SIDE::RIGHT] += delta;
+
 					float ad = m_anchors[SIDE::RIGHT].reference->position.x - m_anchors[SIDE::LEFT].reference->position.x;
 					float middle = m_anchors[SIDE::LEFT].reference->position.x + 0.5f * ad;
-					m_selfFrame->sides[SIDE::LEFT] = middle - m_selfFrame->width() * 0.5f;
-					m_selfFrame->sides[SIDE::RIGHT] = middle + m_selfFrame->width() * 0.5f;
+					float width = m_selfFrame->width();
+					m_selfFrame->sides[SIDE::LEFT] = middle - width * 0.5f;
+					m_selfFrame->sides[SIDE::RIGHT] = middle + width * 0.5f;
 				} else if(m_anchors[SIDE::LEFT].reference) {
 					float delta = m_anchors[SIDE::LEFT].reference->position.x + m_anchors[SIDE::LEFT].relativePosition - m_selfFrame->sides[SIDE::LEFT];
 					m_selfFrame->sides[SIDE::LEFT] += delta;
@@ -93,16 +106,20 @@ namespace ca { namespace gui {
 		// vertical ******************************
 		if(m_anchors[SIDE::BOTTOM].reference || m_anchors[SIDE::TOP].reference)
 		{
-			switch(m_horizontalMode)
+			switch(m_verticalMode)
 			{
 			case NO_RESIZE:
 				if(m_anchors[SIDE::BOTTOM].reference && m_anchors[SIDE::TOP].reference)
 				{
 					// Both borders are set -> center the object
-					float ad = m_anchors[SIDE::TOP].reference->position.y - m_anchors[SIDE::BOTTOM].reference->position.y;
-					float middle = m_anchors[SIDE::BOTTOM].reference->position.y + 0.5f * ad;
-					m_selfFrame->sides[SIDE::BOTTOM] = middle - m_selfFrame->height() * 0.5f;
-					m_selfFrame->sides[SIDE::TOP] = middle + m_selfFrame->height() * 0.5f;
+					float center = (m_selfFrame->sides[SIDE::BOTTOM] + m_selfFrame->sides[SIDE::TOP]) * 0.5f;
+					float oldBottomAnchor = m_selfFrame->sides[SIDE::BOTTOM] - m_anchors[SIDE::BOTTOM].relativePosition;
+					float oldTopAnchor = m_selfFrame->sides[SIDE::TOP] - m_anchors[SIDE::TOP].relativePosition;
+					float relativeBottomPosition = (center - oldBottomAnchor) / (oldTopAnchor - oldBottomAnchor);
+					float delta = (m_anchors[SIDE::BOTTOM].reference->position.y + m_anchors[SIDE::BOTTOM].relativePosition - m_selfFrame->sides[SIDE::BOTTOM]) * (1.0f - relativeBottomPosition)
+								+ (m_anchors[SIDE::TOP].reference->position.y + m_anchors[SIDE::TOP].relativePosition - m_selfFrame->sides[SIDE::TOP]) * relativeBottomPosition;
+					m_selfFrame->sides[SIDE::BOTTOM] += delta;
+					m_selfFrame->sides[SIDE::TOP] += delta;
 				} else if(m_anchors[SIDE::BOTTOM].reference) {
 					float delta = m_anchors[SIDE::BOTTOM].reference->position.y + m_anchors[SIDE::BOTTOM].relativePosition - m_selfFrame->sides[SIDE::BOTTOM];
 					m_selfFrame->sides[SIDE::BOTTOM] += delta;
@@ -117,6 +134,7 @@ namespace ca { namespace gui {
 				if(m_anchors[SIDE::BOTTOM].reference && m_anchors[SIDE::TOP].reference)
 				{
 					// Both borders are set so resize is necessary
+					//goto Resize_Top_Down;
 					m_selfFrame->sides[SIDE::BOTTOM] = m_anchors[SIDE::BOTTOM].reference->position.y + m_anchors[SIDE::BOTTOM].relativePosition;
 					m_selfFrame->sides[SIDE::TOP] = m_anchors[SIDE::TOP].reference->position.y + m_anchors[SIDE::TOP].relativePosition;
 				} else if(m_anchors[SIDE::BOTTOM].reference) {
@@ -130,6 +148,23 @@ namespace ca { namespace gui {
 				}
 				break;
 			case PREFER_RESIZE:
+				// Relative resize implementation: destroys relative margins/anchors
+				/*if(m_anchors[SIDE::BOTTOM].reference && m_anchors[SIDE::TOP].reference)
+				{
+Resize_Top_Down:
+					float oldBottomAnchor = m_selfFrame->sides[SIDE::BOTTOM] - m_anchors[SIDE::BOTTOM].relativePosition;
+					float oldTopAnchor = m_selfFrame->sides[SIDE::TOP] - m_anchors[SIDE::TOP].relativePosition;
+					float oldSize = oldTopAnchor - oldBottomAnchor;
+					float newBottomAnchor = m_anchors[SIDE::BOTTOM].reference->position.y;
+					float newTopAnchor = m_anchors[SIDE::TOP].reference->position.y;
+					float newSize = newTopAnchor - newBottomAnchor;
+					float relativeBottomPosition = m_anchors[SIDE::BOTTOM].relativePosition / oldSize;
+					float relativeTopPosition = m_anchors[SIDE::TOP].relativePosition / oldSize;
+					m_anchors[SIDE::BOTTOM].relativePosition = relativeBottomPosition * newSize;
+					m_anchors[SIDE::TOP].relativePosition = relativeTopPosition * newSize;
+					m_selfFrame->sides[SIDE::BOTTOM] = relativeBottomPosition * newSize + newBottomAnchor;
+					m_selfFrame->sides[SIDE::TOP] = relativeTopPosition * newSize + newTopAnchor;
+				} else */
 				if(m_anchors[SIDE::BOTTOM].reference)
 					m_selfFrame->sides[SIDE::BOTTOM] = m_anchors[SIDE::BOTTOM].reference->position.y + m_anchors[SIDE::BOTTOM].relativePosition;
 				if(m_anchors[SIDE::TOP].reference)

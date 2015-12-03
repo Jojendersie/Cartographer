@@ -30,9 +30,9 @@ namespace ca { namespace gui {
 		/// A component may or may not be resized to satisfy the anchoring.
 		enum Mode
 		{
-			NO_RESIZE,					///< Try to set the position such that quadratic deviation between all anchor-positions is minimized.
-			PREFER_MOVE,				///< If not anchored on either side move the object and keep its size.
-			PREFER_RESIZE,				///< No matter if the opposite side is anchored resize the object.
+			NO_RESIZE,			///< Try to set the position such that quadratic deviation between all anchor-positions is minimized.
+			PREFER_MOVE,		///< If not anchored on either side move the object and keep its size.
+			PREFER_RESIZE,		///< No matter if the opposite side is anchored resize the object.
 		};
 
 		/// Make a reference frame anchorable.

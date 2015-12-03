@@ -112,6 +112,24 @@ namespace ca { namespace gui {
 			error("Cannot set an anchor for a non-anchorable component!");
 	}
 
+	void Widget::setHorizontalAnchorMode(Anchorable::Mode _mode)
+	{
+		if(m_anchorComponent)
+		{
+			m_anchorComponent->setHorizontalAnchorMode(_mode);
+		} else
+			error("Cannot set horizontal anchor mode for a non-anchorable component!");
+	}
+
+	void Widget::setVerticalAnchorMode(Anchorable::Mode _mode)
+	{
+		if(m_anchorComponent)
+		{
+			m_anchorComponent->setVerticalAnchorMode(_mode);
+		} else
+			error("Cannot set vertical anchor mode for a non-anchorable component!");
+	}
+
 	void Widget::refitToAnchors()
 	{
 		if(m_anchorComponent)

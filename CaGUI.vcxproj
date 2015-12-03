@@ -97,7 +97,7 @@
     <IncludePath>$(ProjectDir)../Charcoal/include;$(ProjectDir)include/;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)../Charcoal/lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)lib/</OutDir>
-    <TargetName>$(ProjectName)D</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

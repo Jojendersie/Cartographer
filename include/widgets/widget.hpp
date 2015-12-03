@@ -68,6 +68,8 @@ namespace ca { namespace gui {
 		/// Attach one of the four reference sides to an anchor point
 		/// \details If the element was created without anchoring this fails with an error message.
 		void setAnchor(SIDE::Val _side, AnchorPtr _anchor);
+		void setHorizontalAnchorMode(Anchorable::Mode _mode);
+		void setVerticalAnchorMode(Anchorable::Mode _mode);
 
 		/// Realign component to its anchors. If there is no anchor-component do nothing.
 		virtual void refitToAnchors();
