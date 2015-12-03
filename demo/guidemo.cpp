@@ -1,6 +1,7 @@
 #include <cagui.hpp>
 #include <charcoal.hpp>
 #include <glcore/opengl.hpp>
+#include "../dependencies/stb_image.h" // Implementation included in Charcoal
 #include <GLFW/glfw3.h>
 #include "stdwindow.hpp"
 #include <memory>
@@ -11,6 +12,7 @@ using namespace ca::gui;
 
 static std::shared_ptr<ca::gui::FlatTheme> g_flatTheme;
 static MouseState g_mouseState;
+static GLFWcursor* g_cursors[10];
 
 static void cursorPosFunc(GLFWwindow*, double _x, double _y)
 {
@@ -30,6 +32,34 @@ void mouseButtonFunc(GLFWwindow* _window, int _button, int _action, int _mods)
 		else if(_action == GLFW_RELEASE)
 			g_mouseState.buttons[_button] = MouseState::UP;
 	}
+}
+
+
+GLFWcursor* loadAsCursor(const char* _imgFile, int _hotX, int _hotY)
+{
+	GLFWimage img;
+	int numComponents = 4;
+	img.pixels = stbi_load(_imgFile, &img.width, &img.height, &numComponents, 0);
+
+	GLFWcursor* newCursor = glfwCreateCursor(&img, _hotX, _hotY);
+
+	stbi_image_free(img.pixels);
+
+	return newCursor;
+}
+
+void setupInput(GLFWwindow* _window)
+{
+	glfwSetCursorPosCallback(_window, cursorPosFunc);
+	glfwSetMouseButtonCallback(_window, mouseButtonFunc);
+
+	g_cursors[(int)CursorType::ARROW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+	g_cursors[(int)CursorType::CROSSHAIR] = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+	g_cursors[(int)CursorType::MOVE] = loadAsCursor("textures/cursor_cross.png", 7, 7);
+	g_cursors[(int)CursorType::RESIZE_DDOWN] = loadAsCursor("textures/cursor_resize_ddown.png", 7, 7);
+	g_cursors[(int)CursorType::RESIZE_DUP] = loadAsCursor("textures/cursor_resize_dup.png", 7, 7);
+	g_cursors[(int)CursorType::RESIZE_H] = loadAsCursor("textures/cursor_resize_h.png", 7, 7);
+	g_cursors[(int)CursorType::RESIZE_V] = loadAsCursor("textures/cursor_resize_v.png", 7, 7);
 }
 
 
@@ -138,6 +168,7 @@ void runMainLoop(GLFWwindow* _window)
 		g_mouseState.deltaPos = Coord2(0.0f);
 		glfwPollEvents();
 		ca::gui::GUIManager::processInput(g_mouseState);
+		glfwSetCursor(_window, g_cursors[(int)GUIManager::getCursorType()]);
 
 		ca::cc::glCall(glClearColor, 0.01f, 0.01f, 0.01f, 1.0f);
 		ca::cc::glCall(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -153,8 +184,7 @@ int main()
 	GLFWwindow* window = setupStdWindow("Carthographer GUI demo.", false);
 	if(!window) return 1;
 
-	glfwSetCursorPosCallback(window, cursorPosFunc);
-	glfwSetMouseButtonCallback(window, mouseButtonFunc);
+	setupInput(window);
 
 	createGUI(window);
 	runMainLoop(window);
@@ -163,5 +193,6 @@ int main()
 	ca::cc::ShaderManager::clear();
 	ca::cc::Texture2DManager::clear();
 	glfwDestroyWindow(window);
+	glfwTerminate();
 	return 0;
 }

@@ -38,4 +38,21 @@ namespace ca { namespace gui {
 		ButtonState buttons[5];
 	};
 
+	/// Desired shape of the cursor.
+	/// \detais The GUI will set thes in the manager and expects that the application will render
+	///		according shapes.
+	enum class CursorType
+	{
+		ARROW,					///< Standard arrow/pointer
+		IBEAM,					///< Text input cursor
+		CROSSHAIR,				///< The cross for precise picking
+		HAND,					///< The Hand
+		RESIZE_H,				///< Arrow for horizontal resizing
+		RESIZE_V,				///< Arrow for vertical resizing
+		RESIZE_DUP,				///< Arrow for resizing with Lower-Left to Upper-Right orientation
+		RESIZE_DDOWN,			///< Arrow for resizing with Upper-Right to Lower-Left orientation
+		MOVE,					///< The cross for movements
+		WAIT,					///< Hour-glass or similar
+	};
+
 }} // namespace ca::gui

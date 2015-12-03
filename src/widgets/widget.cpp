@@ -89,6 +89,7 @@ namespace ca { namespace gui {
 		if(m_moveComponent)
 			if(m_moveComponent->processInput(_mouseState))
 			{
+				GUIManager::setCursorType(CursorType::MOVE);
 				GUIManager::setMouseFocus(this, true);
 				if(oldFrame != m_refFrame)
 					onExtentChanged();

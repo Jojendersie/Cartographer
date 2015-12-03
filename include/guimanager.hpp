@@ -63,6 +63,12 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		static void setKeyboardFocus(Widget* _widget, bool _sticky = false);
 		static void setMouseFocus(Widget* _widget, bool _sticky = false);
 
+		/// What cursor should actually be used?
+		static CursorType getCursorType();
+
+		/// Set the desired cursor shape, it is reset every frame.
+		static void setCursorType(CursorType _type);
+
 		/// Access the render backend for elementary draw opertations
 		static class IRenderBackend& renderBackend();
 		/// Access the theme which handles high level draw operations
@@ -91,6 +97,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 
 		std::stack<ei::IVec4, std::vector<ei::IVec4>> m_clipRegionStack;
 		MouseState m_mouseState;		///< Buffer the last seen mouse state
+		CursorType m_cursorType;		///< Current desired cursor shape
 
 		/// Globally check all elements for changes and cause a refiting of sizes and positions.
 		/// \details This method blocks recursive calls. I.e. if a resize causes another refit

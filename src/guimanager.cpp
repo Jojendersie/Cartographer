@@ -102,8 +102,11 @@ namespace ca { namespace gui {
 			error("Uninitialized GUIManager! Cannot process input!");
 			return false;
 		}
+
 		refitAllToAnchors();
 		g_manager->m_mouseState = _mouseState;
+		g_manager->m_cursorType = CursorType::ARROW;
+
 		if(g_manager->m_stickyMouseFocus && g_manager->m_mouseFocus)
 			return g_manager->m_mouseFocus->processInput( _mouseState );
 		else return g_manager->m_topFrame->processInput( _mouseState );
@@ -158,35 +161,6 @@ namespace ca { namespace gui {
 		return nullptr;
 	}
 
-/*	bool GUIManager::hasFocus(const WidgetPtr& _widget)
-	{
-		return hasFocus(_widget.get());
-	}
-
-	bool GUIManager::hasFocus(const Widget* _widget)
-	{
-		// Only if enabled...
-		while(_widget->isInputReceivable() && _widget->isEnabled())
-		{
-			// Go along the parent pointers to check if this one is the first in all
-			// hierarchy levels.
-			if(!_widget->parent()) return true; // Reached the root TODO: check list of roots in GUIManager
-			if(_widget->parent()->isChildFocused(_widget))
-				_widget = _widget->parent();
-			else return false;
-		}
-		return false;
-	}
-
-	WidgetPtr GUIManager::getFocussed()
-	{
-		return WidgetPtr();
-	}
-
-	void GUIManager::setFocus(WidgetPtr _widget)
-	{
-	}*/
-
 	void GUIManager::setKeyboardFocus(Widget* _widget, bool _sticky)
 	{
 		g_manager->m_keyboardFocus = _widget;
@@ -197,6 +171,16 @@ namespace ca { namespace gui {
 	{
 		g_manager->m_mouseFocus = _widget;
 		g_manager->m_stickyMouseFocus = _sticky;
+	}
+
+	CursorType GUIManager::getCursorType()
+	{
+		return g_manager->m_cursorType;
+	}
+
+	void GUIManager::setCursorType(CursorType _type)
+	{
+		g_manager->m_cursorType = _type;
 	}
 
 	IRenderBackend& GUIManager::renderBackend()
