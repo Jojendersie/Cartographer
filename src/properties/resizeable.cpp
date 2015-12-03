@@ -53,15 +53,16 @@ namespace ca { namespace gui {
 				m_resizing[SIDE::RIGHT] = abs(m_refFrame->right() - _mouseState.position.x) <= 2.0f;
 				m_resizing[SIDE::BOTTOM] = abs(m_refFrame->bottom() - _mouseState.position.y) <= 2.0f;
 				m_resizing[SIDE::TOP] = abs(m_refFrame->top() - _mouseState.position.y) <= 2.0f;
+				bool anyFlag = (m_resizing[0] || m_resizing[1] || m_resizing[2] || m_resizing[3]);
 
 				// Set a cursor if in margin
 				chooseCursor(m_resizing);
 
-				m_active = _mouseState.buttons[0] == MouseState::DOWN
-					&& (m_resizing[0] || m_resizing[1] || m_resizing[2] || m_resizing[3]);
+				m_active = _mouseState.buttons[0] == MouseState::DOWN && anyFlag;
+				return anyFlag;
 			}
 		}
-		return m_active;
+		return false;
 	}
 
 }} // namespace ca::gui

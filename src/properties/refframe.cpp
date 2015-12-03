@@ -12,7 +12,7 @@ namespace ca { namespace gui {
 		sides[3] = _t;
 	}
 
-	bool RefFrame::isMouseOver(const Coord2& _mousePos)
+	bool RefFrame::isMouseOver(const Coord2& _mousePos) const
 	{
 		// Simple rectangle test if the coordinate is inside
 		return _mousePos.x >= left() && _mousePos.x <= right()

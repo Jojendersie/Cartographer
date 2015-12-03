@@ -93,7 +93,8 @@ namespace ca { namespace gui {
 					if(e->isEnabled() && e->processInput(_mouseState))
 					{
 						// The one who took the input gets the focus
-						if(e->isFocusable()) focusOn(i);
+						if(e->isFocusable() && _mouseState.anyButtonDown)
+							moveToFront(i);
 						return true;
 					}
 				}
@@ -104,12 +105,6 @@ namespace ca { namespace gui {
 		// the reference frame this is not inside the isMouseOver-block.
 		return Widget::processInput(_mouseState);
 	}
-
-	/*bool Frame::isChildFocused(const Widget* _child) const
-	{
-		// TODO: Assert m_activeChildren.size() > 0
-		return m_activeChildren[0].get() == _child && _child->isFocusable();
-	}*/
 
 	void Frame::setBackground(const char* _imageFile, bool _smooth, float _opacity)
 	{
@@ -131,14 +126,14 @@ namespace ca { namespace gui {
 		Widget::refitToAnchors();
 	}
 
-	void Frame::focusOn(size_t _index)
+	void Frame::moveToFront(size_t _index)
 	{
 		if(_index > 0)
 		{
 			// Move to front and keep relative order of everything else
 			std::rotate( m_activeChildren.begin(),
 				m_activeChildren.begin() + _index,
-				m_activeChildren.begin() + _index );
+				m_activeChildren.begin() + _index + 1 );
 		}
 	}
 

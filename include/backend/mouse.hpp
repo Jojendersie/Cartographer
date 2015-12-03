@@ -34,8 +34,10 @@ namespace ca { namespace gui {
 			DBL_CLICKED = 16,	///< Metastate Two CLICK events occured in a short period
 		};
 
-		/// State for up to 5 buttons
-		ButtonState buttons[5];
+		/// State for up to 8 buttons
+		ButtonState buttons[8];
+		/// Is there any DOWN or UP event for any of the 8 buttons?
+		bool anyButtonUp, anyButtonDown;
 	};
 
 	/// Desired shape of the cursor.

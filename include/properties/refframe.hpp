@@ -9,7 +9,7 @@ namespace ca { namespace gui {
 	public:
 		/// Check if the mouse position is over this element.
 		/// \param [in] _mousePos Position of the cursor in screenspace [0,1]^2.
-		virtual bool isMouseOver(const Coord2& _mousePos) = 0;
+		virtual bool isMouseOver(const Coord2& _mousePos) const = 0;
 	};
 
 	/// A general purpose enum to define positioning schemes
@@ -44,7 +44,7 @@ namespace ca { namespace gui {
 
 		/// Check if the mouse cursor is on this reference frame.
 		/// \param [in] _mousePos Position of the cursor in screenspace [0,1]^2.
-		virtual bool isMouseOver(const Coord2& _mousePos) override;
+		virtual bool isMouseOver(const Coord2& _mousePos) const override;
 
 		bool operator != (const RefFrame& _rhs) const;
 	};

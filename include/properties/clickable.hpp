@@ -40,6 +40,8 @@ namespace ca { namespace gui {
 		///		If nothing is set/the nullptr is given, the own reference frame defines the region.
 		/// \param [in] _delete The region object must be deleted.
 		void setClickRegion(IRegion* _region, bool _delete = true);
+
+		const IRegion* getClickRegion() const { return m_clickRegion; }
 	protected:
 		IRegion* m_clickRegion;
 		bool m_deleteRegion;
@@ -56,7 +58,7 @@ namespace ca { namespace gui {
 		/// \param [in] _selfFrame The reference frame for the clickable area
 		EllipseRegion(RefFrame* _selfFrame);
 
-		virtual bool isMouseOver(const Coord2& _mousePos) override;
+		virtual bool isMouseOver(const Coord2& _mousePos) const override;
 	private:
 		RefFrame* m_selfFrame;
 	};
@@ -65,7 +67,7 @@ namespace ca { namespace gui {
 	class MaskRegion: public IRegion
 	{
 	public:
-		virtual bool isMouseOver(const Coord2& _mousePos) override;
+		virtual bool isMouseOver(const Coord2& _mousePos) const override;
 	};
 
 }} // namespace ca::gui

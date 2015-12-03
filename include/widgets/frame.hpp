@@ -44,7 +44,7 @@ namespace ca { namespace gui {
 
 	private:
 		/// Resort active list to bring focussed element to the front.
-		void focusOn(size_t _index);
+		void moveToFront(size_t _index);
 
 		float m_opacity;
 		uint64 m_texture;

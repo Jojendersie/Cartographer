@@ -31,9 +31,9 @@ namespace ca { namespace gui {
 	void FlatTheme::drawButton(const RefFrame& _rect, bool _mouseOver)
 	{
 		if(_mouseOver)
-			GUIManager::renderBackend().drawRect(_rect, m_properties.hoverBackgroundColor);
+			GUIManager::renderBackend().drawRect(_rect, m_properties.hoverButtonColor);
 		else 
-			GUIManager::renderBackend().drawRect(_rect, m_properties.backgroundColor);
+			GUIManager::renderBackend().drawRect(_rect, m_properties.buttonColor);
 	}
 
 	void FlatTheme::drawCheckbox(const class RefFrame& _rect, bool _checked, bool _mouseOver)
@@ -77,7 +77,7 @@ namespace ca { namespace gui {
 
 	void FlatTheme::drawArrowButton(const class RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver)
 	{
-		GUIManager::renderBackend().drawRect(_rect, _mouseOver ? m_properties.hoverBackgroundColor : m_properties.backgroundColor);
+		GUIManager::renderBackend().drawRect(_rect, _mouseOver ? m_properties.hoverButtonColor : m_properties.buttonColor);
 		// Use the minimum possible size to create a triangle without stretch
 		float size = min(_rect.width(), _rect.height()) - 2.0f;
 		float sizeh = size/2.0f;

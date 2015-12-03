@@ -72,7 +72,8 @@ namespace ca { namespace gui {
 	bool Widget::processInput(const struct MouseState& _mouseState)
 	{
 		if(m_clickComponent)
-			if(m_clickComponent->processInput(_mouseState)) {
+			if(m_clickComponent->processInput(_mouseState))
+			{
 				GUIManager::setMouseFocus(this);
 				return true;
 			}
@@ -80,8 +81,9 @@ namespace ca { namespace gui {
 		// Do resize before move, because it adds a little different behavior if the same input
 		// is done close to the border.
 		if(m_resizeComponent)
-			if(m_resizeComponent->processInput(_mouseState)) {
-				GUIManager::setMouseFocus(this, true);
+			if(m_resizeComponent->processInput(_mouseState))
+			{
+				GUIManager::setMouseFocus(this, _mouseState.buttons[0] == MouseState::DOWN);
 				if(oldFrame != m_refFrame)
 					onExtentChanged();
 				return true;
@@ -95,10 +97,13 @@ namespace ca { namespace gui {
 					onExtentChanged();
 				return true;
 			}
-		if(m_refFrame.isMouseOver(_mouseState.position))
+		if(m_refFrame.isMouseOver(_mouseState.position)) {
 			GUIManager::setMouseFocus(this);
+			// Clickables may define special areas, if not the reference frame defines the real
+			// element area and the cursor is on this element.
+			if(!m_clickComponent) return true;
 		// The current element has the focus but now reson to keep it.
-		else if(GUIManager::hasMouseFocus(this))
+		} else if(GUIManager::hasMouseFocus(this))
 			GUIManager::setMouseFocus(nullptr);
 		return false;
 	}

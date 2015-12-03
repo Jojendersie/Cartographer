@@ -7,11 +7,12 @@ namespace ca { namespace gui {
 
 	struct FlatProperties
 	{
-		ei::Vec4 backgroundColor;		///< Color for buttons, frames...
+		ei::Vec4 backgroundColor;		///< Color for frames...
+		ei::Vec4 buttonColor;			///< Color for buttons
 		ei::Vec4 foregroundColor;		///< Color for arrows...
 		ei::Vec4 textColor;				///< Color for text
 		ei::Vec4 textBackColor;			///< Color for text areas, checkboxes, ...
-		ei::Vec4 hoverBackgroundColor;	///< Color for buttons... when mouse is over
+		ei::Vec4 hoverButtonColor;		///< Color for buttons... when mouse is over
 		ei::Vec4 hoverTextColor;		///< Color for texts when mouse is over
 		float textSize;					///< Height of text in pixels
 	};

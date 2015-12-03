@@ -62,9 +62,11 @@ namespace ca { namespace gui {
 				}
 
 				if(_mouseState.buttons[b] & MouseState::PRESSED)
+				{
 					for(size_t i = 0; i < m_changeFuncs.size(); ++i)
 						if(m_statesMasks[i] & MouseState::PRESSED)
 							m_changeFuncs[i](_mouseState.position, b, MouseState::PRESSED);
+				}
 			}
 			return true;
 		}
@@ -94,7 +96,7 @@ namespace ca { namespace gui {
 	{
 	}
 
-	bool EllipseRegion::isMouseOver(const Coord2& _mousePos)
+	bool EllipseRegion::isMouseOver(const Coord2& _mousePos) const
 	{
 		// Convert _mousePos to [-1,1] positions inside the frame
 		Coord2 pos = _mousePos - Coord2(m_selfFrame->bottom(), m_selfFrame->left());

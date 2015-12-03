@@ -25,12 +25,15 @@ static void cursorPosFunc(GLFWwindow*, double _x, double _y)
 
 void mouseButtonFunc(GLFWwindow* _window, int _button, int _action, int _mods)
 {
-	if(_button < 5)
+	if(_button < 8)
 	{
-		if(_action == GLFW_PRESS)
+		if(_action == GLFW_PRESS) {
 			g_mouseState.buttons[_button] = MouseState::DOWN;
-		else if(_action == GLFW_RELEASE)
+			g_mouseState.anyButtonDown = true;
+		} else if(_action == GLFW_RELEASE) {
 			g_mouseState.buttons[_button] = MouseState::UP;
+			g_mouseState.anyButtonUp = true;
+		}
 	}
 }
 
@@ -67,11 +70,12 @@ void createGUI(GLFWwindow* _window)
 {
 	// Create an instance for all themes
 	FlatProperties themeProps;
-	themeProps.backgroundColor = Vec4(0.05f, 0.05f, 0.05f, 1.0f);
+	themeProps.backgroundColor = Vec4(0.025f, 0.025f, 0.025f, 1.0f);
+	themeProps.buttonColor = Vec4(0.05f, 0.05f, 0.05f, 1.0f);
 	themeProps.foregroundColor = Vec4(0.25f, 0.25f, 0.25f, 1.0f);
 	themeProps.textColor = Vec4(0.8f, 0.8f, 0.7f, 1.0f);
 	themeProps.textBackColor = Vec4(0.01f, 0.01f, 0.01f, 1.0f);
-	themeProps.hoverBackgroundColor = Vec4(0.15f, 0.15f, 0.15f, 1.0f);
+	themeProps.hoverButtonColor = Vec4(0.15f, 0.15f, 0.15f, 1.0f);
 	themeProps.hoverTextColor = Vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	themeProps.textSize = 14.0f;
 	g_flatTheme = std::make_shared<FlatTheme>(themeProps);
@@ -88,7 +92,6 @@ void createGUI(GLFWwindow* _window)
 	// A resizeable frame with different anchored buttons
 	FramePtr f0 = std::make_shared<Frame>(true, false, true, true);
 	f0->setExtent(Vec2(5.0f), Vec2(100.0f, 105.0f));
-	f0->setBackgroundOpacity(0.5f);
 	f0->setAnchorProvider( std::make_unique<GridAnchorProvider>(2, 5) );
 	GridAnchorProvider* anchors = static_cast<GridAnchorProvider*>(f0->getAnchorProvider());
 	GUIManager::add(f0);
@@ -113,7 +116,6 @@ void createGUI(GLFWwindow* _window)
 	// Second frame with image buttons
 	FramePtr f1 = std::make_shared<Frame>(true, false, true, true);
 	f1->setExtent(Vec2(5.0f, 120.0f), Vec2(100.0f, 230.0f));
-	f1->setBackgroundOpacity(0.5f);
 	f1->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	BorderAnchorProvider* anchorsf1 = static_cast<BorderAnchorProvider*>(f1->getAnchorProvider());
 	GUIManager::add(f1);
@@ -174,6 +176,8 @@ void runMainLoop(GLFWwindow* _window)
 				g_mouseState.buttons[i] = MouseState::RELEASED;
 		}
 		g_mouseState.deltaPos = Coord2(0.0f);
+		g_mouseState.anyButtonDown = false;
+		g_mouseState.anyButtonUp = false;
 		glfwPollEvents();
 		ca::gui::GUIManager::processInput(g_mouseState);
 		glfwSetCursor(_window, g_cursors[(int)GUIManager::getCursorType()]);
