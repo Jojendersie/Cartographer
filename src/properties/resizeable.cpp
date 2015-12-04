@@ -32,10 +32,11 @@ namespace ca { namespace gui {
 			// If key was released stop floating
 			if(_mouseState.buttons[0] == MouseState::PRESSED)
 			{
-				if(m_resizing[SIDE::LEFT])		m_refFrame->sides[SIDE::LEFT] = ei::min(m_refFrame->sides[SIDE::LEFT] + _mouseState.deltaPos.x, m_refFrame->sides[SIDE::RIGHT]-1.0f);
-				if(m_resizing[SIDE::RIGHT])		m_refFrame->sides[SIDE::RIGHT] = ei::max(m_refFrame->sides[SIDE::RIGHT] + _mouseState.deltaPos.x, m_refFrame->sides[SIDE::LEFT]+1.0f);
-				if(m_resizing[SIDE::BOTTOM])	m_refFrame->sides[SIDE::BOTTOM] = ei::min(m_refFrame->sides[SIDE::BOTTOM] + _mouseState.deltaPos.y, m_refFrame->sides[SIDE::TOP]-1.0f);
-				if(m_resizing[SIDE::TOP])		m_refFrame->sides[SIDE::TOP] = ei::max(m_refFrame->sides[SIDE::TOP] + _mouseState.deltaPos.y, m_refFrame->sides[SIDE::BOTTOM]+1.0f);
+				Coord2 deltaPos = _mouseState.deltaPos();
+				if(m_resizing[SIDE::LEFT])		m_refFrame->sides[SIDE::LEFT] = ei::min(m_refFrame->sides[SIDE::LEFT] + deltaPos.x, m_refFrame->sides[SIDE::RIGHT]-1.0f);
+				if(m_resizing[SIDE::RIGHT])		m_refFrame->sides[SIDE::RIGHT] = ei::max(m_refFrame->sides[SIDE::RIGHT] + deltaPos.x, m_refFrame->sides[SIDE::LEFT]+1.0f);
+				if(m_resizing[SIDE::BOTTOM])	m_refFrame->sides[SIDE::BOTTOM] = ei::min(m_refFrame->sides[SIDE::BOTTOM] + deltaPos.y, m_refFrame->sides[SIDE::TOP]-1.0f);
+				if(m_resizing[SIDE::TOP])		m_refFrame->sides[SIDE::TOP] = ei::max(m_refFrame->sides[SIDE::TOP] + deltaPos.y, m_refFrame->sides[SIDE::BOTTOM]+1.0f);
 				// Make sure the anchoring does not reset the object
 				if(m_anchorable)
 					m_anchorable->resetAnchors();

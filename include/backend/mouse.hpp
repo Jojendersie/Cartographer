@@ -13,7 +13,7 @@ namespace ca { namespace gui {
 		Coord2 position;
 
 		/// Change of the position since last frame.
-		Coord2 deltaPos;
+		Coord2 deltaPos() const { return position - lastPosition; }
 
 		/// Flags of a mouse button state.
 		/// \details It is possible that multiple flags are set in a single frame. This happens
@@ -38,6 +38,11 @@ namespace ca { namespace gui {
 		ButtonState buttons[8];
 		/// Is there any DOWN or UP event for any of the 8 buttons?
 		bool anyButtonUp, anyButtonDown;
+
+		/// Reset/change states
+		void clear();
+	private:
+		Coord2 lastPosition;
 	};
 
 	/// Desired shape of the cursor.

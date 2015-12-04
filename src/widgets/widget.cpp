@@ -80,10 +80,10 @@ namespace ca { namespace gui {
 		RefFrame oldFrame = m_refFrame;
 		// Do resize before move, because it adds a little different behavior if the same input
 		// is done close to the border.
-		if(m_resizeComponent)
+		if(m_resizeComponent && !(m_moveComponent && m_moveComponent->isMoving()))
 			if(m_resizeComponent->processInput(_mouseState))
 			{
-				GUIManager::setMouseFocus(this, _mouseState.buttons[0] == MouseState::DOWN);
+				GUIManager::setMouseFocus(this, (_mouseState.buttons[0] & (MouseState::DOWN | MouseState::PRESSED)) != 0);
 				if(oldFrame != m_refFrame)
 					onExtentChanged();
 				return true;
@@ -103,7 +103,7 @@ namespace ca { namespace gui {
 			// element area and the cursor is on this element.
 			if(!m_clickComponent) return true;
 		// The current element has the focus but now reson to keep it.
-		} else if(GUIManager::hasMouseFocus(this))
+		} else if(GUIManager::hasMouseFocus(this))// && !GUIManager::getStickyMouseFocussed())
 			GUIManager::setMouseFocus(nullptr);
 		return false;
 	}

@@ -182,6 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\backend\charcoal.cpp" />
+    <ClCompile Include="src\backend\mouse.cpp" />
     <ClCompile Include="src\core\error.cpp" />
     <ClCompile Include="src\guimanager.cpp" />
     <ClCompile Include="src\properties\anchorable.cpp" />

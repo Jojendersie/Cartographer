@@ -164,5 +164,8 @@
     <ClCompile Include="src\properties\anchorprovider.cpp">
       <Filter>properties</Filter>
     </ClCompile>
+    <ClCompile Include="src\backend\mouse.cpp">
+      <Filter>backend</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

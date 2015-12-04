@@ -16,11 +16,7 @@ static GLFWcursor* g_cursors[10];
 
 static void cursorPosFunc(GLFWwindow*, double _x, double _y)
 {
-	Coord2 newPos;
-	newPos.x = (float)_x;
-	newPos.y = GUIManager::getHeight() - (float)_y;
-	g_mouseState.deltaPos = newPos - g_mouseState.position;
-	g_mouseState.position = newPos;
+	g_mouseState.position = Coord2((float)_x, GUIManager::getHeight() - (float)_y);
 }
 
 void mouseButtonFunc(GLFWwindow* _window, int _button, int _action, int _mods)
@@ -167,17 +163,7 @@ void runMainLoop(GLFWwindow* _window)
 	{
 		float deltaTime = (float)clock.deltaTime();
 
-		// Change the mouse button input states from last frame
-		for(int i = 0; i < 5; ++i)
-		{
-			if(g_mouseState.buttons[i] & MouseState::DOWN)
-				g_mouseState.buttons[i] = MouseState::PRESSED;
-			if(g_mouseState.buttons[i] & MouseState::UP)
-				g_mouseState.buttons[i] = MouseState::RELEASED;
-		}
-		g_mouseState.deltaPos = Coord2(0.0f);
-		g_mouseState.anyButtonDown = false;
-		g_mouseState.anyButtonUp = false;
+		g_mouseState.clear();
 		glfwPollEvents();
 		ca::gui::GUIManager::processInput(g_mouseState);
 		glfwSetCursor(_window, g_cursors[(int)GUIManager::getCursorType()]);
@@ -193,7 +179,7 @@ void runMainLoop(GLFWwindow* _window)
 
 int main()
 {
-	GLFWwindow* window = setupStdWindow("Carthographer GUI demo.", false);
+	GLFWwindow* window = setupStdWindow("Carthographer GUI demo.", true);
 	if(!window) return 1;
 
 	setupInput(window);

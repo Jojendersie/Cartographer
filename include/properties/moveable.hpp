@@ -17,10 +17,12 @@ namespace ca { namespace gui {
 		/// \param [in] _mouseState State of the mouse buttons and position. Required to start/end
 		///		movements.
 		bool processInput(const struct MouseState& _mouseState);
+
+		bool isMoving() const { return m_moving; }
 	private:
 		class RefFrame* m_refFrame;
 		class Anchorable* m_anchorable;
-		bool m_floating;	/// Currently actively moving
+		bool m_moving;	/// Currently actively moving
 	};
 
 }} // namespace ca::gui
