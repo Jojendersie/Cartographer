@@ -28,7 +28,8 @@ namespace ca { namespace gui {
 
 		// Determine vertical center for text and box
 		float padding = GUIManager::theme().getTextSize() * 0.25f;
-		float downScale = ei::min(1.0f, m_refFrame.height() / (GUIManager::theme().getTextSize() + 2.0f));
+		float downScale = ei::min(1.0f, ei::min(m_refFrame.height() / (GUIManager::theme().getTextSize() + 2.0f),
+			m_refFrame.width() / (m_textWidth + 6.0f + GUIManager::theme().getTextSize())));
 		float size = (GUIManager::theme().getTextSize() - 2.0f) * downScale;
 		float vcenter = (m_refFrame.bottom() + m_refFrame.top() - size) * 0.5f;
 
@@ -49,6 +50,7 @@ namespace ca { namespace gui {
 	void gui::CheckBox::setText(const char* _text)
 	{
 		m_text = _text;
+		m_textWidth = GUIManager::theme().getTextBB(Coord2(0.0f), _text, 1.0f).max.x;
 	}
 
 	void CheckBox::setBackgroundTexture(const char * _textureFile, bool _smooth)

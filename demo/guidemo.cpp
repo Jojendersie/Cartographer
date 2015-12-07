@@ -170,9 +170,8 @@ void createGUI(GLFWwindow* _window)
 		c0->setAnchoring(SIDE::LEFT, anchorsf2->getAnchor(SIDE::LEFT));
 		c0->setAnchoring(SIDE::BOTTOM, anchorsf2->getAnchor(SIDE::BOTTOM));
 		c0->setAnchoring(SIDE::RIGHT, anchorsf2->getAnchor(SIDE::RIGHT));
-		c0->setAnchoring(SIDE::TOP, anchorsf2->getAnchor(SIDE::TOP));
 		c0->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
-		c0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
+		c0->setVerticalAnchorMode(Anchorable::PREFER_MOVE);
 		f2->add(c0);
 	}
 }

@@ -133,7 +133,7 @@ namespace ca { namespace gui {
 			case PREFER_MOVE:
 				if(m_anchors[SIDE::BOTTOM].reference && m_anchors[SIDE::TOP].reference)
 				{
-					// Both borders are set so resize is necessary
+					// Both borders are set, so resize is necessary
 					//goto Resize_Top_Down;
 					m_selfFrame->sides[SIDE::BOTTOM] = m_anchors[SIDE::BOTTOM].reference->position.y + m_anchors[SIDE::BOTTOM].relativePosition;
 					m_selfFrame->sides[SIDE::TOP] = m_anchors[SIDE::TOP].reference->position.y + m_anchors[SIDE::TOP].relativePosition;
