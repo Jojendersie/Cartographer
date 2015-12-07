@@ -30,7 +30,7 @@ namespace ca { namespace gui {
 		/// \param [in] _padding Distance of the icon to the border and to the text.
 		void setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, bool _smooth = true, Coord _padding = 2.0f);
 
-		/// Set a custom look instead of the themes button rendering.
+		/// Set a custom look instead of the theme's background rendering.
 		/// \param [in] _textureFile Name of an image file.
 		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
 		void setBackgroundTexture(const char* _textureFile, bool _smooth = true);

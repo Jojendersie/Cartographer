@@ -42,11 +42,11 @@ namespace ca { namespace gui {
 		// Draw three different sized rectangles (border, background and a smaller one for the
 		// checkmark).
 		GUIManager::renderBackend().drawRect(_rect, color);
-		RefFrame backRect(_rect.left() - 1, _rect.right() - 1, _rect.bottom() - 1, _rect.top() - 1);
+		RefFrame backRect(_rect.left() + 1, _rect.right() - 1, _rect.bottom() + 1, _rect.top() - 1);
 		GUIManager::renderBackend().drawRect(backRect, m_properties.textBackColor);
 		if(_checked)
 		{
-			RefFrame checkRect(_rect.left() - 3, _rect.right() - 3, _rect.bottom() - 3, _rect.top() - 3);
+			RefFrame checkRect(_rect.left() + 3, _rect.right() - 3, _rect.bottom() + 3, _rect.top() - 3);
 			GUIManager::renderBackend().drawRect(checkRect, color);
 		}
 	}

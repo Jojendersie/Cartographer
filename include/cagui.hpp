@@ -2,7 +2,7 @@
 
 #include "guimanager.hpp"
 #include "widgets/button.hpp"
-#include "widgets/chechbox.hpp"
+#include "widgets/checkbox.hpp"
 #include "widgets/colorpicker.hpp"
 #include "widgets/directionpicker.hpp"
 #include "widgets/dropdownbox.hpp"

@@ -154,6 +154,27 @@ void createGUI(GLFWwindow* _window)
 	b1->setAnchoring(SIDE::LEFT, anchorsf1->getAnchor(SIDE::LEFT));
 	b1->setAnchoring(SIDE::BOTTOM, anchorsf1->getAnchor(SIDE::BOTTOM));
 	f1->add(b1);
+
+	// Third frame with checkboxes and more
+	FramePtr f2 = std::make_shared<Frame>(true, false, true, true);
+	f2->setExtent(Vec2(5.0f, 360.0f), Vec2(100.0f, 150.0f));
+	f2->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
+	BorderAnchorProvider* anchorsf2 = static_cast<BorderAnchorProvider*>(f2->getAnchorProvider());
+	GUIManager::add(f2);
+
+	for(int i = 0; i < 2; ++i)
+	{
+		CheckBoxPtr c0 = std::make_shared<CheckBox>();
+		c0->setExtent(f2->getPosition() + Coord2(5.0f, 5.0f + i * 25.0f), Coord2(90.0f, 20.0f));
+		c0->setText("Cookie?");
+		c0->setAnchoring(SIDE::LEFT, anchorsf2->getAnchor(SIDE::LEFT));
+		c0->setAnchoring(SIDE::BOTTOM, anchorsf2->getAnchor(SIDE::BOTTOM));
+		c0->setAnchoring(SIDE::RIGHT, anchorsf2->getAnchor(SIDE::RIGHT));
+		c0->setAnchoring(SIDE::TOP, anchorsf2->getAnchor(SIDE::TOP));
+		c0->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
+		c0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
+		f2->add(c0);
+	}
 }
 
 void runMainLoop(GLFWwindow* _window)

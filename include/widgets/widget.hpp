@@ -30,6 +30,9 @@ namespace ca { namespace gui {
 		/// Set both: position and size (resets anchoring)
 		void setExtent(const Coord2& _position, const Coord2& _size);
 
+		/// Get the bounding box of the component
+		const RefFrame& getRefFrame() const { return m_refFrame; }
+
 		/// Draw the element now
 		virtual void draw() = 0;
 

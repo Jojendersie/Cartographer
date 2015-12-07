@@ -169,7 +169,7 @@
     <ClInclude Include="include\rendering\sharp3dtheme.hpp" />
     <ClInclude Include="include\rendering\theme.hpp" />
     <ClInclude Include="include\widgets\button.hpp" />
-    <ClInclude Include="include\widgets\chechbox.hpp" />
+    <ClInclude Include="include\widgets\checkbox.hpp" />
     <ClInclude Include="include\widgets\colorpicker.hpp" />
     <ClInclude Include="include\widgets\directionpicker.hpp" />
     <ClInclude Include="include\widgets\dropdownbox.hpp" />
@@ -195,7 +195,7 @@
     <ClCompile Include="src\rendering\flattheme.cpp" />
     <ClCompile Include="src\rendering\sharp3dtheme.cpp" />
     <ClCompile Include="src\widgets\button.cpp" />
-    <ClCompile Include="src\widgets\chechbox.cpp" />
+    <ClCompile Include="src\widgets\checkbox.cpp" />
     <ClCompile Include="src\widgets\colorpicker.cpp" />
     <ClCompile Include="src\widgets\directionpicker.cpp" />
     <ClCompile Include="src\widgets\dropdownbox.cpp" />

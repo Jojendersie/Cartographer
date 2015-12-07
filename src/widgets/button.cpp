@@ -41,9 +41,6 @@ namespace ca { namespace gui {
 
 	void Button::draw()
 	{
-		if(!isVisible()) return;
-		if(GUIManager::isClipped( m_refFrame )) return;
-
 		// Background
 		bool mouseOver = GUIManager::hasMouseFocus(this);
 		if(m_backgroundTexture)
@@ -120,10 +117,5 @@ namespace ca { namespace gui {
 		// Text
 		GUIManager::theme().drawText(textPos, m_text.c_str(), downScale, mouseOver);
 	}
-
-	/*bool Button::processInput(const MouseState& _mouseState)
-	{
-		return m_clickComponent->processInput(_mouseState);
-	}*/
 
 }} // namespace ca::gui

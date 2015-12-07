@@ -31,8 +31,12 @@ namespace ca { namespace gui {
 		virtual void drawImage(const class RefFrame& _rect, uint64 _texHandle, float _opacity = 1.0f) = 0;
 		/// Draw an arrow for sliders, scrollbars or drop down menus
 		virtual void drawArrowButton(const class RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver) = 0;
-		
+		/// Query the global basis font size. Headers or similar can differ from that (element dependent).
+		/// \return Height in pixels.
+		virtual float getTextSize() const = 0;
 		// more are following...
+
+	protected:
 	};
 
 }} // namespace ca::gui

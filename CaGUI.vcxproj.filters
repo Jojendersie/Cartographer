@@ -33,9 +33,6 @@
     <ClInclude Include="include\properties\moveable.hpp">
       <Filter>properties</Filter>
     </ClInclude>
-    <ClInclude Include="include\widgets\chechbox.hpp">
-      <Filter>widgets</Filter>
-    </ClInclude>
     <ClInclude Include="include\widgets\dropdownbox.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
@@ -95,6 +92,9 @@
     <ClInclude Include="include\properties\anchorprovider.hpp">
       <Filter>properties</Filter>
     </ClInclude>
+    <ClInclude Include="include\widgets\checkbox.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\widgets\frame.cpp">
@@ -113,9 +113,6 @@
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="src\widgets\button.cpp">
-      <Filter>widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="src\widgets\chechbox.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="src\widgets\colorpicker.cpp">
@@ -166,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="src\backend\mouse.cpp">
       <Filter>backend</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\checkbox.cpp">
+      <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -34,11 +34,17 @@ namespace ca { namespace gui {
 					GUIManager::theme().drawBackgroundArea(m_refFrame, m_opacity);
 
 				for(const auto& i : m_passiveChildren)
-					i->draw();
-				// Draw all active components in reverse order (the first one has the focus and should
+				{
+					if( i->isVisible() && !GUIManager::isClipped(i->getRefFrame()) )
+						i->draw();
+				}
+				// Draw all active components in reverse order (the first one should
 				// be on top)
 				for(auto i = m_activeChildren.rbegin(); i != m_activeChildren.rend(); ++i)
-					(*i)->draw();
+				{
+					if( (*i)->isVisible() && !GUIManager::isClipped((*i)->getRefFrame()) )
+						(*i)->draw();
+				}
 			}
 
 			GUIManager::popClipRegion();
