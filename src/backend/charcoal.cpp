@@ -140,18 +140,18 @@ namespace ca { namespace gui {
 
 		void main()
 		{
-			vec4 color;
+			vec4 color = vec4(0.0);
 			// position A and B are given in sprite relative coordinates (i.e. texture coordinates)
 			switch(in_gradientMode)
 			{
 			case 0: // Uniform color
-			case 4: {
 				color = in_colorA;
-				break; }
+				break;
 			case 1: { // IRenderBackend::GradientMode::LINEAR
 				// Project to a line between A and B
-				vec2 AtoB = in_posAB.zw - in_posAB.xy;
-				float t = dot(AtoB, in_texCoord - in_posAB.xy) / dot(AtoB, AtoB);
+				// Texture coordinates and cagui coordinates must be toggled in y direction
+				vec2 AtoB = in_posAB.zy - in_posAB.xw;
+				float t = dot(AtoB, in_texCoord - in_posAB.xw) / dot(AtoB, AtoB);
 				t = clamp(t, 0.0, 1.0);
 				color = mix(in_colorA, in_colorB, t);
 				break; }
@@ -174,6 +174,9 @@ namespace ca { namespace gui {
 				mindist /= min(in_posAB.z - in_posAB.x, in_posAB.w - in_posAB.y) * 0.5;
 				color = mix(in_colorA, in_colorB, mindist);
 				break; }
+			case 4:
+				color = in_colorA;
+				break;
 			}
 			// Premultiply color alpha
 			color.rgb *= color.a;
@@ -328,7 +331,7 @@ namespace ca { namespace gui {
 		cc::glCall(glVertexAttribPointer, 9, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 28, (GLvoid*)(20));
 		// 1 x int32 gradient mode
 		cc::glCall(glEnableVertexAttribArray, 10);
-		cc::glCall(glVertexAttribPointer, 10, 4, GLenum(cc::PrimitiveFormat::INT32), GL_FALSE, 28, (GLvoid*)(24));
+		cc::glCall(glVertexAttribIPointer, 10, 1, GLenum(cc::PrimitiveFormat::INT32), 28, (GLvoid*)(24));
 
 		// Define geometry for triangles and rectangles
 		m_spriteRenderer->defSprite(0.0f, 0.0f, 0); // Standard rect without texture
@@ -390,7 +393,7 @@ namespace ca { namespace gui {
 		AdditionalVertexInfo info;
 		info.a = Vec2(0.0f);
 		info.b = Vec2(0.0f);
-		info.colorA = Vec<uint8, 4>(_color * 255.0f);
+		info.colorA = Vec<uint8, 4>(saturate(_color) * 255.0f);
 		info.colorB = Vec<uint8, 4>(0);
 		info.gradientType = 0;
 		m_perInstanceData.push_back(info);
@@ -403,9 +406,9 @@ namespace ca { namespace gui {
 		AdditionalVertexInfo info;
 		info.a = _a;
 		info.b = _b;
-		info.colorA = Vec<uint8, 4>(_colorA * 255.0f);
-		info.colorB = Vec<uint8, 4>(_colorB * 255.0f);
-		info.gradientType = (int)_mode;
+		info.colorA = Vec<uint8, 4>(saturate(_colorA) * 255.0f);
+		info.colorB = Vec<uint8, 4>(saturate(_colorB) * 255.0f);
+		info.gradientType = (int)_mode + 1;
 		m_perInstanceData.push_back(info);
 	}
 
@@ -417,7 +420,7 @@ namespace ca { namespace gui {
 		AdditionalVertexInfo info;
 		info.a = Vec2(0.0f);
 		info.b = Vec2(0.0f);
-		info.colorA = Vec<uint8, 4>(255, 255, 255, uint8(_opacity * 255.0f));
+		info.colorA = Vec<uint8, 4>(255, 255, 255, uint8(saturate(_opacity) * 255.0f));
 		info.colorB = Vec<uint8, 4>(0);
 		info.gradientType = 0;
 		m_perInstanceData.push_back(info);
@@ -430,7 +433,7 @@ namespace ca { namespace gui {
 		AdditionalVertexInfo info;
 		info.a = _triangle.v1;
 		info.b = _triangle.v2;
-		info.colorA = Vec<uint8, 4>(_color * 255.0f);
+		info.colorA = Vec<uint8, 4>(saturate(_color) * 255.0f);
 		info.colorB = Vec<uint8, 4>(0);
 		info.gradientType = 4;
 		m_perInstanceData.push_back(info);

@@ -3,6 +3,7 @@
 #include "properties/coordinate.hpp"
 #include "properties/refframe.hpp"
 #include <ei/2dtypes.hpp>
+#include <memory>
 
 namespace ca { namespace gui {
 
@@ -38,5 +39,7 @@ namespace ca { namespace gui {
 
 	protected:
 	};
+
+	typedef std::shared_ptr<ITheme> ThemePtr;
 
 }} // namespace ca::gui

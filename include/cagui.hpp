@@ -15,3 +15,4 @@
 #include "backend/charcoal.hpp"
 
 #include "rendering/flattheme.hpp"
+#include "rendering/sharp3dtheme.hpp"

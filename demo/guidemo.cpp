@@ -10,7 +10,8 @@
 using namespace ei;
 using namespace ca::gui;
 
-static std::shared_ptr<ca::gui::FlatTheme> g_flatTheme;
+static ThemePtr g_flatTheme;
+static ThemePtr g_3dTheme;
 static MouseState g_mouseState;
 static GLFWcursor* g_cursors[10];
 
@@ -76,12 +77,22 @@ void createGUI(GLFWwindow* _window)
 	themeProps.textSize = 14.0f;
 	g_flatTheme = std::make_shared<FlatTheme>(themeProps);
 
+	Sharp3DProperties themeProps2;
+	themeProps2.borderWidth = 1;
+	themeProps2.basicColor = Vec4(0.05f, 0.05f, 0.05f, 1.0f);
+	themeProps2.basicHoverColor = Vec4(0.15f, 0.15f, 0.15f, 1.0f);
+	themeProps2.textColor = Vec4(0.8f, 0.8f, 0.7f, 1.0f);
+	themeProps2.textBackColor = Vec4(0.01f, 0.01f, 0.01f, 1.0f);
+	themeProps2.hoverTextColor = Vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	themeProps2.textSize = 14.0f;
+	g_3dTheme = std::make_shared<Sharp3DTheme>(themeProps2);
+
 	// Initialize GUI system itself
 	int w, h;
 	glfwGetFramebufferSize(_window, &w, &h);
 	GUIManager::init(
 		std::make_shared<CharcoalBackend>("calibri.caf"),
-		g_flatTheme,
+		g_3dTheme,
 		w, h );
 
 	// Create GUI-elements

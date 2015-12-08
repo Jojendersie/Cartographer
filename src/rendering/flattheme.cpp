@@ -22,7 +22,7 @@ namespace ca { namespace gui {
 	{
 		if(_opacity > 0.0f)
 		{
-			ei::Vec4 color = m_properties.backgroundColor;
+			Vec4 color = m_properties.backgroundColor;
 			color.a *= _opacity;
 			GUIManager::renderBackend().drawRect(_rect, color);
 		}
