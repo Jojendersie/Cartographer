@@ -175,6 +175,7 @@
     <ClInclude Include="include\widgets\dropdownbox.hpp" />
     <ClInclude Include="include\widgets\editbox.hpp" />
     <ClInclude Include="include\widgets\frame.hpp" />
+    <ClInclude Include="include\widgets\label.hpp" />
     <ClInclude Include="include\widgets\multilineeditbox.hpp" />
     <ClInclude Include="include\widgets\slider.hpp" />
     <ClInclude Include="include\widgets\treelist.hpp" />
@@ -201,6 +202,7 @@
     <ClCompile Include="src\widgets\dropdownbox.cpp" />
     <ClCompile Include="src\widgets\editbox.cpp" />
     <ClCompile Include="src\widgets\frame.cpp" />
+    <ClCompile Include="src\widgets\label.cpp" />
     <ClCompile Include="src\widgets\multilineeditbox.cpp" />
     <ClCompile Include="src\widgets\slider.cpp" />
     <ClCompile Include="src\widgets\treelist.cpp" />

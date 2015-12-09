@@ -5,7 +5,7 @@
 
 namespace ca { namespace gui {
 
-	gui::CheckBox::CheckBox() :
+	CheckBox::CheckBox() :
 		Widget(true, true, false, false, true, false),
 		m_textWidth(0.0f),
 		m_checked(false),
@@ -19,7 +19,7 @@ namespace ca { namespace gui {
 			MouseState::ButtonState(MouseState::CLICKED | MouseState::DBL_CLICKED));
 	}
 
-	void gui::CheckBox::draw()
+	void CheckBox::draw()
 	{
 		// Background
 		if(m_backgroundTexture)
@@ -48,7 +48,7 @@ namespace ca { namespace gui {
 		GUIManager::theme().drawText(Coord2(checkRect.sides[SIDE::RIGHT] + padding, vcenter - 1.0f), m_text.c_str(), downScale, mouseOver);
 	}
 
-	void gui::CheckBox::setText(const char* _text)
+	void CheckBox::setText(const char* _text)
 	{
 		m_text = _text;
 		m_textWidth = GUIManager::theme().getTextBB(Coord2(0.0f), _text, 1.0f).max.x;

@@ -8,6 +8,7 @@
 #include "widgets/dropdownbox.hpp"
 #include "widgets/editbox.hpp"
 #include "widgets/frame.hpp"
+#include "widgets/label.hpp"
 #include "widgets/multilineeditbox.hpp"
 #include "widgets/slider.hpp"
 #include "widgets/treelist.hpp"

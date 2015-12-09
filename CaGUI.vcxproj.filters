@@ -95,6 +95,9 @@
     <ClInclude Include="include\widgets\checkbox.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
+    <ClInclude Include="include\widgets\label.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\widgets\frame.cpp">
@@ -165,6 +168,9 @@
       <Filter>backend</Filter>
     </ClCompile>
     <ClCompile Include="src\widgets\checkbox.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\label.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>

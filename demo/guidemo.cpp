@@ -185,6 +185,86 @@ void createGUI(GLFWwindow* _window)
 		c0->setVerticalAnchorMode(Anchorable::PREFER_MOVE);
 		f2->add(c0);
 	}
+
+	// Fourth frame with lables (window fake)
+	FramePtr f3 = std::make_shared<Frame>(true, false, false, true);
+	f3->setExtent(Vec2(115.0f, 120.0f), Vec2(200.0f, 230.0f));
+	f3->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
+	BorderAnchorProvider* anchorsf3 = static_cast<BorderAnchorProvider*>(f3->getAnchorProvider());
+	GUIManager::add(f3);
+	{
+		FramePtr header = std::make_shared<Frame>(true, false, true, false);
+		header->setExtent(f3->getPosition() + Vec2(0.0f, 210.0f), Vec2(200.0f, 20.0f));
+		header->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
+		header->setAnchoring(SIDE::LEFT, anchorsf3->getAnchor(SIDE::LEFT));
+		header->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
+		header->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+		header->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
+		f3->add(header);
+		BorderAnchorProvider* anchorsf = static_cast<BorderAnchorProvider*>(header->getAnchorProvider());
+		f3->setAnchoring(SIDE::LEFT, anchorsf->getAnchor(SIDE::LEFT));
+		f3->setAnchoring(SIDE::TOP, anchorsf->getAnchor(SIDE::TOP));
+
+		LabelPtr l0 = std::make_shared<Label>();
+		l0->setExtent(header->getPosition() + 2.0f, header->getSize() - 4.0f);
+		l0->setText(" Usually useless titelbar");
+		l0->setAnchoring(SIDE::LEFT, anchorsf->getAnchor(SIDE::LEFT));
+		l0->setAnchoring(SIDE::RIGHT, anchorsf->getAnchor(SIDE::RIGHT));
+		l0->setAnchoring(SIDE::TOP, anchorsf->getAnchor(SIDE::TOP));
+		l0->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
+		header->add(l0);
+
+		ButtonPtr b0 = std::make_shared<Button>();
+		b0->setExtent(Coord2(header->getPosition().x + header->getSize().x - header->getSize().y + 2.0f, header->getPosition().y + 2.0f), Coord2(header->getSize().y - 4.0f));
+		b0->setText(" X");//TODO: why is centering wrong here?
+		b0->setAnchoring(SIDE::RIGHT, anchorsf->getAnchor(SIDE::RIGHT));
+		b0->setAnchoring(SIDE::TOP, anchorsf->getAnchor(SIDE::TOP));
+		header->add(b0);
+	}
+
+	LabelPtr l0 = std::make_shared<Label>();
+	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
+	l0->setText("LEFT");
+	l0->setAnchoring(SIDE::LEFT, anchorsf3->getAnchor(SIDE::LEFT));
+	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
+	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	f3->add(l0);
+
+	l0 = std::make_shared<Label>();
+	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
+	l0->setText("RIGHT");
+	l0->setAlignment(SIDE::RIGHT);
+	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
+	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
+	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	f3->add(l0);
+
+	l0 = std::make_shared<Label>();
+	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
+	l0->setText("BOTTOM");
+	l0->setAlignment(SIDE::BOTTOM);
+	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
+	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
+	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	f3->add(l0);
+
+	l0 = std::make_shared<Label>();
+	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
+	l0->setText("TOP");
+	l0->setAlignment(SIDE::TOP);
+	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
+	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
+	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	f3->add(l0);
+
+	l0 = std::make_shared<Label>();
+	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
+	l0->setText("Reopen the window\nby clicking one of the icon-buttons.");
+	l0->setAlignment(SIDE::CENTER);
+	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
+	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
+	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	f3->add(l0);
 }
 
 void runMainLoop(GLFWwindow* _window)
