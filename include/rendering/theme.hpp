@@ -19,7 +19,7 @@ namespace ca { namespace gui {
 		/// Draw a background for frames...
 		virtual void drawBackgroundArea(const class RefFrame& _rect, float _opacity = 1.0f) = 0;
 		/// Draw the background for buttons
-		virtual void drawButton(const class RefFrame& _rect, bool _mouseOver) = 0;
+		virtual void drawButton(const class RefFrame& _rect, bool _mouseOver, bool _mouseDown) = 0;
 		/// Draw the box with the check mark
 		virtual void drawCheckbox(const class RefFrame& _rect, bool _checked, bool _mouseOver) = 0;
 		/// Draw a string

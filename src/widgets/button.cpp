@@ -46,7 +46,7 @@ namespace ca { namespace gui {
 		if(m_backgroundTexture)
 			GUIManager::theme().drawImage(m_refFrame, m_backgroundTexture);
 		else
-			GUIManager::theme().drawButton(m_refFrame, mouseOver);
+			GUIManager::theme().drawButton(m_refFrame, mouseOver, m_clickComponent->isAnyButtonDown());
 
 		// Compute text and icon positions
 		Coord2 iconPos, textPos;

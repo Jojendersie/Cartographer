@@ -42,13 +42,15 @@ namespace ca { namespace gui {
 		void setClickRegion(IRegion* _region, bool _delete = true);
 
 		const IRegion* getClickRegion() const { return m_clickRegion; }
+
+		bool isAnyButtonDown() const { for(int i = 0; i < 8; ++i) if(m_buttonDownReceived[i]) return true; return false; }
 	protected:
 		IRegion* m_clickRegion;
 		bool m_deleteRegion;
 		std::vector<OnButtonChange> m_changeFuncs;
-		std::vector<MouseState::ButtonState> m_statesMasks;
-		bool m_buttonDownReceived[5];	// Detect for each button, if it was pressed on this element (for CLICK events)
-		float m_lastClick[5];			// Time stamp for the last click to detect DBL_CLICK events
+		std::vector<MouseState::ButtonState> m_statesMasks; // Call callbacks only for desired events
+		bool m_buttonDownReceived[8];	// Detect for each button, if it was pressed on this element (for CLICK events)
+		float m_lastClick[8];			// Time stamp for the last click to detect DBL_CLICK events
 	};
 
 	/// Use the reference frame fitted ellipse to detect click events.

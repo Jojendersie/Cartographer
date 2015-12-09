@@ -32,8 +32,8 @@ namespace ca { namespace gui {
 			if(m_properties.borderWidth)
 			{
 				RefFrame rect(_rect.left() + m_properties.borderWidth, _rect.right() - m_properties.borderWidth, _rect.bottom() + m_properties.borderWidth, _rect.top() - m_properties.borderWidth);
-				RefFrame borderRect;
 				// TODO: Find out what is faster 4 small rects or one large and much overdraw?
+				RefFrame borderRect;
 				borderRect = RefFrame(_rect.left(), rect.left(), _rect.bottom(), _rect.top());
 				GUIManager::renderBackend().drawRect(borderRect, Vec2(0.0f), Vec2(0.0f, 1.0f), scaleColor(color, 1.0f), scaleColor(color, 4.0f));
 				borderRect = RefFrame(rect.right(), _rect.right(), _rect.bottom(), _rect.top());
@@ -52,22 +52,24 @@ namespace ca { namespace gui {
 		}
 	}
 
-	void Sharp3DTheme::drawButton(const RefFrame& _rect, bool _mouseOver)
+	void Sharp3DTheme::drawButton(const RefFrame& _rect, bool _mouseOver, bool _mouseDown)
 	{
 		Vec4 color = _mouseOver ? m_properties.basicHoverColor : m_properties.basicColor;
 		RefFrame rect(_rect.left() + m_properties.borderWidth, _rect.right() - m_properties.borderWidth, _rect.bottom() + m_properties.borderWidth, _rect.top() - m_properties.borderWidth);
-		RefFrame borderRect;
+		Vec2 gfrom = Vec2(0.0f, _mouseDown ? 1.0f : 0.0f);
+		Vec2 gto = Vec2(0.0f, _mouseDown ? 0.0f : 1.0f);
 		// TODO: Find out what is faster 4 small rects or one large and much overdraw?
+		RefFrame borderRect;
 		borderRect = RefFrame(_rect.left(), rect.left(), _rect.bottom(), _rect.top());
-		GUIManager::renderBackend().drawRect(borderRect, Vec2(0.0f), Vec2(0.0f, 1.0f), scaleColor(color, 1.0f), scaleColor(color, 4.0f));
+		GUIManager::renderBackend().drawRect(borderRect, gfrom, gto, scaleColor(color, 1.0f), scaleColor(color, 4.0f));
 		borderRect = RefFrame(rect.right(), _rect.right(), _rect.bottom(), _rect.top());
-		GUIManager::renderBackend().drawRect(borderRect, Vec2(0.0f), Vec2(0.0f, 1.0f), scaleColor(color, 1.0f), scaleColor(color, 4.0f));
+		GUIManager::renderBackend().drawRect(borderRect, gfrom, gto, scaleColor(color, 1.0f), scaleColor(color, 4.0f));
 		borderRect = RefFrame(rect.left(), rect.right(), rect.top(), _rect.top());
 		GUIManager::renderBackend().drawRect(borderRect, scaleColor(color, 4.0f));
 		borderRect = RefFrame(rect.left(), rect.right(), _rect.bottom(), rect.bottom());
 		GUIManager::renderBackend().drawRect(borderRect, scaleColor(color, 1.0f));
 
-		GUIManager::renderBackend().drawRect(rect, Vec2(0.0f), Vec2(0.0f, 1.0f),
+		GUIManager::renderBackend().drawRect(rect, gfrom, gto,
 			scaleColor(color, 0.5f),
 			scaleColor(color, 2.0f));
 	}

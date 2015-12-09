@@ -9,7 +9,7 @@ namespace ca { namespace gui {
 		m_clickRegion(_selfFrame),
 		m_deleteRegion(false)
 	{
-		for(int b = 0; b < 5; ++b)
+		for(int b = 0; b < 8; ++b)
 		{
 			m_lastClick[b] = -10000.0f;
 			m_buttonDownReceived[b] = false;
@@ -27,7 +27,7 @@ namespace ca { namespace gui {
 		if(m_clickRegion->isMouseOver(_mouseState.position))
 		{
 			// Handle each button
-			for(int b = 0; b < 5; ++b)
+			for(int b = 0; b < 8; ++b)
 			{
 				if(_mouseState.buttons[b] & MouseState::DOWN)
 				{
@@ -72,7 +72,7 @@ namespace ca { namespace gui {
 		}
 
 		// If mouse is released somewhere else clear the state
-		for(int b = 0; b < 5; ++b)
+		for(int b = 0; b < 8; ++b)
 			if(!_mouseState.buttons[b] || _mouseState.buttons[b] & MouseState::UP)
 				m_buttonDownReceived[b] = false;
 

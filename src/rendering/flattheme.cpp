@@ -28,7 +28,7 @@ namespace ca { namespace gui {
 		}
 	}
 
-	void FlatTheme::drawButton(const RefFrame& _rect, bool _mouseOver)
+	void FlatTheme::drawButton(const RefFrame& _rect, bool _mouseOver, bool _mouseDown)
 	{
 		if(_mouseOver)
 			GUIManager::renderBackend().drawRect(_rect, m_properties.hoverButtonColor);
