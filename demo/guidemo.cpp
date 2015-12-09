@@ -168,16 +168,16 @@ void createGUI(GLFWwindow* _window)
 
 	// Third frame with checkboxes and more
 	FramePtr f2 = std::make_shared<Frame>(true, false, true, true);
-	f2->setExtent(Vec2(5.0f, 360.0f), Vec2(100.0f, 150.0f));
+	f2->setExtent(Vec2(5.0f, 360.0f), Vec2(100.0f, 130.0f));
 	f2->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	BorderAnchorProvider* anchorsf2 = static_cast<BorderAnchorProvider*>(f2->getAnchorProvider());
 	GUIManager::add(f2);
 
-	for(int i = 0; i < 2; ++i)
+	for(int i = 0; i < 5; ++i)
 	{
 		CheckBoxPtr c0 = std::make_shared<CheckBox>();
 		c0->setExtent(f2->getPosition() + Coord2(5.0f, 5.0f + i * 25.0f), Coord2(90.0f, 20.0f));
-		c0->setText("Cookie?");
+		if(i < 4) c0->setText("Cookie?");
 		c0->setAnchoring(SIDE::LEFT, anchorsf2->getAnchor(SIDE::LEFT));
 		c0->setAnchoring(SIDE::BOTTOM, anchorsf2->getAnchor(SIDE::BOTTOM));
 		c0->setAnchoring(SIDE::RIGHT, anchorsf2->getAnchor(SIDE::RIGHT));
