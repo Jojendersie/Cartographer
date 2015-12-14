@@ -48,6 +48,7 @@ namespace ca { namespace gui {
 		virtual bool isMouseOver(const Coord2& _mousePos) const override;
 
 		bool operator != (const RefFrame& _rhs) const;
+		bool operator == (const RefFrame& _rhs) const;
 	};
 
 }} // namespace ca::gui

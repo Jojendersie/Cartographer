@@ -10,7 +10,7 @@ namespace ca { namespace gui {
 	struct AnchorPoint
 	{
 		const void* host;		///< Who is responsible for this point? If the host object is deleted it must set this to nullptr. Then anchors are released automatic.
-		Coord2 position;		///< Current position.
+		Coord position;			///< Current position.
 		AnchorPoint(const void* _host) : host(_host) {}
 	};
 
@@ -46,11 +46,16 @@ namespace ca { namespace gui {
 		/// \param [in] _anchorPoint New reference point or nullptr to fix or release the anchor.
 		void setAnchor(SIDE::Val _side, AnchorPtr _anchorPoint);
 
+		/// Automatically attach all four anchor points to the closest anchors in the provider
+		void autoAnchor(const class IAnchorProvider* _anchorProvider);
+
 		/// Recompute relative positioning. E.g. if a component was moved manually.
 		void resetAnchors();
 
 		void setHorizontalAnchorMode(Mode _mode);
 		void setVerticalAnchorMode(Mode _mode);
+		/// Set horizontal and vertical anchor mode simultaneously
+		void setAnchorModes(Mode _mode);
 
 		/// Resize/renew position the object dependent on the current anchor points
 		/// \return True if any property was changed by the refit method.

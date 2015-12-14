@@ -20,10 +20,10 @@ namespace ca { namespace gui {
 	void BorderAnchorProvider::recomputeAnchors(const RefFrame& _selfFrame)
 	{
 		m_someChanged = true;
-		m_anchors[SIDE::LEFT]->position   = Coord2(_selfFrame.left(),  (_selfFrame.bottom() + _selfFrame.top()) * 0.5f);
-		m_anchors[SIDE::RIGHT]->position  = Coord2(_selfFrame.right(), (_selfFrame.bottom() + _selfFrame.top()) * 0.5f);
-		m_anchors[SIDE::BOTTOM]->position = Coord2((_selfFrame.left() + _selfFrame.right()) * 0.5f, _selfFrame.bottom());
-		m_anchors[SIDE::TOP]->position    = Coord2((_selfFrame.left() + _selfFrame.right()) * 0.5f, _selfFrame.top());
+		m_anchors[SIDE::LEFT]->position   = _selfFrame.left();
+		m_anchors[SIDE::RIGHT]->position  = _selfFrame.right();
+		m_anchors[SIDE::BOTTOM]->position = _selfFrame.bottom();
+		m_anchors[SIDE::TOP]->position    = _selfFrame.top();
 	}
 
 
@@ -47,18 +47,17 @@ namespace ca { namespace gui {
 
 	void GridAnchorProvider::recomputeAnchors(const class RefFrame& _selfFrame)
 	{
-		ei::Vec2 center( (_selfFrame.left() + _selfFrame.right()) * 0.5f, (_selfFrame.bottom() + _selfFrame.top()) * 0.5f );
 		m_someChanged = true;
 
 		if( !m_hAnchors.empty() )
 		{
 			if( m_hAnchors.size() == 1)
 			{
-				m_hAnchors[0]->position = center;
+				m_hAnchors[0]->position = (_selfFrame.left() + _selfFrame.right()) * 0.5f;
 			} else {
 				float hgap = _selfFrame.width() / (m_hAnchors.size() - 1);
 				for(size_t i = 0; i < m_hAnchors.size(); ++i)
-					m_hAnchors[i]->position = ei::Vec2(_selfFrame.left() + i * hgap, center.y);
+					m_hAnchors[i]->position = _selfFrame.left() + i * hgap;
 			}
 		}
 
@@ -66,11 +65,11 @@ namespace ca { namespace gui {
 		{
 			if( m_vAnchors.size() == 1)
 			{
-				m_vAnchors[0]->position = center;
+				m_vAnchors[0]->position = (_selfFrame.bottom() + _selfFrame.top()) * 0.5f;
 			} else {
 				float vgap = _selfFrame.height() / (m_vAnchors.size() - 1);
 				for(size_t i = 0; i < m_vAnchors.size(); ++i)
-					m_vAnchors[i]->position = ei::Vec2(center.x, _selfFrame.bottom() + i * vgap);
+					m_vAnchors[i]->position = _selfFrame.bottom() + i * vgap;
 			}
 		}
 	}

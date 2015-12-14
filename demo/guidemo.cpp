@@ -187,42 +187,29 @@ void createGUI(GLFWwindow* _window)
 	}
 
 	// Fourth frame with lables (window fake)
-	FramePtr f3 = std::make_shared<Frame>(true, false, false, true);
+	FramePtr f3 = std::make_shared<Frame>(true, false, true, true);
 	f3->setExtent(Vec2(115.0f, 120.0f), Vec2(200.0f, 230.0f));
 	f3->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	BorderAnchorProvider* anchorsf3 = static_cast<BorderAnchorProvider*>(f3->getAnchorProvider());
 	GUIManager::add(f3);
-	{
-		FramePtr header = std::make_shared<Frame>(true, false, true, false);
-		header->setExtent(f3->getPosition() + Vec2(0.0f, 210.0f), Vec2(200.0f, 20.0f));
-		header->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
-		header->setAnchoring(SIDE::LEFT, anchorsf3->getAnchor(SIDE::LEFT));
-		header->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
-		header->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
-		header->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
-		f3->add(header);
-		BorderAnchorProvider* anchorsf = static_cast<BorderAnchorProvider*>(header->getAnchorProvider());
-		f3->setAnchoring(SIDE::LEFT, anchorsf->getAnchor(SIDE::LEFT));
-		f3->setAnchoring(SIDE::TOP, anchorsf->getAnchor(SIDE::TOP));
-
-		LabelPtr l0 = std::make_shared<Label>();
-		l0->setExtent(header->getPosition() + 2.0f, header->getSize() - 4.0f);
-		l0->setText(" Usually useless titelbar");
-		l0->setAnchoring(SIDE::LEFT, anchorsf->getAnchor(SIDE::LEFT));
-		l0->setAnchoring(SIDE::RIGHT, anchorsf->getAnchor(SIDE::RIGHT));
-		l0->setAnchoring(SIDE::TOP, anchorsf->getAnchor(SIDE::TOP));
-		l0->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
-		header->add(l0);
-
-		ButtonPtr b0 = std::make_shared<Button>();
-		b0->setExtent(Coord2(header->getPosition().x + header->getSize().x - header->getSize().y + 2.0f, header->getPosition().y + 2.0f), Coord2(header->getSize().y - 4.0f));
-		b0->setText(" X");//TODO: why is centering wrong here?
-		b0->setAnchoring(SIDE::RIGHT, anchorsf->getAnchor(SIDE::RIGHT));
-		b0->setAnchoring(SIDE::TOP, anchorsf->getAnchor(SIDE::TOP));
-		header->add(b0);
-	}
 
 	LabelPtr l0 = std::make_shared<Label>();
+	l0->setExtent(f3->getPosition() + Coord2(0.0f, f3->getSize().y - 20.0f) + 2.0f, Coord2(f3->getSize().x, 16.0f));
+	l0->setText(" Usually useless titelbar");
+	l0->setAnchoring(SIDE::LEFT, anchorsf3->getAnchor(SIDE::LEFT));
+	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
+	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	l0->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
+	f3->add(l0);
+
+	ButtonPtr b0 = std::make_shared<Button>();
+	b0->setExtent(f3->getPosition() + f3->getSize() - 20.0f, Coord2(16.0f));
+	b0->setText(" X");//TODO: why is centering wrong here?
+	b0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
+	b0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	f3->add(b0);
+
+	l0 = std::make_shared<Label>();
 	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
 	l0->setText("LEFT");
 	l0->setAnchoring(SIDE::LEFT, anchorsf3->getAnchor(SIDE::LEFT));
@@ -237,6 +224,7 @@ void createGUI(GLFWwindow* _window)
 	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
 	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
 	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	l0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 
 	l0 = std::make_shared<Label>();
@@ -246,6 +234,7 @@ void createGUI(GLFWwindow* _window)
 	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
 	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
 	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	l0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 
 	l0 = std::make_shared<Label>();
@@ -255,6 +244,7 @@ void createGUI(GLFWwindow* _window)
 	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
 	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
 	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	l0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 
 	l0 = std::make_shared<Label>();
@@ -264,6 +254,7 @@ void createGUI(GLFWwindow* _window)
 	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
 	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
 	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	l0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 }
 

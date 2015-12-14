@@ -73,6 +73,7 @@ namespace ca { namespace gui {
 		void setAnchoring(SIDE::Val _side, AnchorPtr _anchor);
 		void setHorizontalAnchorMode(Anchorable::Mode _mode);
 		void setVerticalAnchorMode(Anchorable::Mode _mode);
+		void setAnchorModes(Anchorable::Mode _mode);
 
 		/// Let this widget create anchors for others
 		void setAnchorProvider(std::unique_ptr<IAnchorProvider> _anchorProvider);

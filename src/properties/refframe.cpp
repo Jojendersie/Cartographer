@@ -27,4 +27,12 @@ namespace ca { namespace gui {
 			|| sides[3] != _rhs.sides[3];
 	}
 
+	bool RefFrame::operator == (const RefFrame& _rhs) const
+	{
+		return sides[0] == _rhs.sides[0]
+			&& sides[1] == _rhs.sides[1]
+			&& sides[2] == _rhs.sides[2]
+			&& sides[3] == _rhs.sides[3];
+	}
+
 }} // namespace ca::gui

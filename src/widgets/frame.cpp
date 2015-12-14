@@ -125,11 +125,11 @@ namespace ca { namespace gui {
 
 	void Frame::refitToAnchors()
 	{
+		Widget::refitToAnchors();
 		for(auto it = m_activeChildren.begin(); it != m_activeChildren.end(); ++it)
 			(*it)->refitToAnchors();
 		for(auto it = m_passiveChildren.begin(); it != m_passiveChildren.end(); ++it)
 			(*it)->refitToAnchors();
-		Widget::refitToAnchors();
 	}
 
 	void Frame::moveToFront(size_t _index)
