@@ -168,9 +168,9 @@ namespace ca { namespace cc {
 		m_dirty = true;
 	}
 
-	ei::Rect2D FontRenderer::getBoundingBox(const ei::Vec3& _position, const char* _text, float _size, float _rotation, float _alignX, float _alignY)
+	Rect2D FontRenderer::getBoundingBox(const Vec3& _position, const char* _text, float _size, float _rotation, float _alignX, float _alignY)
 	{
-		ei::Rect2D out;
+		Rect2D out;
 
 		// Convert pixel size into a scale factor
 		float scale = _size / BASE_SIZE;
@@ -190,7 +190,6 @@ namespace ca { namespace cc {
 			{
 				out.max.y += BASE_SIZE;
 				cursor.x = out.min.x;
-				cursor.y -= BASE_SIZE;
 				lastC = m_chars.end();
 			} else {
 				auto charEntry = m_chars.find(c);
@@ -213,10 +212,14 @@ namespace ca { namespace cc {
 		}
 
 		// Compute a vector to move the whole text to its alignment
-		Vec2 align = ((out.max.x - out.min.x) * _alignX) * adX
-					+ (-out.max.y * (1-_alignY) + BASE_SIZE * _alignY + BASE_SIZE) * adY;
+		Vec2 align( (out.max.x - out.min.x) * _alignX,
+					-out.max.y * (1-_alignY) + BASE_SIZE * _alignY );
 		out.min -= align;
 		out.max -= align;
+		out.max.y += BASE_SIZE;
+		// Transform to world space
+		out.min = out.min.x * adX + out.min.y * adY + Vec2(_position);
+		out.max = out.max.x * adX + out.max.y * adY + Vec2(_position);
 
 		return out;
 	}
