@@ -75,8 +75,13 @@ void runMainLoop(GLFWwindow* _window)
 		}
 		s_fontRenderer->draw(Vec3(1400.0f, 550.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 1.0f));
 		s_fontRenderer->draw(Vec3(1430.0f, 520.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 0.5f + 0.5f*(float)sin(clock.now()/1000.0)));
-		s_fontRenderer->draw(Vec3(1270.0f, 900.0f, 0.0f), u8"(-O-)", 200.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.5f, 0.45f);
-		s_fontRenderer->draw(Vec3(1270.0f, 900.0f, 0.0f), u8"(-O-)", 8.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.5f, 0.45f);
+		s_fontRenderer->draw(Vec3(1270.0f, 900.0f, 0.0f), u8"(-O-)", 200.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.46f, 0.45f);
+		s_fontRenderer->draw(Vec3(1270.0f, 900.0f, 0.0f), u8"(-O-)", 8.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.46f, 0.45f);
+
+		s_fontRenderer->draw(Vec3(870.0f, 1000.0f, 0.0f), u8"Multiline\nexample 1", 16.0f, Vec4(0.5f, 0.5f, 0.8f, 1.0f));
+		s_fontRenderer->draw(Vec3(870.0f, 1000.0f, 0.0f), u8"Multiline\nexample 2", 16.0f, Vec4(0.5f, 0.5f, 0.8f, 1.0f), 0.0f, 1.0f);
+		s_fontRenderer->draw(Vec3(870.0f, 1000.0f, 0.0f), u8"Multiline\nexample 3\nextra\nlong", 16.0f, Vec4(0.5f, 0.5f, 0.8f, 1.0f), 0.0f, 0.0f, 1.0f);
+		s_fontRenderer->draw(Vec3(870.0f, 1000.0f, 0.0f), u8"Multiline\nexample 4", 16.0f, Vec4(0.5f, 0.5f, 0.8f, 1.0f), PI*0.5f, 1.0f);
 		s_fontRenderer->present();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));

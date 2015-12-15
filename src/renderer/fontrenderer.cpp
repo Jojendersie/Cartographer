@@ -96,58 +96,70 @@ namespace ca { namespace cc {
 
 		// Create a basis based on the rotation
 		float sinAlpha = sin(_rotation), cosAlpha = cos(_rotation);
-		Vec3 adX( cosAlpha * scale,-sinAlpha * scale, 0.0f);
-		Vec3 adY( sinAlpha * scale, cosAlpha * scale, 0.0f);
+		Vec3 adX( cosAlpha * scale, sinAlpha * scale, 0.0f);
+		Vec3 adY(-sinAlpha * scale, cosAlpha * scale, 0.0f);
 
 		size_t firstNewVertex = m_instances.size();
-		// Avoid kerning for the first character
-		Vec3 cursor = _position;
-		char32_t c = getNext(&_text);
-		auto charEntry = m_chars.find(c);
-		if(charEntry != m_chars.end())
-			cursor -= charEntry->second.baseX * adX;
-		Vec3 beginCursor = cursor, endCursor = cursor;
+		// Create a cursor in text-space (without rotation and scale)
+		Vec3 cursor(0.0f);
+		// Avoid the offset for the first character
+		bool firstInLine = true;
+		Vec3 maxCursor = cursor;
 		auto lastC = m_chars.end();
-		for(; c; c = getNext(&_text))
+		for(char32_t c = getNext(&_text); c; c = getNext(&_text))
 		{
-			auto charEntry = m_chars.find(c);
-			if(charEntry != m_chars.end())
+			if(c == '\n')
 			{
-				// Add kerning
-				if(lastC != m_chars.end())
+				maxCursor.y += BASE_SIZE;
+				cursor.x = 0.0f;
+				cursor.y -= BASE_SIZE;
+				lastC = m_chars.end();
+				firstInLine = true;
+			} else {
+				auto charEntry = m_chars.find(c);
+				if(charEntry != m_chars.end())
 				{
-					CharacterDef::KerningPair p; p.character = charEntry->first;
-					int s = lastC->second.kerning.size();
-					auto it = std::lower_bound(lastC->second.kerning.begin(), lastC->second.kerning.end(), p);
-					if(it != lastC->second.kerning.end() && it->character == p.character)
-						cursor += it->kern / 64.0f * adX;
+					// Add kerning
+					if(lastC != m_chars.end())
+					{
+						CharacterDef::KerningPair p; p.character = charEntry->first;
+						int s = lastC->second.kerning.size();
+						auto it = std::lower_bound(lastC->second.kerning.begin(), lastC->second.kerning.end(), p);
+						if(it != lastC->second.kerning.end() && it->character == p.character)
+							cursor.x += it->kern / 64.0f;
+					}
+					if(firstInLine)
+						cursor.x -= charEntry->second.baseX;
+					// Create sprite instance
+					CharacterVertex v;
+					v.position = _position + (cursor.x + charEntry->second.baseX) * adX + (cursor.y + charEntry->second.baseY) * adY;
+					// Round to pixels for sharper rendering (floor gives better results with kerning than roundf)
+					if(_roundToPixel)
+					{
+						v.position.x = floorf(v.position.x);
+						v.position.y = floorf(v.position.y);
+					}
+					v.rotation = -_rotation;
+					v.size.x = toHalf(charEntry->second.texSize.x * scale);
+					v.size.y = toHalf(charEntry->second.texSize.y * scale);
+					v.color = color;
+					v.texCoords = charEntry->second.texCoords;
+					m_instances.push_back(v);
+					maxCursor.x = max(maxCursor.x, cursor.x + charEntry->second.texSize.x);
+					cursor.x += charEntry->second.advance / 64.0f;
 				}
-				// Create sprite instance
-				CharacterVertex v;
-				v.position = cursor + charEntry->second.baseX * adX + charEntry->second.baseY * adY;
-				// Round to pixels for sharper rendering (floor gives better results with kerning than roundf)
-				if(_roundToPixel)
-				{
-					v.position.x = floorf(v.position.x);
-					v.position.y = floorf(v.position.y);
-				}
-				v.rotation = _rotation;
-				v.size.x = toHalf(charEntry->second.texSize.x * scale);
-				v.size.y = toHalf(charEntry->second.texSize.y * scale);
-				v.color = color;
-				v.texCoords = charEntry->second.texCoords;
-				m_instances.push_back(v);
-				endCursor = cursor + adX * charEntry->second.texSize.x;
-				cursor += adX * (charEntry->second.advance / 64.0f);
+				lastC = charEntry;
+				firstInLine = false;
 			}
-			lastC = charEntry;
 		}
 
-		if(_alignX != 0.0f || _alignY != 0.0f)
+		// Compute a vector to move the whole text to its alignment
+		Vec3 align = (maxCursor.x * _alignX) * adX
+					+ (-maxCursor.y * (1-_alignY) + BASE_SIZE * _alignY) * adY;
+		if(_roundToPixel)
+			align = Vec3(floor(align));
+		if(any(align != Vec3(0.0f)))
 		{
-			// Compute a vector to move the whole text to its alignment
-			Vec3 align = (endCursor - beginCursor) * _alignX;
-			align += adY * BASE_SIZE * _alignY;
 			// Move all new characters to the reference point
 			for(size_t i = firstNewVertex; i < m_instances.size(); ++i)
 				m_instances[i].position -= align;
@@ -165,45 +177,46 @@ namespace ca { namespace cc {
 
 		// Create a basis based on the rotation
 		float sinAlpha = sin(_rotation), cosAlpha = cos(_rotation);
-		Vec2 adX( cosAlpha * scale,-sinAlpha * scale);
-		Vec2 adY( sinAlpha * scale, cosAlpha * scale);
+		Vec2 adX( cosAlpha * scale, sinAlpha * scale);
+		Vec2 adY(-sinAlpha * scale, cosAlpha * scale);
 
-		// Avoid kerning for the first character
-		Vec2 cursor(_position.x, _position.y);
-		char32_t c = getNext(&_text);
-		auto charEntry = m_chars.find(c);
-		if(charEntry != m_chars.end())
-			cursor -= charEntry->second.baseX * adX;
+		// Create a cursor in text-space (without rotation and scale)
+		Vec2 cursor(0.0f);
 		out.min = cursor, out.max = cursor;
 		auto lastC = m_chars.end();
-		for(; c; c = getNext(&_text))
+		for(char32_t c = getNext(&_text); c; c = getNext(&_text))
 		{
-			auto charEntry = m_chars.find(c);
-			if(charEntry != m_chars.end())
+			if(c == '\n')
 			{
-				// Add kerning
-				if(lastC != m_chars.end())
+				out.max.y += BASE_SIZE;
+				cursor.x = out.min.x;
+				cursor.y -= BASE_SIZE;
+				lastC = m_chars.end();
+			} else {
+				auto charEntry = m_chars.find(c);
+				if(charEntry != m_chars.end())
 				{
-					CharacterDef::KerningPair p; p.character = charEntry->first;
-					int s = lastC->second.kerning.size();
-					auto it = std::lower_bound(lastC->second.kerning.begin(), lastC->second.kerning.end(), p);
-					if(it != lastC->second.kerning.end() && it->character == p.character)
-						cursor += it->kern / 64.0f * adX;
+					// Add kerning
+					if(lastC != m_chars.end())
+					{
+						CharacterDef::KerningPair p; p.character = charEntry->first;
+						int s = lastC->second.kerning.size();
+						auto it = std::lower_bound(lastC->second.kerning.begin(), lastC->second.kerning.end(), p);
+						if(it != lastC->second.kerning.end() && it->character == p.character)
+							cursor.x += it->kern / 64.0f;
+					}
+					out.max.x = max(out.max.x, cursor.x + charEntry->second.texSize.x);
+					cursor.x += charEntry->second.advance / 64.0f;
 				}
-				out.max = cursor + adX * charEntry->second.texSize.x + adY * BASE_SIZE;
-				cursor += adX * (charEntry->second.advance / 64.0f);
+				lastC = charEntry;
 			}
-			lastC = charEntry;
 		}
 
-		if(_alignX != 0.0f || _alignY != 0.0f)
-		{
-			// Compute a vector to move the whole text to its alignment
-			Vec2 align = (out.max - out.min) * _alignX;
-			align += adY * BASE_SIZE * _alignY;
-			out.min -= align;
-			out.max -= align;
-		}
+		// Compute a vector to move the whole text to its alignment
+		Vec2 align = ((out.max.x - out.min.x) * _alignX) * adX
+					+ (-out.max.y * (1-_alignY) + BASE_SIZE * _alignY + BASE_SIZE) * adY;
+		out.min -= align;
+		out.max -= align;
 
 		return out;
 	}
