@@ -98,6 +98,9 @@ namespace ca { namespace cc {
 		float sinAlpha = sin(_rotation), cosAlpha = cos(_rotation);
 		Vec3 adX( cosAlpha * scale, sinAlpha * scale, 0.0f);
 		Vec3 adY(-sinAlpha * scale, cosAlpha * scale, 0.0f);
+		Vec3 position = _position;
+		if(_roundToPixel)
+			position.y = roundf(position.y - m_baseLineOffset * scale) + m_baseLineOffset * scale;
 
 		size_t firstNewVertex = m_instances.size();
 		// Create a cursor in text-space (without rotation and scale)
@@ -132,13 +135,9 @@ namespace ca { namespace cc {
 						cursor.x -= charEntry->second.baseX;
 					// Create sprite instance
 					CharacterVertex v;
-					v.position = _position + (cursor.x + charEntry->second.baseX) * adX + (cursor.y + charEntry->second.baseY) * adY;
-					// Round to pixels for sharper rendering (floor gives better results with kerning than roundf)
 					if(_roundToPixel)
-					{
-						v.position.x = floorf(v.position.x);
-						v.position.y = floorf(v.position.y);
-					}
+						cursor.x = roundf((cursor.x + charEntry->second.baseX) * scale) / scale - charEntry->second.baseX;
+					v.position = position + (cursor.x + charEntry->second.baseX) * adX + (cursor.y + charEntry->second.baseY) * adY;
 					v.rotation = -_rotation;
 					v.size.x = toHalf(charEntry->second.texSize.x * scale);
 					v.size.y = toHalf(charEntry->second.texSize.y * scale);
@@ -156,12 +155,12 @@ namespace ca { namespace cc {
 		// Compute a vector to move the whole text to its alignment
 		Vec3 align = (maxCursor.x * _alignX) * adX
 					+ (-maxCursor.y * (1-_alignY) + BASE_SIZE * _alignY) * adY;
-		if(_roundToPixel)
-			align = Vec3(floor(align));
-		if(any(align != Vec3(0.0f)))
+		// Move all new characters to the reference point
+		for(size_t i = firstNewVertex; i < m_instances.size(); ++i)
 		{
-			// Move all new characters to the reference point
-			for(size_t i = firstNewVertex; i < m_instances.size(); ++i)
+			if(_roundToPixel)
+				m_instances[i].position = Vec3(floor(m_instances[i].position.x - align.x), m_instances[i].position.y - align.y, m_instances[i].position.z);
+			else
 				m_instances[i].position -= align;
 		}
 
@@ -182,7 +181,8 @@ namespace ca { namespace cc {
 
 		// Create a cursor in text-space (without rotation and scale)
 		Vec2 cursor(0.0f);
-		out.min = cursor, out.max = cursor;
+		out.min = Vec2(0.0f);
+		out.max = Vec2(0.0f, (float)BASE_SIZE);
 		auto lastC = m_chars.end();
 		for(char32_t c = getNext(&_text); c; c = getNext(&_text))
 		{
@@ -213,10 +213,9 @@ namespace ca { namespace cc {
 
 		// Compute a vector to move the whole text to its alignment
 		Vec2 align( (out.max.x - out.min.x) * _alignX,
-					-out.max.y * (1-_alignY) + BASE_SIZE * _alignY );
+					 out.max.y * _alignY );
 		out.min -= align;
 		out.max -= align;
-		out.max.y += BASE_SIZE;
 		// Transform to world space
 		out.min = out.min.x * adX + out.min.y * adY + Vec2(_position);
 		out.max = out.max.x * adX + out.max.y * adY + Vec2(_position);
@@ -524,6 +523,7 @@ namespace ca { namespace cc {
 	{
 		//int8 baseLineOffset = 127;
 		m_baseLineOffset = 10000;
+		float avgBaseLine = 0.0f;
 		for(auto& cEntry : m_chars)
 		{
 			// Resize texture sprite to a slim fit
@@ -543,6 +543,7 @@ namespace ca { namespace cc {
 			// Lift all characters such that the new base-line is entirely below the text (for alignment)
 			if(cEntry.second.baseY < m_baseLineOffset)
 				m_baseLineOffset = cEntry.second.baseY;
+			avgBaseLine += cEntry.second.baseY;
 			// Build a kerning table for all characters with a special spacing
 			const char* charIt = _characters;
 			for(char32_t c = getNext(&charIt); c; c = getNext(&charIt))
@@ -561,6 +562,7 @@ namespace ca { namespace cc {
 			if(cEntry.second.kerning.size() > 0)
 				std::sort(cEntry.second.kerning.begin(), cEntry.second.kerning.end());
 		}
+		avgBaseLine /= m_chars.size();
 
 		for(auto& cEntry : m_chars)
 			cEntry.second.baseY -= m_baseLineOffset;
