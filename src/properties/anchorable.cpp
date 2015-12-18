@@ -1,6 +1,7 @@
 #pragma once
 
 #include "properties/anchorable.hpp"
+#include "properties/anchorprovider.hpp"
 
 namespace ca { namespace gui {
 
@@ -11,7 +12,7 @@ namespace ca { namespace gui {
 	{
 	}
 
-	void Anchorable::setAnchor(SIDE::Val _side, std::shared_ptr<const AnchorPoint> _anchorPoint)
+	void Anchorable::setAnchor(SIDE::Val _side, AnchorPtr _anchorPoint)
 	{
 		int si = (int)_side;
 		m_anchors[si].reference = _anchorPoint;
@@ -20,6 +21,10 @@ namespace ca { namespace gui {
 
 	void Anchorable::autoAnchor(const IAnchorProvider* _anchorProvider)
 	{
+		setAnchor(SIDE::LEFT,   _anchorProvider->findClosestAnchor(m_selfFrame->left(), IAnchorProvider::SearchDirection::LEFT));
+		setAnchor(SIDE::RIGHT,  _anchorProvider->findClosestAnchor(m_selfFrame->right(), IAnchorProvider::SearchDirection::RIGHT));
+		setAnchor(SIDE::BOTTOM, _anchorProvider->findClosestAnchor(m_selfFrame->bottom(), IAnchorProvider::SearchDirection::DOWN));
+		setAnchor(SIDE::TOP,    _anchorProvider->findClosestAnchor(m_selfFrame->top(), IAnchorProvider::SearchDirection::UP));
 	}
 
 	void Anchorable::resetAnchors()
@@ -70,20 +75,14 @@ namespace ca { namespace gui {
 					{
 						// Both borders are set -> center the object
 						float center = (m_selfFrame->sides[sa] + m_selfFrame->sides[sb]) * 0.5f;
-						float oldLeftAnchor = m_selfFrame->sides[sa] - m_anchors[sa].relativePosition;
-						float oldRightAnchor = m_selfFrame->sides[sb] - m_anchors[sb].relativePosition;
-						float relativeLeftPosition = (center - oldLeftAnchor) / (oldRightAnchor - oldLeftAnchor);
-						float delta = (m_anchors[sa].reference->position + m_anchors[sa].relativePosition - m_selfFrame->sides[sa]) * (1.0f - relativeLeftPosition)
-									+ (m_anchors[sb].reference->position + m_anchors[sb].relativePosition - m_selfFrame->sides[sb]) * relativeLeftPosition;
+						float oldAAnchor = m_selfFrame->sides[sa] - m_anchors[sa].relativePosition;
+						float oldBAnchor = m_selfFrame->sides[sb] - m_anchors[sb].relativePosition;
+						float relativeAPosition = (center - oldAAnchor) / (oldBAnchor - oldAAnchor);
+						if(abs(oldBAnchor - oldAAnchor) < 1.0f) relativeAPosition = 0.0f;
+						float delta = (m_anchors[sa].reference->position + m_anchors[sa].relativePosition - m_selfFrame->sides[sa]) * (1.0f - relativeAPosition)
+									+ (m_anchors[sb].reference->position + m_anchors[sb].relativePosition - m_selfFrame->sides[sb]) * relativeAPosition;
 						m_selfFrame->sides[sa] += delta;
 						m_selfFrame->sides[sb] += delta;
-
-						// ?? what is this block for?
-						/*float ad = m_anchors[sb].reference->position - m_anchors[sa].reference->position;
-						float middle = m_anchors[sa].reference->position + 0.5f * ad;
-						float width = m_selfFrame->width();
-						m_selfFrame->sides[sa] = middle - width * 0.5f;
-						m_selfFrame->sides[sb] = middle + width * 0.5f;*/
 					} else if(m_anchors[sa].reference) {
 						float delta = m_anchors[sa].reference->position + m_anchors[sa].relativePosition - m_selfFrame->sides[sa];
 						m_selfFrame->sides[sa] += delta;

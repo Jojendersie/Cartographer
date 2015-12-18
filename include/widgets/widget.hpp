@@ -75,6 +75,10 @@ namespace ca { namespace gui {
 		void setVerticalAnchorMode(Anchorable::Mode _mode);
 		void setAnchorModes(Anchorable::Mode _mode);
 
+		/// Automatically attach all four anchor points to the closest anchors in the provider.
+		/// \details Fails silently if the component is not anchorable
+		void autoAnchor(const class IAnchorProvider* _anchorProvider);
+
 		/// Let this widget create anchors for others
 		void setAnchorProvider(std::unique_ptr<IAnchorProvider> _anchorProvider);
 		/// Get the anchor component (can be nullptr)

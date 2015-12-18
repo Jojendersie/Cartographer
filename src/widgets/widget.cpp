@@ -144,6 +144,12 @@ namespace ca { namespace gui {
 			error("Cannot set anchor modes for a non-anchorable component!");
 	}
 
+	void Widget::autoAnchor(const IAnchorProvider* _anchorProvider)
+	{
+		if(m_anchorComponent)
+			m_anchorComponent->autoAnchor(_anchorProvider);
+	}
+
 	void Widget::setAnchorProvider(std::unique_ptr<IAnchorProvider> _anchorProvider)
 	{
 		m_anchorProvider = move(_anchorProvider);

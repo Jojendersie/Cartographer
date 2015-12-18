@@ -100,7 +100,6 @@ void createGUI(GLFWwindow* _window)
 	FramePtr f0 = std::make_shared<Frame>(true, false, true, true);
 	f0->setExtent(Vec2(5.0f), Vec2(100.0f, 105.0f));
 	f0->setAnchorProvider( std::make_unique<GridAnchorProvider>(2, 5) );
-	GridAnchorProvider* anchors = static_cast<GridAnchorProvider*>(f0->getAnchorProvider());
 	GUIManager::add(f0);
 
 	for(int i = 0; i < 4; ++i)
@@ -111,10 +110,7 @@ void createGUI(GLFWwindow* _window)
 		b0->setText(name.c_str());
 		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " clicked.\n"; }, MouseState::CLICKED);
 		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " double clicked.\n"; }, MouseState::DBL_CLICKED);
-		b0->setAnchoring(SIDE::LEFT, anchors->getHAnchor(0));
-		b0->setAnchoring(SIDE::BOTTOM, anchors->getVAnchor(i));
-		b0->setAnchoring(SIDE::RIGHT, anchors->getHAnchor(1));
-		b0->setAnchoring(SIDE::TOP, anchors->getVAnchor(i+1));
+		b0->autoAnchor(f0->getAnchorProvider());
 		b0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
 		b0->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
 		f0->add(b0);
@@ -130,40 +126,35 @@ void createGUI(GLFWwindow* _window)
 	ButtonPtr b1 = std::make_shared<Button>();
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 5.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::LEFT, coord::pixel(32,32), false);
-	b1->setAnchoring(SIDE::LEFT, anchorsf1->getAnchor(SIDE::LEFT));
-	b1->setAnchoring(SIDE::BOTTOM, anchorsf1->getAnchor(SIDE::BOTTOM));
+	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
 	b1 = std::make_shared<Button>();
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 50.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::LEFT, coord::pixel(20,20), false, 5.0f);
 	b1->setText("Icon Left");
-	b1->setAnchoring(SIDE::LEFT, anchorsf1->getAnchor(SIDE::LEFT));
-	b1->setAnchoring(SIDE::BOTTOM, anchorsf1->getAnchor(SIDE::BOTTOM));
+	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
 	b1 = std::make_shared<Button>();
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 95.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::RIGHT, coord::pixel(20,20), false, 2.0f);
 	b1->setText("Icon Right");
-	b1->setAnchoring(SIDE::LEFT, anchorsf1->getAnchor(SIDE::LEFT));
-	b1->setAnchoring(SIDE::BOTTOM, anchorsf1->getAnchor(SIDE::BOTTOM));
+	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
 	b1 = std::make_shared<Button>();
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 140.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::BOTTOM, coord::pixel(20,20), false, 2.0f);
 	b1->setText("Icon Bottom");
-	b1->setAnchoring(SIDE::LEFT, anchorsf1->getAnchor(SIDE::LEFT));
-	b1->setAnchoring(SIDE::BOTTOM, anchorsf1->getAnchor(SIDE::BOTTOM));
+	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
 	b1 = std::make_shared<Button>();
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 185.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::TOP, coord::pixel(20,20), false, 2.0f);
 	b1->setText("Icon Top");
-	b1->setAnchoring(SIDE::LEFT, anchorsf1->getAnchor(SIDE::LEFT));
-	b1->setAnchoring(SIDE::BOTTOM, anchorsf1->getAnchor(SIDE::BOTTOM));
+	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
 	// Third frame with checkboxes and more
@@ -178,11 +169,8 @@ void createGUI(GLFWwindow* _window)
 		CheckBoxPtr c0 = std::make_shared<CheckBox>();
 		c0->setExtent(f2->getPosition() + Coord2(5.0f, 5.0f + i * 25.0f), Coord2(90.0f, 20.0f));
 		if(i < 4) c0->setText("Cookie?");
-		c0->setAnchoring(SIDE::LEFT, anchorsf2->getAnchor(SIDE::LEFT));
-		c0->setAnchoring(SIDE::BOTTOM, anchorsf2->getAnchor(SIDE::BOTTOM));
-		c0->setAnchoring(SIDE::RIGHT, anchorsf2->getAnchor(SIDE::RIGHT));
-		c0->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
-		c0->setVerticalAnchorMode(Anchorable::PREFER_MOVE);
+		c0->autoAnchor(anchorsf2);
+		c0->setAnchorModes(Anchorable::PREFER_MOVE);
 		f2->add(c0);
 	}
 
@@ -212,49 +200,40 @@ void createGUI(GLFWwindow* _window)
 	l0 = std::make_shared<Label>();
 	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
 	l0->setText("LEFT");
-	l0->setAnchoring(SIDE::LEFT, anchorsf3->getAnchor(SIDE::LEFT));
-	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
-	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	l0->autoAnchor(anchorsf3);
+	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 
 	l0 = std::make_shared<Label>();
 	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
 	l0->setText("RIGHT");
 	l0->setAlignment(SIDE::RIGHT);
-	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
-	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
-	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
-	l0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
+	l0->autoAnchor(anchorsf3);
+	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 
 	l0 = std::make_shared<Label>();
 	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
 	l0->setText("BOTTOM");
 	l0->setAlignment(SIDE::BOTTOM);
-	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
-	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
-	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
-	l0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
+	l0->autoAnchor(anchorsf3);
+	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 
 	l0 = std::make_shared<Label>();
 	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
 	l0->setText("TOP");
 	l0->setAlignment(SIDE::TOP);
-	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
-	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
-	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
-	l0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
+	l0->autoAnchor(anchorsf3);
+	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 
 	l0 = std::make_shared<Label>();
 	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
-	l0->setText("Reopen the window\nby clicking one of the icon-buttons.");
+	l0->setText("Reopen the window\nby clicking one of\nthe icon-buttons.");
 	l0->setAlignment(SIDE::CENTER);
-	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
-	l0->setAnchoring(SIDE::BOTTOM, anchorsf3->getAnchor(SIDE::BOTTOM));
-	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
-	l0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
+	l0->autoAnchor(anchorsf3);
+	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 }
 
