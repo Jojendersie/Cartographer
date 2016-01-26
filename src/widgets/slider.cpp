@@ -62,10 +62,10 @@ namespace ca { namespace gui {
 			}
 		} else if(_mouseState.buttons[0] == MouseState::RELEASED || _mouseState.buttons[0] == MouseState::UP)
 		{
-			if(GUIManager::getMouseFocussed() == this)
-				GUIManager::setMouseFocus(nullptr, false);
 			m_isMoving = false;
-		}
+		} else if(GUIManager::hasMouseFocus(this))
+			// Keep sticky focus until mouse is released (above)
+			GUIManager::setMouseFocus(this, true);
 
 		return Widget::processInput(_mouseState);
 	}

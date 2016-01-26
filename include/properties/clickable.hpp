@@ -7,7 +7,7 @@
 
 namespace ca { namespace gui {
 
-	/// Interface for clickable objects defining input and callback handling.
+	/// Component for clickable objects defining input and callback handling.
 	/// \details Per default a clickable uses the objects reference frame as input region.
 	class Clickable
 	{
@@ -16,7 +16,7 @@ namespace ca { namespace gui {
 		~Clickable();
 
 		/// Process mouse input (uses the callbacks).
-		virtual bool processInput(const struct MouseState& _mouseState);
+		bool processInput(const struct MouseState& _mouseState);
 
 		/// Type for click callbacks.
 		/// \param [in] _where Internal position as info.
@@ -54,7 +54,7 @@ namespace ca { namespace gui {
 	};
 
 	/// Use the reference frame fitted ellipse to detect click events.
-	class EllipseRegion: public IRegion
+	class EllipseRegion : public IRegion
 	{
 	public:
 		/// \param [in] _selfFrame The reference frame for the clickable area
@@ -66,7 +66,7 @@ namespace ca { namespace gui {
 	};
 
 	/// Use a bitmap mask to detect click events.
-	class MaskRegion: public IRegion
+	class MaskRegion : public IRegion
 	{
 	public:
 		virtual bool isMouseOver(const Coord2& _mousePos) const override;

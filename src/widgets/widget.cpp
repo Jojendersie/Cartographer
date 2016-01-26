@@ -74,9 +74,9 @@ namespace ca { namespace gui {
 		if(m_clickComponent)
 			if(m_clickComponent->processInput(_mouseState))
 			{
-				GUIManager::setMouseFocus(this);
+				GUIManager::setMouseFocus(this, true);
 				return true;
-			}
+			}// else GUIManager::setMouseFocus(nullptr, false);
 		RefFrame oldFrame = m_refFrame;
 		// Do resize before move, because it adds a little different behavior if the same input
 		// is done close to the border.
@@ -104,8 +104,8 @@ namespace ca { namespace gui {
 			// Clickables may define special areas, if not the reference frame defines the real
 			// element area and the cursor is on this element.
 			if(!m_clickComponent) return true;
-		// The current element has the focus but now reson to keep it.
-		} else if(GUIManager::hasMouseFocus(this))// && !GUIManager::getStickyMouseFocussed())
+		// The current element has the focus but now reason to keep it.
+		} else if(GUIManager::hasMouseFocus(this))
 			GUIManager::setMouseFocus(nullptr);
 		return false;
 	}

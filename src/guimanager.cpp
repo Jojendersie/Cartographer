@@ -108,8 +108,12 @@ namespace ca { namespace gui {
 		g_manager->m_cursorType = CursorType::ARROW;
 
 		if(g_manager->m_stickyMouseFocus && g_manager->m_mouseFocus)
+		{
+			// Reset sticky-state. The component must actively regain this.
+			// Otherwise some component may keep the state forever.
+			g_manager->m_stickyMouseFocus = false;
 			return g_manager->m_mouseFocus->processInput( _mouseState );
-		else return g_manager->m_topFrame->processInput( _mouseState );
+		} else return g_manager->m_topFrame->processInput( _mouseState );
 	}
 
 	const MouseState& GUIManager::getMouseState()

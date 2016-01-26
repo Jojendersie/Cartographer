@@ -76,7 +76,7 @@ namespace ca { namespace gui {
 			if(!_mouseState.buttons[b] || _mouseState.buttons[b] & MouseState::UP)
 				m_buttonDownReceived[b] = false;
 
-		return false;
+		return isAnyButtonDown();
 	}
 
 	void Clickable::addOnButtonChangeFunc(OnButtonChange _callback, MouseState::ButtonState _stateMask)
