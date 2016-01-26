@@ -6,7 +6,7 @@
 
 namespace ca { namespace gui {
 
-	Widget::Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable, bool _inputReceivable, bool _focusable) : 
+	Widget::Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable, bool _inputReceivable, bool _keyboardFocusable) : 
 		m_anchorComponent(nullptr),
 		m_clickComponent(nullptr),
 		m_moveComponent(nullptr),
@@ -14,7 +14,7 @@ namespace ca { namespace gui {
 		m_anchorProvider(nullptr),
 		m_inputReceivable(_inputReceivable),
 		m_enabled(_inputReceivable),
-		m_focusable(_focusable),
+		m_keyboardFocusable(_keyboardFocusable),
 		m_visible(true),
 		m_parent(nullptr)
 	{
@@ -74,7 +74,7 @@ namespace ca { namespace gui {
 		if(m_clickComponent)
 			if(m_clickComponent->processInput(_mouseState))
 			{
-				GUIManager::setMouseFocus(this, true);
+				GUIManager::setMouseFocus(this, _mouseState.anyButtonDown || _mouseState.anyButtonPressed);
 				return true;
 			}// else GUIManager::setMouseFocus(nullptr, false);
 		RefFrame oldFrame = m_refFrame;

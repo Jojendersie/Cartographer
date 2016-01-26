@@ -16,7 +16,7 @@ namespace ca { namespace gui {
 	class Widget
 	{
 	public:
-		Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable, bool _inputReceivable, bool _focusable);
+		Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable, bool _inputReceivable, bool _keyboardFocusable);
 		virtual ~Widget() = default;
 
 		/// Set the button width and heigh (resets anchoring)
@@ -59,14 +59,10 @@ namespace ca { namespace gui {
 		void setVisible(bool _state) { m_visible = _state; }
 
 		/// Can this element get the focus?
-		bool isFocusable() const { return m_focusable; }
+		bool isKeyboardFocusable() const { return m_keyboardFocusable; }
 
 		const Widget* parent() const { return m_parent; }
 		Widget* parent() { return m_parent; }
-
-		/// Elements which contain other elements should implement this check for the focus of a
-		/// contained element.
-		//virtual bool isChildFocused(const Widget* _child) const { return false; }
 
 		/// Attach one of the four reference sides to an anchor point
 		/// \details If the element was created without anchoring this fails with an error message.
@@ -88,9 +84,9 @@ namespace ca { namespace gui {
 		virtual void refitToAnchors();
 	protected:
 		const bool m_inputReceivable;	///< The element can receive input.
-		bool m_enabled;		///< The element can currently receive input (not disabled).
-		bool m_focusable;	///< Can this object have the focus?
-		bool m_visible;		///< Draw the element if visible and mask input otherwise.
+		bool m_enabled;					///< The element can currently receive input (not disabled).
+		bool m_keyboardFocusable;		///< Can this object have the focus?
+		bool m_visible;					///< Draw the element if visible and mask input otherwise.
 
 		RefFrame m_refFrame;
 		// List of optional components (can be nullptr)

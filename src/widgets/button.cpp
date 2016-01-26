@@ -8,7 +8,7 @@
 namespace ca { namespace gui {
 
 	Button::Button() :
-		Widget(true, true, false, false, true, false),
+		Widget(true, true, false, false, true, true),
 		m_textSize(0.0f),
 		m_iconPos(SIDE::LEFT),
 		m_iconSize(0.0f),

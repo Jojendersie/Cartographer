@@ -6,7 +6,7 @@
 namespace ca { namespace gui {
 
 	CheckBox::CheckBox() :
-		Widget(true, true, false, false, true, false),
+		Widget(true, true, false, false, true, true),
 		m_textWidth(0.0f),
 		m_checked(false),
 		m_backgroundTexture(0)

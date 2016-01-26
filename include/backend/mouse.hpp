@@ -37,7 +37,7 @@ namespace ca { namespace gui {
 		/// State for up to 8 buttons
 		ButtonState buttons[8];
 		/// Is there any DOWN or UP event for any of the 8 buttons?
-		bool anyButtonUp, anyButtonDown;
+		bool anyButtonUp, anyButtonDown, anyButtonPressed;
 
 		/// Reset/change states
 		void clear();

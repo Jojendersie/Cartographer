@@ -9,7 +9,7 @@
 namespace ca { namespace gui {
 
 	Frame::Frame(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable) :
-		Widget(_anchorable, _clickable, _moveable, _resizeable, true, true),
+		Widget(_anchorable, _clickable, _moveable, _resizeable, true, false),
 		m_opacity(1.0f),
 		m_texture(0)
 	{
@@ -98,8 +98,8 @@ namespace ca { namespace gui {
 					WidgetPtr& e = m_activeChildren[i];
 					if(e->isEnabled() && e->processInput(_mouseState))
 					{
-						// The one who took the input gets the focus
-						if(e->isFocusable() && _mouseState.anyButtonDown)
+						// If a frame took the input change the order
+						if(dynamic_cast<Frame*>(e.get()) && _mouseState.anyButtonDown)
 							moveToFront(i);
 						return true;
 					}
