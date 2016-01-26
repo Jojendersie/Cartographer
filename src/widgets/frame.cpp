@@ -86,7 +86,7 @@ namespace ca { namespace gui {
 	{
 		// Component disabled?
 		if(!isEnabled() || !isVisible()) return false;
-		// Exclusive input?
+		// Exclusive input? If so don't check children.
 		if(GUIManager::getStickyMouseFocussed() != this)
 		{
 			// Only use mouse input if the mouse is on this component

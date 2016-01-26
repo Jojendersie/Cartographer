@@ -27,7 +27,8 @@ namespace ca { namespace gui {
 		g_manager->m_keyboardFocus = nullptr;
 		g_manager->m_mouseFocus = nullptr;
 		g_manager->m_stickyKeyboardFocus = false;
-		g_manager->m_stickyMouseFocus = false;
+		g_manager->m_stickyMouseFocus[0] = false;
+		g_manager->m_stickyMouseFocus[1] = false;
 	}
 
 	void GUIManager::exit()
@@ -107,12 +108,15 @@ namespace ca { namespace gui {
 		g_manager->m_mouseState = _mouseState;
 		g_manager->m_cursorType = CursorType::ARROW;
 
-		if(g_manager->m_stickyMouseFocus && g_manager->m_mouseFocus)
+		// Reset sticky-state. The component must actively regain this.
+		// Otherwise some component may keep the state forever.
+		g_manager->m_stickyMouseFocus[1] = false;
+
+		if(g_manager->m_stickyMouseFocus[0] && g_manager->m_mouseFocus)
 		{
-			// Reset sticky-state. The component must actively regain this.
-			// Otherwise some component may keep the state forever.
-			g_manager->m_stickyMouseFocus = false;
-			return g_manager->m_mouseFocus->processInput( _mouseState );
+			bool ret = g_manager->m_mouseFocus->processInput( _mouseState );
+			g_manager->m_stickyMouseFocus[0] = g_manager->m_stickyMouseFocus[1];
+			return ret;
 		} else return g_manager->m_topFrame->processInput( _mouseState );
 	}
 
@@ -160,7 +164,7 @@ namespace ca { namespace gui {
 
 	Widget * GUIManager::getStickyMouseFocussed()
 	{
-		if(g_manager->m_stickyMouseFocus)
+		if(g_manager->m_stickyMouseFocus[0])
 			return g_manager->m_mouseFocus;
 		return nullptr;
 	}
@@ -174,7 +178,7 @@ namespace ca { namespace gui {
 	void GUIManager::setMouseFocus(Widget* _widget, bool _sticky)
 	{
 		g_manager->m_mouseFocus = _widget;
-		g_manager->m_stickyMouseFocus = _sticky;
+		g_manager->m_stickyMouseFocus[0] = g_manager->m_stickyMouseFocus[1] = _sticky;
 	}
 
 	CursorType GUIManager::getCursorType()

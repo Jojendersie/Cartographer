@@ -12,23 +12,13 @@ namespace ca { namespace gui {
 		m_value(0.5),
 		m_min(0.0),
 		m_range(1.0),
-		m_stepSize(0.001),
+		m_stepSize(0.01),
 		m_isMoving(false)
 	{
 	}
 
 	void Slider::draw()
 	{
-		if(m_isMoving)
-		{
-			double relativeVal = (GUIManager::getMouseState().position.x - m_refFrame.left()) / (m_refFrame.width()-2.0f);
-			relativeVal = ei::clamp(relativeVal, 0.0, 1.0);
-			relativeVal *= m_range;
-			// Round to step size
-			relativeVal = round(relativeVal / m_stepSize) * m_stepSize;
-			m_value = m_min + relativeVal;
-		}
-
 		// Background
 		GUIManager::theme().drawBackgroundArea(m_refFrame);
 
@@ -63,9 +53,17 @@ namespace ca { namespace gui {
 		} else if(_mouseState.buttons[0] == MouseState::RELEASED || _mouseState.buttons[0] == MouseState::UP)
 		{
 			m_isMoving = false;
-		} else if(GUIManager::hasMouseFocus(this))
+		} else if(m_isMoving) {
+			double relativeVal = (GUIManager::getMouseState().position.x - m_refFrame.left()) / (m_refFrame.width()-2.0f);
+			relativeVal = ei::clamp(relativeVal, 0.0, 1.0);
+			relativeVal *= m_range;
+			// Round to step size
+			relativeVal = round(relativeVal / m_stepSize) * m_stepSize;
+			m_value = m_min + relativeVal;
+
 			// Keep sticky focus until mouse is released (above)
 			GUIManager::setMouseFocus(this, true);
+		}
 
 		return Widget::processInput(_mouseState);
 	}
