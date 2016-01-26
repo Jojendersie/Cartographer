@@ -21,7 +21,9 @@ namespace ca { namespace gui {
 
 	void Sharp3DTheme::drawTextArea(const RefFrame& _rect)
 	{
-		GUIManager::renderBackend().drawRect(_rect, m_properties.textBackColor);
+		RefFrame rect(_rect.left() + m_properties.borderWidth, _rect.right() - m_properties.borderWidth, _rect.bottom() + m_properties.borderWidth, _rect.top() - m_properties.borderWidth);
+		drawBorderRect(_rect, rect, m_properties.basicColor, scaleColor(m_properties.basicColor, 4.0f));
+		GUIManager::renderBackend().drawRect(rect, m_properties.textBackColor);
 	}
 
 	void Sharp3DTheme::drawBackgroundArea(const RefFrame& _rect, float _opacity)
@@ -33,19 +35,7 @@ namespace ca { namespace gui {
 			if(m_properties.borderWidth)
 			{
 				RefFrame rect(_rect.left() + m_properties.borderWidth, _rect.right() - m_properties.borderWidth, _rect.bottom() + m_properties.borderWidth, _rect.top() - m_properties.borderWidth);
-				// TODO: Find out what is faster 4 small rects or one large and much overdraw?
-				RefFrame borderRect;
-				borderRect = RefFrame(_rect.left(), rect.left(), _rect.bottom(), _rect.top());
-				GUIManager::renderBackend().drawRect(borderRect, Vec2(0.0f), Vec2(0.0f, 1.0f), scaleColor(color, 1.0f), scaleColor(color, 4.0f));
-				borderRect = RefFrame(rect.right(), _rect.right(), _rect.bottom(), _rect.top());
-				GUIManager::renderBackend().drawRect(borderRect, Vec2(0.0f), Vec2(0.0f, 1.0f), scaleColor(color, 1.0f), scaleColor(color, 4.0f));
-				borderRect = RefFrame(rect.left(), rect.right(), rect.top(), _rect.top());
-				GUIManager::renderBackend().drawRect(borderRect, scaleColor(color, 4.0f));
-				borderRect = RefFrame(rect.left(), rect.right(), _rect.bottom(), rect.bottom());
-				GUIManager::renderBackend().drawRect(borderRect, scaleColor(color, 1.0f));
-				/*GUIManager::renderBackend().drawRect(_rect,// <- large one
-					Vec2(0.0f), Vec2(0.0f, 1.0f), scaleColor(m_properties.basicColor, 1.0f),
-					scaleColor(m_properties.basicColor, 4.0f));*/
+				drawBorderRect(_rect, rect, color, scaleColor(color, 4.0f));
 
 				GUIManager::renderBackend().drawRect(rect, scaleColor(color, 0.5f));
 			} else
@@ -59,16 +49,7 @@ namespace ca { namespace gui {
 		RefFrame rect(_rect.left() + m_properties.borderWidth, _rect.right() - m_properties.borderWidth, _rect.bottom() + m_properties.borderWidth, _rect.top() - m_properties.borderWidth);
 		Vec2 gfrom = Vec2(0.0f, _mouseDown ? 1.0f : 0.0f);
 		Vec2 gto = Vec2(0.0f, _mouseDown ? 0.0f : 1.0f);
-		// TODO: Find out what is faster 4 small rects or one large and much overdraw?
-		RefFrame borderRect;
-		borderRect = RefFrame(_rect.left(), rect.left(), _rect.bottom(), _rect.top());
-		GUIManager::renderBackend().drawRect(borderRect, gfrom, gto, scaleColor(color, 1.0f), scaleColor(color, 4.0f));
-		borderRect = RefFrame(rect.right(), _rect.right(), _rect.bottom(), _rect.top());
-		GUIManager::renderBackend().drawRect(borderRect, gfrom, gto, scaleColor(color, 1.0f), scaleColor(color, 4.0f));
-		borderRect = RefFrame(rect.left(), rect.right(), rect.top(), _rect.top());
-		GUIManager::renderBackend().drawRect(borderRect, scaleColor(color, 4.0f));
-		borderRect = RefFrame(rect.left(), rect.right(), _rect.bottom(), rect.bottom());
-		GUIManager::renderBackend().drawRect(borderRect, scaleColor(color, 1.0f));
+		drawBorderRect(_rect, rect, color, scaleColor(color, 4.0f));
 
 		GUIManager::renderBackend().drawRect(rect, gfrom, gto,
 			scaleColor(color, 0.5f),
@@ -88,6 +69,18 @@ namespace ca { namespace gui {
 			RefFrame checkRect(_rect.left() + 3, _rect.right() - 3, _rect.bottom() + 3, _rect.top() - 3);
 			GUIManager::renderBackend().drawRect(checkRect, Vec2(0.0f), Vec2(0.0f, 1.0f), scaleColor(color, 0.5f), scaleColor(color, 2.0f));
 		}
+	}
+
+	void Sharp3DTheme::drawSliderBar(const class RefFrame& _rect, float _relativeValue)
+	{
+		// Fill left side with a button like structure
+		RefFrame leftFrame;
+		leftFrame.sides[SIDE::LEFT] = _rect.left() + 1.0f;
+		leftFrame.sides[SIDE::RIGHT] = roundf(_rect.left() + 1.0f + (_rect.width() - 2.0f) * _relativeValue);
+		leftFrame.sides[SIDE::TOP] = _rect.top() - 1.0f;
+		leftFrame.sides[SIDE::BOTTOM] = _rect.bottom() + 1.0f;
+		if(leftFrame.left() != leftFrame.right())
+			drawButton(leftFrame, false, true);
 	}
 
 	void Sharp3DTheme::drawText(const Coord2& _position, const char * _text, float _relativeScale, bool _mouseOver, float _alignX, float _alignY)
@@ -116,6 +109,23 @@ namespace ca { namespace gui {
 
 	void Sharp3DTheme::drawArrowButton(const RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver)
 	{
+	}
+
+	void Sharp3DTheme::drawBorderRect(const RefFrame& _outer, const RefFrame& _inner, const ei::Vec4& _colorA, const ei::Vec4& _colorB)
+	{
+		// TODO: Find out what is faster 4 small rects or one large and much overdraw?
+		RefFrame borderRect;
+		borderRect = RefFrame(_outer.left(), _inner.left(), _outer.bottom(), _outer.top());
+		GUIManager::renderBackend().drawRect(borderRect, Vec2(0.0), Vec2(0.0, 1.0), _colorA, _colorB);
+		borderRect = RefFrame(_inner.right(), _outer.right(), _outer.bottom(), _outer.top());
+		GUIManager::renderBackend().drawRect(borderRect, Vec2(0.0), Vec2(0.0, 1.0), _colorA, _colorB);
+		borderRect = RefFrame(_inner.left(), _inner.right(), _inner.top(), _outer.top());
+		GUIManager::renderBackend().drawRect(borderRect, _colorB);
+		borderRect = RefFrame(_inner.left(), _inner.right(), _outer.bottom(), _inner.bottom());
+		GUIManager::renderBackend().drawRect(borderRect, _colorA);
+		/*GUIManager::renderBackend().drawRect(_rect,// <- large one
+		Vec2(0.0f), Vec2(0.0f, 1.0f), scaleColor(m_properties.basicColor, 1.0f),
+		scaleColor(m_properties.basicColor, 4.0f));*/
 	}
 
 }} // namespace ca::gui

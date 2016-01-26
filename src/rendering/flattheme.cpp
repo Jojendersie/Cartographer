@@ -51,6 +51,17 @@ namespace ca { namespace gui {
 		}
 	}
 
+	void FlatTheme::drawSliderBar(const class RefFrame& _rect, float _relativeValue)
+	{
+		RefFrame leftFrame;
+		leftFrame.sides[SIDE::LEFT] = _rect.left() + 1.0f;
+		leftFrame.sides[SIDE::RIGHT] = roundf(_rect.left() + 1.0f + (_rect.width() - 2.0f) * _relativeValue);
+		leftFrame.sides[SIDE::TOP] = _rect.top() - 1.0f;
+		leftFrame.sides[SIDE::BOTTOM] = _rect.bottom() + 1.0f;
+		if(leftFrame.left() != leftFrame.right())
+			GUIManager::renderBackend().drawRect(leftFrame, m_properties.hoverButtonColor);
+	}
+
 	void FlatTheme::drawText(const Coord2& _position, const char* _text, float _relativeScale, bool _mouseOver, float _alignX, float _alignY)
 	{
 		GUIManager::renderBackend().drawText(_position, _text,

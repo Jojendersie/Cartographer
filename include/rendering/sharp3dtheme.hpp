@@ -25,6 +25,7 @@ namespace ca { namespace gui {
 		virtual void drawBackgroundArea(const class RefFrame& _rect, float _opacity = 1.0f) override;
 		virtual void drawButton(const class RefFrame& _rect, bool _mouseOver, bool _mouseDown) override;
 		virtual void drawCheckbox(const class RefFrame& _rect, bool _checked, bool _mouseOver) override;
+		virtual void drawSliderBar(const class RefFrame& _rect, float _relativeValue) override;
 		virtual void drawText(const Coord2& _position, const char* _text, float _relativeScale, bool _mouseOver, float _alignX = 0.0f, float _alignY = 0.0f) override;
 		virtual ei::Rect2D getTextBB(const Coord2& _position, const char* _text, float _relativeScale, float _alignX = 0.0f, float _alignY = 0.0f) override;
 		virtual void drawImage(const class RefFrame& _rect, uint64 _texHandle, float _opacity = 1.0f) override;
@@ -32,6 +33,9 @@ namespace ca { namespace gui {
 		virtual float getTextSize() const override { return m_properties.textSize; }
 	protected:
 		Sharp3DProperties m_properties;
+
+		/// Draw a rectangle with borders. This rectangle might be completely filled.
+		void drawBorderRect(const class RefFrame& _outer, const class RefFrame& _inner, const ei::Vec4& _colorA, const ei::Vec4& _colorB);
 	};
 
 }} // namespace ca::gui

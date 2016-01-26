@@ -21,15 +21,9 @@ namespace ca { namespace gui {
 	void Slider::draw()
 	{
 		// Background
-		GUIManager::theme().drawBackgroundArea(m_refFrame);
-
-		// Fill left side
-		RefFrame leftFrame;
-		leftFrame.sides[SIDE::LEFT] = m_refFrame.left() + 1.0f;
-		leftFrame.sides[SIDE::RIGHT] = roundf(leftFrame.left() + 1.0f + (m_refFrame.width() - 3.0f) * (float)m_value);
-		leftFrame.sides[SIDE::TOP] = m_refFrame.top() - 1.0f;
-		leftFrame.sides[SIDE::BOTTOM] = m_refFrame.bottom() + 1.0f;
-		GUIManager::theme().drawButton(leftFrame, false, true);
+		//GUIManager::theme().drawBackgroundArea(m_refFrame);
+		GUIManager::theme().drawTextArea(m_refFrame);
+		GUIManager::theme().drawSliderBar(m_refFrame, float((m_value - m_min) / m_range));
 
 		// Draw value string
 		if(m_labelPos >= 0.0f && m_labelPos <= 1.0f)

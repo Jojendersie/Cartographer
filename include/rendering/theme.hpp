@@ -10,7 +10,7 @@ namespace ca { namespace gui {
 	/// Interface for different rendering implementations (look).
 	/// \details Dependent on the generality a new theme does not ever need a new implementation.
 	///		Changing colors should be possible over theme settings. A theme is more a general
-	///		style like flat buttos versus bloby buttons...
+	///		style like flat buttons versus bloby buttons...
 	class ITheme
 	{
 	public:
@@ -22,6 +22,9 @@ namespace ca { namespace gui {
 		virtual void drawButton(const class RefFrame& _rect, bool _mouseOver, bool _mouseDown) = 0;
 		/// Draw the box with the check mark
 		virtual void drawCheckbox(const class RefFrame& _rect, bool _checked, bool _mouseOver) = 0;
+		/// Draw the bar and the value mark of a slider
+		/// \param [in] _relativeValue Position of the mark in [0,1] coordinates relative to the _rect.
+		virtual void drawSliderBar(const class RefFrame& _rect, float _relativeValue) = 0;
 		/// Draw a string
 		/// \param [in] _relativeScale A number to scale the text relative to the global font size.
 		virtual void drawText(const Coord2& _position, const char* _text, float _relativeScale, bool _mouseOver, float _alignX = 0.0f, float _alignY = 0.0f) = 0;
