@@ -157,9 +157,9 @@ void createGUI(GLFWwindow* _window)
 	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
-	// Third frame with checkboxes and more
+	// Third frame with checkboxes and sliders
 	FramePtr f2 = std::make_shared<Frame>(true, false, true, true);
-	f2->setExtent(Vec2(5.0f, 360.0f), Vec2(100.0f, 130.0f));
+	f2->setExtent(Vec2(5.0f, 360.0f), Vec2(100.0f, 255.0f));
 	f2->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	BorderAnchorProvider* anchorsf2 = static_cast<BorderAnchorProvider*>(f2->getAnchorProvider());
 	GUIManager::add(f2);
@@ -174,7 +174,16 @@ void createGUI(GLFWwindow* _window)
 		f2->add(c0);
 	}
 
-	// Fourth frame with lables (window fake)
+	for(int i = 0; i < 5; ++i)
+	{
+		SliderPtr s0 = std::make_shared<Slider>();
+		s0->setExtent(f2->getPosition() + Coord2(5.0f, 130.0f + i * 25.0f), Coord2(90.0f, 20.0f));
+		s0->autoAnchor(anchorsf2);
+		s0->setAnchorModes(Anchorable::PREFER_MOVE);
+		f2->add(s0);
+	}
+
+	// Fourth frame with labels (window fake)
 	FramePtr f3 = std::make_shared<Frame>(true, false, true, true);
 	f3->setExtent(Vec2(115.0f, 120.0f), Vec2(200.0f, 230.0f));
 	f3->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );

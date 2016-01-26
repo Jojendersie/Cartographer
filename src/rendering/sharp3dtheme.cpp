@@ -21,6 +21,7 @@ namespace ca { namespace gui {
 
 	void Sharp3DTheme::drawTextArea(const RefFrame& _rect)
 	{
+		GUIManager::renderBackend().drawRect(_rect, m_properties.textBackColor);
 	}
 
 	void Sharp3DTheme::drawBackgroundArea(const RefFrame& _rect, float _opacity)

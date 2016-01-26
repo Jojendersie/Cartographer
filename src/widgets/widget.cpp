@@ -97,6 +97,8 @@ namespace ca { namespace gui {
 					onExtentChanged();
 				return true;
 			}
+		if(GUIManager::getStickyMouseFocussed() == this)
+			return true;
 		if(m_refFrame.isMouseOver(_mouseState.position)) {
 			GUIManager::setMouseFocus(this);
 			// Clickables may define special areas, if not the reference frame defines the real
