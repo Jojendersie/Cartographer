@@ -16,7 +16,9 @@ namespace ca { namespace gui {
 	{
 		int si = (int)_side;
 		m_anchors[si].reference = _anchorPoint;
-		m_anchors[si].relativePosition = m_selfFrame->sides[si] - _anchorPoint->position;
+		if(_anchorPoint)
+			m_anchors[si].relativePosition = m_selfFrame->sides[si] - _anchorPoint->position;
+		else m_anchors[si].relativePosition = 0.0f;
 	}
 
 	void Anchorable::autoAnchor(const IAnchorProvider* _anchorProvider)
