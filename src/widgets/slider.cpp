@@ -13,6 +13,7 @@ namespace ca { namespace gui {
 		m_min(0.0),
 		m_range(1.0),
 		m_stepSize(0.01),
+		m_labelPos(0.5f),
 		m_isMoving(false)
 	{
 	}
@@ -30,13 +31,16 @@ namespace ca { namespace gui {
 		leftFrame.sides[SIDE::BOTTOM] = m_refFrame.bottom() + 1.0f;
 		GUIManager::theme().drawButton(leftFrame, false, true);
 
-		// Draw value
-		char valueString[32];
-		sprintf(valueString, "%g", m_value);
-		Coord2 textPos;
-		textPos.x = m_refFrame.left() + m_refFrame.width() * 0.5f + 1.0f;
-		textPos.y = m_refFrame.bottom() + m_refFrame.height() * 0.5f;
-		GUIManager::theme().drawText(textPos, valueString, 1.0f, false, 0.5f, 0.5f);
+		// Draw value string
+		if(m_labelPos >= 0.0f && m_labelPos <= 1.0f)
+		{
+			char valueString[32];
+			sprintf(valueString, "%g", m_value);
+			Coord2 textPos;
+			textPos.x = m_refFrame.left() + (m_refFrame.width() - 6.0f) * m_labelPos + 4.0f;
+			textPos.y = m_refFrame.bottom() + m_refFrame.height() * 0.5f;
+			GUIManager::theme().drawText(textPos, valueString, 1.0f, false, m_labelPos, 0.5f);
+		}
 	}
 
 	bool Slider::processInput(const MouseState& _mouseState)
@@ -80,6 +84,11 @@ namespace ca { namespace gui {
 		m_min = _min;
 		m_range = _max - _min;
 		m_stepSize = _stepSize;
+	}
+
+	void Slider::setValueTextPosition(float _where)
+	{
+		m_labelPos = _where;
 	}
 
 }} // namespace ca::gui

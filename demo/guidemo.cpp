@@ -180,6 +180,7 @@ void createGUI(GLFWwindow* _window)
 		s0->setExtent(f2->getPosition() + Coord2(5.0f, 130.0f + i * 25.0f), Coord2(90.0f, 20.0f));
 		s0->autoAnchor(anchorsf2);
 		s0->setAnchorModes(Anchorable::PREFER_MOVE);
+		s0->setValueTextPosition(0.5f);
 		f2->add(s0);
 	}
 
