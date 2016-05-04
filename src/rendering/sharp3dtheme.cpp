@@ -80,7 +80,15 @@ namespace ca { namespace gui {
 		leftFrame.sides[SIDE::TOP] = _rect.top() - 1.0f;
 		leftFrame.sides[SIDE::BOTTOM] = _rect.bottom() + 1.0f;
 		if(leftFrame.left() != leftFrame.right())
-			drawButton(leftFrame, false, true);
+		{
+			Vec2 gfrom = Vec2(0.0f, 1.0f);
+			Vec2 gto = Vec2(0.0f, 0.0f);
+
+			GUIManager::renderBackend().drawRect(leftFrame, gfrom, gto,
+				scaleColor(m_properties.basicColor, 0.5f),
+				scaleColor(m_properties.basicColor, 2.0f));
+		//	drawButton(leftFrame, false, true);
+		}
 	}
 
 	void Sharp3DTheme::drawText(const Coord2& _position, const char * _text, float _relativeScale, bool _mouseOver, float _alignX, float _alignY)
