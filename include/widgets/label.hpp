@@ -23,7 +23,7 @@ namespace ca { namespace gui {
 		void setAlignment(SIDE::Val _position) { m_textPosition = _position; }
 		SIDE::Val getAlignment() const { return m_textPosition; }
 	private:
-		std::string m_text;				///< Descriptive text beside the checkmark
+		std::string m_text;				///< Descriptive text
 		ei::Vec2 m_textSize;
 		SIDE::Val m_textPosition;
 	};

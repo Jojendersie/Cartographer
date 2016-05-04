@@ -111,8 +111,7 @@ void createGUI(GLFWwindow* _window)
 		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " clicked.\n"; }, MouseState::CLICKED);
 		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " double clicked.\n"; }, MouseState::DBL_CLICKED);
 		b0->autoAnchor(f0->getAnchorProvider());
-		b0->setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
-		b0->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
+		b0->setAnchorModes(Anchorable::PREFER_MOVE, Anchorable::PREFER_RESIZE);
 		f0->add(b0);
 	}
 

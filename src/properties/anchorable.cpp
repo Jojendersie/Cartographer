@@ -55,6 +55,12 @@ namespace ca { namespace gui {
 		m_verticalMode = _mode;
 	}
 
+	void Anchorable::setAnchorModes(Mode _horizontalMode, Mode _verticalMode)
+	{
+		m_horizontalMode = _horizontalMode;
+		m_verticalMode = _verticalMode;
+	}
+
 	bool Anchorable::refitToAnchors()
 	{
 		// If host vanished detach this element

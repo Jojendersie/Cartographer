@@ -70,6 +70,7 @@ namespace ca { namespace gui {
 		void setHorizontalAnchorMode(Anchorable::Mode _mode);
 		void setVerticalAnchorMode(Anchorable::Mode _mode);
 		void setAnchorModes(Anchorable::Mode _mode);
+		void setAnchorModes(Anchorable::Mode _horizontalMode, Anchorable::Mode _verticalMode);
 
 		/// Automatically attach all four anchor points to the closest anchors in the provider.
 		/// \details Fails silently if the component is not anchorable

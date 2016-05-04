@@ -56,6 +56,7 @@ namespace ca { namespace gui {
 		void setVerticalAnchorMode(Mode _mode);
 		/// Set horizontal and vertical anchor mode simultaneously
 		void setAnchorModes(Mode _mode);
+		void setAnchorModes(Mode _horizontalMode, Mode _verticalMode);
 
 		/// Resize/renew position the object dependent on the current anchor points
 		/// \return True if any property was changed by the refit method.
