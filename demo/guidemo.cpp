@@ -255,6 +255,9 @@ void runMainLoop(GLFWwindow* _window)
 
 		g_mouseState.clear();
 		glfwPollEvents();
+		double x, y;
+		glfwGetCursorPos(_window, &x, &y);
+		//g_mouseState.position = Coord2((float)x, GUIManager::getHeight() - (float)y);
 		ca::gui::GUIManager::processInput(g_mouseState);
 		glfwSetCursor(_window, g_cursors[(int)GUIManager::getCursorType()]);
 
