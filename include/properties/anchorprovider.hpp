@@ -27,7 +27,7 @@ namespace ca { namespace gui {
 			UP				///< Search only anchors above the reference position
 		};
 
-		/// From all provided horizontal anchors find the one closest to the given position.
+		/// From all provided anchors in one dimension find the one closest to the given position.
 		/// \param [in] _position Position from where to begin the search. Usually this is
 		///		the point to be anchored in one dimension.
 		/// \param [in] _direction Only consider anchors which lie this direction with respect

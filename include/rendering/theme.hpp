@@ -38,6 +38,10 @@ namespace ca { namespace gui {
 		/// Query the global basis font size. Headers or similar can differ from that (element dependent).
 		/// \return Height in pixels.
 		virtual float getTextSize() const = 0;
+		/// Draw a small handle for node based editors
+		virtual void drawNodeHandle(const Coord2& _position, float _radius, const ei::Vec3& _color) = 0;
+		/// General purpose line drawing used for splines and borders
+		virtual void drawLine(const Coord2& _position, const ei::Vec3& _color) = 0;
 		// more are following...
 
 	protected:

@@ -5,7 +5,7 @@
 
 namespace ca { namespace gui {
 
-	/// The frame is the simplest form of a element container.
+	/// The frame is the simplest form of an element container.
 	class Frame : public Widget
 	{
 	public:
@@ -27,10 +27,10 @@ namespace ca { namespace gui {
 		/// Check if the given child is the first one
 //		virtual bool isChildFocused(const Widget* _child) const override;
 
-		/// Set an image as background. It is streched automatically.
+		/// Set an image as background. It is stretched automatically.
 		/// \param [in] _imageFile Name of a texture file loadable by the render-backend.
 		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
-		/// \param [in] _opacity An [0,1] transparents value (alpha). The value is multiplied with
+		/// \param [in] _opacity An [0,1] transparency value (alpha). The value is multiplied with
 		///		the image during rendering. The default alpha is opaque (1).
 		void setBackground(const char* _imageFile, bool _smooth = true, float _opacity = 1.0f);
 		// TODO: recursive transparency?
@@ -39,11 +39,11 @@ namespace ca { namespace gui {
 		/// Recursive refit
 		virtual void refitToAnchors() override;
 	protected:
-		std::vector<WidgetPtr> m_activeChildren;	///< List of subelements which can receive input. The list is sorted after last focus time (first element has the focus)
-		std::vector<WidgetPtr> m_passiveChildren;	///< List of subelements which are only drawn
+		std::vector<WidgetPtr> m_activeChildren;	///< List of subelements which can receive input. The list is sorted after last focus time (first element has the focus).
+		std::vector<WidgetPtr> m_passiveChildren;	///< List of subelements which are only drawn.
 
 	private:
-		/// Resort active list to bring focussed element to the front.
+		/// Resort active list to bring focused element to the front.
 		void moveToFront(size_t _index);
 
 		float m_opacity;

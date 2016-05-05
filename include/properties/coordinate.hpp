@@ -14,7 +14,7 @@ namespace ca { namespace gui {
 		Coord2 percentage(float _x, float _y);
 		Coord percentageWidth(float _w);
 		Coord percentageHeight(float _h);
-		/// Convert a [0,a]x[0,1] height-relative coordinate to internal, where a is the aspect
+		/// Convert a [0,a]x[0,1] height-relative coordinate to internal, where 'a' is the aspect
 		/// ratio w/h.
 		/// \details This coordinate allows to design a resolution independent GUI with
 		///		proportional width and height properties. I.e. if using _x==_y for the size then

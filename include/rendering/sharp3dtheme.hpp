@@ -31,6 +31,8 @@ namespace ca { namespace gui {
 		virtual void drawImage(const class RefFrame& _rect, uint64 _texHandle, float _opacity = 1.0f) override;
 		virtual void drawArrowButton(const class RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver) override;
 		virtual float getTextSize() const override { return m_properties.textSize; }
+		virtual void drawNodeHandle(const Coord2& _position, float _radius, const ei::Vec3& _color) override;
+		virtual void drawLine(const Coord2& _position, const ei::Vec3& _color) override;
 	protected:
 		Sharp3DProperties m_properties;
 

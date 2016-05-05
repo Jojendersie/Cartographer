@@ -8,7 +8,7 @@ namespace ca { namespace gui {
 	{
 	public:
 		/// Check if the mouse position is over this element.
-		/// \param [in] _mousePos Position of the cursor in screenspace [0,1]^2.
+		/// \param [in] _mousePos Position of the cursor in screen space [0,1]^2.
 		virtual bool isMouseOver(const Coord2& _mousePos) const = 0;
 	};
 
@@ -42,9 +42,11 @@ namespace ca { namespace gui {
 		float top() const { return sides[SIDE::TOP]; }
 		float width() const { return sides[SIDE::RIGHT] - sides[SIDE::LEFT]; }
 		float height() const { return sides[SIDE::TOP] - sides[SIDE::BOTTOM]; }
+		float horizontalCenter() const { return 0.5f * (sides[SIDE::RIGHT] + sides[SIDE::LEFT]); }
+		float verticalCenter() const { return 0.5f * (sides[SIDE::TOP] + sides[SIDE::BOTTOM]); }
 
 		/// Check if the mouse cursor is on this reference frame.
-		/// \param [in] _mousePos Position of the cursor in screenspace [0,1]^2.
+		/// \param [in] _mousePos Position of the cursor in screen space [0,1]^2.
 		virtual bool isMouseOver(const Coord2& _mousePos) const override;
 
 		bool operator != (const RefFrame& _rhs) const;

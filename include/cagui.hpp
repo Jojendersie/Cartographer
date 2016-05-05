@@ -12,6 +12,7 @@
 #include "widgets/multilineeditbox.hpp"
 #include "widgets/slider.hpp"
 #include "widgets/treelist.hpp"
+#include "widgets/node.hpp"
 
 #include "backend/charcoal.hpp"
 

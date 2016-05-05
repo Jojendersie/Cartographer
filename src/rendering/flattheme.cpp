@@ -120,4 +120,24 @@ namespace ca { namespace gui {
 		GUIManager::renderBackend().drawTriangle(triangle, _mouseOver ? m_properties.hoverTextColor : m_properties.textColor);
 	}
 
+	void FlatTheme::drawNodeHandle(const Coord2& _position, float _radius, const ei::Vec3& _color)
+	{
+		Vec4 color(_color, 1.0f);
+		// Draw a triangle fan to create a small circle
+		Triangle2D triangle;
+		triangle.v0 = _position + Coord2(_radius, 0.0f);
+		triangle.v2 = _position + _radius * Coord2(cos(2*PI/12.0f), sin(2*PI/12.0f));
+		for(int i = 0; i < 10; ++i)
+		{
+			triangle.v1 = triangle.v2;
+			triangle.v2 = _position + _radius * Coord2(cos(2*PI * (i+2)/12.0f), sin(2*PI * (i+2)/12.0f));
+			GUIManager::renderBackend().drawTriangle(triangle, color);
+		}
+	}
+
+	void FlatTheme::drawLine(const Coord2& _position, const ei::Vec3& _color)
+	{
+	}
+
+
 }} // namespace ca::gui
