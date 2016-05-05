@@ -63,6 +63,9 @@ namespace ca { namespace cc {
 		/// Single instanced draw call for all characters.
 		void present() const;
 
+		/// Check if there are any characters to draw.
+		bool isEmpty() const { return m_instances.empty(); }
+
 	private:
 #pragma pack(push, 2)
 		struct CharacterDef

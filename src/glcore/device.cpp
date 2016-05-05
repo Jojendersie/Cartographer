@@ -155,13 +155,13 @@ namespace ca { namespace cc {
 		{
 			if(_zFunc == ComparisonFunc::ALWAYS)
 			{
-				glDisable(GL_DEPTH_TEST);
+				glCall(glDisable, GL_DEPTH_TEST);
 			} else {
 				if(s_zEnable) {
-					glEnable(GL_DEPTH_TEST);
+					glCall(glEnable, GL_DEPTH_TEST);
 					s_zEnable = true;
 				}
-				glDepthFunc(unsigned(_zFunc));
+				glCall(glDepthFunc, unsigned(_zFunc));
 				s_zFunc = _zFunc;
 			}
 		}
@@ -171,7 +171,7 @@ namespace ca { namespace cc {
 	{
 		if(s_zWriteEnable != _enable)
 		{
-			glDepthMask(_enable);
+			glCall(glDepthMask, _enable);
 			s_zWriteEnable = _enable;
 		}
 	}
@@ -181,7 +181,7 @@ namespace ca { namespace cc {
 	void Device::scissorTest(int _x, int _y, int _width, int _height)
 	{
 		if(!s_scissorEnable) {
-			glEnable(GL_SCISSOR_TEST);
+			glCall(glEnable, GL_SCISSOR_TEST);
 			s_scissorEnable = true;
 		}
 		glCall(glScissor, _x, _y, _width, _height);
@@ -190,7 +190,7 @@ namespace ca { namespace cc {
 	void Device::disableScissorTest()
 	{
 		if(s_scissorEnable) {
-			glDisable(GL_SCISSOR_TEST);
+			glCall(glDisable, GL_SCISSOR_TEST);
 			s_scissorEnable = false;
 		}
 	}

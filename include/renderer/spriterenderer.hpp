@@ -68,6 +68,9 @@ namespace ca { namespace cc {
 		/// Single instanced draw call for all instances.
 		void draw() const;
 
+		/// Check if there are any instances to draw
+		bool isEmpty() const { return m_instances.empty(); }
+
 	private:
 #pragma pack(push, 4)
 		struct Sprite
