@@ -367,13 +367,16 @@ namespace ca { namespace gui {
 
 	void gui::CharcoalBackend::beginLayer(const ei::IVec4& _clippingRect)
 	{
-		eiAssertWeak(_clippingRect.x >= 0 && _clippingRect.z >= 0
+		/*eiAssertWeak(_clippingRect.x >= 0 && _clippingRect.z >= 0
 			&& _clippingRect.y <= GUIManager::getWidth() && _clippingRect.w <= GUIManager::getHeight(),
-			"Clipping region is (partially) not visible.");
+			"Clipping region is (partially) not visible.");*/
 		// The upcomming state change avoids more buffering
 		flush();
-		cc::Device::scissorTest(_clippingRect.x, _clippingRect.z,
-			_clippingRect.y - _clippingRect.x, _clippingRect.w - _clippingRect.z);
+		cc::Device::scissorTest(
+			max(0, _clippingRect.x),
+			max(0, _clippingRect.z),
+			min(_clippingRect.y - _clippingRect.x, GUIManager::getWidth()-1),
+			min(_clippingRect.w - _clippingRect.z, GUIManager::getHeight()-1));
 	}
 
 	void gui::CharcoalBackend::drawText(const Vec2& _position, const char* _text, float _size, const Vec4& _color, float _alignX, float _alignY, float _rotation, bool _roundToPixel)
@@ -449,21 +452,31 @@ namespace ca { namespace gui {
 
 	void CharcoalBackend::flush()
 	{
-		// TODO: only if there are instances (is this checked by draw itself?)
-		cc::glCall(glBindBuffer, GL_ARRAY_BUFFER, m_extraVBO);
-		cc::glCall(glBufferData, GL_ARRAY_BUFFER, m_perInstanceData.size() * sizeof(AdditionalVertexInfo), m_perInstanceData.data(), GL_DYNAMIC_DRAW);
-		// Enable alpha blending (permultiplied)
-		cc::glCall(glEnable, GL_BLEND);
-		cc::glCall(glBlendFunci, 0, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-		m_spriteShader.use();
-		m_spriteRenderer->draw();
+		// Only if there are instances
+		if(!m_spriteRenderer->isEmpty())
+		{
+			cc::glCall(glBindBuffer, GL_ARRAY_BUFFER, m_extraVBO);
+			cc::glCall(glBufferData, GL_ARRAY_BUFFER, m_perInstanceData.size() * sizeof(AdditionalVertexInfo), m_perInstanceData.data(), GL_DYNAMIC_DRAW);
+			// Enable alpha blending (permultiplied)
+			cc::Device::enableBlending(true);
+			cc::Device::setBlendFactor(cc::BlendFactor::ONE, cc::BlendFactor::INV_SRC_ALPHA);
+			m_spriteShader.use();
+			m_spriteRenderer->draw();
+					
+			m_spriteRenderer->clearInstances();
+			m_perInstanceData.clear();
+		}
 
-		m_fontShader.use();
-		m_fontRenderer->present();
+		if(!m_fontRenderer->isEmpty())
+		{
+			// Enable alpha blending (permultiplied)
+			cc::Device::enableBlending(true);
+			cc::Device::setBlendFactor(cc::BlendFactor::ONE, cc::BlendFactor::INV_SRC_ALPHA);
+			m_fontShader.use();
+			m_fontRenderer->present();
 
-		m_spriteRenderer->clearInstances();
-		m_fontRenderer->clearText();
-		m_perInstanceData.clear();
+			m_fontRenderer->clearText();
+		}
 	}
 
 }} // namespace ca::gui

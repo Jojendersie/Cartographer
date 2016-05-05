@@ -22,7 +22,7 @@ namespace ca { namespace gui {
 		g_manager->m_topFrame->setBackgroundOpacity(0.0f);
 		g_manager->m_topFrame->setExtent(ei::Vec2(0.0f), ei::Vec2((float)_width, (float)_height));
 		// Push some (infinite) initial top-level clip region
-		g_manager->m_clipRegionStack.push(ei::IVec4(0x80000000, 0x7fffffff, 0x80000000, 0x7fffffff));
+		g_manager->m_clipRegionStack.push(ei::IVec4(0, 0x7fffffff, 0, 0x7fffffff));
 
 		g_manager->m_keyboardFocus = nullptr;
 		g_manager->m_mouseFocus = nullptr;
@@ -85,7 +85,8 @@ namespace ca { namespace gui {
 	{
 		g_manager->m_clipRegionStack.pop();
 		// Set old clip region (there is at least our initial one)
-		auto& top = g_manager->m_clipRegionStack.top();
+		ei::IVec4& top = g_manager->m_clipRegionStack.top();
+		g_manager->m_renderer->beginLayer(top);
 	}
 
 	bool GUIManager::isClipped(const RefFrame& _rect)
