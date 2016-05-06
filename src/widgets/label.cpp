@@ -6,7 +6,7 @@
 namespace ca { namespace gui {
 
 	Label::Label() :
-		Widget(true, false, false, false, false, false),
+		Widget(true, false, false, false),
 		m_textSize(0.0f),
 		m_textPosition(SIDE::LEFT)
 	{

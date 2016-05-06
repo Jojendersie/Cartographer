@@ -101,6 +101,9 @@
     <ClInclude Include="include\widgets\node.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
+    <ClInclude Include="include\widgets\group.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\widgets\frame.cpp">
@@ -177,6 +180,9 @@
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="src\widgets\node.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\group.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>

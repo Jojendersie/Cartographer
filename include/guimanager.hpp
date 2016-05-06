@@ -88,7 +88,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 	private:
 		std::shared_ptr<class IRenderBackend> m_renderer;
 		std::shared_ptr<class ITheme> m_theme;
-		std::shared_ptr<class Frame> m_topFrame;
+		std::shared_ptr<class Group> m_topFrame;
 
 		Widget* m_keyboardFocus;		///< The element with the keyboard-focus or nullptr
 		Widget* m_mouseFocus;			///< The element with the mouse-focus or nullptr
@@ -99,7 +99,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		MouseState m_mouseState;		///< Buffer the last seen mouse state
 		CursorType m_cursorType;		///< Current desired cursor shape
 
-		/// Globally check all elements for changes and cause a refiting of sizes and positions.
+		/// Globally check all elements for changes and cause a refitting of sizes and positions.
 		/// \details This method blocks recursive calls. I.e. if a resize causes another refit
 		///		this is logged and executed later until convergence or at most three times.
 		static void refitAllToAnchors();

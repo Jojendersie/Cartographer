@@ -19,6 +19,10 @@ namespace ca { namespace gui {
 		bool processInput(const struct MouseState& _mouseState);
 
 		bool isMoving() const { return m_moving; }
+
+		/// Should the anchor component change update this component.
+		/// \param [in] _anchorable The new anchor component or new if there is none afterwards.
+		void registerAnchorCompoentent(class Anchorable* _anchorable) { m_anchorable = _anchorable; }
 	private:
 		class RefFrame* m_refFrame;
 		class Anchorable* m_anchorable;

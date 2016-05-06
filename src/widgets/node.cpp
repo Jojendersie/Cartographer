@@ -6,7 +6,7 @@
 namespace ca { namespace gui {
 
 	NodeHandle::NodeHandle() :
-		Widget(true, true, false, false, true, false),
+		Widget(true, true, false, false),
 		m_angle(0.0f),
 		m_color(1.0f)
 	{

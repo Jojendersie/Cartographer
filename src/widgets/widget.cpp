@@ -6,15 +6,14 @@
 
 namespace ca { namespace gui {
 
-	Widget::Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable, bool _inputReceivable, bool _keyboardFocusable) : 
+	Widget::Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable) : 
 		m_anchorComponent(nullptr),
 		m_clickComponent(nullptr),
 		m_moveComponent(nullptr),
 		m_resizeComponent(nullptr),
 		m_anchorProvider(nullptr),
-		m_inputReceivable(_inputReceivable),
-		m_enabled(_inputReceivable),
-		m_keyboardFocusable(_keyboardFocusable),
+		m_enabled(_clickable || _moveable || _resizeable),
+		m_keyboardFocusable(false),
 		m_visible(true),
 		m_parent(nullptr)
 	{
@@ -166,6 +165,41 @@ namespace ca { namespace gui {
 		m_anchorProvider = move(_anchorProvider);
 		if(m_anchorProvider)
 			m_anchorProvider->recomputeAnchors(m_refFrame);
+	}
+
+	void Widget::setClickable(bool _enable)
+	{
+		if(_enable && !m_clickComponent)
+			m_clickComponent = std::make_unique<Clickable>(&m_refFrame);
+		
+		
+	}
+
+	void Widget::setAnchorable(bool _enable)
+	{
+		if(_enable && !m_anchorComponent) {
+			m_anchorComponent = std::make_unique<Anchorable>(&m_refFrame);
+			if(m_moveComponent) m_moveComponent->registerAnchorCompoentent(m_anchorComponent.get());
+			if(m_resizeComponent) m_resizeComponent->registerAnchorCompoentent(m_anchorComponent.get());
+		} else if(!_enable && m_anchorComponent) {
+			if(m_moveComponent) m_moveComponent->registerAnchorCompoentent(nullptr);
+			if(m_resizeComponent) m_resizeComponent->registerAnchorCompoentent(nullptr);
+			m_anchorComponent = nullptr;
+		}
+	}
+
+	void Widget::setMoveable(bool _enable)
+	{
+		if(_enable && !m_moveComponent)
+			m_moveComponent = std::make_unique<Moveable>(&m_refFrame, m_anchorComponent.get());
+		else m_moveComponent = nullptr;
+	}
+
+	void Widget::setResizeable(bool _enable)
+	{
+		if(_enable && !m_resizeComponent)
+			m_resizeComponent = std::make_unique<Resizeable>(&m_refFrame, m_anchorComponent.get());
+		else m_resizeComponent = nullptr;
 	}
 
 	void Widget::refitToAnchors()

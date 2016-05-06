@@ -8,7 +8,7 @@
 namespace ca { namespace gui {
 
 	Button::Button() :
-		Widget(true, true, false, false, true, true),
+		Widget(true, true, false, false),
 		m_textSize(0.0f),
 		m_iconPos(SIDE::LEFT),
 		m_iconSize(0.0f),
@@ -16,6 +16,7 @@ namespace ca { namespace gui {
 		m_iconTexture(0),
 		m_backgroundTexture(0)
 	{
+		Widget::setKeyboardFocusable(true);
 		m_enabled = true;
 		m_clickComponent->setClickRegion(&m_refFrame, false);
 	}

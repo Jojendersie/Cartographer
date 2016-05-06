@@ -8,7 +8,7 @@
 namespace ca { namespace gui {
 
 	Slider::Slider() :
-		Widget(true, false, false, false, true, true),
+		Widget(true, false, false, false),
 		m_value(0.5),
 		m_min(0.0),
 		m_range(1.0),
@@ -16,6 +16,7 @@ namespace ca { namespace gui {
 		m_labelPos(0.5f),
 		m_isMoving(false)
 	{
+		Widget::setKeyboardFocusable(true);
 	}
 
 	void Slider::draw()

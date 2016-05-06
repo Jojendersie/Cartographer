@@ -2,11 +2,12 @@
 
 #include <vector>
 #include "widget.hpp"
+#include "group.hpp"
 
 namespace ca { namespace gui {
 
-	/// The frame is the simplest form of an element container.
-	class Frame : public Widget
+	/// The frame is a container with a drawn background and clipping for its subcomponents.
+	class Frame : public Group
 	{
 	public:
 		Frame(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable);
@@ -14,12 +15,6 @@ namespace ca { namespace gui {
 
 		/// Implement the draw method
 		void draw() override;
-
-		/// Add a new child element.
-		void add(WidgetPtr _widget);
-
-		/// Find and remove a widget (O(n) with n = number of elements)
-		void remove(WidgetPtr _widget);
 
 		/// Forward input to subelements and to properties
 		virtual bool processInput(const struct MouseState& _mouseState) override;
@@ -36,16 +31,7 @@ namespace ca { namespace gui {
 		// TODO: recursive transparency?
 		void setBackgroundOpacity(float _opacity);
 
-		/// Recursive refit
-		virtual void refitToAnchors() override;
-	protected:
-		std::vector<WidgetPtr> m_activeChildren;	///< List of subelements which can receive input. The list is sorted after last focus time (first element has the focus).
-		std::vector<WidgetPtr> m_passiveChildren;	///< List of subelements which are only drawn.
-
 	private:
-		/// Resort active list to bring focused element to the front.
-		void moveToFront(size_t _index);
-
 		float m_opacity;
 		uint64 m_texture;
 	};
