@@ -50,8 +50,9 @@ namespace ca { namespace gui {
 		// Exclusive input? If so don't check children.
 		if(GUIManager::getStickyMouseFocussed() != this) // TODO why is this processInput ever called, iff only the sticking element receives anything? Is it necessary for the Widget::processInput below?
 		{
-			// Forward to subelements
-			for(size_t i = 0; i < m_children.size(); ++i)
+			// Forward to sub-elements. Use inverse order such that the visibly top
+			// most component receives the input first.
+			for(int i = (int)m_children.size()-1; i >= 0; --i)
 			{
 				WidgetPtr& e = m_children[i].widget;
 				if(e->isEnabled() && e->processInput(_mouseState))
