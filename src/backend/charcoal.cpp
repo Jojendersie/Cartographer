@@ -27,7 +27,8 @@ namespace ca { namespace gui {
 		layout(location = 7) in vec4 in_posAB;
 		layout(location = 8) in vec4 in_colorA;
 		layout(location = 9) in vec4 in_colorB;
-		layout(location = 10) in int in_gradientMode;
+		layout(location = 10) in vec4 in_colorC;
+		layout(location = 11) in int in_gradientMode;
 	
 		layout(location = 0) out vec4 out_texCoords;
 		layout(location = 1) out uvec2 out_textureHandle;
@@ -36,7 +37,8 @@ namespace ca { namespace gui {
 		layout(location = 4) out vec4 out_posAB;
 		layout(location = 5) out vec4 out_colorA;
 		layout(location = 6) out vec4 out_colorB;
-		layout(location = 7) out int out_gradientMode;
+		layout(location = 7) out vec4 out_colorC;
+		layout(location = 8) out int out_gradientMode;
 
 		void main()
 		{
@@ -47,6 +49,7 @@ namespace ca { namespace gui {
 			out_posAB = in_posAB;
 			out_colorA = in_colorA;
 			out_colorB = in_colorB;
+			out_colorC = in_colorC;
 			out_gradientMode = in_gradientMode;
 		}
 	)";
@@ -60,7 +63,8 @@ namespace ca { namespace gui {
 		layout(location = 4) in vec4 in_posAB[1];
 		layout(location = 5) in vec4 in_colorA[1];
 		layout(location = 6) in vec4 in_colorB[1];
-		layout(location = 7) in int in_gradientMode[1];
+		layout(location = 7) in vec4 in_colorC[1];
+		layout(location = 8) in int in_gradientMode[1];
 
 		layout(location = 0) uniform mat4 c_projection;
 
@@ -71,7 +75,8 @@ namespace ca { namespace gui {
 		layout(location = 2) out flat vec4 out_posAB;
 		layout(location = 3) out flat vec4 out_colorA;
 		layout(location = 4) out flat vec4 out_colorB;
-		layout(location = 5) out flat int out_gradientMode;
+		layout(location = 5) out vec4 out_colorInterpolated;
+		layout(location = 6) out flat int out_gradientMode;
 
 		void main()
 		{
@@ -79,16 +84,20 @@ namespace ca { namespace gui {
 			out_posAB = in_posAB[0];
 			out_colorA = in_colorA[0];
 			out_colorB = in_colorB[0];
+			out_colorInterpolated = vec4(0.0);
 			out_gradientMode = in_gradientMode[0];
 
 			// Triangle mode?
 			if(in_gradientMode[0] == 4)
 			{
 				gl_Position = vec4(in_position[0].xy, 0, 1) * c_projection;
+				out_colorInterpolated = in_colorA[0];
 				EmitVertex();
 				gl_Position = vec4(in_posAB[0].xy, 0, 1) * c_projection;
+				out_colorInterpolated = in_colorB[0];
 				EmitVertex();
 				gl_Position = vec4(in_posAB[0].zw, 0, 1) * c_projection;
+				out_colorInterpolated = in_colorC[0];
 				EmitVertex();
 			} else {
 				vec3 worldBasePos = in_position[0];
@@ -134,7 +143,8 @@ namespace ca { namespace gui {
 		layout(location = 2) in flat vec4 in_posAB;
 		layout(location = 3) in flat vec4 in_colorA;
 		layout(location = 4) in flat vec4 in_colorB;
-		layout(location = 5) in flat int in_gradientMode;
+		layout(location = 5) in vec4 in_colorInterpolated;
+		layout(location = 6) in flat int in_gradientMode;
 
 		layout(location = 0, index = 0) out vec4 out_color;
 
@@ -175,7 +185,7 @@ namespace ca { namespace gui {
 				color = mix(in_colorA, in_colorB, mindist);
 				break; }
 			case 4:
-				color = in_colorA;
+				color = in_colorInterpolated;
 				break;
 			}
 			// Premultiply color alpha
@@ -317,21 +327,24 @@ namespace ca { namespace gui {
 		m_fontRenderer->loadCaf(_fontFile);
 		m_spriteRenderer.reset(new cc::SpriteRenderer);
 
-		// Create extra VBO for clipping rectangles
+		// Create extra VBO for additional instance data
 		cc::glCall(glGenBuffers, 1, &m_extraVBO);
 		cc::glCall(glBindBuffer, GL_ARRAY_BUFFER, m_extraVBO);
 		// 4 x float for posA and posB
 		cc::glCall(glEnableVertexAttribArray, 7);
-		cc::glCall(glVertexAttribPointer, 7, 4, GLenum(cc::PrimitiveFormat::FLOAT), GL_FALSE, 28, (GLvoid*)(0));
+		cc::glCall(glVertexAttribPointer, 7, 4, GLenum(cc::PrimitiveFormat::FLOAT), GL_FALSE, 29, (GLvoid*)(0));
 		// 4 x uint8 normalized as colorA
 		cc::glCall(glEnableVertexAttribArray, 8);
-		cc::glCall(glVertexAttribPointer, 8, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 28, (GLvoid*)(16));
+		cc::glCall(glVertexAttribPointer, 8, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 29, (GLvoid*)(16));
 		// 4 x uint8 normalized as colorB
 		cc::glCall(glEnableVertexAttribArray, 9);
-		cc::glCall(glVertexAttribPointer, 9, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 28, (GLvoid*)(20));
-		// 1 x int32 gradient mode
+		cc::glCall(glVertexAttribPointer, 9, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 29, (GLvoid*)(20));
+		// 4 x uint8 normalized as colorC
 		cc::glCall(glEnableVertexAttribArray, 10);
-		cc::glCall(glVertexAttribIPointer, 10, 1, GLenum(cc::PrimitiveFormat::INT32), 28, (GLvoid*)(24));
+		cc::glCall(glVertexAttribPointer, 10, 4, GLenum(cc::PrimitiveFormat::UINT8), GL_TRUE, 29, (GLvoid*)(24));
+		// 1 x int8 gradient mode
+		cc::glCall(glEnableVertexAttribArray, 11);
+		cc::glCall(glVertexAttribIPointer, 11, 1, GLenum(cc::PrimitiveFormat::INT8), 29, (GLvoid*)(28));
 
 		// Define geometry for triangles and rectangles
 		m_spriteRenderer->defSprite(0.0f, 0.0f, 0); // Standard rect without texture
@@ -398,6 +411,7 @@ namespace ca { namespace gui {
 		info.b = Vec2(0.0f);
 		info.colorA = Vec<uint8, 4>(saturate(_color) * 255.0f);
 		info.colorB = Vec<uint8, 4>(0);
+		info.colorC = Vec<uint8, 4>(0);
 		info.gradientType = 0;
 		m_perInstanceData.push_back(info);
 	}
@@ -411,6 +425,7 @@ namespace ca { namespace gui {
 		info.b = _b;
 		info.colorA = Vec<uint8, 4>(saturate(_colorA) * 255.0f);
 		info.colorB = Vec<uint8, 4>(saturate(_colorB) * 255.0f);
+		info.colorC = Vec<uint8, 4>(0);
 		info.gradientType = (int)_mode + 1;
 		m_perInstanceData.push_back(info);
 	}
@@ -425,19 +440,21 @@ namespace ca { namespace gui {
 		info.b = Vec2(0.0f);
 		info.colorA = Vec<uint8, 4>(255, 255, 255, uint8(saturate(_opacity) * 255.0f));
 		info.colorB = Vec<uint8, 4>(0);
+		info.colorC = Vec<uint8, 4>(0);
 		info.gradientType = 0;
 		m_perInstanceData.push_back(info);
 	}
 
-	void gui::CharcoalBackend::drawTriangle(const Triangle2D& _triangle, const Vec4& _color)
+	void gui::CharcoalBackend::drawTriangle(const Triangle2D& _triangle, const Vec4& _color0, const Vec4& _color1, const Vec4& _color2)
 	{
 		m_spriteRenderer->newInstance(0, Vec3(_triangle.v0, 0.0f), 0.0f, Vec2(0.0f));
 
 		AdditionalVertexInfo info;
 		info.a = _triangle.v1;
 		info.b = _triangle.v2;
-		info.colorA = Vec<uint8, 4>(saturate(_color) * 255.0f);
-		info.colorB = Vec<uint8, 4>(0);
+		info.colorA = Vec<uint8, 4>(saturate(_color0) * 255.0f);
+		info.colorB = Vec<uint8, 4>(saturate(_color1) * 255.0f);
+		info.colorC = Vec<uint8, 4>(saturate(_color2) * 255.0f);
 		info.gradientType = 4;
 		m_perInstanceData.push_back(info);
 	}

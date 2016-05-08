@@ -22,7 +22,7 @@ namespace ca { namespace gui {
 		virtual void drawRect(const class RefFrame& _rect, const ei::Vec4& _color) override;
 		virtual void drawRect(const class RefFrame& _rect, const ei::Vec2& _a, const ei::Vec2& _b, const ei::Vec4& _colorA, const ei::Vec4& _colorB, GradientMode _mode = GradientMode::LINEAR) override;
 		virtual void drawTextureRect(const class RefFrame& _rect, uint64 _texture, float _opacity) override;
-		virtual void drawTriangle(const ei::Triangle2D& _triangle, const ei::Vec4& _color) override;
+		virtual void drawTriangle(const ei::Triangle2D& _triangle, const ei::Vec4& _color0, const ei::Vec4& _color1, const ei::Vec4& _color2) override;
 		virtual uint64 getTexture(const char* _textureFile, bool _smooth) override;
 
 	private:
@@ -33,7 +33,8 @@ namespace ca { namespace gui {
 			ei::Vec2 b;
 			ei::Vec<uint8, 4> colorA;
 			ei::Vec<uint8, 4> colorB;
-			int32 gradientType;				///< Uniform=0, IRenderBackend::GradientMode, Triangle=4
+			ei::Vec<uint8, 4> colorC;
+			int8 gradientType;				///< Uniform=0, IRenderBackend::GradientMode, Triangle=4
 		};
 #pragma pack(pop)
 

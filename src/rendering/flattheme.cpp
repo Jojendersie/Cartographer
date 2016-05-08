@@ -117,7 +117,8 @@ namespace ca { namespace gui {
 			triangle.v2 = Vec2(center.x + sizeh, center.y - sizeh);
 			break;
 		}
-		GUIManager::renderBackend().drawTriangle(triangle, _mouseOver ? m_properties.hoverTextColor : m_properties.textColor);
+		Vec4& color = _mouseOver ? m_properties.hoverTextColor : m_properties.textColor;
+		GUIManager::renderBackend().drawTriangle(triangle, color, color, color);
 	}
 
 	void FlatTheme::drawNodeHandle(const Coord2& _position, float _radius, const ei::Vec3& _color)
@@ -131,7 +132,7 @@ namespace ca { namespace gui {
 		{
 			triangle.v1 = triangle.v2;
 			triangle.v2 = _position + _radius * Coord2(cos(2*PI * (i+2)/12.0f), sin(2*PI * (i+2)/12.0f));
-			GUIManager::renderBackend().drawTriangle(triangle, color);
+			GUIManager::renderBackend().drawTriangle(triangle, color, color, color);
 		}
 	}
 
