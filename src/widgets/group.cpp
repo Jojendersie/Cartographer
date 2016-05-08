@@ -12,6 +12,8 @@ namespace ca { namespace gui {
 		Widget(false, false, false, false)
 	{
 		Widget::enable();
+		// Just use extreme large coordinates to make the group always visible
+		setExtent(Coord2(0.0f), Coord2(5000.0f));
 	}
 
 	void Group::draw()

@@ -97,10 +97,12 @@ void createGUI(GLFWwindow* _window)
 
 	// Create GUI-elements
 	// A resizeable frame with different anchored buttons
+	GroupPtr f0group = std::make_shared<Group>(); // Contains f0 and the node based handles
+	GUIManager::add(f0group);
 	FramePtr f0 = std::make_shared<Frame>(true, false, true, true);
 	f0->setExtent(Vec2(5.0f), Vec2(100.0f, 105.0f));
 	f0->setAnchorProvider( std::make_unique<GridAnchorProvider>(3, 5) );
-	GUIManager::add(f0);
+	f0group->add(f0);
 
 	for(int i = 0; i < 4; ++i)
 	{
@@ -115,13 +117,13 @@ void createGUI(GLFWwindow* _window)
 		f0->add(b0);
 	}
 	
+	// Add node handles for node-based-editing demo
 	NodeHandlePtr h0 = std::make_shared<NodeHandle>();
 	h0->setColor(Vec3(themeProps2.basicHoverColor));
-	Coord2 handleCenter(0.5f * (f0->getRefFrame().left() + f0->getRefFrame().right()), f0->getRefFrame().top() - 3.0f);
+	Coord2 handleCenter(0.5f * (f0->getRefFrame().left() + f0->getRefFrame().right()), f0->getRefFrame().top());
 	h0->setExtent(handleCenter - 6.0f, Coord2(12.0f));
 	h0->autoAnchor(f0->getAnchorProvider());
-//	GUIManager::add(h0, above(f0));
-	f0->add(h0);
+	f0group->add(h0, 1);
 
 	// Second frame with image buttons
 	FramePtr f1 = std::make_shared<Frame>(true, false, true, true);
