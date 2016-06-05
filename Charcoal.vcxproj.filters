@@ -67,6 +67,9 @@
     <ClInclude Include="include\glcore\geometrybuffer.hpp">
       <Filter>glcore</Filter>
     </ClInclude>
+    <ClInclude Include="include\renderer\linerenderer.hpp">
+      <Filter>renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\freetype\src\type1cid.c">
@@ -233,6 +236,9 @@
     </ClCompile>
     <ClCompile Include="src\glcore\geometrybuffer.cpp">
       <Filter>glcore</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\linerenderer.cpp">
+      <Filter>renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

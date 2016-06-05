@@ -17,9 +17,9 @@ namespace ca { namespace cc {
 
 		/// Replace current block of data.
 		/// This might cause an glBufferData. Sub-data-updates are used if possible.
-		void setData(void* _data, unsigned _size);
-		void setIndexData(void* _data, unsigned _size);
-		void setInstanceData(void* _data, unsigned _size);
+		void setData(const void* _data, unsigned _size);
+		void setIndexData(const void* _data, unsigned _size);
+		void setInstanceData(const void* _data, unsigned _size);
 
 		/// Bind for draw calls. Do not change its content!
 		void bind() const;

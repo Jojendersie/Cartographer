@@ -107,7 +107,7 @@ namespace ca { namespace cc {
 		glCall(glDeleteVertexArrays, 1, &m_vao);
 	}
 
-	void GeometryBuffer::setData(void* _data, unsigned _size)
+	void GeometryBuffer::setData(const void* _data, unsigned _size)
 	{
 		// Use subdata, if capacity is greater or equal the required size.
 		if(_size <= m_capacity)
@@ -123,7 +123,7 @@ namespace ca { namespace cc {
 		m_vertexCount = _size / m_vertexSize;
 	}
 
-	void GeometryBuffer::setIndexData(void* _data, unsigned _size)
+	void GeometryBuffer::setIndexData(const void* _data, unsigned _size)
 	{
 		if(_size <= m_indexCapacity)
 		{
@@ -138,7 +138,7 @@ namespace ca { namespace cc {
 		m_indexCount = _size / m_indexSize;
 	}
 
-	void GeometryBuffer::setInstanceData(void* _data, unsigned _size)
+	void GeometryBuffer::setInstanceData(const void* _data, unsigned _size)
 	{
 		if(!m_vboInstances)
 		{

@@ -99,6 +99,7 @@
     <ClInclude Include="include\glcore\vertexformat.hpp" />
     <ClInclude Include="include\renderer\fontrenderer.hpp" />
     <ClInclude Include="include\renderer\instancerenderer.hpp" />
+    <ClInclude Include="include\renderer\linerenderer.hpp" />
     <ClInclude Include="include\renderer\spriterenderer.hpp" />
     <ClInclude Include="include\utilities\half.hpp" />
     <ClInclude Include="include\utilities\hrclock.hpp" />
@@ -156,6 +157,7 @@
     <ClCompile Include="src\glcore\vertexformat.cpp" />
     <ClCompile Include="src\renderer\fontrenderer.cpp" />
     <ClCompile Include="src\renderer\instancerenderer.cpp" />
+    <ClCompile Include="src\renderer\linerenderer.cpp" />
     <ClCompile Include="src\renderer\spriterenderer.cpp" />
     <ClCompile Include="src\utilities\half.cpp" />
     <ClCompile Include="src\utilities\hrclock.cpp" />
