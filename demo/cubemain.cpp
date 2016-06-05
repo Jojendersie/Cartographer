@@ -21,7 +21,7 @@ void prepareBoxes()
 	VertexAttribute attr[3] = {{PrimitiveFormat::FLOAT, 3, false},
 							   {PrimitiveFormat::FLOAT, 3, false},
 							   {PrimitiveFormat::FLOAT, 2, false}};
-	s_renderer = new InstanceRenderer(InstanceRenderer::PrimitiveType::TRIANGLE_STRIPE, attr, 3);
+	s_renderer = new InstanceRenderer(GLPrimitiveType::TRIANGLE_STRIPE, attr, 3);
 	s_meshID = s_renderer->beginDef();
 		s_renderer->put(1, Vec3(-1.0f,  0.0f,  0.0f));
 		s_renderer->put(0, Vec3(-1.0f, -1.0f, -1.0f)); s_renderer->put(2, Vec2(0.0f, 0.0f)); s_renderer->emit();

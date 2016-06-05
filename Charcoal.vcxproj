@@ -20,13 +20,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -95,6 +95,7 @@
     <ClInclude Include="include\glcore\sampler.hpp" />
     <ClInclude Include="include\glcore\shader.hpp" />
     <ClInclude Include="include\glcore\texture.hpp" />
+    <ClInclude Include="include\glcore\geometrybuffer.hpp" />
     <ClInclude Include="include\glcore\vertexformat.hpp" />
     <ClInclude Include="include\renderer\fontrenderer.hpp" />
     <ClInclude Include="include\renderer\instancerenderer.hpp" />
@@ -147,6 +148,7 @@
     <ClCompile Include="dependencies\freetype\src\winfnt.c" />
     <ClCompile Include="src\core\error.cpp" />
     <ClCompile Include="src\glcore\device.cpp" />
+    <ClCompile Include="src\glcore\geometrybuffer.cpp" />
     <ClCompile Include="src\glcore\opengl.cpp" />
     <ClCompile Include="src\glcore\sampler.cpp" />
     <ClCompile Include="src\glcore\shader.cpp" />

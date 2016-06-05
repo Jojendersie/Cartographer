@@ -7,16 +7,10 @@ using namespace ei;
 
 namespace ca { namespace cc {
 
-InstanceRenderer::InstanceRenderer(PrimitiveType _type, const VertexAttribute* _attributes, int _numAttributes) :
+InstanceRenderer::InstanceRenderer(GLPrimitiveType _type, const VertexAttribute* _attributes, int _numAttributes) :
 	m_startNewPrimitive(0),
-	m_type(_type)
+	m_glType(_type)
 {
-	if(_type == PrimitiveType::POINTS)
-		m_glType = static_cast<GLPrimitiveType>(GL_POINTS);
-	else if(_type == PrimitiveType::LINES || _type == PrimitiveType::LINE_STRIPE)
-		m_glType = static_cast<GLPrimitiveType>(GL_LINES);
-	else m_glType = static_cast<GLPrimitiveType>(GL_TRIANGLES);
-
 	glCall(glGenVertexArrays, 1, &m_vao);
 	glCall(glBindVertexArray, m_vao);
 
@@ -184,31 +178,7 @@ void InstanceRenderer::emit()
 {
 	m_vertexData.insert(m_vertexData.end(), m_currentVertex.begin(), m_currentVertex.end());
 	unsigned index = m_vertexData.size() / m_vertexSize - 1;
-	// If primitive finished add the indices
-	if(m_type == PrimitiveType::LINES)
-	{
-		m_indexData.push_back(index);
-	} else if(m_type == PrimitiveType::LINE_STRIPE)
-	{
-		// Continue stripe by adding the same index as start index
-		if(m_startNewPrimitive == 2)
-			m_indexData.push_back(index-1);
-		else ++m_startNewPrimitive;
-		m_indexData.push_back(index);
-	} else if(m_type == PrimitiveType::TRIANGLES)
-	{
-		m_indexData.push_back(index);
-	} else if(m_type == PrimitiveType::TRIANGLE_STRIPE)
-	{
-		// Continue stripe by copying the last two indices
-		if(m_startNewPrimitive == 3)
-		{
-			// TODO: face orientation
-			m_indexData.push_back(index-1);
-			m_indexData.push_back(index-2);
-		} else ++m_startNewPrimitive;
-		m_indexData.push_back(index);
-	}
+	m_indexData.push_back(index);
 }
 
 void InstanceRenderer::endPrimitive()

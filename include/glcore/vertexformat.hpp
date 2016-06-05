@@ -28,16 +28,19 @@ namespace ca { namespace cc {
 		PrimitiveFormat type;
 		int numComponents;	///< 1 to 4
 		bool normalize;		///< Normalize integer values to [0,1] or [-1,1]
+		bool perInstance;	///< If false this is part of a standard geometry defining vertex, otherwise it is used as instance information (e.g. world matrix).
 	};
 
-	/// Compute the size of a single attribute.
+	/// Compute the size of a single attribute in bytes.
 	int attributeSize(const VertexAttribute& _attr);
 
 	enum struct GLPrimitiveType
 	{
-		POINTS = 0x0000,	///< GL_POINTS
-		LINES = 0x0001,		///< GL_LINES
-		TRIANGLES = 0x0004,	///< GL_TRIANGLES
+		POINTS = 0x0000,		///< GL_POINTS
+		LINES = 0x0001,			///< GL_LINES
+		LINE_STRIPE = 0x0003,	///< GL_LINE_STRIP
+		TRIANGLES = 0x0004,		///< GL_TRIANGLES
+		TRIANGLE_STRIPE = 0x0005,	///< GL_TRIANGLE_STRIP
 	};
 
 }} // namespace ca::cc

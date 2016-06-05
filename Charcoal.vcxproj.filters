@@ -64,6 +64,9 @@
       <Filter>utilities</Filter>
     </ClInclude>
     <ClInclude Include="include\charcoal.hpp" />
+    <ClInclude Include="include\glcore\geometrybuffer.hpp">
+      <Filter>glcore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\freetype\src\type1cid.c">
@@ -227,6 +230,9 @@
     </ClCompile>
     <ClCompile Include="src\utilities\half.cpp">
       <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glcore\geometrybuffer.cpp">
+      <Filter>glcore</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

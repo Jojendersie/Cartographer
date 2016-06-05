@@ -13,17 +13,8 @@ namespace ca { namespace cc {
 	class InstanceRenderer
 	{
 	public:
-		enum class PrimitiveType
-		{
-			POINTS,
-			LINES,
-			LINE_STRIPE,
-			TRIANGLES,
-			TRIANGLE_STRIPE
-		};
-
 		/// Creation determines the vertex format and primitive type.
-		InstanceRenderer(PrimitiveType _type, const VertexAttribute* _attributes, int _numAttributes);
+		InstanceRenderer(GLPrimitiveType _type, const VertexAttribute* _attributes, int _numAttributes);
 		
 		/// Create a new static mesh (e.g. a sprite)
 		/// \details This is similar to the OpenGL immediate mode. You can fill the data of a vertex
@@ -86,7 +77,6 @@ namespace ca { namespace cc {
 		unsigned m_vertexSize;		///< Number of 32bit words per vertex, computed from vertex declaration
 		unsigned m_vboInstances;	///< Instance data
 		GLPrimitiveType m_glType;	///< OpenGL primitive type
-		PrimitiveType m_type;		///< Primitive type for primitive generation
 		unsigned m_numIndices;	
 		unsigned m_numVertices;
 		std::vector<AttributeDefinition> m_attributes;
