@@ -76,7 +76,9 @@ namespace ca { namespace cc {
 		unsigned m_ibo;		///< OpenGL index buffer object with 32bit indices
 		unsigned m_vertexSize;		///< Number of 32bit words per vertex, computed from vertex declaration
 		unsigned m_vboInstances;	///< Instance data
-		GLPrimitiveType m_glType;	///< OpenGL primitive type
+		// This renderer does need types without stripe-mode to be able to separate geometry.
+		GLPrimitiveType m_geometryType;	///< Type for geometry generation.
+		GLPrimitiveType m_glType;	///< OpenGL primitive type.
 		unsigned m_numIndices;	
 		unsigned m_numVertices;
 		std::vector<AttributeDefinition> m_attributes;

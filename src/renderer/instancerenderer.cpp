@@ -9,8 +9,15 @@ namespace ca { namespace cc {
 
 InstanceRenderer::InstanceRenderer(GLPrimitiveType _type, const VertexAttribute* _attributes, int _numAttributes) :
 	m_startNewPrimitive(0),
-	m_glType(_type)
+	m_geometryType(_type)
 {
+	if(_type == GLPrimitiveType::POINTS)
+		m_glType = GLPrimitiveType::POINTS;
+	else if(_type == GLPrimitiveType::LINES || _type == GLPrimitiveType::LINE_STRIPE)
+		m_glType = GLPrimitiveType::LINES;
+	else if(_type == GLPrimitiveType::TRIANGLES || _type == GLPrimitiveType::TRIANGLE_STRIPE)
+		m_glType = GLPrimitiveType::TRIANGLES;
+
 	glCall(glGenVertexArrays, 1, &m_vao);
 	glCall(glBindVertexArray, m_vao);
 
@@ -178,7 +185,31 @@ void InstanceRenderer::emit()
 {
 	m_vertexData.insert(m_vertexData.end(), m_currentVertex.begin(), m_currentVertex.end());
 	unsigned index = m_vertexData.size() / m_vertexSize - 1;
-	m_indexData.push_back(index);
+	// If primitive finished add the indices
+	if(m_geometryType == GLPrimitiveType::LINES)
+	{
+		m_indexData.push_back(index);
+	} else if(m_geometryType == GLPrimitiveType::LINE_STRIPE)
+	{
+		// Continue stripe by adding the same index as start index
+		if(m_startNewPrimitive == 2)
+			m_indexData.push_back(index-1);
+		else ++m_startNewPrimitive;
+		m_indexData.push_back(index);
+	} else if(m_geometryType == GLPrimitiveType::TRIANGLES)
+	{
+		m_indexData.push_back(index);
+	} else if(m_geometryType == GLPrimitiveType::TRIANGLE_STRIPE)
+	{
+		// Continue stripe by copying the last two indices
+		if(m_startNewPrimitive == 3)
+		{
+			// TODO: face orientation
+			m_indexData.push_back(index-1);
+			m_indexData.push_back(index-2);
+		} else ++m_startNewPrimitive;
+		m_indexData.push_back(index);
+	}
 }
 
 void InstanceRenderer::endPrimitive()
