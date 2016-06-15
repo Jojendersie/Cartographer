@@ -24,6 +24,7 @@ namespace ca { namespace gui {
 		virtual void drawTextureRect(const class RefFrame& _rect, uint64 _texture, float _opacity) override;
 		virtual void drawTriangle(const ei::Triangle2D& _triangle, const ei::Vec4& _color0, const ei::Vec4& _color1, const ei::Vec4& _color2) override;
 		virtual uint64 getTexture(const char* _textureFile, bool _smooth) override;
+		virtual void drawLine(const ei::Vec3* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB) override;
 
 	private:
 #pragma pack(push, 1)
@@ -40,9 +41,11 @@ namespace ca { namespace gui {
 
 		std::unique_ptr<cc::FontRenderer> m_fontRenderer;
 		std::unique_ptr<cc::SpriteRenderer> m_spriteRenderer;	///< Uber-shader for textured, colored and gradient rectangles/triangles
+		std::unique_ptr<cc::LineRenderer> m_lineRenderer;
 		std::vector<ei::Vec2> m_spriteSizes;
 		cc::Program m_spriteShader;
 		cc::Program m_fontShader;
+		cc::Program m_lineShader;
 		cc::Sampler m_linearSampler;
 		cc::Sampler m_pointSampler;
 		uint m_extraVBO;

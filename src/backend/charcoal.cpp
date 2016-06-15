@@ -309,6 +309,35 @@ namespace ca { namespace gui {
 		}
 	)";
 
+	const char* VS_LINE = R"(
+		#version 450
+
+		layout(location = 0) in vec3 in_position;
+		layout(location = 1) in vec4 in_color;
+
+		layout(location = 0) uniform mat4 c_projection;
+
+		layout(location = 0) out vec4 out_color;
+
+		void main()
+		{
+			out_color = in_color;
+			gl_Position = vec4(in_position, 1) * c_projection;
+		}
+	)";
+	const char* PS_LINE = R"(
+		#version 450
+
+		layout(location = 0) in vec4 in_color;
+
+		layout(location = 0, index = 0) out vec4 out_color;
+
+		void main()
+		{
+			out_color = in_color;
+		}
+	)";
+
 	CharcoalBackend::CharcoalBackend(const char* _fontFile) :
 		m_fontRenderer(new cc::FontRenderer),
 		m_linearSampler(cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR),
@@ -324,10 +353,16 @@ namespace ca { namespace gui {
 		m_fontShader.attach( cc::ShaderManager::get(PS_FONT, cc::ShaderType::FRAGMENT, false) );
 		m_fontShader.link();
 
-		m_fontRenderer->loadCaf(_fontFile);
-		m_spriteRenderer.reset(new cc::SpriteRenderer);
+		m_lineShader.attach( cc::ShaderManager::get(VS_LINE, cc::ShaderType::VERTEX, false) );
+		m_lineShader.attach( cc::ShaderManager::get(PS_LINE, cc::ShaderType::FRAGMENT, false) );
+		m_lineShader.link();
 
+		m_fontRenderer->loadCaf(_fontFile);
+		m_lineRenderer.reset(new cc::LineRenderer);
+
+		m_spriteRenderer.reset(new cc::SpriteRenderer);
 		// Create extra VBO for additional instance data
+		// This must be done directly after the creation, as it needs the VAO to be bound
 		cc::glCall(glGenBuffers, 1, &m_extraVBO);
 		cc::glCall(glBindBuffer, GL_ARRAY_BUFFER, m_extraVBO);
 		// 4 x float for posA and posB
@@ -467,6 +502,14 @@ namespace ca { namespace gui {
 		return m_spriteRenderer->defSprite(0.0f, 0.0f, tex);
 	}
 
+	void CharcoalBackend::drawLine(const ei::Vec3* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB)
+	{
+		m_lineRenderer->beginLine();
+		for(int i = 0; i < _numPositions; ++i)
+			m_lineRenderer->putVertex(_positions[i], lerp(_colorA, _colorB, i / (_numPositions - 1.0f)));
+		m_lineRenderer->endLine();
+	}
+
 	void CharcoalBackend::flush()
 	{
 		// Only if there are instances
@@ -482,6 +525,15 @@ namespace ca { namespace gui {
 					
 			m_spriteRenderer->clearInstances();
 			m_perInstanceData.clear();
+		}
+
+		if(!m_lineRenderer->isEmpty())
+		{
+			// TODO: alpha blending?
+			// TODO: anti aliasing?
+			m_lineShader.use();
+			m_lineRenderer->draw();
+			m_lineRenderer->clearLines();
 		}
 
 		if(!m_fontRenderer->isEmpty())
