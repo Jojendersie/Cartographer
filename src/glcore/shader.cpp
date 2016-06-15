@@ -65,6 +65,8 @@ namespace ca { namespace cc {
 		m_numShaders(0),
 		m_programID(0)
 	{
+		for(int i = 0; i < 5; ++i)
+			m_shaders[i] = nullptr;
 	}
 	
 	Program::~Program()

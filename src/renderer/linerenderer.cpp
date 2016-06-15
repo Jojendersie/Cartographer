@@ -11,21 +11,23 @@ namespace ca { namespace cc {
 	LineRenderer::LineRenderer() :
 		m_GPUBuffer(GLPrimitiveType::LINES,
 			LINE_VERTEX_ATTRIBUTES,
-			2, 0)
+			2, 4)
 	{
 	}
 
 	void LineRenderer::beginLine()
 	{
-		m_firstOfLine = true;
+		m_lineVertexCount = 0;
 	}
 
 	void LineRenderer::putVertex(const ei::Vec3& _position, const ei::Vec4& _color)
 	{
-		// Continue a stripe by douplicating the last vertex
-		if(m_firstOfLine)
-			m_firstOfLine = false;
-		else m_lineData.push_back(m_lineData.back());
+		// Continue a stripe by douplicating the last vertex index
+		if(m_lineVertexCount++ > 1)
+		{
+			m_lineIndices.push_back(m_lineIndices.back());
+		}
+		m_lineIndices.push_back(m_lineData.size());
 
 		LineVertex newVertex;
 		newVertex.position = _position;
@@ -43,6 +45,7 @@ namespace ca { namespace cc {
 	void LineRenderer::clearLines()
 	{
 		m_lineData.clear();
+		m_lineIndices.clear();
 	}
 
 	void LineRenderer::draw() const
@@ -50,6 +53,7 @@ namespace ca { namespace cc {
 		if(m_dirty)
 		{
 			m_GPUBuffer.setData(m_lineData.data(), m_lineData.size() * sizeof(LineVertex));
+			m_GPUBuffer.setIndexData(m_lineIndices.data(), m_lineIndices.size() * sizeof(uint32));
 			m_dirty = false;
 		}
 

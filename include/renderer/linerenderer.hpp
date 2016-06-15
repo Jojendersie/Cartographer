@@ -39,8 +39,9 @@ namespace ca { namespace cc {
 
 		mutable GeometryBuffer m_GPUBuffer;
 		std::vector<LineVertex> m_lineData;
+		std::vector<uint32> m_lineIndices;
 		mutable bool m_dirty;
-		bool m_firstOfLine;
+		int m_lineVertexCount;	// Number of vertices since last beginLine()
 	};
 
 }} // namespace ca::cc

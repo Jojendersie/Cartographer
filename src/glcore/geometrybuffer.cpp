@@ -171,7 +171,10 @@ namespace ca { namespace cc {
 	{
 		bind();
 
-		glDrawElementsInstanced(unsigned(m_glType), m_indexCount, GL_UNSIGNED_INT, nullptr, m_instanceCount);
+		if(m_ibo)
+			glCall(glDrawElementsInstanced, unsigned(m_glType), m_indexCount, GL_UNSIGNED_INT, nullptr, ei::max(1u, m_instanceCount));
+		else
+			glCall(glDrawArraysInstanced, unsigned(m_glType), 0, m_vertexCount, ei::max(1u, m_instanceCount));
 	}
 
 }}

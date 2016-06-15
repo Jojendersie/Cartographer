@@ -9,4 +9,5 @@
 #include "renderer/instancerenderer.hpp"
 #include "renderer/spriterenderer.hpp"
 #include "renderer/fontrenderer.hpp"
+#include "renderer/linerenderer.hpp"
 #include "utilities/hrclock.hpp"
