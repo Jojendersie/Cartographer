@@ -397,6 +397,7 @@ namespace ca { namespace gui {
 		Mat4x4 viewProj = ei::orthographicGL(0.0f, (float)GUIManager::getWidth(), 0.0f, (float)GUIManager::getHeight(), 0.0f, 1.0f);
 		m_spriteShader.setUniform(0, viewProj);
 		m_fontShader.setUniform(0, viewProj);
+		m_lineShader.setUniform(0, viewProj);
 
 		// Prepare pipeline
 		cc::Device::setCullMode(cc::CullMode::BACK);

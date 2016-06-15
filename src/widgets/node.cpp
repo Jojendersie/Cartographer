@@ -3,6 +3,8 @@
 #include "rendering/theme.hpp"
 #include "backend/renderbackend.hpp"
 
+using namespace ei;
+
 namespace ca { namespace gui {
 
 	NodeHandle::NodeHandle() :
@@ -34,6 +36,29 @@ namespace ca { namespace gui {
 	{
 		Widget::setAnchoring(SIDE::LEFT, _anchorProvider->findClosestAnchor(m_refFrame.horizontalCenter(), IAnchorProvider::SearchDirection::HORIZONTAL));
 		Widget::setAnchoring(SIDE::BOTTOM, _anchorProvider->findClosestAnchor(m_refFrame.verticalCenter(), IAnchorProvider::SearchDirection::VERTICAL));
+	}
+
+
+	
+	NodeConnector::NodeConnector() :
+		Widget(false, true, false, false)
+	{
+	}
+
+	void NodeConnector::draw()
+	{
+		Vec3 wayPoints[2];
+		wayPoints[0] = Vec3(m_sourceNode->getRefFrame().center(), 0.1f);
+		wayPoints[1] = Vec3(m_destNode->getRefFrame().center(), 0.1f);
+		GUIManager::theme().drawLine(wayPoints, 2, Vec4(1.0f), Vec4(1.0f));
+	}
+
+	void NodeConnector::refitToAnchors()
+	{
+		m_refFrame.sides[SIDE::LEFT] = min(m_sourceNode->getPosition().x, m_destNode->getPosition().x);
+		m_refFrame.sides[SIDE::BOTTOM] = min(m_sourceNode->getPosition().y, m_destNode->getPosition().y);
+		m_refFrame.sides[SIDE::RIGHT] = max(m_sourceNode->getPosition().x, m_destNode->getPosition().x);
+		m_refFrame.sides[SIDE::TOP] = max(m_sourceNode->getPosition().y, m_destNode->getPosition().y);
 	}
 
 }} // namespace ca::gui

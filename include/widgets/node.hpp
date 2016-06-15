@@ -48,9 +48,22 @@ namespace ca { namespace gui {
 	/// Spline connector as edges of the node graph.
 	class NodeConnector : public Widget
 	{
+	public:
+		NodeConnector();
+
+		/// Implement the draw method
+		void draw() override;
+
+		/// Recompute the reference frame dependent on the two nodes
+		void refitToAnchors() override;
+
+		void setSource(NodeHandlePtr _node)		{m_sourceNode = _node;}
+		void setDest(NodeHandlePtr _node)		{m_destNode = _node;}
 	protected:
-		NodeHandlePtr sourceNode;
-		NodeHandlePtr destNode;
+		NodeHandlePtr m_sourceNode;
+		NodeHandlePtr m_destNode;
 	};
+
+	typedef std::shared_ptr<NodeConnector> NodeConnectorPtr;
 
 }} // namespace ca::gui

@@ -118,12 +118,12 @@ void createGUI(GLFWwindow* _window)
 	}
 	
 	// Add node handles for node-based-editing demo
-	NodeHandlePtr h0 = std::make_shared<NodeHandle>();
-	h0->setColor(Vec3(themeProps2.basicHoverColor));
+	NodeHandlePtr h00 = std::make_shared<NodeHandle>();
+	h00->setColor(Vec3(themeProps2.basicHoverColor));
 	Coord2 handleCenter(0.5f * (f0->getRefFrame().left() + f0->getRefFrame().right()), f0->getRefFrame().top() + 2.0f);
-	h0->setExtent(handleCenter - 6.0f, Coord2(12.0f));
-	h0->autoAnchor(f0->getAnchorProvider());
-	f0group->add(h0, 1);
+	h00->setExtent(handleCenter - 6.0f, Coord2(12.0f));
+	h00->autoAnchor(f0->getAnchorProvider());
+	f0group->add(h00, 1);
 
 	// Second frame with image buttons
 	FramePtr f1 = std::make_shared<Frame>(true, false, true, true);
@@ -194,11 +194,21 @@ void createGUI(GLFWwindow* _window)
 	}
 
 	// Fourth frame with labels (window fake)
+	GroupPtr f3group = std::make_shared<Group>(); // Contains f3 and the node based handles
+	GUIManager::add(f3group);
 	FramePtr f3 = std::make_shared<Frame>(true, false, true, true);
 	f3->setExtent(Vec2(115.0f, 120.0f), Vec2(200.0f, 230.0f));
 	f3->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	BorderAnchorProvider* anchorsf3 = static_cast<BorderAnchorProvider*>(f3->getAnchorProvider());
-	GUIManager::add(f3);
+	f3group->add(f3);
+
+	// Add node handles
+	NodeHandlePtr h30 = std::make_shared<NodeHandle>();
+	h30->setColor(Vec3(themeProps2.basicHoverColor));
+	handleCenter = Coord2(0.5f * (f3->getRefFrame().left() + f3->getRefFrame().right()), f3->getRefFrame().top() + 2.0f);
+	h30->setExtent(handleCenter - 6.0f, Coord2(12.0f));
+	h30->autoAnchor(f3->getAnchorProvider());
+	f3group->add(h30, 1);
 
 	LabelPtr l0 = std::make_shared<Label>();
 	l0->setExtent(f3->getPosition() + Coord2(0.0f, f3->getSize().y - 20.0f) + 2.0f, Coord2(f3->getSize().x, 16.0f));
@@ -254,6 +264,12 @@ void createGUI(GLFWwindow* _window)
 	l0->autoAnchor(anchorsf3);
 	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
+
+	// Add some connectors between node handles
+	NodeConnectorPtr connector0 = std::make_shared<NodeConnector>();
+	connector0->setSource(h00);
+	connector0->setDest(h30);
+	GUIManager::add(connector0);
 }
 
 void runMainLoop(GLFWwindow* _window)
