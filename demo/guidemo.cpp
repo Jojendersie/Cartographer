@@ -120,7 +120,7 @@ void createGUI(GLFWwindow* _window)
 	// Add node handles for node-based-editing demo
 	NodeHandlePtr h0 = std::make_shared<NodeHandle>();
 	h0->setColor(Vec3(themeProps2.basicHoverColor));
-	Coord2 handleCenter(0.5f * (f0->getRefFrame().left() + f0->getRefFrame().right()), f0->getRefFrame().top());
+	Coord2 handleCenter(0.5f * (f0->getRefFrame().left() + f0->getRefFrame().right()), f0->getRefFrame().top() + 2.0f);
 	h0->setExtent(handleCenter - 6.0f, Coord2(12.0f));
 	h0->autoAnchor(f0->getAnchorProvider());
 	f0group->add(h0, 1);

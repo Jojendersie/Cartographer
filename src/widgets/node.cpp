@@ -15,10 +15,12 @@ namespace ca { namespace gui {
 
 	void NodeHandle::draw()
 	{
+		bool mouseOver = GUIManager::hasMouseFocus(this)
+			&& m_refFrame.isMouseOver(GUIManager::getMouseState().position);
 		GUIManager::theme().drawNodeHandle(
 			0.5f * Coord2(m_refFrame.left() + m_refFrame.right(), m_refFrame.bottom() + m_refFrame.top()),
 			0.5f * m_refFrame.width(),
-			m_color);
+			mouseOver ? 2.0f * m_color : m_color);
 		//GUIManager::theme().drawCheckbox(m_refFrame, true, true);
 	}
 
