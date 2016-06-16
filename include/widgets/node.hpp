@@ -27,6 +27,9 @@ namespace ca { namespace gui {
 		//void setAnchoring(AnchorPtr _anchor);
 		/// Modified automated anchoring, which attaches only two of four anchors
 		void autoAnchor(const class IAnchorProvider* _anchorProvider);
+
+		/// Get a direction vector in wich connectors should start
+		ei::Vec2 getConnectorDirection() const;
 	private:
 		std::vector<NodeConnectorPtr> m_edges;
 		ei::Vec3 m_color;

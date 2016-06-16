@@ -123,6 +123,7 @@ void createGUI(GLFWwindow* _window)
 	Coord2 handleCenter(0.5f * (f0->getRefFrame().left() + f0->getRefFrame().right()), f0->getRefFrame().top() + 2.0f);
 	h00->setExtent(handleCenter - 6.0f, Coord2(12.0f));
 	h00->autoAnchor(f0->getAnchorProvider());
+	h00->setRotation(PI / 2.0f);
 	f0group->add(h00, 1);
 
 	// Second frame with image buttons
@@ -205,9 +206,10 @@ void createGUI(GLFWwindow* _window)
 	// Add node handles
 	NodeHandlePtr h30 = std::make_shared<NodeHandle>();
 	h30->setColor(Vec3(themeProps2.basicHoverColor));
-	handleCenter = Coord2(0.5f * (f3->getRefFrame().left() + f3->getRefFrame().right()), f3->getRefFrame().top() + 2.0f);
+	handleCenter = Coord2(0.5f * (f3->getRefFrame().left() + f3->getRefFrame().right()), f3->getRefFrame().bottom() - 2.0f);
 	h30->setExtent(handleCenter - 6.0f, Coord2(12.0f));
 	h30->autoAnchor(f3->getAnchorProvider());
+	h30->setRotation(-PI / 2.0f);
 	f3group->add(h30, 1);
 
 	LabelPtr l0 = std::make_shared<Label>();
