@@ -31,7 +31,10 @@ namespace ca { namespace cc {
 
 		LineVertex newVertex;
 		newVertex.position = _position;
-		newVertex.color = uint8(ei::clamp(_color.x, 0.0f, 1.0f) * 255.0f);
+		newVertex.color = uint8(ei::clamp(_color.r, 0.0f, 1.0f) * 255.0f)
+			| (uint8(ei::clamp(_color.g, 0.0f, 1.0f) * 255.0f) << 8)
+			| (uint8(ei::clamp(_color.b, 0.0f, 1.0f) * 255.0f) << 16)
+			| (uint8(ei::clamp(_color.a, 0.0f, 1.0f) * 255.0f) << 24);
 
 		m_lineData.push_back(newVertex);
 	}
