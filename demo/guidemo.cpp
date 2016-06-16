@@ -269,7 +269,7 @@ void createGUI(GLFWwindow* _window)
 	NodeConnectorPtr connector0 = std::make_shared<NodeConnector>();
 	connector0->setSource(h00);
 	connector0->setDest(h30);
-	GUIManager::add(connector0);
+	GUIManager::add(connector0, 1);
 }
 
 void runMainLoop(GLFWwindow* _window)

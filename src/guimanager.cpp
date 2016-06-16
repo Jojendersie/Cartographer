@@ -39,11 +39,11 @@ namespace ca { namespace gui {
 	{
 	}
 
-	void GUIManager::add(WidgetPtr _widget)
+	void GUIManager::add(WidgetPtr _widget, unsigned _innerLayer)
 	{
 		if(!g_manager)
 			return error("Uninitialized GUIManager! Cannot add components!");
-		g_manager->m_topFrame->add(_widget);
+		g_manager->m_topFrame->add(_widget, _innerLayer);
 	}
 
 	void GUIManager::remove(WidgetPtr _widget)
