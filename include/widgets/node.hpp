@@ -22,6 +22,7 @@ namespace ca { namespace gui {
 
 		/// Each node can have an individual color to distinguish classes/compatibilities.
 		void setColor(const ei::Vec3& _color) { m_color = _color; }
+		const ei::Vec3& color() const { return m_color; }
 
 		/// Attach entire element (moveable) to an anchor.
 		//void setAnchoring(AnchorPtr _anchor);
@@ -49,7 +50,7 @@ namespace ca { namespace gui {
 	typedef std::shared_ptr<NodeHandle> NodeHandlePtr;
 
 	/// Spline connector as edges of the node graph.
-	class NodeConnector : public Widget
+	class NodeConnector : public Widget, public IRegion
 	{
 	public:
 		NodeConnector();
@@ -65,6 +66,9 @@ namespace ca { namespace gui {
 	protected:
 		NodeHandlePtr m_sourceNode;
 		NodeHandlePtr m_destNode;
+
+		/// Implementation of IRegion::isMouseOver.
+		bool isMouseOver(const Coord2& _mousePos) const override;
 	};
 
 	typedef std::shared_ptr<NodeConnector> NodeConnectorPtr;

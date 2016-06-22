@@ -3,6 +3,8 @@
 #include "rendering/theme.hpp"
 #include "backend/renderbackend.hpp"
 
+#include <ei/2dintersection.hpp>
+
 using namespace ei;
 
 namespace ca { namespace gui {
@@ -73,7 +75,37 @@ namespace ca { namespace gui {
 			float ti = 1.0f - t;
 			wayPoints[i] = Vec3( ti*ti*ti * p0 + 3.0f*ti*ti*t * p1 + 3.0f*ti*t*t * p2 + t*t*t * p3, 0.0f);
 		}
-		GUIManager::theme().drawLine(wayPoints, CONNECTOR_NUM_POINTS, Vec4(1.0f), Vec4(1.0f));
+		bool mouseOver = isMouseOver(GUIManager::getMouseState().position);
+		Vec4 sourceColor = ei::Vec4(m_sourceNode->color() * (mouseOver ? 2.0f : 1.0f), 1.0f);
+		Vec4 destColor = ei::Vec4(m_destNode->color() * (mouseOver ? 2.0f : 1.0f), 1.0f);
+		GUIManager::theme().drawLine(wayPoints, CONNECTOR_NUM_POINTS, sourceColor, destColor);
+	}
+
+	bool NodeConnector::isMouseOver(const Coord2& _mousePos) const
+	{
+		// Move along the spline and check if any segment is closer than 3.0 pixels
+		// to the mouse position.
+		Vec2 p0 = m_sourceNode->getRefFrame().center();
+		p0 += m_sourceNode->getConnectorDirection() * m_sourceNode->getRefFrame().size() / 2.0f;
+		Vec2 p3 = m_destNode->getRefFrame().center();
+		p3 += m_destNode->getConnectorDirection() * m_destNode->getRefFrame().size() / 2.0f;
+		float nodeDistance = len(p0 - p3) / 3.0f;
+		Vec2 p1 = p0 + m_sourceNode->getConnectorDirection() * nodeDistance;
+		Vec2 p2 = p3 + m_destNode->getConnectorDirection() * nodeDistance;
+
+		Segment2D line;
+		line.a = p0;
+		for(int i = 1; i < CONNECTOR_NUM_POINTS; ++i)
+		{
+			float t = i / (CONNECTOR_NUM_POINTS - 1.0f);
+			float ti = 1.0f - t;
+			line.b = Vec2( ti*ti*ti * p0 + 3.0f*ti*ti*t * p1 + 3.0f*ti*t*t * p2 + t*t*t * p3);
+			// Test if the _mousePos is close to the line segment l0-l1
+			if(distanceSq(line, _mousePos) <= 9.0f)
+				return true;
+			line.a = line.b;
+		}
+		return false;
 	}
 
 	void NodeConnector::refitToAnchors()
