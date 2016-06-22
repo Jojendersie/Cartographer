@@ -102,7 +102,7 @@ namespace ca { namespace gui {
 		//pos *= 2.0f;
 		// Convert _mousePos to [-1,1] positions inside the frame
 		Coord2 pos = _mousePos - Coord2(m_selfFrame->left(), m_selfFrame->bottom());
-		pos /= Coord2(m_selfFrame->width(), m_selfFrame->height());
+		pos /= m_selfFrame->size();
 		pos = pos * 2.0f - 1.0f;
 		// Check if the position is inside a circle
 		return lensq(pos) <= 1.0f;

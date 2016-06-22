@@ -13,12 +13,13 @@ namespace ca { namespace gui {
 		m_color(1.0f)
 	{
 		Widget::setAnchorModes(Anchorable::Mode::PREFER_MOVE);
+		m_clickComponent->setClickRegion(new EllipseRegion(&m_refFrame));
 	}
 
 	void NodeHandle::draw()
 	{
 		bool mouseOver = GUIManager::hasMouseFocus(this)
-			&& m_refFrame.isMouseOver(GUIManager::getMouseState().position);
+			&& m_clickComponent->getClickRegion()->isMouseOver(GUIManager::getMouseState().position);
 		GUIManager::theme().drawNodeHandle(
 			0.5f * Coord2(m_refFrame.left() + m_refFrame.right(), m_refFrame.bottom() + m_refFrame.top()),
 			0.5f * m_refFrame.width(),
@@ -57,13 +58,17 @@ namespace ca { namespace gui {
 		// As support vectors take the direction given by the node handles
 		// with a lenght of 1/3 from the distance between the two nodes.
 		Vec2 p0 = m_sourceNode->getRefFrame().center();
+		p0 += m_sourceNode->getConnectorDirection() * m_sourceNode->getRefFrame().size() / 2.0f;
 		Vec2 p3 = m_destNode->getRefFrame().center();
+		p3 += m_destNode->getConnectorDirection() * m_destNode->getRefFrame().size() / 2.0f;
 		float distance = len(p0 - p3) / 3.0f;
 		Vec2 p1 = p0 + m_sourceNode->getConnectorDirection() * distance;
 		Vec2 p2 = p3 + m_destNode->getConnectorDirection() * distance;
 		Vec3 wayPoints[CONNECTOR_NUM_POINTS];
 		for(int i = 0; i < CONNECTOR_NUM_POINTS; ++i)
 		{
+			// TODO: adaptive step length to increase sample density in heigh
+			// curvature areas
 			float t = i / (CONNECTOR_NUM_POINTS - 1.0f);
 			float ti = 1.0f - t;
 			wayPoints[i] = Vec3( ti*ti*ti * p0 + 3.0f*ti*ti*t * p1 + 3.0f*ti*t*t * p2 + t*t*t * p3, 0.0f);
