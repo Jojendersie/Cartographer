@@ -32,6 +32,15 @@ namespace ca { namespace gui {
 	{
 		_widget->m_parent = this;
 		m_children.push_back({move(_widget), _innerLayer});
+		// Move to the front of the vector as long as there are elements
+		// with a larger layer (-> insertion sort).
+		auto currentIt = m_children.rbegin();
+		auto nextIt = currentIt + 1;
+		while(nextIt != m_children.rend() && (nextIt->innerLayer > currentIt->innerLayer))
+		{
+			std::iter_swap(currentIt, nextIt);
+			currentIt = nextIt++;
+		}
 	}
 
 	void Group::remove(WidgetPtr _widget)
