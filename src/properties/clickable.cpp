@@ -98,9 +98,11 @@ namespace ca { namespace gui {
 
 	bool EllipseRegion::isMouseOver(const Coord2& _mousePos) const
 	{
+		//Coord2 pos = _mousePos - m_selfFrame->center();
+		//pos *= 2.0f;
 		// Convert _mousePos to [-1,1] positions inside the frame
-		Coord2 pos = _mousePos - Coord2(m_selfFrame->bottom(), m_selfFrame->left());
-		pos /= Coord2(m_selfFrame->height(), m_selfFrame->width());
+		Coord2 pos = _mousePos - Coord2(m_selfFrame->left(), m_selfFrame->bottom());
+		pos /= Coord2(m_selfFrame->width(), m_selfFrame->height());
 		pos = pos * 2.0f - 1.0f;
 		// Check if the position is inside a circle
 		return lensq(pos) <= 1.0f;
