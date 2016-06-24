@@ -51,6 +51,7 @@ namespace ca { namespace gui {
 	NodeConnector::NodeConnector() :
 		Widget(false, true, false, false)
 	{
+		m_clickComponent->setClickRegion(this, false);
 	}
 
 	const int CONNECTOR_NUM_POINTS = 32;
