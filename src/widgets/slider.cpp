@@ -17,6 +17,7 @@ namespace ca { namespace gui {
 		m_isMoving(false)
 	{
 		Widget::setKeyboardFocusable(true);
+		enable();
 	}
 
 	void Slider::draw()
