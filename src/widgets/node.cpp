@@ -14,7 +14,7 @@ namespace ca { namespace gui {
 		m_angle(0.0f),
 		m_color(1.0f)
 	{
-		Widget::setAnchorModes(Anchorable::Mode::PREFER_MOVE);
+		Widget::setAnchorModes(Anchorable::Mode::NO_RESIZE);
 		m_clickComponent->setClickRegion(new EllipseRegion(&m_refFrame));
 	}
 
@@ -37,8 +37,10 @@ namespace ca { namespace gui {
 
 	void NodeHandle::autoAnchor(const class IAnchorProvider* _anchorProvider)
 	{
-		Widget::setAnchoring(SIDE::LEFT, _anchorProvider->findClosestAnchor(m_refFrame.horizontalCenter(), IAnchorProvider::SearchDirection::HORIZONTAL));
-		Widget::setAnchoring(SIDE::BOTTOM, _anchorProvider->findClosestAnchor(m_refFrame.verticalCenter(), IAnchorProvider::SearchDirection::VERTICAL));
+		Widget::setAnchoring(SIDE::LEFT, _anchorProvider->findClosestAnchor(m_refFrame.horizontalCenter(), IAnchorProvider::SearchDirection::LEFT));
+		Widget::setAnchoring(SIDE::RIGHT, _anchorProvider->findClosestAnchor(m_refFrame.horizontalCenter(), IAnchorProvider::SearchDirection::RIGHT));
+		Widget::setAnchoring(SIDE::BOTTOM, _anchorProvider->findClosestAnchor(m_refFrame.verticalCenter(), IAnchorProvider::SearchDirection::DOWN));
+		Widget::setAnchoring(SIDE::TOP, _anchorProvider->findClosestAnchor(m_refFrame.verticalCenter(), IAnchorProvider::SearchDirection::UP));
 	}
 
 	ei::Vec2 NodeHandle::getConnectorDirection() const

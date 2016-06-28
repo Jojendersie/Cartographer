@@ -120,7 +120,7 @@ void createGUI(GLFWwindow* _window)
 	// Add node handles for node-based-editing demo
 	NodeHandlePtr h00 = std::make_shared<NodeHandle>();
 	h00->setColor(Vec3(themeProps2.basicHoverColor));
-	Coord2 handleCenter(0.5f * (f0->getRefFrame().left() + f0->getRefFrame().right()), f0->getRefFrame().top() + 2.0f);
+	Coord2 handleCenter(f0->getRefFrame().horizontalCenter(), f0->getRefFrame().top() + 2.0f);
 	h00->setExtent(handleCenter - 6.0f, Coord2(12.0f));
 	h00->autoAnchor(f0->getAnchorProvider());
 	h00->setRotation(PI / 2.0f);
@@ -206,11 +206,18 @@ void createGUI(GLFWwindow* _window)
 	// Add node handles
 	NodeHandlePtr h30 = std::make_shared<NodeHandle>();
 	h30->setColor(Vec3(themeProps2.basicHoverColor));
-	handleCenter = Coord2(0.5f * (f3->getRefFrame().left() + f3->getRefFrame().right()), f3->getRefFrame().bottom() - 2.0f);
+	handleCenter = Coord2(f3->getRefFrame().horizontalCenter(), f3->getRefFrame().bottom() - 2.0f);
 	h30->setExtent(handleCenter - 6.0f, Coord2(12.0f));
 	h30->autoAnchor(f3->getAnchorProvider());
 	h30->setRotation(-PI / 2.0f);
 	f3group->add(h30, 1);
+	NodeHandlePtr h31 = std::make_shared<NodeHandle>();
+	h31->setColor(Vec3(0.0f, 0.5f, 0.0f));
+	handleCenter = Coord2(f3->getRefFrame().left() - 2.0f, f3->getRefFrame().verticalCenter());
+	h31->setExtent(handleCenter - 6.0f, Coord2(12.0f));
+	h31->autoAnchor(f3->getAnchorProvider());
+	h31->setRotation(-PI);
+	f3group->add(h31, 1);
 
 	LabelPtr l0 = std::make_shared<Label>();
 	l0->setExtent(f3->getPosition() + Coord2(0.0f, f3->getSize().y - 20.0f) + 2.0f, Coord2(f3->getSize().x, 16.0f));

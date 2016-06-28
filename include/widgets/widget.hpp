@@ -23,7 +23,7 @@ namespace ca { namespace gui {
 		void setSize(const Coord2& _size);
 		Coord2 getSize() const;
 
-		/// Set the position (resets anchoring)
+		/// Set the position of the lower left corner (resets anchoring)
 		void setPosition(const Coord2& _position);
 		Coord2 getPosition() const;
 
