@@ -61,14 +61,28 @@ namespace ca { namespace gui {
 		/// Recompute the reference frame dependent on the two nodes
 		void refitToAnchors() override;
 
+		/// Tear off from a node if clicked an snap (back) if released.
+		bool processInput(const MouseState& _mouseState) override;
+
 		void setSource(NodeHandlePtr _node)		{m_sourceNode = _node;}
 		void setDest(NodeHandlePtr _node)		{m_destNode = _node;}
 	protected:
 		NodeHandlePtr m_sourceNode;
 		NodeHandlePtr m_destNode;
 
+		enum class HandleState
+		{
+			ATTACHED,					///< Use source and dest node (ignore tmp), even if one of the nodes does not exist.
+			TMP_SRC,					///< Replace src optically by tmp
+			TMP_DST						///< Replace dest optically by tmp
+		};
+		HandleState m_tmpHandleState;
+
 		/// Implementation of IRegion::isMouseOver.
 		bool isMouseOver(const Coord2& _mousePos) const override;
+
+		mutable bool m_isMouseOver;		///< Store the result of the last test
+		mutable float m_mouseT;			///< Store curve parameter 't' of last isMouseOver test. This is undefined if m_isMouseOver is false.
 	};
 
 	typedef std::shared_ptr<NodeConnector> NodeConnectorPtr;
