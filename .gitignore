@@ -1,0 +1,12 @@
+Debug/
+Release/
+
+*.suo
+*.opensdf
+*.sdf
+*.opendb
+*.db
+*.user
+*.props
+
+*.lib
