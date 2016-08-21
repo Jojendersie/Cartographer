@@ -133,10 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\memory\refptr.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\memory\refptr.hpp" />
+    <ClInclude Include="include\pa\memory\refptr.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -28,9 +28,30 @@ namespace ca { namespace pa {
 	public:
 		// Construction and copies
 		RefPtr() : m_ptr(nullptr)							{}
-		RefPtr(T* _object) : m_ptr(_object)					{ m_ptr->m_refCounter++; }
-		RefPtr(const RefPtr& _other) : m_ptr(_other.m_ptr)	{ m_ptr->m_refCounter++; }
-		RefPtr(RefPtr&& _other) : m_ptr(_other.m_ptr)		{ _other.m_ptr = nullptr; }
+		explicit RefPtr(T* _object) : m_ptr(_object)		{ m_ptr->m_refCounter++; }
+
+		template<typename T2, class = typename std::enable_if<std::is_convertible<T2*,T*>::value || std::is_base_of<T2,T>::value, void>::type>
+		RefPtr(const RefPtr<T2>& _other)
+		{
+			if(std::is_convertible<T2*,T*>::value)
+				m_ptr = static_cast<T*>(_other.m_ptr);
+			else
+				m_ptr = dynamic_cast<T*>(_other.m_ptr);
+			if(m_ptr)
+				m_ptr->m_refCounter++;
+		}
+
+		template<typename T2, class = typename std::enable_if<std::is_convertible<T2*,T*>::value || std::is_base_of<T2,T>::value, void>::type>
+		RefPtr(RefPtr<T2>&& _other)
+		{
+			if(std::is_convertible<T2*,T*>::value)
+				m_ptr = static_cast<T*>(_other.m_ptr);
+			else
+				m_ptr = dynamic_cast<T*>(_other.m_ptr);
+			if(m_ptr)
+				_other.m_ptr = nullptr;
+		}
+
 		RefPtr& operator = (const RefPtr& _other)			{ this->~RefPtr(); m_ptr = _other.m_ptr; m_ptr->m_refCounter++; return *this; }
 		RefPtr& operator = (T* _other)						{ this->~RefPtr(); m_ptr = _other;       m_ptr->m_refCounter++; return *this; }
 		RefPtr& operator = (RefPtr&& _other)				{ this->~RefPtr(); m_ptr = _other.m_ptr; _other.m_ptr = nullptr; return *this; }
@@ -50,8 +71,16 @@ namespace ca { namespace pa {
 		T* get() { return m_ptr; }
 		const T* get() const { return m_ptr; }
 
+		// Check
+		explicit operator bool () { return m_ptr != nullptr; }
+
+		// Implicit static cast
+		//template<typename T2>
+		//operator RefPtr<T2> () {}
 	private:
 		T* m_ptr;
+
+		template<typename T2> friend class RefPtr;
 	};
 
 }} // namespace ca::pa

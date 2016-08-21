@@ -15,12 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\memory\refptr.cpp">
-      <Filter>src\memory</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\memory\refptr.hpp">
+    <ClInclude Include="include\pa\memory\refptr.hpp">
       <Filter>include\memory</Filter>
     </ClInclude>
   </ItemGroup>
