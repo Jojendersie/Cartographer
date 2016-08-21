@@ -16,7 +16,7 @@ namespace ca { namespace gui {
 		setExtent(Coord2(0.0f), Coord2(5000.0f));
 	}
 
-	void Group::draw()
+	void Group::draw() const
 	{
 		if(m_visible)
 		{
@@ -31,7 +31,7 @@ namespace ca { namespace gui {
 	void Group::add(WidgetPtr _widget, unsigned _innerLayer)
 	{
 		_widget->m_parent = this;
-		m_children.push_back({move(_widget), _innerLayer});
+		m_children.push_back({std::move(_widget), _innerLayer});
 		// Move to the front of the vector as long as there are elements
 		// with a larger layer (-> insertion sort).
 		auto currentIt = m_children.rbegin();

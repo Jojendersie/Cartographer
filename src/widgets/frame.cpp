@@ -22,7 +22,7 @@ namespace ca { namespace gui {
 	{
 	}
 
-	void Frame::draw()
+	void Frame::draw() const
 	{
 		if(m_visible)
 		{

@@ -18,7 +18,7 @@ namespace ca { namespace gui {
 		Group();
 
 		/// Implement the draw method
-		void draw() override;
+		void draw() const override;
 
 		/// Add a new child element.
 		/// \param [in] _innerLayer Stir rendering order within the component.
@@ -45,6 +45,6 @@ namespace ca { namespace gui {
 		void moveToFront(size_t _index);
 	};
 
-	typedef std::shared_ptr<Group> GroupPtr;
+	typedef pa::RefPtr<Group> GroupPtr;
 
 }} // namespace ca::gui

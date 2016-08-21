@@ -4,7 +4,7 @@
 
 namespace ca { namespace gui {
 
-	typedef std::shared_ptr<class NodeConnector> NodeConnectorPtr;
+	typedef pa::RefPtr<class NodeConnector> NodeConnectorPtr;
 
 	/// A small handle for node based editors which can connect to other nodes
 	/// usin spline connectors.
@@ -14,7 +14,7 @@ namespace ca { namespace gui {
 		NodeHandle();
 
 		/// Implement the draw method
-		void draw() override;
+		void draw() const override;
 
 		/// The rotation determines the starting direction of all edges.
 		/// \param [in] _angle Angle in radiant where 0 is showing right.
@@ -47,7 +47,7 @@ namespace ca { namespace gui {
 		IAnchorProvider* getAnchorProvider() const = delete;
 	};
 
-	typedef std::shared_ptr<NodeHandle> NodeHandlePtr;
+	typedef pa::RefPtr<NodeHandle> NodeHandlePtr;
 
 	/// Spline connector as edges of the node graph.
 	class NodeConnector : public Widget, public IRegion
@@ -56,7 +56,7 @@ namespace ca { namespace gui {
 		NodeConnector();
 
 		/// Implement the draw method
-		void draw() override;
+		void draw() const override;
 
 		/// Recompute the reference frame dependent on the two nodes
 		void refitToAnchors() override;
@@ -84,7 +84,5 @@ namespace ca { namespace gui {
 		mutable bool m_isMouseOver;		///< Store the result of the last test
 		mutable float m_mouseT;			///< Store curve parameter 't' of last isMouseOver test. This is undefined if m_isMouseOver is false.
 	};
-
-	typedef std::shared_ptr<NodeConnector> NodeConnectorPtr;
 
 }} // namespace ca::gui

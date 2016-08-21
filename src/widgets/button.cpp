@@ -40,7 +40,7 @@ namespace ca { namespace gui {
 		m_backgroundTexture = GUIManager::renderBackend().getTexture(_textureFile, _smooth);
 	}
 
-	void Button::draw()
+	void Button::draw() const
 	{
 		// Background
 		bool mouseOver = GUIManager::hasMouseFocus(this)

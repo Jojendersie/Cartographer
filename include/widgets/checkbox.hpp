@@ -11,7 +11,7 @@ namespace ca { namespace gui {
 		CheckBox();
 
 		/// Implement the draw method
-		void draw() override;
+		void draw() const override;
 
 		/// Set the description text (utf8 w/o BOM)
 		/// \param [in] _text New text for the checkbox (utf8 w/o BOM). The text is copied internally.
@@ -30,6 +30,6 @@ namespace ca { namespace gui {
 		uint64 m_checkmarkTexture[2];	///< Custom textures for the checkmark
 	};
 
-	typedef std::shared_ptr<CheckBox> CheckBoxPtr;
+	typedef pa::RefPtr<CheckBox> CheckBoxPtr;
 
 }} // namespace ca::gui

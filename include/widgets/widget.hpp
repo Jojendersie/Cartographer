@@ -7,13 +7,14 @@
 #include "properties/moveable.hpp"
 #include "properties/refframe.hpp"
 #include "properties/resizeable.hpp"
+#include "pa/memory/refptr.hpp"
 
 namespace ca { namespace gui {
 
 	/// Base class with mandatory attributes for all widgets.
 	/// \details A widget only contains the state. State handling in general is up to the derived
 	///		elements.
-	class Widget
+	class Widget: public pa::ReferenceCountable
 	{
 	public:
 		Widget(bool _anchorable = false, bool _clickable = false, bool _moveable = false, bool _resizeable = false);
@@ -34,7 +35,7 @@ namespace ca { namespace gui {
 		const RefFrame& getRefFrame() const { return m_refFrame; }
 
 		/// Draw the element now
-		virtual void draw() = 0;
+		virtual void draw() const = 0;
 
 		/// Process mouse input if desired.
 		/// \details The Widget implementation forwards input to click-, resize- and move-
@@ -114,6 +115,6 @@ namespace ca { namespace gui {
 		virtual void onExtentChanged();
 	};
 
-	typedef std::shared_ptr<Widget> WidgetPtr;
+	typedef pa::RefPtr<Widget> WidgetPtr;
 
 }} // namespace ca::gui

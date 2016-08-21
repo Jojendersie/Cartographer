@@ -14,7 +14,7 @@ namespace ca { namespace gui {
 		~Frame();
 
 		/// Implement the draw method
-		void draw() override;
+		void draw() const override;
 
 		/// Forward input to subelements and to properties
 		virtual bool processInput(const struct MouseState& _mouseState) override;
@@ -36,6 +36,6 @@ namespace ca { namespace gui {
 		uint64 m_texture;
 	};
 
-	typedef std::shared_ptr<Frame> FramePtr;
+	typedef pa::RefPtr<Frame> FramePtr;
 
 }} // namespace ca::gui

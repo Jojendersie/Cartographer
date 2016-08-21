@@ -20,7 +20,7 @@ namespace ca { namespace gui {
 		enable();
 	}
 
-	void Slider::draw()
+	void Slider::draw() const
 	{
 		// Background
 		//GUIManager::theme().drawBackgroundArea(m_refFrame);

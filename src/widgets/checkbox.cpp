@@ -20,7 +20,7 @@ namespace ca { namespace gui {
 			MouseState::ButtonState(MouseState::CLICKED | MouseState::DBL_CLICKED));
 	}
 
-	void CheckBox::draw()
+	void CheckBox::draw() const
 	{
 		// Background
 		if(m_backgroundTexture)

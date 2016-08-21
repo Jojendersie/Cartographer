@@ -77,25 +77,25 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)../Charcoal/include;$(ProjectDir)include/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)../Charcoal/lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)../Charcoal/include;$(ProjectDir)../Paper/include;$(ProjectDir)include/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)../Charcoal/lib;$(ProjectDir)../Paper/lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)lib/</OutDir>
     <TargetName>$(ProjectName)D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)../Charcoal/include;$(ProjectDir)include/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)../Charcoal/lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)../Charcoal/include;$(ProjectDir)../Paper/include;$(ProjectDir)include/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)../Charcoal/lib;$(ProjectDir)../Paper/lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)lib/</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(ProjectDir)../Charcoal/include;$(ProjectDir)include/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)../Charcoal/lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)../Charcoal/include;$(ProjectDir)../Paper/include;$(ProjectDir)include/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)../Charcoal/lib;$(ProjectDir)../Paper/lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)lib/</OutDir>
     <TargetName>$(ProjectName)D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(ProjectDir)../Charcoal/include;$(ProjectDir)include/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)../Charcoal/lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)../Charcoal/include;$(ProjectDir)../Paper/include;$(ProjectDir)include/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)../Charcoal/lib;$(ProjectDir)../Paper/lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)lib/</OutDir>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>

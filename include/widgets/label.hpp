@@ -11,7 +11,7 @@ namespace ca { namespace gui {
 		Label();
 
 		/// Implement the draw method
-		void draw() override;
+		void draw() const override;
 
 		/// Set the description text (utf8 w/o BOM)
 		/// \param [in] _text New text for the checkbox (utf8 w/o BOM). The text is copied internally.
@@ -28,6 +28,6 @@ namespace ca { namespace gui {
 		SIDE::Val m_textPosition;
 	};
 
-	typedef std::shared_ptr<Label> LabelPtr;
+	typedef pa::RefPtr<Label> LabelPtr;
 
 }} // namespace ca::gui

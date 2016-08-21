@@ -13,7 +13,7 @@ namespace ca { namespace gui {
 		Button();
 
 		/// Implement the draw method
-		void draw() override;
+		void draw() const override;
 
 		/// Set the button text (utf8 w/o BOM)
 		/// \param [in] _text New text for the button (utf8 w/o BOM). The text is copied internally.
@@ -47,6 +47,6 @@ namespace ca { namespace gui {
 		uint64 m_backgroundTexture;
 	};
 
-	typedef std::shared_ptr<Button> ButtonPtr;
+	typedef pa::RefPtr<Button> ButtonPtr;
 
 }} // namespace ca::gui

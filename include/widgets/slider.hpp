@@ -10,7 +10,7 @@ namespace ca { namespace gui {
 		Slider();
 
 		/// Implement the draw method
-		void draw() override;
+		void draw() const override;
 
 		virtual bool processInput(const struct MouseState& _mouseState);
 
@@ -31,6 +31,6 @@ namespace ca { namespace gui {
 		bool m_isMoving;	///< Mouse is currently attached
 	};
 
-	typedef std::shared_ptr<Slider> SliderPtr;
+	typedef pa::RefPtr<Slider> SliderPtr;
 
 }} // namespace ca::gui

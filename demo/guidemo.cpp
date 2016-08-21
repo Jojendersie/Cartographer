@@ -97,16 +97,16 @@ void createGUI(GLFWwindow* _window)
 
 	// Create GUI-elements
 	// A resizeable frame with different anchored buttons
-	GroupPtr f0group = std::make_shared<Group>(); // Contains f0 and the node based handles
+	GroupPtr f0group(new Group); // Contains f0 and the node based handles
 	GUIManager::add(f0group);
-	FramePtr f0 = std::make_shared<Frame>(true, false, true, true);
+	FramePtr f0(new Frame(true, false, true, true));
 	f0->setExtent(Vec2(5.0f), Vec2(100.0f, 105.0f));
 	f0->setAnchorProvider( std::make_unique<GridAnchorProvider>(3, 5) );
 	f0group->add(f0);
 
 	for(int i = 0; i < 4; ++i)
 	{
-		ButtonPtr b0 = std::make_shared<Button>();
+		ButtonPtr b0(new Button);
 		b0->setExtent(f0->getPosition() + Vec2(5.0f, 5.0f + i*25.0f), Vec2(90.0f, 20.0f));
 		std::string name = "Test " + std::to_string(i);
 		b0->setText(name.c_str());
@@ -118,7 +118,7 @@ void createGUI(GLFWwindow* _window)
 	}
 	
 	// Add node handles for node-based-editing demo
-	NodeHandlePtr h00 = std::make_shared<NodeHandle>();
+	NodeHandlePtr h00(new NodeHandle);
 	h00->setColor(Vec3(themeProps2.basicHoverColor));
 	Coord2 handleCenter(f0->getRefFrame().horizontalCenter(), f0->getRefFrame().top() + 2.0f);
 	h00->setExtent(handleCenter - 6.0f, Coord2(12.0f));
@@ -127,40 +127,40 @@ void createGUI(GLFWwindow* _window)
 	f0group->add(h00, 1);
 
 	// Second frame with image buttons
-	FramePtr f1 = std::make_shared<Frame>(true, false, true, true);
+	FramePtr f1(new Frame(true, false, true, true));
 	f1->setExtent(Vec2(5.0f, 120.0f), Vec2(100.0f, 230.0f));
 	f1->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	BorderAnchorProvider* anchorsf1 = static_cast<BorderAnchorProvider*>(f1->getAnchorProvider());
 	GUIManager::add(f1);
 
-	ButtonPtr b1 = std::make_shared<Button>();
+	ButtonPtr b1(new Button);
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 5.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::LEFT, coord::pixel(32,32), false);
 	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
-	b1 = std::make_shared<Button>();
+	b1 = ButtonPtr(new Button);
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 50.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::LEFT, coord::pixel(20,20), false, 5.0f);
 	b1->setText("Icon Left");
 	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
-	b1 = std::make_shared<Button>();
+	b1 = ButtonPtr(new Button);
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 95.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::RIGHT, coord::pixel(20,20), false, 2.0f);
 	b1->setText("Icon Right");
 	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
-	b1 = std::make_shared<Button>();
+	b1 = ButtonPtr(new Button);
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 140.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::BOTTOM, coord::pixel(20,20), false, 2.0f);
 	b1->setText("Icon Bottom");
 	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
-	b1 = std::make_shared<Button>();
+	b1 = ButtonPtr(new Button);
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 185.0f), Vec2(90.0f, 40.0f));
 	b1->setIcon("textures/ca_icon32.png", SIDE::TOP, coord::pixel(20,20), false, 2.0f);
 	b1->setText("Icon Top");
@@ -168,7 +168,7 @@ void createGUI(GLFWwindow* _window)
 	f1->add(b1);
 
 	// Third frame with checkboxes and sliders
-	FramePtr f2 = std::make_shared<Frame>(true, false, true, true);
+	FramePtr f2(new Frame(true, false, true, true));
 	f2->setExtent(Vec2(5.0f, 360.0f), Vec2(100.0f, 255.0f));
 	f2->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	BorderAnchorProvider* anchorsf2 = static_cast<BorderAnchorProvider*>(f2->getAnchorProvider());
@@ -176,7 +176,7 @@ void createGUI(GLFWwindow* _window)
 
 	for(int i = 0; i < 5; ++i)
 	{
-		CheckBoxPtr c0 = std::make_shared<CheckBox>();
+		CheckBoxPtr c0(new CheckBox);
 		c0->setExtent(f2->getPosition() + Coord2(5.0f, 5.0f + i * 25.0f), Coord2(90.0f, 20.0f));
 		if(i < 4) c0->setText("Cookie?");
 		c0->autoAnchor(anchorsf2);
@@ -186,7 +186,7 @@ void createGUI(GLFWwindow* _window)
 
 	for(int i = 0; i < 5; ++i)
 	{
-		SliderPtr s0 = std::make_shared<Slider>();
+		SliderPtr s0(new Slider);
 		s0->setExtent(f2->getPosition() + Coord2(5.0f, 130.0f + i * 25.0f), Coord2(90.0f, 20.0f));
 		s0->autoAnchor(anchorsf2);
 		s0->setAnchorModes(Anchorable::PREFER_MOVE);
@@ -195,23 +195,23 @@ void createGUI(GLFWwindow* _window)
 	}
 
 	// Fourth frame with labels (window fake)
-	GroupPtr f3group = std::make_shared<Group>(); // Contains f3 and the node based handles
+	GroupPtr f3group(new Group); // Contains f3 and the node based handles
 	GUIManager::add(f3group);
-	FramePtr f3 = std::make_shared<Frame>(true, false, true, true);
+	FramePtr f3(new Frame(true, false, true, true));
 	f3->setExtent(Vec2(115.0f, 120.0f), Vec2(200.0f, 230.0f));
 	f3->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	BorderAnchorProvider* anchorsf3 = static_cast<BorderAnchorProvider*>(f3->getAnchorProvider());
 	f3group->add(f3);
 
 	// Add node handles
-	NodeHandlePtr h30 = std::make_shared<NodeHandle>();
+	NodeHandlePtr h30(new NodeHandle);
 	h30->setColor(Vec3(themeProps2.basicHoverColor));
 	handleCenter = Coord2(f3->getRefFrame().horizontalCenter(), f3->getRefFrame().bottom() - 2.0f);
 	h30->setExtent(handleCenter - 6.0f, Coord2(12.0f));
 	h30->autoAnchor(f3->getAnchorProvider());
 	h30->setRotation(-PI / 2.0f);
 	f3group->add(h30, 1);
-	NodeHandlePtr h31 = std::make_shared<NodeHandle>();
+	NodeHandlePtr h31(new NodeHandle);
 	h31->setColor(Vec3(0.0f, 0.5f, 0.0f));
 	handleCenter = Coord2(f3->getRefFrame().left() - 2.0f, f3->getRefFrame().verticalCenter());
 	h31->setExtent(handleCenter - 6.0f, Coord2(12.0f));
@@ -219,7 +219,7 @@ void createGUI(GLFWwindow* _window)
 	h31->setRotation(-PI);
 	f3group->add(h31, 1);
 
-	LabelPtr l0 = std::make_shared<Label>();
+	LabelPtr l0(new Label);
 	l0->setExtent(f3->getPosition() + Coord2(0.0f, f3->getSize().y - 20.0f) + 2.0f, Coord2(f3->getSize().x, 16.0f));
 	l0->setText(" Usually useless titelbar");
 	l0->setAnchoring(SIDE::LEFT, anchorsf3->getAnchor(SIDE::LEFT));
@@ -228,21 +228,21 @@ void createGUI(GLFWwindow* _window)
 	l0->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
 	f3->add(l0);
 
-	ButtonPtr b0 = std::make_shared<Button>();
+	ButtonPtr b0(new Button);
 	b0->setExtent(f3->getPosition() + f3->getSize() - 20.0f, Coord2(16.0f));
 	b0->setText(" X");//TODO: why is centering wrong here?
 	b0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
 	b0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
 	f3->add(b0);
 
-	l0 = std::make_shared<Label>();
+	l0 = LabelPtr(new Label);
 	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
 	l0->setText("LEFT");
 	l0->autoAnchor(anchorsf3);
 	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 
-	l0 = std::make_shared<Label>();
+	l0 = LabelPtr(new Label);
 	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
 	l0->setText("RIGHT");
 	l0->setAlignment(SIDE::RIGHT);
@@ -250,7 +250,7 @@ void createGUI(GLFWwindow* _window)
 	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 
-	l0 = std::make_shared<Label>();
+	l0 = LabelPtr(new Label);
 	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
 	l0->setText("BOTTOM");
 	l0->setAlignment(SIDE::BOTTOM);
@@ -258,7 +258,7 @@ void createGUI(GLFWwindow* _window)
 	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 
-	l0 = std::make_shared<Label>();
+	l0 = LabelPtr(new Label);
 	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
 	l0->setText("TOP");
 	l0->setAlignment(SIDE::TOP);
@@ -266,7 +266,7 @@ void createGUI(GLFWwindow* _window)
 	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
 	f3->add(l0);
 
-	l0 = std::make_shared<Label>();
+	l0 = LabelPtr(new Label);
 	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
 	l0->setText("Reopen the window\nby clicking one of\nthe icon-buttons.");
 	l0->setAlignment(SIDE::CENTER);
@@ -275,7 +275,7 @@ void createGUI(GLFWwindow* _window)
 	f3->add(l0);
 
 	// Add some connectors between node handles
-	NodeConnectorPtr connector0 = std::make_shared<NodeConnector>();
+	NodeConnectorPtr connector0(new NodeConnector);
 	connector0->setSource(h00);
 	connector0->setDest(h30);
 	GUIManager::add(connector0, 1);

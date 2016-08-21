@@ -81,20 +81,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)../Charcoal/include;$(SolutionDir)/include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)../Charcoal/lib;$(SolutionDir)/lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)../Charcoal/include;$(SolutionDir)../Paper/include;$(SolutionDir)/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)../Charcoal/lib;$(ProjectDir)../Paper/lib;$(SolutionDir)/lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)../Charcoal/include;$(SolutionDir)/include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)../Charcoal/lib;$(SolutionDir)/lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)../Charcoal/include;$(SolutionDir)../Paper/include;$(SolutionDir)/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)../Charcoal/lib;$(ProjectDir)../Paper/lib;$(SolutionDir)/lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(SolutionDir)../Charcoal/lib;$(SolutionDir)/lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)../Charcoal/include;$(SolutionDir)/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)../Charcoal/lib;$(ProjectDir)../Paper/lib;$(SolutionDir)/lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)../Charcoal/include;$(SolutionDir)../Paper/include;$(SolutionDir)/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>$(SolutionDir)../Charcoal/lib;$(SolutionDir)/lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)../Charcoal/include;$(SolutionDir)/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)../Charcoal/lib;$(ProjectDir)../Paper/lib;$(SolutionDir)/lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)../Charcoal/include;$(SolutionDir)../Paper/include;$(SolutionDir)/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -12,7 +12,7 @@ namespace ca { namespace gui {
 	{
 	}
 
-	void Label::draw()
+	void Label::draw() const
 	{
 		float downScale = ei::min(1.0f, ei::min(
 			m_refFrame.width() / m_textSize.x,

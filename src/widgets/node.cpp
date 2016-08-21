@@ -20,7 +20,7 @@ namespace ca { namespace gui {
 		m_clickComponent->setClickRegion(new EllipseRegion(&m_refFrame));
 	}
 
-	void NodeHandle::draw()
+	void NodeHandle::draw() const
 	{
 		bool mouseOver = GUIManager::hasMouseFocus(this)
 			&& m_clickComponent->getClickRegion()->isMouseOver(GUIManager::getMouseState().position);
@@ -61,11 +61,11 @@ namespace ca { namespace gui {
 
 		// Make sure that the mouse node is always existing.
 		if(!s_tmpMouseNode)
-			s_tmpMouseNode = std::make_shared<NodeHandle>();
+			s_tmpMouseNode = new NodeHandle;
 	}
 
 	const int CONNECTOR_NUM_POINTS = 32;
-	void NodeConnector::draw()
+	void NodeConnector::draw() const
 	{
 		// Control points of a cubic Bezier spline:
 		Vec2 p0, p1, p2, p3;
@@ -115,10 +115,11 @@ namespace ca { namespace gui {
 		Vec4 destColor = ei::Vec4(m_destNode->color() * (mouseOver ? 2.0f : 1.0f), 1.0f);
 		GUIManager::theme().drawLine(wayPoints, CONNECTOR_NUM_POINTS, sourceColor, destColor);
 
-		m_refFrame.sides[SIDE::LEFT] = boundingRect[0].x - 3.0f;
-		m_refFrame.sides[SIDE::BOTTOM] = boundingRect[0].y - 3.0f;
-		m_refFrame.sides[SIDE::RIGHT] = boundingRect[1].x + 3.0f;
-		m_refFrame.sides[SIDE::TOP] = boundingRect[1].y + 3.0f;
+		NodeConnector* t = const_cast<NodeConnector*>(this);
+		t->m_refFrame.sides[SIDE::LEFT] = boundingRect[0].x - 3.0f;
+		t->m_refFrame.sides[SIDE::BOTTOM] = boundingRect[0].y - 3.0f;
+		t->m_refFrame.sides[SIDE::RIGHT] = boundingRect[1].x + 3.0f;
+		t->m_refFrame.sides[SIDE::TOP] = boundingRect[1].y + 3.0f;
 	}
 
 	bool NodeConnector::isMouseOver(const Coord2& _mousePos) const
