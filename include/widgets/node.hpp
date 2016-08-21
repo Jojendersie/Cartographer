@@ -10,8 +10,13 @@ namespace ca { namespace gui {
 	/// usin spline connectors.
 	class NodeHandle : public Widget
 	{
+		/// Internal default constructor. May register the handle in the global
+		/// list for node searches.
+		NodeHandle(bool _register);
+		friend class NodeConnector;
 	public:
-		NodeHandle();
+		NodeHandle() : NodeHandle(true) {}
+		~NodeHandle();
 
 		/// Implement the draw method
 		void draw() const override;
@@ -31,6 +36,9 @@ namespace ca { namespace gui {
 
 		/// Get a direction vector in wich connectors should start
 		ei::Vec2 getConnectorDirection() const;
+
+		/// Set the radius in which a connector can snap to the node.
+		static void setConnectorSnapRadius(Coord _radius);
 	private:
 		std::vector<NodeConnectorPtr> m_edges;
 		ei::Vec3 m_color;

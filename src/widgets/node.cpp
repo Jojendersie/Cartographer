@@ -9,15 +9,106 @@ using namespace ei;
 
 namespace ca { namespace gui {
 
+	// A uniform grid search structure to find the closest node fast.
+	// The cell size is always 16x16 pixel. Using snapRadius x snapRadius
+	// pixels would be more efficient most time, but then changing the radius
+	// requires a rebuild.
+	//
+	// Approach disambonded: Rebuild if resolution changes, Rebuild if node moves.
+	// -> too many rebuilds make it more difficult and not more efficient.
+	/*class NodeGrid
+	{
+	public:
+		static float s_snapRadius;
+
+		static void addNode(NodeHandle* _node)
+		{
+			IVec2 cellPos = IVec2(_node->getPosition() / 16.0f);
+			int cellIndex = cellPos.x + cellPos.y;
+
+			s_cells[cellIndex].nodes.push_back(_node);
+		}
+
+		static void removeNode(NodeHandle* _node);
+	private:
+		struct Cell
+		{
+			std::vector<NodeHandle*> nodes;
+		};
+
+		static std::vector<Cell> s_cells;
+	};
+	float NodeGrid::s_snapRadius = 10.0f;*/
+
+	/// A simple list of all existing nodes to find the closest ones.
+	class NodeList
+	{
+	public:
+		static std::vector<NodeHandle*> s_nodes;
+		static float s_snapRadiusSq;
+
+		static void addNode(NodeHandle* _node)
+		{
+			s_nodes.push_back(_node);
+		}
+
+		static void removeNode(NodeHandle* _node)
+		{
+			// Linear search for the address of the node
+			for(size_t i = 0; i < s_nodes.size(); ++i)
+			{
+				if(s_nodes[i] == _node)
+				{
+					// Replace with last node. Order is not important.
+					s_nodes[i] = s_nodes.back();
+					s_nodes.pop_back();
+					return;
+				}
+			}
+			//eiAssert(false, "Node to remove was not found.");
+		}
+
+		static NodeHandle* findClosest(Coord2 _position)
+		{
+			float minDistSq = s_snapRadiusSq;
+			NodeHandle* closestNode = nullptr;
+			// Linear search for the closest node.
+			// If nothing is as close as the search radius the method will return
+			// the default nullptr.
+			for(size_t i = 0; i < s_nodes.size(); ++i)
+			{
+				float distSq = lensq(s_nodes[i]->getPosition() - _position);
+				if(distSq <= minDistSq)
+				{
+					minDistSq = distSq;
+					closestNode = s_nodes[i];
+				}
+			}
+			return closestNode;
+		}
+	};
+	float NodeList::s_snapRadiusSq = 100.0f;
+	std::vector<NodeHandle*> NodeList::s_nodes;
+
+
+
 	NodeHandlePtr s_tmpMouseNode;		///< An additional node which is held by the mouse.
 
-	NodeHandle::NodeHandle() :
+	NodeHandle::NodeHandle(bool _register) :
 		Widget(true, true, false, false),
 		m_angle(0.0f),
 		m_color(1.0f)
 	{
 		Widget::setAnchorModes(Anchorable::Mode::NO_RESIZE);
 		m_clickComponent->setClickRegion(new EllipseRegion(&m_refFrame));
+
+		if(_register)
+			NodeList::addNode(this);
+	}
+
+	NodeHandle::~NodeHandle()
+	{
+		NodeList::removeNode(this);
 	}
 
 	void NodeHandle::draw() const
@@ -50,6 +141,11 @@ namespace ca { namespace gui {
 		return ei::Vec2(cos(m_angle), sin(m_angle));
 	}
 
+	void NodeHandle::setConnectorSnapRadius(Coord _radius)
+	{
+		NodeList::s_snapRadiusSq = _radius * _radius;
+	}
+
 
 	
 	NodeConnector::NodeConnector() :
@@ -61,7 +157,7 @@ namespace ca { namespace gui {
 
 		// Make sure that the mouse node is always existing.
 		if(!s_tmpMouseNode)
-			s_tmpMouseNode = new NodeHandle;
+			s_tmpMouseNode = new NodeHandle(false);
 	}
 
 	const int CONNECTOR_NUM_POINTS = 32;
@@ -71,29 +167,32 @@ namespace ca { namespace gui {
 		Vec2 p0, p1, p2, p3;
 		// As support vectors take the direction given by the node handles
 		// with a lenght of 1/3 from the distance between the two nodes.
-		if(m_tmpHandleState == HandleState::TMP_SRC)
+		bool mouseFarAwayFromSrc = lensq(m_sourceNode->getRefFrame().center() - s_tmpMouseNode->getPosition()) > NodeList::s_snapRadiusSq;
+		bool mouseFarAwayFromDst = lensq(m_destNode->getRefFrame().center() - s_tmpMouseNode->getPosition()) > NodeList::s_snapRadiusSq;
+		if(m_tmpHandleState == HandleState::TMP_SRC && mouseFarAwayFromSrc)
 			p0 = s_tmpMouseNode->getPosition();
 		else {
 			p0 = m_sourceNode->getRefFrame().center();
 			p0 += m_sourceNode->getConnectorDirection() * m_sourceNode->getRefFrame().size() / 2.0f;
 		}
-		if(m_tmpHandleState == HandleState::TMP_DST)
+		if(m_tmpHandleState == HandleState::TMP_DST && mouseFarAwayFromDst)
 			p3 = s_tmpMouseNode->getPosition();
 		else {
 			p3 = m_destNode->getRefFrame().center();
 			p3 += m_destNode->getConnectorDirection() * m_destNode->getRefFrame().size() / 2.0f;
 		}
 		float distance = len(p0 - p3) / 3.0f;
-		if(m_tmpHandleState != HandleState::ATTACHED)
+		if((m_tmpHandleState == HandleState::TMP_SRC && mouseFarAwayFromSrc)
+			|| (m_tmpHandleState == HandleState::TMP_DST && mouseFarAwayFromDst))
 			distance /= 2.0f;
 		// Reuse the one existing control point from the non-temp node for the
 		// tmp connection direction. This way the temp node does not need an own
 		// direction and the curve is visually reduced to a quadratic spline.
-		if(m_tmpHandleState == HandleState::TMP_SRC)
+		if(m_tmpHandleState == HandleState::TMP_SRC && mouseFarAwayFromSrc)
 			p1 = p3 + m_destNode->getConnectorDirection() * distance;
 		else
 			p1 = p0 + m_sourceNode->getConnectorDirection() * distance;
-		if(m_tmpHandleState == HandleState::TMP_DST)
+		if(m_tmpHandleState == HandleState::TMP_DST && mouseFarAwayFromDst)
 			p2 = p0 + m_sourceNode->getConnectorDirection() * distance;
 		else
 			p2 = p3 + m_destNode->getConnectorDirection() * distance;
@@ -183,6 +282,15 @@ namespace ca { namespace gui {
 			s_tmpMouseNode->setPosition(_mouseState.position);
 			// Get exclusive focus
 			GUIManager::setMouseFocus(this, true);
+			// Look if there is a close node.
+			NodeHandle* handle = NodeList::findClosest(_mouseState.position);
+			if(handle)
+			{
+				if(m_tmpHandleState == HandleState::TMP_SRC)
+					m_sourceNode = handle;
+				else if(m_tmpHandleState == HandleState::TMP_DST)
+					m_destNode = handle;
+			}
 		}
 
 		return m_tmpHandleState != HandleState::ATTACHED;
