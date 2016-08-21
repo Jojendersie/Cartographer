@@ -40,6 +40,11 @@ namespace ca { namespace pa {
 			if(m_ptr)
 				m_ptr->m_refCounter++;
 		}
+		RefPtr(const RefPtr& _other) : m_ptr(_other.m_ptr)
+		{
+			if(m_ptr)
+				m_ptr->m_refCounter++;
+		}
 
 		template<typename T2, class = typename std::enable_if<std::is_convertible<T2*,T*>::value || std::is_base_of<T2,T>::value, void>::type>
 		RefPtr(RefPtr<T2>&& _other)
@@ -48,6 +53,11 @@ namespace ca { namespace pa {
 				m_ptr = static_cast<T*>(_other.m_ptr);
 			else
 				m_ptr = dynamic_cast<T*>(_other.m_ptr);
+			if(m_ptr)
+				_other.m_ptr = nullptr;
+		}
+		RefPtr(RefPtr&& _other) : m_ptr(_other.m_ptr)
+		{
 			if(m_ptr)
 				_other.m_ptr = nullptr;
 		}
@@ -64,19 +74,22 @@ namespace ca { namespace pa {
 		}
 
 		// Access
-		T& operator * () { return *m_ptr; }
-		const T& operator * () const { return *m_ptr; }
-		T* operator -> () { return m_ptr; }
-		const T* operator -> () const { return m_ptr; }
-		T* get() { return m_ptr; }
-		const T* get() const { return m_ptr; }
+		T& operator * ()				{ return *m_ptr; }
+		const T& operator * () const	{ return *m_ptr; }
+		T* operator -> ()				{ return m_ptr; }
+		const T* operator -> () const	{ return m_ptr; }
+		T* get()						{ return m_ptr; }
+		const T* get() const			{ return m_ptr; }
 
 		// Check
-		explicit operator bool () { return m_ptr != nullptr; }
+		explicit operator bool ()				{ return m_ptr != nullptr; }
+		bool operator == (const RefPtr& _other)	{ return m_ptr == _other.m_ptr; }
+		bool operator != (const RefPtr& _other)	{ return m_ptr != _other.m_ptr; }
+		bool operator < (const RefPtr& _other)	{ return m_ptr < _other.m_ptr; }
+		bool operator <= (const RefPtr& _other)	{ return m_ptr <= _other.m_ptr; }
+		bool operator >= (const RefPtr& _other)	{ return m_ptr >= _other.m_ptr; }
+		bool operator > (const RefPtr& _other)	{ return m_ptr > _other.m_ptr; }
 
-		// Implicit static cast
-		//template<typename T2>
-		//operator RefPtr<T2> () {}
 	private:
 		T* m_ptr;
 
