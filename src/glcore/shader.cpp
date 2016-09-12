@@ -47,6 +47,7 @@ namespace ca { namespace cc {
 			// Read in whole file and make 0 terminated.
 			fread(source, 1, fileLength, file);
 			source[fileLength] = 0;
+			fclose(file);
 			return new Shader(source, _type);
 		}
 		return new Shader(_source, _type);
