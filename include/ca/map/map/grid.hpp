@@ -31,8 +31,30 @@ namespace ca { namespace map {
 		bool compare(const Grid<T2>& _other, std::function<bool(const T&, const T2&)> _comparator) const
 		{
 			bool res = true;
-			for(int i = max(_other.m_yPosition, m_yPosition); i < min(_other.m_yPosition + _other.m_rows.size(), m_yPosition + m_rows.size()); ++i)
+			// Iterate over a minimal range in y
+			auto itThis = m_rows.begin();
+			auto itOther = _other.m_rows.begin();
+			if(_other.m_yPosition > m_yPosition)
+				itThis += _other.m_yPosition - m_yPosition;
+			else itOther += m_yPosition - _other.m_yPosition;
+			for(int y = max(_other.m_yPosition, m_yPosition); y < min(_other.m_yPosition + _other.m_rows.size(), m_yPosition + m_rows.size()); ++y)
 			{
+				// First search the entry point.
+				int j;
+				binSearch(*itThis, _coord.x, j);
+				// Compare each cell in the gird-row if there is an occupied cell in the current map.
+				for(int i = 0; i < itOther->xpos.size(); ++i)
+				{
+					while(itThis->xpos[j] < itOther->xpos[i]) {
+						++j;
+						if(j == itThis->xpos.size()) goto NextRow;
+					}
+					if(itThis->xpos[j] == itOther->xpos[i])
+						res &= _comparator(itThis->cells[j], itOther->cells[i]);
+				}
+			NextRow:
+				++itThis;
+				++itOther;
 			}
 			return res;
 		}
@@ -80,20 +102,15 @@ namespace ca { namespace map {
 				}
 				// Find the position with binary search
 				else {
-					int l = 0;
-					int r = row.xpos.size();
-					// Binary search of the x-coordinate
-					while(l < r)
-					{
-						int m = (l + r) / 2;
-						if(row.xpos[m] < _coord.x) l = m;
-						else if(row.xpos[m] == _coord.x) {row.cells[m] = _value; return;}
-						else r = m;
-					}
-					// Not found -> insert at m or m-1 ???? is only one case possible
-					if(_coord.x > row.xpos[m]) --m;
-					row.cells.insert(row.cells.begin() + m, _value);
-					row.xpos.insert(row.xpos.begin() + m, _coord.x);
+					int m;
+					if(binSearch(row, _coord.x, m)) {
+						row.cells[m] = _value;
+					} else {
+						// Not found -> insert at m or m-1 ???? is only one case possible
+						if(_coord.x > row.xpos[m]) --m;
+						row.cells.insert(row.cells.begin() + m, _value);
+						row.xpos.insert(row.xpos.begin() + m, _coord.x);
+					}					
 				}
 			}
 		}
@@ -106,19 +123,9 @@ namespace ca { namespace map {
 			if(_coord.y >= m_yPosition + m_rows.size()) return nullptr;
 			
 			auto& row = m_rows[_coord.y - m_yPosition];
-			// Range check for x-coordinate
-			int l = 0;
-			int r = row.xpos.size();
-			if(_coord.x < row.xpos[l]) return nullptr;
-			if(_coord.x >= row.xpos[r-1]) return nullptr;
-			// Binary search of the x-coordinate
-			while(l < r)
-			{
-				int m = (l + r) / 2;
-				if(row.xpos[m] < _coord.x) l = m;
-				else if(row.xpos[m] == _coord.x) return row.cells[m];
-				else else r = m;
-			}
+			int m;
+			if(binSearch(row, _coord.x, m))
+				return row.cells[m];
 			// Not found = in some empty range
 			return nullptr;
 		}
@@ -138,5 +145,25 @@ namespace ca { namespace map {
 		
 		// The position is a global reference position of the first tile of the first row.
 		int m_yPosition;
+		
+		// Search for a specific x-coordinate.
+		// \param [out] _m The coordiate where the binary search stopped.
+		// \returns true if the element was found.
+		bool binSearch(const Row& _row, int _x, int& _m)
+		{
+			int l = 0;
+			int r = _row.xpos.size();
+			if(_x < _row.xpos[l]) { _m = l; return false; }
+			if(_x >= _row.xpos[r-1]) { _m = r; return false; }
+			// Binary search of the x-coordinate
+			while(l < r)
+			{
+				_m = (l + r) / 2;
+				if(row.xpos[_m] < _x) l = m;
+				else if(row.xpos[_m] == _x) return true;
+				else r = m;
+			}
+			return false;
+		}
 	};
 }}
