@@ -5,7 +5,7 @@
 namespace ca { namespace map {
 	
 	/// A grid is a row wise sparse array with either quad- or hex- neigborhood.
-	/// The origin is top-left andt coordinates increase towards east and south.
+	/// The origin is bottom-left and coordinates increase towards east and north.
 	template<typename T>
 	class Grid
 	{
@@ -205,25 +205,90 @@ namespace ca { namespace map {
 				return copy;
 			}
 			
-			// Is this a valid iterator?
+			/// Is this a valid iterator?
 			operator bool () const
 			{
 				return (m_row < m_gridRef.m_rows.size()) &&
 						(m_col < m_gridRef.m_rows[m_row].cells.size());
 			}
 			
-			// Access to the data (fails hard for invalid iterators)
+			/// Access to the data (fails hard for invalid iterators)
 			T& dat() { return m_gridRef.m_rows[m_row].cells[m_col]; }
 			const T& dat() const { return m_gridRef.m_rows[m_row].cells[m_col]; }
-			// Get the coordinate of the current grid cell.
+			/// Get the coordinate of the current grid cell.
 			ei::IVec2 pos() const { return ei::IVec2(m_gridRef.m_rows[m_row].xpos[m_col], m_gridRef.m_yPosition + m_row); }
 		private:
 			SeqIterator(Grid<T>& _gridRef) : m_gridRef(_gridRef), m_row(0), m_col(0) {}
 			Grid<T>& m_gridRef;
 			uint m_row, m_col;
+			friend class Grid<T>;
 		};
 		
 		SeqIterator begin() { return SeqIterator(*this); }
+		
+		/// Iterator class for neighborhood searches.
+		/// \details This iterator can be valid/invalid. In valid cases it always points
+		///		to a non-empty cell.
+		class NeighborIterator
+		{
+		public:
+			/// Preincrement-like step to one of the neighbors.
+			/// \details The number of valid neighbors in a QUAD grid is 8
+			///		(0 = east, 1 = north east, 2 = north, ...) and 6 for HEX
+			///		grids (0 = east, 1 = north east, 2 = north west, ...).
+			NeighborIterator getNeighbor(uint n)
+			{
+				if(m_gridRef.m_type == Type::QUAD)
+				{
+					int8 xoff[8] = {1, 1, 0, -1, -1, -1, 0, 1};
+					int8 yoff[8] = {0, -1, -1, -1, 0, 1, 1, 1};
+					return NeighborIterator(m_gridRef, m_row + yoff[n], m_col, m_x + xoff[n]);
+				} else {
+					switch(n) {
+						case 0: return NeighborIterator(m_gridRef, m_row, m_col, m_x + 1); break;
+						case 1: return NeighborIterator(m_gridRef, m_row - 1, m_col, m_x + (m_row & 1) ? 1 : 0); break;
+						case 2: return NeighborIterator(m_gridRef, m_row - 1, m_col, m_x + (m_row & 1) ? 0 : -1); break;
+						case 3: return NeighborIterator(m_gridRef, m_row, m_col, m_x - 1); break;
+						case 4: return NeighborIterator(m_gridRef, m_row + 1, m_col, m_x + (m_row & 1) ? 0 : -1); break;
+						case 5: return NeighborIterator(m_gridRef, m_row + 1, m_col, m_x + (m_row & 1) ? 1 : 0); break;
+					}
+				}
+			}
+			
+			/// Is this a valid iterator?
+			operator bool () const
+			{
+				return (m_row < m_gridRef.m_rows.size())					// In row range?
+						&& (m_col < m_gridRef.m_rows[m_row].cells.size())	// Inside the row?
+						&& (m_gridRef.m_rows[m_row].xpos[m_col] == m_x);	// Points to a filled cell?
+			}
+			
+			/// Access to the data (fails hard for invalid iterators)
+			T& dat() { return m_gridRef.m_rows[m_row].cells[m_col]; }
+			const T& dat() const { return m_gridRef.m_rows[m_row].cells[m_col]; }
+			/// Get the coordinate of the current grid cell.
+			ei::IVec2 pos() const { return ei::IVec2(m_x, m_gridRef.m_yPosition + m_row); }
+		private:
+			NeighborIterator(Grid<T>& _gridRef, uint _row, uint _col, int _x) :
+				m_gridRef(_gridRef),
+				m_row(_row),
+				m_col(_col),
+				m_x(_x)
+			{
+				// Make sure _col and _x match if possible.
+				// This assumes that we are always very close.
+				if(m_row < m_gridRef.m_rows.size())					// In row range?
+				{
+					while(m_col < m_gridRef.m_rows[m_row].cells.size() && m_gridRef.m_rows[m_row].xpos[m_col] < _x) ++m_col;
+					while(m_col < m_gridRef.m_rows[m_row].cells.size() && m_gridRef.m_rows[m_row].xpos[m_col] > _x) --m_col;
+				}
+			}
+			
+			Grid<T>& m_gridRef;
+			uint m_row, m_col;
+			int m_x;
+			friend class Grid<T>;
+		};
 
 	private:
 		struct Row {
@@ -238,6 +303,9 @@ namespace ca { namespace map {
 		int m_yPosition;
 		
 		Type m_type;
+		
+		friend class SeqIterator;
+		friend class NeighborIterator;
 		
 		// Search for a specific x-coordinate.
 		// \param [out] _m The coordiate where the binary search stopped.
