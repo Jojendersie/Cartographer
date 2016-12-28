@@ -15,12 +15,37 @@ namespace ca { namespace map {
 			HEX,
 		};
 		
-		Grid(Type _type);
+		Grid(Type _type) : m_type(_type)
+		{}
 		
 		/// Rotates a grid by 90° or 60° times the number of ticks dependent on the type.
 		/// \details A rotation reorganizes the memory and is therefore expensive for large
 		///		grids.
-		void rotate(int _ticks);
+		void rotate(int _ticks)
+		{
+			ei::IMat2x2 rot;
+			if(_type == Type::QUAD)
+			{
+				// Create the rotation matrix for the coordiantes.
+				rot = ei::round(ei::rotation(PI / 2.0f * _ticks));
+			} else {
+				// The rotation of integral hex-coordinates requires +1/-1 in more dimensions.
+				// E.g. a rotation by 60° converts (0,0), (1,0), (2,0), (3,0) into (0,0), (1,1), (2,2), (3,3).
+				// I.e. the rotation matrix is not orthonormal/orthogonal. Ceil hopefully does this. TODO: test
+				rot = ei::ceil(ei::rotation(PI / 3.0f * _ticks));
+			}
+			// Create a copy of the map and move the elements
+			Grid<T> tmp(Type::QUAD);
+			for(int j = 0; j < m_rows.size(); ++j)
+			{
+				Row& row = m_rows[j];
+				for(int i = 0; i < row.size(); ++i)
+				{
+					tmp.set(rot * ei::IVec2(row.xpos[i], y + m_yPosition), std::move(row.cells[i]));
+				}
+			}
+			std::swap(tmp, *this);
+		}
 		
 		/// Compare occupied cells of _other and AND all the results.
 		/// \details To implement an OR or some else return value you may use exceptions.
@@ -60,10 +85,19 @@ namespace ca { namespace map {
 		}
 		
 		/// Set/overwrite any grid cell.
-		void set(const ei::IVec2& _coord, const T& _value)
+		template<typename T2> // Recapture type for move sematic. T2 should be T in this case.
+		void set(const ei::IVec2& _coord, T2&& _value)
 		{
+			// First element at all?
+			if(m_rows.empty())
+			{
+				m_yPosition = _coord.y;
+				m_rows.push_back(Row());
+				m_rows.first().xpos.push_back(_coord.x);
+				m_rows.first().cells.push_back(_value);
+			}
 			// Add rows on top (front of the vector)
-			if(_coord.y < m_yPosition)
+			else if(_coord.y < m_yPosition)
 			{
 				Row emptyRow;
 				m_rows.insert(m_rows.begin(), m_yPosition - _coord.y, emptyRow);
@@ -133,6 +167,63 @@ namespace ca { namespace map {
 		/// Get a cell. If it was not occupied before it gets filled with a default constructed
 		/// T element.
 		T& get(const ei::IVec2& _coord); // TODO: implement if needed
+		
+		/// Iterator class which allows sequential access to all grid cells.
+		class SeqIterator
+		{
+		public:
+			// Pre increment
+			SeqIterator& operator ++ ()
+			{
+				++m_col;
+				if(m_gridRef.m_rows[m_row].cells.size() == m_col)
+				{
+					m_col = 0;
+					++m_row;
+				}
+			}
+			
+			SeqIterator& operator -- ()
+			{
+				--m_col;
+				if(uint(-1) == m_col)
+				{
+					--m_row;
+					m_col = m_gridRef.m_rows[m_row].cells.size() - 1;
+				}
+			}
+			
+			// Post increment
+			SeqIterator operator ++ (int) {
+				SeqIterator copy = *this;
+				++*this;
+				return copy;
+			}
+			SeqIterator operator -- (int) {
+				SeqIterator copy = *this;
+				--*this;
+				return copy;
+			}
+			
+			// Is this a valid iterator?
+			operator bool () const
+			{
+				return (m_row < m_gridRef.m_rows.size()) &&
+						(m_col < m_gridRef.m_rows[m_row].cells.size());
+			}
+			
+			// Access to the data (fails hard for invalid iterators)
+			T& dat() { return m_gridRef.m_rows[m_row].cells[m_col]; }
+			const T& dat() const { return m_gridRef.m_rows[m_row].cells[m_col]; }
+			// Get the coordinate of the current grid cell.
+			ei::IVec2 pos() const { return ei::IVec2(m_gridRef.m_rows[m_row].xpos[m_col], m_gridRef.m_yPosition + m_row); }
+		private:
+			SeqIterator(Grid<T>& _gridRef) : m_gridRef(_gridRef), m_row(0), m_col(0) {}
+			Grid<T>& m_gridRef;
+			uint m_row, m_col;
+		};
+		
+		SeqIterator begin() { return SeqIterator(*this); }
 
 	private:
 		struct Row {
@@ -145,6 +236,8 @@ namespace ca { namespace map {
 		
 		// The position is a global reference position of the first tile of the first row.
 		int m_yPosition;
+		
+		Type m_type;
 		
 		// Search for a specific x-coordinate.
 		// \param [out] _m The coordiate where the binary search stopped.
