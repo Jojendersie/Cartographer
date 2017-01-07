@@ -1,5 +1,5 @@
-#include "glcore/opengl.hpp"
-#include "glcore/geometrybuffer.hpp"
+#include "ca/cc/glcore/opengl.hpp"
+#include "ca/cc/glcore/geometrybuffer.hpp"
 #include <ei/vector.hpp>
 
 static void enableAttribute(unsigned _index, const ca::cc::VertexAttribute& _attribute, unsigned _vertexSize, unsigned _offset)

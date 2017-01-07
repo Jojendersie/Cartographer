@@ -21,55 +21,55 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\core\manager.hpp">
+    <ClInclude Include="include\ca\cc\core\manager.hpp">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\scopedptr.hpp">
+    <ClInclude Include="include\ca\cc\core\scopedptr.hpp">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\error.hpp">
+    <ClInclude Include="include\ca\cc\core\error.hpp">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="include\glcore\shader.hpp">
+    <ClInclude Include="include\ca\cc\glcore\sampler.hpp">
       <Filter>glcore</Filter>
     </ClInclude>
-    <ClInclude Include="include\glcore\texture.hpp">
+    <ClInclude Include="include\ca\cc\glcore\shader.hpp">
       <Filter>glcore</Filter>
     </ClInclude>
-    <ClInclude Include="include\glcore\vertexformat.hpp">
+    <ClInclude Include="include\ca\cc\glcore\texture.hpp">
       <Filter>glcore</Filter>
     </ClInclude>
-    <ClInclude Include="include\glcore\device.hpp">
+    <ClInclude Include="include\ca\cc\glcore\vertexformat.hpp">
       <Filter>glcore</Filter>
     </ClInclude>
-    <ClInclude Include="include\glcore\opengl.hpp">
+    <ClInclude Include="include\ca\cc\glcore\device.hpp">
       <Filter>glcore</Filter>
     </ClInclude>
-    <ClInclude Include="include\glcore\sampler.hpp">
+    <ClInclude Include="include\ca\cc\glcore\geometrybuffer.hpp">
       <Filter>glcore</Filter>
     </ClInclude>
-    <ClInclude Include="include\renderer\instancerenderer.hpp">
+    <ClInclude Include="include\ca\cc\glcore\opengl.hpp">
+      <Filter>glcore</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\cc\renderer\instancerenderer.hpp">
       <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="include\renderer\spriterenderer.hpp">
+    <ClInclude Include="include\ca\cc\renderer\linerenderer.hpp">
       <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="include\renderer\fontrenderer.hpp">
+    <ClInclude Include="include\ca\cc\renderer\spriterenderer.hpp">
       <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="include\utilities\half.hpp">
+    <ClInclude Include="include\ca\cc\renderer\fontrenderer.hpp">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\cc\utilities\hrclock.hpp">
       <Filter>utilities</Filter>
     </ClInclude>
-    <ClInclude Include="include\utilities\hrclock.hpp">
+    <ClInclude Include="include\ca\cc\utilities\half.hpp">
       <Filter>utilities</Filter>
     </ClInclude>
-    <ClInclude Include="include\charcoal.hpp" />
-    <ClInclude Include="include\glcore\geometrybuffer.hpp">
-      <Filter>glcore</Filter>
-    </ClInclude>
-    <ClInclude Include="include\renderer\linerenderer.hpp">
-      <Filter>renderer</Filter>
-    </ClInclude>
+    <ClInclude Include="include\ca\charcoal.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\freetype\src\type1cid.c">
@@ -198,9 +198,6 @@
     <ClCompile Include="dependencies\freetype\src\type1.c">
       <Filter>dependencies\freetype</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\error.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="src\glcore\shader.cpp">
       <Filter>glcore</Filter>
     </ClCompile>
@@ -239,6 +236,9 @@
     </ClCompile>
     <ClCompile Include="src\renderer\linerenderer.cpp">
       <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\error.cpp">
+      <Filter>core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

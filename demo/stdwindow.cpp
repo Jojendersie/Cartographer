@@ -1,5 +1,4 @@
-#include <charcoal.hpp>
-#include <glcore/opengl.hpp>
+#include <ca/charcoal.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>

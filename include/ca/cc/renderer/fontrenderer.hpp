@@ -1,8 +1,8 @@
 #pragma once
 
-#include "glcore/texture.hpp"
-#include "core/scopedptr.hpp"
-#include "utilities/half.hpp"
+#include "ca/cc/glcore/texture.hpp"
+#include "ca/cc/core/scopedptr.hpp"
+#include "ca/cc/utilities/half.hpp"
 
 #include <ei/2dtypes.hpp>
 #include <vector>

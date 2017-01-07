@@ -1,5 +1,5 @@
-#include "glcore/opengl.hpp"
-#include "renderer/linerenderer.hpp"
+#include "ca/cc/glcore/opengl.hpp"
+#include "ca/cc/renderer/linerenderer.hpp"
 
 static const ca::cc::VertexAttribute LINE_VERTEX_ATTRIBUTES[2] = {
 	{ca::cc::PrimitiveFormat::FLOAT, 3, false},

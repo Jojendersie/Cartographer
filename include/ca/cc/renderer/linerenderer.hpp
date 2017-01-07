@@ -1,7 +1,7 @@
 #pragma once
 
-#include "utilities/half.hpp"
-#include "glcore/geometrybuffer.hpp"
+#include "ca/cc/utilities/half.hpp"
+#include "ca/cc/glcore/geometrybuffer.hpp"
 
 #include <ei/vector.hpp>
 #include <vector>

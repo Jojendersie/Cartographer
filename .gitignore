@@ -7,3 +7,5 @@ lib/
 *.sdf
 *.user
 *.props
+*.db
+*.opendb

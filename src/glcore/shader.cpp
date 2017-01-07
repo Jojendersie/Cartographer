@@ -1,7 +1,7 @@
-#include "core/error.hpp"
-#include "core/scopedptr.hpp"
-#include "glcore/opengl.hpp"
-#include "glcore/shader.hpp"
+#include "ca/cc/core/error.hpp"
+#include "ca/cc/core/scopedptr.hpp"
+#include "ca/cc/glcore/opengl.hpp"
+#include "ca/cc/glcore/shader.hpp"
 #include <string>
 
 namespace ca { namespace cc {

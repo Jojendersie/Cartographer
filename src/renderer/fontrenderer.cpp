@@ -1,7 +1,7 @@
-#include "renderer/fontrenderer.hpp"
-#include "core/error.hpp"
-#include "glcore/opengl.hpp"
-#include "glcore/vertexformat.hpp"
+#include "ca/cc/renderer/fontrenderer.hpp"
+#include "ca/cc/core/error.hpp"
+#include "ca/cc/glcore/opengl.hpp"
+#include "ca/cc/glcore/vertexformat.hpp"
 
 #include <string>
 #include <algorithm>

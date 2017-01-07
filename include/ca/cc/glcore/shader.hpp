@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ei/vector.hpp>
-#include "core/manager.hpp"
+#include "ca/cc/core/manager.hpp"
 
 namespace ca { namespace cc {
 	

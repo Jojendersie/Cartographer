@@ -1,9 +1,9 @@
 #pragma once
 
 #include <ei/elementarytypes.hpp>
-#include "core/scopedptr.hpp"
-#include "core/manager.hpp"
-#include "glcore/sampler.hpp"
+#include "ca/cc/core/scopedptr.hpp"
+#include "ca/cc/core/manager.hpp"
+#include "ca/cc/glcore/sampler.hpp"
 
 namespace ca { namespace cc {
 

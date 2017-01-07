@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/error.hpp"
+#include "ca/cc/core/error.hpp"
 #include <gl/glew.h>
 #include <type_traits>
 #include <string>

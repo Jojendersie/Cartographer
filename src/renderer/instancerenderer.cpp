@@ -1,6 +1,6 @@
-#include "renderer/instancerenderer.hpp"
-#include "glcore/opengl.hpp"
-#include "core/error.hpp"
+#include "ca/cc/renderer/instancerenderer.hpp"
+#include "ca/cc/glcore/opengl.hpp"
+#include "ca/cc/core/error.hpp"
 #include <string>
 
 using namespace ei;

@@ -1,5 +1,5 @@
-#include "glcore/opengl.hpp"
-#include "glcore/sampler.hpp"
+#include "ca/cc/glcore/opengl.hpp"
+#include "ca/cc/glcore/sampler.hpp"
 
 namespace ca { namespace cc {
 

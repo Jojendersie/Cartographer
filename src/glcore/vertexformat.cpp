@@ -1,4 +1,4 @@
-#include "glcore/vertexformat.hpp"
+#include "ca/cc/glcore/vertexformat.hpp"
 
 namespace ca { namespace cc {
 

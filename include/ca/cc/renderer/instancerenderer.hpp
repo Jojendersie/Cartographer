@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glcore/vertexformat.hpp"
+#include "ca/cc/glcore/vertexformat.hpp"
 
 #include <ei/vector.hpp>
 #include <vector>
