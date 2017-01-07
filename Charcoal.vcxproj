@@ -46,15 +46,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(ProjectDir);$(ProjectDir)/include;$(ProjectDir)/dependencies/freetype/include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)../Paper/include;$(ProjectDir);$(ProjectDir)/include;$(ProjectDir)/dependencies/freetype/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)../Paper/lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)lib\</OutDir>
     <TargetName>$(ProjectName)D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(ProjectDir);$(ProjectDir)/include;$(ProjectDir)/dependencies/freetype/include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)../Paper/include;$(ProjectDir);$(ProjectDir)/include;$(ProjectDir)/dependencies/freetype/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)../Paper/lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)lib\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -86,7 +86,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\ca\cc\core\error.hpp" />
     <ClInclude Include="include\ca\cc\core\manager.hpp" />
     <ClInclude Include="include\ca\cc\core\scopedptr.hpp" />
     <ClInclude Include="include\ca\cc\glcore\device.hpp" />
@@ -147,7 +146,6 @@
     <ClCompile Include="dependencies\freetype\src\type1cid.c" />
     <ClCompile Include="dependencies\freetype\src\type42.c" />
     <ClCompile Include="dependencies\freetype\src\winfnt.c" />
-    <ClCompile Include="src\core\error.cpp" />
     <ClCompile Include="src\glcore\device.cpp" />
     <ClCompile Include="src\glcore\geometrybuffer.cpp" />
     <ClCompile Include="src\glcore\opengl.cpp" />

@@ -1,4 +1,4 @@
-#include "ca/cc/core/error.hpp"
+#include <ca/pa/log.hpp>
 #include "ca/cc/glcore/opengl.hpp"
 
 #include <string>
@@ -45,7 +45,7 @@ namespace ca { namespace cc {
 				description = "Unknown error code.";
 				break;
 			}
-			error((std::string("OpenGL Error during ") + _openGLFunctionName + ": " + errorString + "(" + description + ")").c_str());
+			pa::logError("OpenGL Error during ", _openGLFunctionName, ": ", errorString, "(", description, ")");
 			return true;
 		}
 

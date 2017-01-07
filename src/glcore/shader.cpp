@@ -1,11 +1,13 @@
-#include "ca/cc/core/error.hpp"
 #include "ca/cc/core/scopedptr.hpp"
 #include "ca/cc/glcore/opengl.hpp"
 #include "ca/cc/glcore/shader.hpp"
+#include <ca/pa/log.hpp>
 #include <string>
 
 namespace ca { namespace cc {
-	
+
+	using namespace pa;
+
 	Shader::Shader(const char* _source, ShaderType _type)
 	{
 		m_shaderID = glCall(glCreateShader, uint(_type));
@@ -23,7 +25,7 @@ namespace ca { namespace cc {
 			std::string errorLog;
 			errorLog.reserve(maxLength);
 			glCall(glGetShaderInfoLog, m_shaderID, maxLength, &maxLength, &errorLog[0]);
-			error(errorLog.c_str());
+			logError(errorLog);
 			glCall(glDeleteShader, m_shaderID);
 			return;
 		}
@@ -38,7 +40,7 @@ namespace ca { namespace cc {
 	{
 		if(_isFileName) {
 			FILE* file = fopen(_source, "rb");
-			if(!file) error(("Cannot open shader file: " + std::string(_source)).c_str());
+			if(!file) logError(("Cannot open shader file: " + std::string(_source)).c_str());
 			// Get file size and allocate memory
 			fseek(file, 0, SEEK_END);
 			unsigned fileLength = ftell(file);
@@ -83,20 +85,20 @@ namespace ca { namespace cc {
 		{
 			m_shaders[m_numShaders++] = _shader;
 			glCall(glAttachShader, m_programID, _shader->m_shaderID);
-		} else error("Already 5 shaders bound. This is the maximum: Vertex + Hull + Domain + Geometry + Fragment.");
+		} else logError("Already 5 shaders bound. This is the maximum: Vertex + Hull + Domain + Geometry + Fragment.");
 	}
 		
 	void Program::use()
 	{
 		if(!m_programID)
-			error("Trying to use an uninitialized program!");
+			logError("Trying to use an uninitialized program!");
 		glCall(glUseProgram, m_programID);
 	}
 	
 	void Program::link()
 	{
 		if(!m_programID)
-			error("Trying to link an uninitialized program!");
+			logError("Trying to link an uninitialized program!");
 		glCall(glLinkProgram, m_programID);
 
 		GLint isLinked = 0;
@@ -110,7 +112,7 @@ namespace ca { namespace cc {
 			std::string errorLog;
 			errorLog.reserve(maxLength);
 			glCall(glGetProgramInfoLog, m_programID, maxLength, &maxLength, &errorLog[0]);
-			error(errorLog.c_str());
+			logError(errorLog);
 
 			glCall(glDeleteProgram, m_programID);
 			m_programID = 0;

@@ -1,7 +1,7 @@
 #include "ca/cc/renderer/spriterenderer.hpp"
 #include "ca/cc/glcore/opengl.hpp"
 #include "ca/cc/glcore/vertexformat.hpp"
-#include "ca/cc/core/error.hpp"
+#include <ca/pa/log.hpp>
 
 using namespace ei;
 

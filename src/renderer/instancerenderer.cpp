@@ -1,11 +1,13 @@
 #include "ca/cc/renderer/instancerenderer.hpp"
 #include "ca/cc/glcore/opengl.hpp"
-#include "ca/cc/core/error.hpp"
+#include <ca/pa/log.hpp>
 #include <string>
 
 using namespace ei;
 
 namespace ca { namespace cc {
+
+	using namespace pa;
 
 InstanceRenderer::InstanceRenderer(GLPrimitiveType _type, const VertexAttribute* _attributes, int _numAttributes) :
 	m_startNewPrimitive(0),
@@ -91,7 +93,7 @@ void InstanceRenderer::put(int _attrIndex, const float _value)
 {
 	if( m_attributes[_attrIndex].numComponents != 1 )
 	{
-		error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(float)! The component count is wrong.").c_str());
+		logError("Vertex attribute ", _attrIndex, " is incompatible with put(float)! The component count is wrong.");
 		return;
 	}
 
@@ -101,14 +103,14 @@ void InstanceRenderer::put(int _attrIndex, const float _value)
 		*reinterpret_cast<int32*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = (int32)(_value * std::numeric_limits<int32>::max());
 	else if( m_attributes[_attrIndex].type == PrimitiveFormat::UINT32 )
 		*reinterpret_cast<uint32*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = (uint32)(_value * std::numeric_limits<uint32>::max());
-	else error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(float)! The format cannot be casted.").c_str());
+	else logError("Vertex attribute ", _attrIndex, " is incompatible with put(float)! The format cannot be casted.");
 }
 
 void InstanceRenderer::put(int _attrIndex, const Vec2& _value)
 {
 	if( m_attributes[_attrIndex].numComponents != 2 )
 	{
-		error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(vec2)! The component count is wrong.").c_str());
+		logError("Vertex attribute ", _attrIndex, " is incompatible with put(vec2)! The component count is wrong.");
 		return;
 	}
 
@@ -122,14 +124,14 @@ void InstanceRenderer::put(int _attrIndex, const Vec2& _value)
 		*reinterpret_cast<uint32*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = uint32(_value.x * std::numeric_limits<int16>::max()) << 16 | uint32(_value.y * std::numeric_limits<int16>::max());
 	else if( m_attributes[_attrIndex].type == PrimitiveFormat::UINT16 && m_attributes[_attrIndex].normalize )
 		*reinterpret_cast<uint32*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = uint32(_value.x * std::numeric_limits<uint16>::max()) << 16 | uint32(_value.y * std::numeric_limits<uint16>::max());
-	else error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(vec2)! The format cannot be casted.").c_str());
+	else logError("Vertex attribute ", _attrIndex, " is incompatible with put(vec2)! The format cannot be casted.");
 }
 
 void InstanceRenderer::put(int _attrIndex, const ei::Vec3& _value)
 {
 	if( m_attributes[_attrIndex].numComponents != 3 )
 	{
-		error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(vec3)! The component count is wrong.").c_str());
+		logError("Vertex attribute ", _attrIndex, " is incompatible with put(vec3)! The component count is wrong.");
 		return;
 	}
 
@@ -140,14 +142,14 @@ void InstanceRenderer::put(int _attrIndex, const ei::Vec3& _value)
 	else if( m_attributes[_attrIndex].type == PrimitiveFormat::UINT32 && m_attributes[_attrIndex].normalize )
 		*reinterpret_cast<UVec3*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = UVec3(_value * std::numeric_limits<uint32>::max());
 	// TODO allow and convert to R11G11B10F
-	else error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(vec3)! The format cannot be casted.").c_str());
+	else logError("Vertex attribute ", _attrIndex, " is incompatible with put(vec3)! The format cannot be casted.");
 }
 
 void InstanceRenderer::put(int _attrIndex, const ei::Vec4& _value)
 {
 	if( m_attributes[_attrIndex].numComponents != 4 )
 	{
-		error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(vec4)! The component count is wrong.").c_str());
+		logError("Vertex attribute ", _attrIndex, " is incompatible with put(vec4)! The component count is wrong.");
 		return;
 	}
 
@@ -159,7 +161,7 @@ void InstanceRenderer::put(int _attrIndex, const ei::Vec4& _value)
 		*reinterpret_cast<UVec4*>(m_currentVertex.data() + m_attributes[_attrIndex].offset) = UVec4(_value * std::numeric_limits<uint32>::max());
 	// TODO INT16 and INT8 normalized formats
 	// TODO allow and convert special formats with alpha channel
-	else error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(vec4)! The format cannot be casted.").c_str());
+	else logError("Vertex attribute ", _attrIndex, " is incompatible with put(vec4)! The format cannot be casted.");
 }
 
 void InstanceRenderer::put(int _attrIndex, const uint32 _value)
@@ -174,7 +176,7 @@ void InstanceRenderer::put(int _attrIndex, const uint32 _value)
 		&& !(m_attributes[_attrIndex].type == PrimitiveFormat::INTR10G10B10A2 && m_attributes[_attrIndex].numComponents == 1)
 		&& !(m_attributes[_attrIndex].type == PrimitiveFormat::UINTR10G10B10A2 && m_attributes[_attrIndex].numComponents == 1))
 	{
-		error(("Vertex attribute " + std::to_string(_attrIndex) + " is incompatible with put(uint32)!").c_str());
+		logError("Vertex attribute ", _attrIndex, " is incompatible with put(uint32)!");
 		return;
 	}
 

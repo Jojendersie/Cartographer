@@ -6,6 +6,7 @@
 #include "stdwindow.hpp"
 
 using namespace ca::cc;
+using namespace ca;
 
 static float s_aspectRatio;
 static int s_windowWidth, s_windowHeight;
@@ -34,7 +35,7 @@ GLFWwindow* setupStdWindow(const char* _titel, bool _vsync)
 	glfwSetErrorCallback(errorCallbackGLFW);
 	// Setup glfw
 	if(!glfwInit()) {
-		error("GLFW init failed");
+		pa::logError("GLFW init failed");
 		return nullptr;
 	}
 

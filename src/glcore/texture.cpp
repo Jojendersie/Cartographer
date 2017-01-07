@@ -1,6 +1,6 @@
 #include "ca/cc/glcore/texture.hpp"
-#include "ca/cc/core/error.hpp"
 #include "ca/cc/glcore/opengl.hpp"
+#include <ca/pa/log.hpp>
 #include <memory.h>
 
 #define STB_IMAGE_IMPLEMENTATION

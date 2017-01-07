@@ -1,7 +1,7 @@
 #include "ca/cc/renderer/fontrenderer.hpp"
-#include "ca/cc/core/error.hpp"
 #include "ca/cc/glcore/opengl.hpp"
 #include "ca/cc/glcore/vertexformat.hpp"
+#include <ca/pa/log.hpp>
 
 #include <string>
 #include <algorithm>
@@ -11,6 +11,8 @@
 using namespace ei;
 
 namespace ca { namespace cc {
+
+	using namespace pa;
 
 	const int BASE_SIZE = 72;			///< Vertical size in pixels within largest bitmap
 	const int MAP_WIDTH = 1024;			///< Default width for textures (height depends on the required space)
@@ -253,7 +255,7 @@ namespace ca { namespace cc {
 		FT_Library ftlib;
 		if( FT_Init_FreeType( &ftlib ) )
 		{
-			error("Cannot initalize freetype!");
+			logError("Cannot initalize freetype!");
 			return;
 		}
 
@@ -261,7 +263,7 @@ namespace ca { namespace cc {
 		FT_Face fontFace;
 		if( FT_New_Face(ftlib, _fontFile, 0, &fontFace) )
 		{
-			error("Could not open font!");
+			logError("Could not open font!");
 			return;
 		}
 
@@ -271,7 +273,7 @@ namespace ca { namespace cc {
 		int texHeight = MIP_RANGE * createMap(map[mipLevel--], _characters, fontFace, BASE_SIZE / MIP_RANGE, MAP_WIDTH / MIP_RANGE, MIP_RANGE / mipFactor);
 		if(!texHeight)
 		{
-			error("Cancel font creation because basic mipmap could not be created!");
+			logError("Cancel font creation because basic mipmap could not be created!");
 			return;
 		}
 		while(mipFactor > 1)
@@ -294,7 +296,7 @@ namespace ca { namespace cc {
 		// Free resources
 		if( FT_Done_FreeType(ftlib) )
 		{
-			error("Cannot free all Freetype resources!");
+			logError("Cannot free all Freetype resources!");
 			return;
 		}
 	}
@@ -322,7 +324,7 @@ namespace ca { namespace cc {
 	void FontRenderer::storeCaf(const char* _fontFile)
 	{
 		FILE* file = fopen(_fontFile, "wb");
-		if(!file) { error(("Cannot open file "+std::string(_fontFile)+" for writing!").c_str()); return; }
+		if(!file) { logError("Cannot open file ", _fontFile, " for writing!"); return; }
 
 		// Header with number of characters, global metrics and texture dimensions.
 		CafHeader header;
@@ -373,7 +375,7 @@ namespace ca { namespace cc {
 		if(m_texture) Texture2D::unload(m_texture);
 
 		FILE* file = fopen(_fontFile, "rb");
-		if(!file) { error(("Cannot open file "+std::string(_fontFile)+" for reading!").c_str()); return; }
+		if(!file) { logError("Cannot open file ", _fontFile, " for reading!"); return; }
 
 		CafHeader header;
 		fread(&header, sizeof(CafHeader), 1, file);
@@ -443,7 +445,7 @@ namespace ca { namespace cc {
 		// Set a fixed font size
 		if( FT_Set_Pixel_Sizes(_fontFace, 0, _fontSize) )
 		{
-			error(("Cannot set size to " + std::to_string(_fontSize) + "px!").c_str());
+			logError("Cannot set size to ", _fontSize, "px!");
 			return 0;
 		}
 
@@ -482,7 +484,7 @@ namespace ca { namespace cc {
 				charEntry = m_chars.emplace(c, bmpChar).first;
 			} else {
 				// Character was already there -> do nothing
-				error("Input string contains a character repetition.");
+				logError("Input string contains a character repetition.");
 				continue;
 			}
 			// While copying center the glyph within its padding width
@@ -501,7 +503,7 @@ namespace ca { namespace cc {
 		// Set a fixed font size
 		if( FT_Set_Pixel_Sizes(_fontFace, 0, _fontSize) )
 		{
-			error(("Cannot set size to " + std::to_string(_fontSize) + "px!").c_str());
+			logError("Cannot set size to ", _fontSize, "px!");
 			return;
 		}
 

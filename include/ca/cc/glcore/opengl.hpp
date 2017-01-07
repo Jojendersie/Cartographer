@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ca/cc/core/error.hpp"
+#include <ca/pa/log.hpp>
 #include <gl/glew.h>
 #include <type_traits>
 #include <string>
@@ -19,7 +19,7 @@ namespace ca { namespace cc {
 	template<typename FunctionType, typename... Args>
 	auto _glCall(const char* _functionName, FunctionType _function, Args... _args) -> typename std::enable_if<!std::is_same<decltype(_function(_args...)), void>::value, decltype(_function(_args...))>::type
 	{
-		if(!_function) { error(("Function '" + std::string(_functionName) + "' not loaded!").c_str()); return 0; }
+		if(!_function) { pa::logError("Function '", _functionName, "' not loaded!"); return 0; }
 		auto ret = _function(_args...);
 #ifdef DEBUG
 		GLError(_functionName);
@@ -31,7 +31,7 @@ namespace ca { namespace cc {
 	template<typename FunctionType, typename... Args>
 	auto _glCall(const char* _functionName, FunctionType _function, Args... _args) -> typename std::enable_if<std::is_same<decltype(_function(_args...)), void>::value, decltype(_function(_args...))>::type
 	{
-		if(!_function) { error(("Function '" + std::string(_functionName) + "' not loaded!").c_str()); return; }
+		if(!_function) { pa::logError("Function '", _functionName, "' not loaded!"); return; }
 		_function(_args...);
 #ifdef DEBUG
 		GLError(_functionName);

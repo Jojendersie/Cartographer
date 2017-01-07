@@ -142,7 +142,7 @@ namespace ca { namespace cc {
 	{
 		if(!m_vboInstances)
 		{
-			error("The buffer was initialized without instance vertex attributes!");
+			pa::logError("The buffer was initialized without instance vertex attributes!");
 			return;
 		}
 

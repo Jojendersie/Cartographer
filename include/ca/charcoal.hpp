@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cc/core/error.hpp"
 #include "cc/core/scopedptr.hpp"
 #include "cc/glcore/opengl.hpp"
 #include "cc/glcore/device.hpp"
