@@ -2,18 +2,20 @@
 
 #include "ca/gui.hpp"
 #include "ca/gui/backend/renderbackend.hpp"
-#include "ca/gui/core/error.hpp"
+#include <ca/pa/log.hpp>
 
 namespace ca { namespace gui {
+	using namespace pa;
+
 	std::unique_ptr<GUIManager> g_manager;
 
 	void GUIManager::init(std::shared_ptr<class IRenderBackend> _renderer, std::shared_ptr<class ITheme> _theme, int _width, int _height)
 	{
 		g_manager.reset(new GUIManager);
 		if(!_renderer)
-			return error("No renderer given for initialization!");
+			return logError("No renderer given for initialization!");
 		if(!_theme)
-			return error("No theme given for initialization!");
+			return logError("No theme given for initialization!");
 		g_manager->m_renderer = _renderer;
 		g_manager->m_theme = _theme;
 		// Use an internal light-weight frame as container
@@ -41,21 +43,21 @@ namespace ca { namespace gui {
 	void GUIManager::add(WidgetPtr _widget, unsigned _innerLayer)
 	{
 		if(!g_manager)
-			return error("Uninitialized GUIManager! Cannot add components!");
+			return logError("Uninitialized GUIManager! Cannot add components!");
 		g_manager->m_topFrame->add(_widget, _innerLayer);
 	}
 
 	void GUIManager::remove(WidgetPtr _widget)
 	{
 		if(!g_manager)
-			return error("Uninitialized GUIManager! Cannot remove components!");
+			return logError("Uninitialized GUIManager! Cannot remove components!");
 		g_manager->m_topFrame->remove(_widget);
 	}
 
 	void GUIManager::draw()
 	{
 		if(!g_manager)
-			return error("Uninitialized GUIManager! Cannot draw a GUI!");
+			return logError("Uninitialized GUIManager! Cannot draw a GUI!");
 		refitAllToAnchors();
 		g_manager->m_renderer->beginDraw();
 		g_manager->m_topFrame->draw();
@@ -99,7 +101,7 @@ namespace ca { namespace gui {
 	bool GUIManager::processInput(const MouseState& _mouseState)
 	{
 		if(!g_manager) {
-			error("Uninitialized GUIManager! Cannot process input!");
+			logError("Uninitialized GUIManager! Cannot process input!");
 			return false;
 		}
 

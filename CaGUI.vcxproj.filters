@@ -13,14 +13,8 @@
     <Filter Include="backend">
       <UniqueIdentifier>{cbffbc80-ce64-4792-b6e2-9682887e844a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="core">
-      <UniqueIdentifier>{bf648cca-10de-4097-901f-091c90437073}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\ca\gui\core\error.hpp">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="include\ca\gui.hpp" />
     <ClInclude Include="include\ca\gui\guimanager.hpp" />
     <ClInclude Include="include\ca\gui\backend\mouse.hpp">
@@ -164,9 +158,6 @@
       <Filter>backend</Filter>
     </ClCompile>
     <ClCompile Include="src\guimanager.cpp" />
-    <ClCompile Include="src\core\error.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="src\properties\anchorprovider.cpp">
       <Filter>properties</Filter>
     </ClCompile>

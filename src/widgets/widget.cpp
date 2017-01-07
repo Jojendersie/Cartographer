@@ -2,9 +2,11 @@
 
 #include "ca/gui/widgets/widget.hpp"
 #include "ca/gui/guimanager.hpp"
-#include "ca/gui/core/error.hpp"
+#include <ca/pa/log.hpp>
 
 namespace ca { namespace gui {
+
+	using namespace pa;
 
 	Widget::Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable) : 
 		m_anchorComponent(nullptr),
@@ -115,7 +117,7 @@ namespace ca { namespace gui {
 		{
 			m_anchorComponent->setAnchor(_side, _anchor);
 		} else
-			error("Cannot set an anchor for a non-anchorable component!");
+			logError("Cannot set an anchor for a non-anchorable component!");
 	}
 
 	void Widget::setHorizontalAnchorMode(Anchorable::Mode _mode)
@@ -124,7 +126,7 @@ namespace ca { namespace gui {
 		{
 			m_anchorComponent->setHorizontalAnchorMode(_mode);
 		} else
-			error("Cannot set horizontal anchor mode for a non-anchorable component!");
+			logError("Cannot set horizontal anchor mode for a non-anchorable component!");
 	}
 
 	void Widget::setVerticalAnchorMode(Anchorable::Mode _mode)
@@ -133,7 +135,7 @@ namespace ca { namespace gui {
 		{
 			m_anchorComponent->setVerticalAnchorMode(_mode);
 		} else
-			error("Cannot set vertical anchor mode for a non-anchorable component!");
+			logError("Cannot set vertical anchor mode for a non-anchorable component!");
 	}
 
 	void Widget::setAnchorModes(Anchorable::Mode _mode)
@@ -142,7 +144,7 @@ namespace ca { namespace gui {
 		{
 			m_anchorComponent->setAnchorModes(_mode);
 		} else
-			error("Cannot set anchor modes for a non-anchorable component!");
+			logError("Cannot set anchor modes for a non-anchorable component!");
 	}
 
 	void Widget::setAnchorModes(Anchorable::Mode _horizontalMode, Anchorable::Mode _verticalMode)
@@ -151,7 +153,7 @@ namespace ca { namespace gui {
 		{
 			m_anchorComponent->setAnchorModes(_horizontalMode, _verticalMode);
 		} else
-			error("Cannot set anchor modes for a non-anchorable component!");
+			logError("Cannot set anchor modes for a non-anchorable component!");
 	}
 
 	void Widget::autoAnchor(const IAnchorProvider* _anchorProvider)
