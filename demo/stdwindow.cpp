@@ -1,11 +1,11 @@
-#include <charcoal.hpp>
-#include <glcore/opengl.hpp>
+#include <ca/charcoal.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <string>
 #include "stdwindow.hpp"
 
+using namespace ca;
 using namespace ca::cc;
 
 static float s_aspectRatio;
@@ -35,7 +35,7 @@ GLFWwindow* setupStdWindow(const char* _titel, bool _vsync)
 	glfwSetErrorCallback(errorCallbackGLFW);
 	// Setup glfw
 	if(!glfwInit()) {
-		error("GLFW init failed");
+		pa::logError("GLFW init failed");
 		return nullptr;
 	}
 

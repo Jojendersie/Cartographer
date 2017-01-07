@@ -1,7 +1,7 @@
-#include "widgets/node.hpp"
-#include "guimanager.hpp"
-#include "rendering/theme.hpp"
-#include "backend/renderbackend.hpp"
+#include "ca/gui/widgets/node.hpp"
+#include "ca/gui/guimanager.hpp"
+#include "ca/gui/rendering/theme.hpp"
+#include "ca/gui/backend/renderbackend.hpp"
 
 #include <ei/2dintersection.hpp>
 

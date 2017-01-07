@@ -1,4 +1,4 @@
-#include "properties/anchorprovider.hpp"
+#include "ca/gui/properties/anchorprovider.hpp"
 
 namespace ca { namespace gui {
 

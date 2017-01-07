@@ -1,4 +1,4 @@
-#include "backend/mouse.hpp"
+#include "ca/gui/backend/mouse.hpp"
 
 namespace ca { namespace gui {
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rendering/flattheme.hpp"
-#include "backend/renderbackend.hpp"
-#include "guimanager.hpp"
+#include "ca/gui/rendering/flattheme.hpp"
+#include "ca/gui/backend/renderbackend.hpp"
+#include "ca/gui/guimanager.hpp"
 
 using namespace ei;
 

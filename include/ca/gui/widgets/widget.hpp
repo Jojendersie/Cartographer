@@ -1,13 +1,13 @@
 #pragma once
 
 #include <memory>
-#include "properties/anchorable.hpp"
-#include "properties/anchorprovider.hpp"
-#include "properties/clickable.hpp"
-#include "properties/moveable.hpp"
-#include "properties/refframe.hpp"
-#include "properties/resizeable.hpp"
-#include "pa/memory/refptr.hpp"
+#include "ca/gui/properties/anchorable.hpp"
+#include "ca/gui/properties/anchorprovider.hpp"
+#include "ca/gui/properties/clickable.hpp"
+#include "ca/gui/properties/moveable.hpp"
+#include "ca/gui/properties/refframe.hpp"
+#include "ca/gui/properties/resizeable.hpp"
+#include "ca/pa/memory/refptr.hpp"
 
 namespace ca { namespace gui {
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rendering/sharp3dtheme.hpp"
-#include "backend/renderbackend.hpp"
-#include "guimanager.hpp"
+#include "ca/gui/rendering/sharp3dtheme.hpp"
+#include "ca/gui/backend/renderbackend.hpp"
+#include "ca/gui/guimanager.hpp"
 
 using namespace ei;
 

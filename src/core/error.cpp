@@ -1,4 +1,4 @@
-#include "core/error.hpp"
+#include "ca/gui/core/error.hpp"
 #include <iostream>
 
 namespace ca { namespace gui {

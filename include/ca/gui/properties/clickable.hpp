@@ -2,8 +2,8 @@
 
 #include <functional>
 #include <vector>
-#include "backend/mouse.hpp"
-#include "refframe.hpp"
+#include "ca/gui/backend/mouse.hpp"
+#include "ca/gui/properties/refframe.hpp"
 
 namespace ca { namespace gui {
 

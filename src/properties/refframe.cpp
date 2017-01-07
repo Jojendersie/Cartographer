@@ -1,6 +1,6 @@
 #pragma once
 
-#include "properties/refframe.hpp"
+#include "ca/gui/properties/refframe.hpp"
 
 namespace ca { namespace gui {
 

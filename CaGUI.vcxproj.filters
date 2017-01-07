@@ -18,90 +18,90 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\properties\clickable.hpp">
-      <Filter>properties</Filter>
-    </ClInclude>
-    <ClInclude Include="include\properties\anchorable.hpp">
-      <Filter>properties</Filter>
-    </ClInclude>
-    <ClInclude Include="include\widgets\button.hpp">
-      <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="include\widgets\frame.hpp">
-      <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="include\properties\moveable.hpp">
-      <Filter>properties</Filter>
-    </ClInclude>
-    <ClInclude Include="include\widgets\dropdownbox.hpp">
-      <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="include\widgets\slider.hpp">
-      <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="include\widgets\multilineeditbox.hpp">
-      <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="include\widgets\editbox.hpp">
-      <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="include\widgets\colorpicker.hpp">
-      <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="include\widgets\directionpicker.hpp">
-      <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="include\widgets\treelist.hpp">
-      <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="include\properties\refframe.hpp">
-      <Filter>properties</Filter>
-    </ClInclude>
-    <ClInclude Include="include\properties\resizeable.hpp">
-      <Filter>properties</Filter>
-    </ClInclude>
-    <ClInclude Include="include\backend\mouse.hpp">
-      <Filter>backend</Filter>
-    </ClInclude>
-    <ClInclude Include="include\widgets\widget.hpp">
-      <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="include\backend\renderbackend.hpp">
-      <Filter>backend</Filter>
-    </ClInclude>
-    <ClInclude Include="include\rendering\theme.hpp">
-      <Filter>rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="include\properties\coordinate.hpp">
-      <Filter>properties</Filter>
-    </ClInclude>
-    <ClInclude Include="include\rendering\sharp3dtheme.hpp">
-      <Filter>rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="include\rendering\flattheme.hpp">
-      <Filter>rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="include\backend\charcoal.hpp">
-      <Filter>backend</Filter>
-    </ClInclude>
-    <ClInclude Include="include\guimanager.hpp" />
-    <ClInclude Include="include\cagui.hpp" />
     <ClInclude Include="include\ca\gui\core\error.hpp">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="include\properties\anchorprovider.hpp">
+    <ClInclude Include="include\ca\gui.hpp" />
+    <ClInclude Include="include\ca\gui\guimanager.hpp" />
+    <ClInclude Include="include\ca\gui\backend\mouse.hpp">
+      <Filter>backend</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\backend\renderbackend.hpp">
+      <Filter>backend</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\backend\charcoal.hpp">
+      <Filter>backend</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\properties\clickable.hpp">
       <Filter>properties</Filter>
     </ClInclude>
-    <ClInclude Include="include\widgets\checkbox.hpp">
+    <ClInclude Include="include\ca\gui\properties\coordinate.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\properties\moveable.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\properties\refframe.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\properties\resizeable.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\properties\anchorable.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\properties\anchorprovider.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\rendering\sharp3dtheme.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\rendering\theme.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\rendering\flattheme.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\label.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="include\widgets\label.hpp">
+    <ClInclude Include="include\ca\gui\widgets\multilineeditbox.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="include\widgets\node.hpp">
+    <ClInclude Include="include\ca\gui\widgets\node.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="include\widgets\group.hpp">
+    <ClInclude Include="include\ca\gui\widgets\slider.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\treelist.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\widget.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\button.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\checkbox.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\colorpicker.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\directionpicker.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\dropdownbox.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\editbox.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\frame.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\group.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
   </ItemGroup>

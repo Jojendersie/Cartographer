@@ -152,36 +152,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\backend\charcoal.hpp" />
-    <ClInclude Include="include\backend\mouse.hpp" />
-    <ClInclude Include="include\backend\renderbackend.hpp" />
-    <ClInclude Include="include\cagui.hpp" />
+    <ClInclude Include="include\ca\gui.hpp" />
+    <ClInclude Include="include\ca\gui\backend\charcoal.hpp" />
+    <ClInclude Include="include\ca\gui\backend\mouse.hpp" />
+    <ClInclude Include="include\ca\gui\backend\renderbackend.hpp" />
     <ClInclude Include="include\ca\gui\core\error.hpp" />
-    <ClInclude Include="include\guimanager.hpp" />
-    <ClInclude Include="include\properties\anchorable.hpp" />
-    <ClInclude Include="include\properties\anchorprovider.hpp" />
-    <ClInclude Include="include\properties\clickable.hpp" />
-    <ClInclude Include="include\properties\coordinate.hpp" />
-    <ClInclude Include="include\properties\moveable.hpp" />
-    <ClInclude Include="include\properties\refframe.hpp" />
-    <ClInclude Include="include\properties\resizeable.hpp" />
-    <ClInclude Include="include\rendering\flattheme.hpp" />
-    <ClInclude Include="include\rendering\sharp3dtheme.hpp" />
-    <ClInclude Include="include\rendering\theme.hpp" />
-    <ClInclude Include="include\widgets\button.hpp" />
-    <ClInclude Include="include\widgets\checkbox.hpp" />
-    <ClInclude Include="include\widgets\colorpicker.hpp" />
-    <ClInclude Include="include\widgets\directionpicker.hpp" />
-    <ClInclude Include="include\widgets\dropdownbox.hpp" />
-    <ClInclude Include="include\widgets\editbox.hpp" />
-    <ClInclude Include="include\widgets\frame.hpp" />
-    <ClInclude Include="include\widgets\group.hpp" />
-    <ClInclude Include="include\widgets\label.hpp" />
-    <ClInclude Include="include\widgets\multilineeditbox.hpp" />
-    <ClInclude Include="include\widgets\node.hpp" />
-    <ClInclude Include="include\widgets\slider.hpp" />
-    <ClInclude Include="include\widgets\treelist.hpp" />
-    <ClInclude Include="include\widgets\widget.hpp" />
+    <ClInclude Include="include\ca\gui\guimanager.hpp" />
+    <ClInclude Include="include\ca\gui\properties\anchorable.hpp" />
+    <ClInclude Include="include\ca\gui\properties\anchorprovider.hpp" />
+    <ClInclude Include="include\ca\gui\properties\clickable.hpp" />
+    <ClInclude Include="include\ca\gui\properties\coordinate.hpp" />
+    <ClInclude Include="include\ca\gui\properties\moveable.hpp" />
+    <ClInclude Include="include\ca\gui\properties\refframe.hpp" />
+    <ClInclude Include="include\ca\gui\properties\resizeable.hpp" />
+    <ClInclude Include="include\ca\gui\rendering\flattheme.hpp" />
+    <ClInclude Include="include\ca\gui\rendering\sharp3dtheme.hpp" />
+    <ClInclude Include="include\ca\gui\rendering\theme.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\button.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\checkbox.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\colorpicker.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\directionpicker.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\dropdownbox.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\editbox.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\frame.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\group.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\label.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\multilineeditbox.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\node.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\slider.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\treelist.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\widget.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\backend\charcoal.cpp" />

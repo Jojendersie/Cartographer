@@ -1,7 +1,7 @@
 #pragma once
 
-#include "properties/anchorable.hpp"
-#include "properties/anchorprovider.hpp"
+#include "ca/gui/properties/anchorable.hpp"
+#include "ca/gui/properties/anchorprovider.hpp"
 
 namespace ca { namespace gui {
 

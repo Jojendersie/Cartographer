@@ -1,5 +1,5 @@
-#include "properties/coordinate.hpp"
-#include "cagui.hpp"
+#include "ca/gui/properties/coordinate.hpp"
+#include "ca/gui.hpp"
 
 namespace ca { namespace gui {
 

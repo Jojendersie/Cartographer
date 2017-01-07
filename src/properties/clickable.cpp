@@ -1,6 +1,6 @@
 #pragma once
 
-#include "properties/clickable.hpp"
+#include "ca/gui/properties/clickable.hpp"
 #include <ctime>
 
 namespace ca { namespace gui {

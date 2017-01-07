@@ -1,9 +1,9 @@
 #pragma once
 
-#include "properties/refframe.hpp"
-#include "properties/anchorable.hpp"
-#include "properties/moveable.hpp"
-#include "backend/mouse.hpp"
+#include "ca/gui/properties/refframe.hpp"
+#include "ca/gui/properties/anchorable.hpp"
+#include "ca/gui/properties/moveable.hpp"
+#include "ca/gui/backend/mouse.hpp"
 
 namespace ca { namespace gui {
 

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "cagui.hpp"
-#include "widgets/frame.hpp"
-#include "backend/renderbackend.hpp"
+#include "ca/gui.hpp"
+#include "ca/gui/backend/renderbackend.hpp"
 #include "ca/gui/core/error.hpp"
 
 namespace ca { namespace gui {

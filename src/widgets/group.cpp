@@ -1,10 +1,10 @@
 #pragma once
 
-#include "widgets/group.hpp"
-#include "backend/mouse.hpp"
-#include "backend/renderbackend.hpp"
-#include "guimanager.hpp"
-#include "rendering/theme.hpp"
+#include "ca/gui/widgets/group.hpp"
+#include "ca/gui/backend/mouse.hpp"
+#include "ca/gui/backend/renderbackend.hpp"
+#include "ca/gui/guimanager.hpp"
+#include "ca/gui/rendering/theme.hpp"
 
 namespace ca { namespace gui {
 

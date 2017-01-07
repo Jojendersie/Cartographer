@@ -1,9 +1,9 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#include "widgets/slider.hpp"
-#include "guimanager.hpp"
-#include "rendering/theme.hpp"
-#include "backend/renderbackend.hpp"
+#include "ca/gui/widgets/slider.hpp"
+#include "ca/gui/guimanager.hpp"
+#include "ca/gui/rendering/theme.hpp"
+#include "ca/gui/backend/renderbackend.hpp"
 
 namespace ca { namespace gui {
 

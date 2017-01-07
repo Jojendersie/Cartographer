@@ -1,6 +1,6 @@
 #pragma once
 
-#include "properties/coordinate.hpp"
+#include "ca/gui/properties/coordinate.hpp"
 
 namespace ca { namespace gui {
 

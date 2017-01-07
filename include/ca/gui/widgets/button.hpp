@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-#include "widget.hpp"
-#include "properties/coordinate.hpp"
+#include "ca/gui/widgets/widget.hpp"
+#include "ca/gui/properties/coordinate.hpp"
 
 namespace ca { namespace gui {
 

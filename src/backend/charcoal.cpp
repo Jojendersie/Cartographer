@@ -1,8 +1,8 @@
 #ifdef CHARCOAL_BACKEND
-#include "backend/charcoal.hpp"
-#include "properties/refframe.hpp"
-#include "guimanager.hpp"
-#include <glcore/opengl.hpp>
+#include "ca/gui/backend/charcoal.hpp"
+#include "ca/gui/properties/refframe.hpp"
+#include "ca/gui/guimanager.hpp"
+#include <ca/cc/glcore/opengl.hpp>
 
 using namespace ei;
 

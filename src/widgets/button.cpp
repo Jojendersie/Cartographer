@@ -1,9 +1,9 @@
 #pragma once
 
-#include "widgets/button.hpp"
-#include "guimanager.hpp"
-#include "rendering/theme.hpp"
-#include "backend/renderbackend.hpp"
+#include "ca/gui/widgets/button.hpp"
+#include "ca/gui/guimanager.hpp"
+#include "ca/gui/rendering/theme.hpp"
+#include "ca/gui/backend/renderbackend.hpp"
 
 namespace ca { namespace gui {
 

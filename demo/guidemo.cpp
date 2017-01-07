@@ -1,6 +1,5 @@
-#include <cagui.hpp>
-#include <charcoal.hpp>
-#include <glcore/opengl.hpp>
+#include <ca/gui.hpp>
+#include <ca/charcoal.hpp>
 #include "../dependencies/stb_image.h" // Implementation included in Charcoal
 #include <GLFW/glfw3.h>
 #include "stdwindow.hpp"

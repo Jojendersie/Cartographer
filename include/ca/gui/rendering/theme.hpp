@@ -1,7 +1,7 @@
 #pragma once
 
-#include "properties/coordinate.hpp"
-#include "properties/refframe.hpp"
+#include "ca/gui/properties/coordinate.hpp"
+#include "ca/gui/properties/refframe.hpp"
 #include <ei/2dtypes.hpp>
 #include <memory>
 

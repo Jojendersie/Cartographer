@@ -1,7 +1,7 @@
 #pragma once
 
-#include "widgets/widget.hpp"
-#include "guimanager.hpp"
+#include "ca/gui/widgets/widget.hpp"
+#include "ca/gui/guimanager.hpp"
 #include "ca/gui/core/error.hpp"
 
 namespace ca { namespace gui {
