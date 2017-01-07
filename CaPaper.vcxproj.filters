@@ -15,8 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\pa\memory\refptr.hpp">
+    <ClInclude Include="include\ca\pa\paper.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\pa\log.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\pa\memory\refptr.hpp">
       <Filter>include\memory</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\log.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

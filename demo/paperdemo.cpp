@@ -1,4 +1,4 @@
-#include "pa/memory/refptr.hpp"
+#include "ca/pa/paper.hpp"
 #include <iostream>
 
 using namespace ca;
@@ -39,6 +39,17 @@ public:
 
 int main()
 {
+	// Output some log messages
+	logPedantic("This message should only appear on PEDANTIC level.");
+	logInfo("The log can convert a list of parameters easily: ", 42, " ", 3.1415f, ".");
+	logWarning("The log allocates a string in each call.");
+	logError("Something went wrong!");
+	try {
+		logFatal("Badly wrong!");
+	} catch(...) {
+		std::cerr << "Fatal error caused exception.\n";
+	}
+
 	// The valid output for the program is:
 	// Created #0
 	// Created #1
