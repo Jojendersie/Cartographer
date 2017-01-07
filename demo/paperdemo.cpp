@@ -1,4 +1,4 @@
-#include "ca/pa/paper.hpp"
+#include "ca/paper.hpp"
 #include <iostream>
 
 using namespace ca;

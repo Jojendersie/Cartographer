@@ -15,14 +15,14 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\ca\pa\paper.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\ca\pa\log.hpp">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\ca\pa\memory\refptr.hpp">
       <Filter>include\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\paper.hpp">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
