@@ -43,7 +43,7 @@ int main()
 	logPedantic("This message should only appear on PEDANTIC level.");
 	logInfo("The log can convert a list of parameters easily: ", 42, " ", 3.1415f, ".");
 	logWarning("The log allocates a string in each call.");
-	logError("Something went wrong!");
+	logError(std::string("Something went wrong!"));
 	try {
 		logFatal("Badly wrong!");
 	} catch(...) {

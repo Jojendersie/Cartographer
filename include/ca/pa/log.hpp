@@ -30,26 +30,18 @@ namespace ca { namespace pa {
 		
 		// This one calls all the callbacks
 		void logMessage(LogSeverity _severity, std::string& _msg);
-		
+
+		// Dummy conversion methods to make all types compatible
+		inline const char* to_string(const char* _str) { return _str; }
+		inline const std::string& to_string(const std::string& _str) { return _str; }
+		using std::to_string;
+
 		// This one builds the message string
 		template<typename T, typename... ArgTs>
 		void logMessage(LogSeverity _severity, std::string& _msg, T&& _head, ArgTs... _tail)
 		{
-			_msg += std::to_string(_head);
-			logMessage(_severity, _msg, _tail...);
-		}
-
-		// Overloads for some types
-		template<typename... ArgTs>
-		void logMessage(LogSeverity _severity, std::string& _msg, const char* _head, ArgTs... _tail)
-		{
-			_msg += _head;
-			logMessage(_severity, _msg, _tail...);
-		}
-		template<typename... ArgTs>
-		void logMessage(LogSeverity _severity, std::string& _msg, const std::string& _head, ArgTs... _tail)
-		{
-			_msg += _head;
+			using namespace std;
+			_msg += to_string(_head);
 			logMessage(_severity, _msg, _tail...);
 		}
 	}
