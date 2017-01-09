@@ -44,6 +44,8 @@ GLFWcursor* loadAsCursor(const char* _imgFile, int _hotX, int _hotY)
 
 	stbi_image_free(img.pixels);
 
+	if(newCursor) ca::pa::logPedantic("Loaded cursor '", _imgFile, "'.");
+	else ca::pa::logWarning("Could not load cursor '", _imgFile, "'.");
 	return newCursor;
 }
 
@@ -53,12 +55,15 @@ void setupInput(GLFWwindow* _window)
 	glfwSetMouseButtonCallback(_window, mouseButtonFunc);
 
 	g_cursors[(int)CursorType::ARROW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+	if(g_cursors[(int)CursorType::ARROW]) ca::pa::logPedantic("Loaded cursor 'GLFW_ARROW_CURSOR'.");
 	g_cursors[(int)CursorType::CROSSHAIR] = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+	if(g_cursors[(int)CursorType::CROSSHAIR]) ca::pa::logPedantic("Loaded cursor 'GLFW_CROSSHAIR_CURSOR'.");
 	g_cursors[(int)CursorType::MOVE] = loadAsCursor("textures/cursor_cross.png", 7, 7);
 	g_cursors[(int)CursorType::RESIZE_DDOWN] = loadAsCursor("textures/cursor_resize_ddown.png", 7, 7);
 	g_cursors[(int)CursorType::RESIZE_DUP] = loadAsCursor("textures/cursor_resize_dup.png", 7, 7);
 	g_cursors[(int)CursorType::RESIZE_H] = loadAsCursor("textures/cursor_resize_h.png", 7, 7);
 	g_cursors[(int)CursorType::RESIZE_V] = loadAsCursor("textures/cursor_resize_v.png", 7, 7);
+	ca::pa::logPedantic("Loaded cursors.");
 }
 
 

@@ -20,6 +20,7 @@ namespace ca { namespace gui {
 	{
 	public:
 		Sharp3DTheme(const Sharp3DProperties& _desc);
+		~Sharp3DTheme();
 
 		virtual void drawTextArea(const class RefFrame& _rect) override;
 		virtual void drawBackgroundArea(const class RefFrame& _rect, float _opacity = 1.0f) override;

@@ -54,6 +54,11 @@ namespace ca { namespace gui {
 			}
 	}
 
+	void Group::clear()
+	{
+		m_children.clear();
+	}
+
 	bool Group::processInput(const MouseState& _mouseState)
 	{
 		// Component disabled?

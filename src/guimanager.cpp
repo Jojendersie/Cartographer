@@ -13,9 +13,9 @@ namespace ca { namespace gui {
 	{
 		g_manager.reset(new GUIManager);
 		if(!_renderer)
-			return logError("No renderer given for initialization!");
+			return logError("[ca::gui] No renderer given for initialization!");
 		if(!_theme)
-			return logError("No theme given for initialization!");
+			return logError("[ca::gui] No theme given for initialization!");
 		g_manager->m_renderer = _renderer;
 		g_manager->m_theme = _theme;
 		// Use an internal light-weight frame as container
@@ -29,11 +29,13 @@ namespace ca { namespace gui {
 		g_manager->m_stickyKeyboardFocus = false;
 		g_manager->m_stickyMouseFocus[0] = false;
 		g_manager->m_stickyMouseFocus[1] = false;
+		logInfo("[ca::gui] Initialized GUIManager.");
 	}
 
 	void GUIManager::exit()
 	{
 		g_manager.reset(nullptr);
+		logInfo("[ca::gui] Released GUIManager.");
 	}
 
 	void GUIManager::onResize(int _width, int _height)
@@ -52,6 +54,11 @@ namespace ca { namespace gui {
 		if(!g_manager)
 			return logError("Uninitialized GUIManager! Cannot remove components!");
 		g_manager->m_topFrame->remove(_widget);
+	}
+
+	void GUIManager::clear()
+	{
+		g_manager->m_topFrame->clear();
 	}
 
 	void GUIManager::draw()

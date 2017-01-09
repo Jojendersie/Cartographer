@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ca/pa/log.hpp>
 #include "ca/gui/rendering/sharp3dtheme.hpp"
 #include "ca/gui/backend/renderbackend.hpp"
 #include "ca/gui/guimanager.hpp"
@@ -17,6 +18,12 @@ namespace ca { namespace gui {
 	Sharp3DTheme::Sharp3DTheme(const Sharp3DProperties& _desc) :
 		m_properties(_desc)
 	{
+		pa::logInfo("[ca::gui] Created Sharp 3D Theme.");
+	}
+
+	Sharp3DTheme::~Sharp3DTheme()
+	{
+		pa::logInfo("[ca::gui] Destroyed Sharp 3D Theme.");
 	}
 
 	void Sharp3DTheme::drawTextArea(const RefFrame& _rect)

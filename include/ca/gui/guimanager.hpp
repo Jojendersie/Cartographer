@@ -29,6 +29,12 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		/// Find and remove a widget (O(n) with n = number of elements)
 		static void remove(WidgetPtr _widget);
 
+		/// Remove all current widgets.
+		/// \details This can be usefull to switch between different GUIs. As long as you
+		///		keep one WidgetPtr the component is not deleted and thus can be added back
+		///		later.
+		static void clear();
+
 		/// Render all content
 		static void draw();
 

@@ -28,6 +28,9 @@ namespace ca { namespace gui {
 		/// Find and remove a widget (O(n) with n = number of elements)
 		void remove(WidgetPtr _widget);
 
+		/// Remove all widgets from this group.
+		void clear();
+
 		/// Forward input to subelements and to properties
 		virtual bool processInput(const struct MouseState& _mouseState) override;
 
