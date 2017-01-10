@@ -57,9 +57,10 @@ namespace ca { namespace pa {
 			}
 		}
 
+		bool s_initialized = false; // assert s_notInitialized == false because static memory is 0
 		void logMessage(LogSeverity _severity, std::string& _msg)
 		{
-			if(s_msgHandlers.empty())
+			if(!s_initialized)
 			{
 				s_msgHandlers.push_back(defaultHandler);
 #if defined(_WINDOWS) || defined(_WIN64) || defined(_WIN32)
@@ -67,7 +68,10 @@ namespace ca { namespace pa {
 				SetConsoleMode(hStdout, ENABLE_VIRTUAL_TERMINAL_PROCESSING | ENABLE_PROCESSED_OUTPUT);
 			//	SetConsoleMode(hStdout, ENABLE_VIRTUAL_TERMINAL_INPUT);
 #endif
+				s_initialized = true;
 			}
+			if(s_msgHandlers.empty())
+				defaultHandler(_severity, _msg);
 			for(auto it : s_msgHandlers)
 			{
 				it(_severity, _msg);
