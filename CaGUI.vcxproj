@@ -164,6 +164,7 @@
     <ClInclude Include="include\ca\gui\properties\moveable.hpp" />
     <ClInclude Include="include\ca\gui\properties\refframe.hpp" />
     <ClInclude Include="include\ca\gui\properties\resizeable.hpp" />
+    <ClInclude Include="include\ca\gui\properties\textproperties.hpp" />
     <ClInclude Include="include\ca\gui\rendering\flattheme.hpp" />
     <ClInclude Include="include\ca\gui\rendering\sharp3dtheme.hpp" />
     <ClInclude Include="include\ca\gui\rendering\theme.hpp" />

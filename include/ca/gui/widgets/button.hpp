@@ -3,11 +3,12 @@
 #include <string>
 #include "ca/gui/widgets/widget.hpp"
 #include "ca/gui/properties/coordinate.hpp"
+#include "ca/gui/properties/textproperties.hpp"
 
 namespace ca { namespace gui {
 
 	/// A standard clickable button with text and optional icon
-	class Button : public Widget
+	class Button : public Widget, public TextProperties
 	{
 	public:
 		Button();

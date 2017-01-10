@@ -98,6 +98,9 @@
     <ClInclude Include="include\ca\gui\widgets\group.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
+    <ClInclude Include="include\ca\gui\properties\textproperties.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\widgets\frame.cpp">

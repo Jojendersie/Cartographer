@@ -52,15 +52,16 @@ namespace ca { namespace gui {
 
 		// Compute text and icon positions
 		Coord2 iconPos, textPos;
+		Coord2 effectiveTextSize = m_textSize * m_relativeTextSize;
 		float downScale = 1.0f;
 		if(!m_iconTexture)
 		{
 			// autoscale if width or height is greater then the reference frame.
-			downScale = ei::min(1.0f, m_refFrame.width() / m_textSize.x,
-									  m_refFrame.height() / m_textSize.y);
+			downScale = ei::min(1.0f, m_refFrame.width() / (effectiveTextSize.x),
+									  m_refFrame.height() / (effectiveTextSize.y));
 			textPos.x = (m_refFrame.left() + m_refFrame.right()) * 0.5f;
 			textPos.y = (m_refFrame.bottom() + m_refFrame.top()) * 0.5f;
-			textPos -= m_textSize * downScale * 0.5f;
+			textPos -= effectiveTextSize * downScale * 0.5f;
 		} else if(m_text.empty()) {
 			// autoscale if width or height is greater then the reference frame.
 			downScale = ei::min(1.0f, m_refFrame.width() / (m_iconSize.x + m_iconPadding * 2.0f),
@@ -70,13 +71,13 @@ namespace ca { namespace gui {
 			iconPos -= m_iconSize * downScale * 0.5f;
 		} else if(m_iconPos == SIDE::LEFT || m_iconPos == SIDE::RIGHT)
 		{
-			float width = m_iconSize.x + m_textSize.x + m_iconPadding * 2.0f;
-			float height = ei::max(m_iconSize.y, m_textSize.y) + m_iconPadding * 2.0f;
+			float width = m_iconSize.x + effectiveTextSize.x + m_iconPadding * 2.0f;
+			float height = ei::max(m_iconSize.y, effectiveTextSize.y) + m_iconPadding * 2.0f;
 			// autoscale if width or height is greater then the reference frame.
 			downScale = ei::min(1.0f, m_refFrame.width() / width,
 									  m_refFrame.height() / height);
 			iconPos.y = textPos.y = (m_refFrame.bottom() + m_refFrame.top()) * 0.5f;
-			textPos.y -= m_textSize.y * downScale * 0.5f;
+			textPos.y -= effectiveTextSize.y * downScale * 0.5f;
 			iconPos.y -= m_iconSize.y * downScale * 0.5f;
 			if(m_iconPos == SIDE::LEFT)
 			{
@@ -84,16 +85,16 @@ namespace ca { namespace gui {
 				textPos.x = m_refFrame.left() + (m_iconPadding * 2.0f + m_iconSize.x) * downScale;
 			} else {
 				iconPos.x = m_refFrame.right() - (m_iconPadding + m_iconSize.x) * downScale;
-				textPos.x = m_refFrame.right() - (m_iconPadding * 2.0f + m_iconSize.x + m_textSize.x) * downScale;
+				textPos.x = m_refFrame.right() - (m_iconPadding * 2.0f + m_iconSize.x + effectiveTextSize.x) * downScale;
 			}
 		} else {
-			float width = ei::max(m_iconSize.x, m_textSize.x) + m_iconPadding * 2.0f;
-			float height = m_iconSize.y + m_textSize.y + m_iconPadding * 3.0f;
+			float width = ei::max(m_iconSize.x, effectiveTextSize.x) + m_iconPadding * 2.0f;
+			float height = m_iconSize.y + effectiveTextSize.y + m_iconPadding * 3.0f;
 			// autoscale if width or height is greater then the reference frame.
 			downScale = ei::min(1.0f, m_refFrame.width() / width,
-				m_refFrame.height() / height);
+									  m_refFrame.height() / height);
 			iconPos.x = textPos.x = (m_refFrame.left() + m_refFrame.right()) * 0.5f;
-			textPos.x -= m_textSize.x * downScale * 0.5f;
+			textPos.x -= effectiveTextSize.x * downScale * 0.5f;
 			iconPos.x -= m_iconSize.x * downScale * 0.5f;
 			if(m_iconPos == SIDE::BOTTOM)
 			{
@@ -101,7 +102,7 @@ namespace ca { namespace gui {
 				textPos.y = m_refFrame.bottom() + (m_iconPadding * 2.0f + m_iconSize.y) * downScale;
 			} else {
 				iconPos.y = m_refFrame.top() - (m_iconPadding + m_iconSize.y) * downScale;
-				textPos.y = m_refFrame.top() - (m_iconPadding * 2.0f + m_iconSize.y + m_textSize.y) * downScale;
+				textPos.y = m_refFrame.top() - (m_iconPadding * 2.0f + m_iconSize.y + effectiveTextSize.y) * downScale;
 			}
 		}
 
@@ -117,7 +118,7 @@ namespace ca { namespace gui {
 		}
 
 		// Text
-		GUIManager::theme().drawText(textPos, m_text.c_str(), downScale, mouseOver);
+		GUIManager::theme().drawText(textPos, m_text.c_str(), downScale * m_relativeTextSize, mouseOver);
 	}
 
 }} // namespace ca::gui
