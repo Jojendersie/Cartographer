@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\include\ca\camap.hpp" />
+    <ClInclude Include="..\include\ca\map\unit\unit.hpp">
+      <Filter>unit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ca\map\map\construct.hpp">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ca\map\map\grid.hpp">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ca\map\map\tile.hpp">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ca\map\map\cell.hpp">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ca\map\action\wayfinder.hpp">
+      <Filter>action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ca\map\action\input.hpp">
+      <Filter>action</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="action">
+      <UniqueIdentifier>{0944059e-23dc-4363-8609-4a07d0088d59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="map">
+      <UniqueIdentifier>{3b406194-9002-42c8-9f98-93563955a1e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="unit">
+      <UniqueIdentifier>{bdb6b852-54d8-44a6-b126-eb70a06bfb02}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
