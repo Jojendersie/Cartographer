@@ -46,6 +46,17 @@ namespace ca { namespace map {
 			}
 			std::swap(tmp, *this);
 		}
+
+		/// Compute a 2D floating point position of the tile center.
+		/// \details In QUAD grids this is the same as the integer coordinate, whereas
+		///		HEX grids have alternating x-coords.
+		ei::Vec2 realCoord(const ei::IVec2& _coord)
+		{
+			if(_type == Type::QUAD)
+				return ei::Vec2(_coord);
+			else
+				return ei::Vec2(_coord.x - (_coord.y & 1) * 0.5f, (float)_coord.y);
+		}
 		
 		/// Compare occupied cells of _other and AND all the results.
 		/// \details To implement an OR or some else return value you may use exceptions.
