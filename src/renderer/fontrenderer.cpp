@@ -1,6 +1,7 @@
 #include "ca/cc/renderer/fontrenderer.hpp"
 #include "ca/cc/glcore/opengl.hpp"
 #include "ca/cc/glcore/vertexformat.hpp"
+#include "ca/cc/utilities/hrclock.hpp"
 #include <ca/pa/log.hpp>
 
 #include <string>
@@ -251,6 +252,8 @@ namespace ca { namespace cc {
 
 	void FontRenderer::createFont(const char* _fontFile, const char* _characters)
 	{
+		HRClock clock;
+
 		// Init library
 		FT_Library ftlib;
 		if( FT_Init_FreeType( &ftlib ) )
@@ -299,6 +302,9 @@ namespace ca { namespace cc {
 			logError("Cannot free all Freetype resources!");
 			return;
 		}
+
+		double time = clock.deltaTime();
+		logInfo("Loaded font '", _fontFile, "' in ", time, " ms.");
 	}
 
 #pragma pack(push, 1)
@@ -323,6 +329,8 @@ namespace ca { namespace cc {
 
 	void FontRenderer::storeCaf(const char* _fontFile)
 	{
+		HRClock clock;
+
 		FILE* file = fopen(_fontFile, "wb");
 		if(!file) { logError("Cannot open file ", _fontFile, " for writing!"); return; }
 
@@ -366,10 +374,14 @@ namespace ca { namespace cc {
 		}
 
 		fclose(file);
+
+		double time = clock.deltaTime();
+		logInfo("Stored font '", _fontFile, "' in ", time, " ms.");
 	}
 
 	void FontRenderer::loadCaf(const char* _fontFile)
 	{
+		HRClock clock;
 		// Clear for multiple load calls
 		m_chars.clear();
 		if(m_texture) Texture2D::unload(m_texture);
@@ -419,6 +431,9 @@ namespace ca { namespace cc {
 		m_texture = texture->finalize(false, false);
 
 		fclose(file);
+
+		double time = clock.deltaTime();
+		logInfo("Loaded font '", _fontFile, "' in ", time, " ms.");
 	}
 
 	/// Copy a rectangle into the larger target rectangle
@@ -484,7 +499,7 @@ namespace ca { namespace cc {
 				charEntry = m_chars.emplace(c, bmpChar).first;
 			} else {
 				// Character was already there -> do nothing
-				logError("Input string contains a character repetition.");
+				logError("Input string contains a character repetition of '", c,"'.");
 				continue;
 			}
 			// While copying center the glyph within its padding width
@@ -592,8 +607,10 @@ namespace ca { namespace cc {
 				eiAssert(((ptr[1] & 0xc0) == 0x80), "Invalid utf8 codepoint!");
 				c = ((ptr[0] & 0x1f) << 6) | (ptr[1] & 0x3f);
 				*_textit = ptr + 2;
-			} else
-				eiAssert(false, "Invalid utf8 codepoint! The first byte of an utf8 character cannot start with 10xxx.");
+			} else {
+				logWarning("Invalid utf8 codepoint! The first byte of an utf8 character cannot start with 10xxx.");
+				c = 0;
+			}
 		} else {
 			c = ptr[0];
 			*_textit = ptr + 1;
