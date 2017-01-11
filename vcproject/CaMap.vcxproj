@@ -82,19 +82,23 @@
     <OutDir>$(SolutionDir)lib/</OutDir>
     <IntDir>$(SolutionDir)build/$(Platform)/$(Configuration)/</IntDir>
     <TargetName>$(ProjectName)D</TargetName>
+    <IncludePath>$(SolutionDir)include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)lib/</OutDir>
     <IntDir>$(SolutionDir)build/$(Platform)/$(Configuration)/</IntDir>
+    <IncludePath>$(SolutionDir)include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)lib/</OutDir>
     <IntDir>$(SolutionDir)build/$(Platform)/$(Configuration)/</IntDir>
     <TargetName>$(ProjectName)D</TargetName>
+    <IncludePath>$(SolutionDir)include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)lib/</OutDir>
     <IntDir>$(SolutionDir)build/$(Platform)/$(Configuration)/</IntDir>
+    <IncludePath>$(SolutionDir)include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
