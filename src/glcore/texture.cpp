@@ -20,6 +20,8 @@ namespace ca { namespace cc {
 	{
 		// Create openGL - resource
 		glGenTextures(1, &m_textureID);
+
+		pa::logInfo("[ca::cc] Created raw texture ", m_textureID, " .");
 	}
 
 	Texture2D::Texture2D(const char* _textureFileName, const Sampler& _sampler, bool _srgb) : 
@@ -28,6 +30,10 @@ namespace ca { namespace cc {
 	{
 		// Load from file
 		stbi_uc* textureData = stbi_load(_textureFileName, &m_width, &m_height, &m_numComponents, 0);
+		if(!textureData)
+		{
+			pa::logError("[ca::cc] Could not load texture '", _textureFileName, "'.");
+		}
 		// Create openGL - resource
 		glGenTextures(1, &m_textureID);
 		glCall(glBindTexture, GL_TEXTURE_2D, m_textureID);
@@ -42,6 +48,15 @@ namespace ca { namespace cc {
 		// Enable bindless access
 		m_bindlessHandle = glCall(glGetTextureSamplerHandleARB, m_textureID, m_sampler->getID());
 		glCall(glMakeTextureHandleResidentARB, m_bindlessHandle);
+
+		pa::logInfo("[ca::cc] Loaded texture ", m_textureID, " from '", _textureFileName, "'.");
+	}
+
+	Texture2D::~Texture2D()
+	{
+		glMakeTextureHandleNonResidentARB(m_bindlessHandle);
+		glDeleteTextures(1, &m_textureID);
+		pa::logInfo("[ca::cc] Deleted texture ", m_textureID, " .");
 	}
 
 	Texture2D::Handle Texture2D::load(const char* _fileName, const Sampler& _sampler, bool _srgb)

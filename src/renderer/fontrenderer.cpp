@@ -56,6 +56,8 @@ namespace ca { namespace cc {
 		glCall(glVertexAttribPointer, 4, 1, GLenum(PrimitiveFormat::FLOAT), GL_FALSE, 32, (GLvoid*)(28));
 
 		m_sampler = new Sampler(Sampler::Filter::POINT, Sampler::Filter::LINEAR, Sampler::Filter::LINEAR, Sampler::Border::CLAMP);
+
+		pa::logInfo("[ca::cc] Created font renderer.");
 	}
 
 	FontRenderer::~FontRenderer()
@@ -67,6 +69,9 @@ namespace ca { namespace cc {
 		glCall(glDeleteVertexArrays, 1, &m_vao);
 
 		if(m_texture) Texture2D::unload(m_texture);
+		m_sampler = nullptr;
+
+		pa::logInfo("[ca::cc] Destroyed font renderer.");
 	}
 
 	void FontRenderer::draw(const ei::Vec3& _position, const char* _text, float _size, const ei::Vec4& _color, float _rotation, float _alignX, float _alignY, bool _roundToPixel)
@@ -258,7 +263,7 @@ namespace ca { namespace cc {
 		FT_Library ftlib;
 		if( FT_Init_FreeType( &ftlib ) )
 		{
-			logError("Cannot initalize freetype!");
+			logError("[ca::cc] Cannot initalize freetype!");
 			return;
 		}
 
@@ -266,7 +271,7 @@ namespace ca { namespace cc {
 		FT_Face fontFace;
 		if( FT_New_Face(ftlib, _fontFile, 0, &fontFace) )
 		{
-			logError("Could not open font!");
+			logError("[ca::cc] Could not open font!");
 			return;
 		}
 
@@ -276,7 +281,7 @@ namespace ca { namespace cc {
 		int texHeight = MIP_RANGE * createMap(map[mipLevel--], _characters, fontFace, BASE_SIZE / MIP_RANGE, MAP_WIDTH / MIP_RANGE, MIP_RANGE / mipFactor);
 		if(!texHeight)
 		{
-			logError("Cancel font creation because basic mipmap could not be created!");
+			logError("[ca::cc] Cancel font creation because basic mipmap could not be created!");
 			return;
 		}
 		while(mipFactor > 1)
@@ -299,12 +304,12 @@ namespace ca { namespace cc {
 		// Free resources
 		if( FT_Done_FreeType(ftlib) )
 		{
-			logError("Cannot free all Freetype resources!");
+			logError("[ca::cc] Cannot free all Freetype resources!");
 			return;
 		}
 
 		double time = clock.deltaTime();
-		logInfo("Loaded font '", _fontFile, "' in ", time, " ms.");
+		logInfo("[ca::cc] Loaded font '", _fontFile, "' in ", time, " ms.");
 	}
 
 #pragma pack(push, 1)
@@ -332,7 +337,7 @@ namespace ca { namespace cc {
 		HRClock clock;
 
 		FILE* file = fopen(_fontFile, "wb");
-		if(!file) { logError("Cannot open file ", _fontFile, " for writing!"); return; }
+		if(!file) { logError("[ca::cc] Cannot open file ", _fontFile, " for writing!"); return; }
 
 		// Header with number of characters, global metrics and texture dimensions.
 		CafHeader header;
@@ -376,7 +381,7 @@ namespace ca { namespace cc {
 		fclose(file);
 
 		double time = clock.deltaTime();
-		logInfo("Stored font '", _fontFile, "' in ", time, " ms.");
+		logInfo("[ca::cc] Stored font '", _fontFile, "' in ", time, " ms.");
 	}
 
 	void FontRenderer::loadCaf(const char* _fontFile)
@@ -387,7 +392,7 @@ namespace ca { namespace cc {
 		if(m_texture) Texture2D::unload(m_texture);
 
 		FILE* file = fopen(_fontFile, "rb");
-		if(!file) { logError("Cannot open file ", _fontFile, " for reading!"); return; }
+		if(!file) { logError("[ca::cc] Cannot open file ", _fontFile, " for reading!"); return; }
 
 		CafHeader header;
 		fread(&header, sizeof(CafHeader), 1, file);
@@ -433,7 +438,7 @@ namespace ca { namespace cc {
 		fclose(file);
 
 		double time = clock.deltaTime();
-		logInfo("Loaded font '", _fontFile, "' in ", time, " ms.");
+		logInfo("[ca::cc] Loaded font '", _fontFile, "' in ", time, " ms.");
 	}
 
 	/// Copy a rectangle into the larger target rectangle

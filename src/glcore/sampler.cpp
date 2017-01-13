@@ -36,11 +36,14 @@ namespace ca { namespace cc {
 			GL_CALL(glSamplerParameteri, m_samplerId, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
 			GL_CALL(glSamplerParameteri, m_samplerId, GL_TEXTURE_COMPARE_FUNC, static_cast<GLenum>(desc.compareMode));
 		}*/
+
+		pa::logInfo("[ca::cc] Created sampler ", m_samplerID, ".");
 	}
 
 	Sampler::~Sampler()
 	{
 		glCall(glDeleteSamplers, 1, &m_samplerID);
+		pa::logInfo("[ca::cc] Deleted sampler ", m_samplerID, ".");
 	}
 
 	void Sampler::bind(uint _textureSlot) const

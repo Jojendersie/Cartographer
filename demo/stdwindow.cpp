@@ -46,6 +46,7 @@ GLFWwindow* setupStdWindow(const char* _titel, bool _vsync)
 	glfwWindowHint(GLFW_SAMPLES, 16);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
+	glfwWindowHint(GLFW_SRGB_CAPABLE, GL_TRUE);
 #ifdef _DEBUG
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 #endif

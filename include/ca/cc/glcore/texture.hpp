@@ -62,6 +62,8 @@ namespace ca { namespace cc {
 		/// \param [in] _sampler A sampler which will be used with this texture.
 		Texture2D(const char* _textureFileName, const Sampler& _sampler, bool _srgb);
 
+		~Texture2D();
+
 		int m_width;
 		int m_height;
 		int m_numComponents; ///< R, G, B, A?
