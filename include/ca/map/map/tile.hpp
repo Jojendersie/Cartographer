@@ -12,7 +12,7 @@ namespace ca { namespace map {
 	public:
 		virtual ~Tile() = default;
 
-		virtual void draw() const {}
+		virtual void draw(const ei::Vec3& _position) const {}
 		/// \param [in] _screenCoord An [0,1]^2 position on screen.
 		virtual void processInput(const ei::Vec2& _screenCoord, MouseAction _mouseAction, float _mouseActAmount) {}
 		

@@ -52,7 +52,7 @@ namespace ca { namespace map {
 		///		HEX grids have alternating x-coords.
 		ei::Vec2 realCoord(const ei::IVec2& _coord)
 		{
-			if(_type == Type::QUAD)
+			if(m_type == Type::QUAD)
 				return ei::Vec2(_coord);
 			else
 				return ei::Vec2(_coord.x - (_coord.y & 1) * 0.5f, (float)_coord.y);
@@ -119,11 +119,11 @@ namespace ca { namespace map {
 			}
 			// Add rows at bottom (back of the vector)
 			else if(_coord.y >= m_yPosition + (int)m_rows.size()) {
-				for(int i = int(m_yPosition + m_rows.size()); i < _coord.y; ++i)
+				for(int i = int(m_yPosition + m_rows.size()); i <= _coord.y; ++i)
 					m_rows.push_back(Row());
 				// We now have an empty row -> fill in the element
 				m_rows.back().cells.push_back(std::move(_value));
-				m_rows.front().xpos.push_back(_coord.x);
+				m_rows.back().xpos.push_back(_coord.x);
 			}
 			// There is already a row, insert the element to it
 			else {
