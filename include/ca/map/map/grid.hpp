@@ -10,7 +10,7 @@ namespace ca { namespace map {
 	class Grid
 	{
 	public:
-		class Type {
+		enum class Type {
 			QUAD,
 			HEX,
 		};
@@ -104,25 +104,25 @@ namespace ca { namespace map {
 			{
 				m_yPosition = _coord.y;
 				m_rows.push_back(Row());
-				m_rows.first().xpos.push_back(_coord.x);
-				m_rows.first().cells.push_back(_value);
+				m_rows.front().xpos.push_back(_coord.x);
+				m_rows.front().cells.push_back(std::move(_value));
 			}
 			// Add rows on top (front of the vector)
 			else if(_coord.y < m_yPosition)
 			{
-				Row emptyRow;
-				m_rows.insert(m_rows.begin(), m_yPosition - _coord.y, emptyRow);
+				for(int i = _coord.y; i < m_yPosition; ++i)
+					m_rows.insert(m_rows.begin(), Row());
 				m_yPosition = _coord.y;
 				// We now have an empty row -> fill in the element
-				m_rows.front().cells.push_back(_value);
+				m_rows.front().cells.push_back(std::move(_value));
 				m_rows.front().xpos.push_back(_coord.x);
 			}
 			// Add rows at bottom (back of the vector)
-			else if(_coord.y >= m_yPosition + m_rows.size()) {
-				Row emptyRow;
-				m_rows.insert(m_rows.back(), _coord.y - (m_yPosition + m_rows.size()), emptyRow);
+			else if(_coord.y >= m_yPosition + (int)m_rows.size()) {
+				for(int i = int(m_yPosition + m_rows.size()); i < _coord.y; ++i)
+					m_rows.push_back(Row());
 				// We now have an empty row -> fill in the element
-				m_rows.back().cells.push_back(_value);
+				m_rows.back().cells.push_back(std::move(_value));
 				m_rows.front().xpos.push_back(_coord.x);
 			}
 			// There is already a row, insert the element to it
@@ -130,30 +130,30 @@ namespace ca { namespace map {
 				auto& row = m_rows[_coord.y - m_yPosition];
 				// Empty row?
 				if(row.cells.size() == 0) {
-					row.cells.push_back(_value);
+					row.cells.push_back(std::move(_value));
 					row.xpos.push_back(_coord.x);
 				}
 				// Insert in front of the other elements
-				else if(_coord.x < row.xpos.first())
+				else if(_coord.x < row.xpos.front())
 				{
-					row.cells.insert(row.cells.front(), _value);
-					row.xpos.insert(row.xpos.front(), _coord.x);
+					row.cells.insert(row.cells.begin(), std::move(_value));
+					row.xpos.insert(row.xpos.begin(), _coord.x);
 				}
 				// Insert at the end
-				else if(_coord.x >= row.xpos.last())
+				else if(_coord.x >= row.xpos.back())
 				{
-					row.cells.insert(row.cells.back(), _value);
-					row.xpos.insert(row.xpos.back(), _coord.x);
+					row.cells.push_back(std::move(_value));
+					row.xpos.push_back(_coord.x);
 				}
 				// Find the position with binary search
 				else {
 					int m;
 					if(binSearch(row, _coord.x, m)) {
-						row.cells[m] = _value;
+						row.cells[m] = std::move(_value);
 					} else {
 						// Not found -> insert at m or m-1 ???? is only one case possible
 						if(_coord.x > row.xpos[m]) --m;
-						row.cells.insert(row.cells.begin() + m, _value);
+						row.cells.insert(row.cells.begin() + m, std::move(_value));
 						row.xpos.insert(row.xpos.begin() + m, _coord.x);
 					}					
 				}
@@ -192,6 +192,7 @@ namespace ca { namespace map {
 					m_col = 0;
 					++m_row;
 				}
+				return *this;
 			}
 			
 			SeqIterator& operator -- ()
@@ -202,6 +203,7 @@ namespace ca { namespace map {
 					--m_row;
 					m_col = m_gridRef.m_rows[m_row].cells.size() - 1;
 				}
+				return *this;
 			}
 			
 			// Post increment
@@ -275,7 +277,7 @@ namespace ca { namespace map {
 			}
 			
 			/// Access to the data (fails hard for invalid iterators)
-			T& dat() { return m_gridRef.m_rows[m_row].cells[m_col]; }
+		//	T& dat() { return m_gridRef.m_rows[m_row].cells[m_col]; }
 			const T& dat() const { return m_gridRef.m_rows[m_row].cells[m_col]; }
 			/// Get the coordinate of the current grid cell.
 			ei::IVec2 pos() const { return ei::IVec2(m_x, m_gridRef.m_yPosition + m_row); }
@@ -331,9 +333,9 @@ namespace ca { namespace map {
 			while(l < r)
 			{
 				_m = (l + r) / 2;
-				if(row.xpos[_m] < _x) l = m;
-				else if(row.xpos[_m] == _x) return true;
-				else r = m;
+				if(_row.xpos[_m] < _x) l = _m;
+				else if(_row.xpos[_m] == _x) return true;
+				else r = _m;
 			}
 			return false;
 		}

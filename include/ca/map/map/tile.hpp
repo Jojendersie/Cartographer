@@ -19,7 +19,7 @@ namespace ca { namespace map {
 		/// \param [in] _neighbor A number in [0,8] for quad grids and [0,6] for hex grids.
 		///		0 is the tile itself and the other numbers start at 1 for the north tile
 		///		increasing in clock-wise direction.
-		virtual void trigger(int _neighbor, Unit* _unit) {}
+		virtual void trigger(int _neighbor, class Unit* _unit) {}
 		
 		/// Solid objects block paths of units.
 		virtual bool isSolid() const = 0;
