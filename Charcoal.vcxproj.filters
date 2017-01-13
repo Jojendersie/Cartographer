@@ -67,6 +67,9 @@
       <Filter>utilities</Filter>
     </ClInclude>
     <ClInclude Include="include\ca\charcoal.hpp" />
+    <ClInclude Include="include\ca\cc\glcore\buffer.hpp">
+      <Filter>glcore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\freetype\src\type1cid.c">
@@ -233,6 +236,9 @@
     </ClCompile>
     <ClCompile Include="src\renderer\linerenderer.cpp">
       <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glcore\buffer.cpp">
+      <Filter>glcore</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
