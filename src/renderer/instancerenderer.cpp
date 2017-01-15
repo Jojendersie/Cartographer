@@ -44,6 +44,7 @@ InstanceRenderer::InstanceRenderer(GLPrimitiveType _type, const VertexAttribute*
 	for(int i = 0; i < _numAttributes; ++i)
 	{
 		glCall(glEnableVertexAttribArray, i);
+		glCall(glVertexAttribDivisor, unsigned(i), 0);
 		if( isFloatFormat(_attributes[i].type) || _attributes[i].normalize )
 			glCall(glVertexAttribPointer,
 					unsigned(i),
@@ -59,7 +60,6 @@ InstanceRenderer::InstanceRenderer(GLPrimitiveType _type, const VertexAttribute*
 					GLenum(_attributes[i].type),
 					m_vertexSize * sizeof(float),
 					(GLvoid*)(m_attributes[i].offset * sizeof(float)));
-		//glCall(glVertexAttribDivisor, unsigned(i), 0);
 	}
 	// Buffer for later put() commands.
 	m_currentVertex.resize(m_vertexSize);
@@ -84,7 +84,7 @@ int InstanceRenderer::beginDef()
 	meshDef.indexOffset = (unsigned)m_indexData.size();
 	meshDef.numInstances = 0;
 	meshDef.vertexCount = 0;
-	meshDef.vertexOffset = (unsigned)m_vertexData.size() / m_vertexSize;
+	meshDef.vertexOffset = (unsigned)m_vertexData.size();
 	m_meshes.push_back(meshDef);
 	return (int)m_meshes.size()-1;
 }
@@ -243,7 +243,7 @@ void InstanceRenderer::newInstance(int _meshID, const ei::Vec3& _position, const
 	// Find the position where to insert, it depends on how many instances are within the other meshes
 	int pos = 0;
 	for(int i = 0; i <= _meshID; ++i)
-		pos += m_meshes[_meshID].numInstances;
+		pos += m_meshes[i].numInstances;
 	m_instances.insert(m_instances.begin() + pos, instance);
 	++m_meshes[_meshID].numInstances;
 
@@ -274,15 +274,18 @@ void InstanceRenderer::draw() const
 	int instanceOffset = 0;
 	for(auto& it : m_meshes)
 	{
-		// TODO: bind material
-		glCall(glDrawElementsInstancedBaseInstance,
-			unsigned(m_glType),
-			it.indexCount,
-			GL_UNSIGNED_INT,
-			(void*)it.indexOffset,
-			it.numInstances,
-			instanceOffset);
-		instanceOffset += it.numInstances;
+		if(it.numInstances > 0)
+		{
+			// TODO: bind material
+			glCall(glDrawElementsInstancedBaseInstance,
+				unsigned(m_glType),
+				it.indexCount,
+				GL_UNSIGNED_INT,
+				(void*)(it.indexOffset * 4),
+				it.numInstances,
+				instanceOffset);
+			instanceOffset += it.numInstances;
+		}
 	}
 }
 
