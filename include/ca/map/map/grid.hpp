@@ -55,7 +55,7 @@ namespace ca { namespace map {
 			if(m_type == Type::QUAD)
 				return ei::Vec2(_coord);
 			else
-				return ei::Vec2(_coord.x - (_coord.y & 1) * 0.5f, (float)_coord.y);
+				return ei::Vec2((_coord.x - (_coord.y & 1) * 0.5f) / 0.866025404f, (float)_coord.y);
 		}
 		
 		/// Compare occupied cells of _other and AND all the results.
