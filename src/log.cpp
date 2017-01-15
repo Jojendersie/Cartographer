@@ -58,7 +58,7 @@ namespace ca { namespace pa {
 		}
 
 		bool s_initialized = false; // assert s_notInitialized == false because static memory is 0
-		void logMessage(LogSeverity _severity, std::string& _msg)
+		void logMessage(LogSeverity _severity, const std::string& _msg)
 		{
 			if(!s_initialized)
 			{
