@@ -19,7 +19,7 @@ static void cursorPosFunc(GLFWwindow*, double _x, double _y)
 	g_mouseState.position = Coord2((float)_x, GUIManager::getHeight() - (float)_y);
 }
 
-void mouseButtonFunc(GLFWwindow* _window, int _button, int _action, int _mods)
+static void mouseButtonFunc(GLFWwindow* _window, int _button, int _action, int _mods)
 {
 	if(_button < 8)
 	{
@@ -31,6 +31,12 @@ void mouseButtonFunc(GLFWwindow* _window, int _button, int _action, int _mods)
 			g_mouseState.anyButtonUp = true;
 		}
 	}
+}
+
+static void scrollFunc(GLFWwindow*, double _x, double _y)
+{
+	g_mouseState.deltaScroll.x = (float)_x;
+	g_mouseState.deltaScroll.y = (float)_y;
 }
 
 
@@ -53,6 +59,7 @@ void setupInput(GLFWwindow* _window)
 {
 	glfwSetCursorPosCallback(_window, cursorPosFunc);
 	glfwSetMouseButtonCallback(_window, mouseButtonFunc);
+	glfwSetScrollCallback(_window, scrollFunc);
 
 	g_cursors[(int)CursorType::ARROW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 	if(g_cursors[(int)CursorType::ARROW]) ca::pa::logPedantic("Loaded cursor 'GLFW_ARROW_CURSOR'.");

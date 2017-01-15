@@ -18,6 +18,7 @@ namespace ca { namespace gui {
 		lastPosition = position;
 		anyButtonDown = false;
 		anyButtonUp = false;
+		deltaScroll = ei::Vec2(0.0f);
 	}
 
 }} // namespace ca::gui

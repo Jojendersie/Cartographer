@@ -8,8 +8,8 @@ namespace ca { namespace gui {
 	struct MouseState
 	{
 		/// Cursor position in internal coordinates.
-		/// \details Coordinates outside [0,1] are possible if the mouse leaves the window while
-		///		being pressed or if the window was resized and the mouse is not yet repositioned.
+		/// \details Coordinates outside [0,width/heigh] are possible if the mouse leaves the window
+		///		while being pressed or if the window was resized and the mouse is not yet repositioned.
 		Coord2 position;
 
 		/// Change of the position since last frame.
@@ -34,10 +34,24 @@ namespace ca { namespace gui {
 			DBL_CLICKED = 16,	///< Metastate Two CLICK events occured in a short period
 		};
 
+		enum class Button
+		{
+			LEFT = 0,
+			RIGHT = 1,
+			MIDDLE = 2,
+			MB3 = 3,
+			MB4 = 4,
+			MB5 = 5,
+			MB6 = 6,
+			MB7 = 7
+		};
+
 		/// State for up to 8 buttons
 		ButtonState buttons[8];
 		/// Is there any DOWN or UP event for any of the 8 buttons?
 		bool anyButtonUp, anyButtonDown, anyButtonPressed;
+
+		ei::Vec2 deltaScroll;
 
 		/// Reset/change states
 		void clear();
