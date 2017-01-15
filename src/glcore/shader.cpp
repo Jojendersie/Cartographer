@@ -23,7 +23,7 @@ namespace ca { namespace cc {
 	 
 			// The maxLength includes the NULL character
 			std::string errorLog;
-			errorLog.reserve(maxLength);
+			errorLog.resize(maxLength);
 			glCall(glGetShaderInfoLog, m_shaderID, maxLength, &maxLength, &errorLog[0]);
 			logError(errorLog);
 			glCall(glDeleteShader, m_shaderID);
@@ -110,7 +110,7 @@ namespace ca { namespace cc {
 	 
 			// The maxLength includes the NULL character
 			std::string errorLog;
-			errorLog.reserve(maxLength);
+			errorLog.resize(maxLength);
 			glCall(glGetProgramInfoLog, m_programID, maxLength, &maxLength, &errorLog[0]);
 			logError(errorLog);
 
