@@ -330,7 +330,7 @@ namespace ca { namespace map {
 			if(_x < _row.xpos[l]) { _m = l; return false; }
 			if(_x >= _row.xpos[r-1]) { _m = r; return false; }
 			// Binary search of the x-coordinate
-			while(l < r)
+			while(l+1 < r)
 			{
 				_m = (l + r) / 2;
 				if(_row.xpos[_m] < _x) l = _m;
