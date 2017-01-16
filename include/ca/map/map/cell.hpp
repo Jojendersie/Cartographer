@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ca/map/map/tile.hpp"
+#include <memory>
 
 namespace ca { namespace map {
 	
@@ -10,12 +11,12 @@ namespace ca { namespace map {
 	{
 	public:
 		/// Get a tile from a certain layer. Might be 0 if not occupied.
-		Tile* getTile(uint _layer) { return m_layer[_layer].get(); }
-		const Tile* getTile(uint _layer) const { return m_layer[_layer].get(); }
+		Tile* getTile(uint _layer) { return m_layer[_layer]; }
+		const Tile* getTile(uint _layer) const { return m_layer[_layer]; }
 		
 		/// Set or replace a tile
-		void setTile(uint _layer, std::unique_ptr<Tile> _tile) {
-			m_layer[_layer] = move(_tile);
+		void setTile(uint _layer, Tile* _tile) {
+			m_layer[_layer] = _tile;
 		}
 		
 		/// Is a certain layer in this cell counting as occupied?
@@ -42,7 +43,7 @@ namespace ca { namespace map {
 			return false;
 		}
 	private:
-		std::unique_ptr<Tile> m_layer[N];
+		Tile* m_layer[N];
 	};
 	
 }} // namespace ca::map

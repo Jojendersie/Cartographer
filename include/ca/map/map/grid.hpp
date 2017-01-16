@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <vector>
 
 namespace ca { namespace map {
 	
@@ -303,7 +304,7 @@ namespace ca { namespace map {
 			friend class Grid<T>;
 		};
 
-	private:
+	protected:
 		struct Row {
 			// CRS (compressed row storage) like format.
 			// Stores the x positions of each occupied entry and its content
