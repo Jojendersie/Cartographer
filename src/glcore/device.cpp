@@ -156,14 +156,15 @@ namespace ca { namespace cc {
 			if(_zFunc == ComparisonFunc::ALWAYS)
 			{
 				glCall(glDisable, GL_DEPTH_TEST);
+				s_zEnable = false;
 			} else {
-				if(s_zEnable) {
+				if(!s_zEnable) {
 					glCall(glEnable, GL_DEPTH_TEST);
 					s_zEnable = true;
 				}
 				glCall(glDepthFunc, unsigned(_zFunc));
-				s_zFunc = _zFunc;
 			}
+			s_zFunc = _zFunc;
 		}
 	}
 

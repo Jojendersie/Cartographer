@@ -30,10 +30,15 @@ namespace ca { namespace cc {
 			void put(int _attrIndex, const uint32 _value);
 			/// Go to the next vertex/primitive. Also checks if the vertex is valid.
 			void emit();
+			/// Emit the vertex only without touching any primitive (should be used
+			/// with defTriangle()).
+			void emitVertex();
 			/// Finish the primitive in case of LINE_STRIPE and TRIANGLE_STRIPE
 			void endPrimitive();
 		/// Upload mesh
 		void endDef();
+
+		void defTriangle(uint32 _a, uint32 _b, uint32 _c);
 		
 		/// \param [in] _position Position in world (x,y) and z for the "layer".
 		/// \param [in] _rotation Angle (radiants) of a rotation around the z-axis).

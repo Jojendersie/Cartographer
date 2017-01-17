@@ -214,6 +214,11 @@ void InstanceRenderer::emit()
 	}
 }
 
+void InstanceRenderer::emitVertex()
+{
+	m_vertexData.insert(m_vertexData.end(), m_currentVertex.begin(), m_currentVertex.end());
+}
+
 void InstanceRenderer::endPrimitive()
 {
 	m_startNewPrimitive = 0;
@@ -233,6 +238,13 @@ void InstanceRenderer::endDef()
 
 	glCall(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 	glCall(glBufferData, GL_ELEMENT_ARRAY_BUFFER, m_indexData.size() * 4, m_indexData.data(), GL_STATIC_DRAW);
+}
+
+void InstanceRenderer::defTriangle(uint32 _a, uint32 _b, uint32 _c)
+{
+	m_indexData.push_back(_a);
+	m_indexData.push_back(_b);
+	m_indexData.push_back(_c);
 }
 
 void InstanceRenderer::newInstance(int _meshID, const ei::Vec3& _position, const ei::Quaternion& _rotation)
@@ -264,6 +276,7 @@ void InstanceRenderer::draw() const
 	if(m_dirty)
 	{
 		glCall(glBindBuffer, GL_ARRAY_BUFFER, m_vboInstances);
+		// TODO: subdata for dynamic stuff?
 		glCall(glBufferData, GL_ARRAY_BUFFER, m_instances.size() * sizeof(MeshInstance), m_instances.data(), GL_DYNAMIC_DRAW);
 		m_dirty = false;
 	}
