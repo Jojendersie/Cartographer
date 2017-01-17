@@ -166,12 +166,12 @@ namespace ca { namespace map {
 		{
 			// Check y-range if element is on map at all.
 			if(_coord.y < m_yPosition) return nullptr;
-			if(_coord.y >= m_yPosition + m_rows.size()) return nullptr;
+			if(_coord.y >= m_yPosition + (int)m_rows.size()) return nullptr;
 			
 			auto& row = m_rows[_coord.y - m_yPosition];
 			int m;
 			if(binSearch(row, _coord.x, m))
-				return row.cells[m];
+				return &row.cells[m];
 			// Not found = in some empty range
 			return nullptr;
 		}
@@ -338,6 +338,7 @@ namespace ca { namespace map {
 				else if(_row.xpos[_m] == _x) return true;
 				else r = _m;
 			}
+			if(_row.xpos[l] == _x) { _m = 0; return true; }
 			return false;
 		}
 	};

@@ -10,6 +10,12 @@ namespace ca { namespace map {
 	class Cell
 	{
 	public:
+		Cell()
+		{
+			for(uint i = 0; i < N; ++i)
+				m_layer[i] = nullptr;
+		}
+
 		/// Get a tile from a certain layer. Might be 0 if not occupied.
 		Tile* getTile(uint _layer) { return m_layer[_layer]; }
 		const Tile* getTile(uint _layer) const { return m_layer[_layer]; }
