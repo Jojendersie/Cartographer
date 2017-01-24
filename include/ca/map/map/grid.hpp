@@ -7,6 +7,8 @@ namespace ca { namespace map {
 	
 	/// A grid is a row wise sparse array with either quad- or hex- neigborhood.
 	/// The origin is bottom-left and coordinates increase towards east and north.
+	/// \details
+	///		A good source for hexagonal coordinates: http://www.redblobgames.com/grids/hexagons/
 	template<typename T>
 	class Grid
 	{
@@ -51,12 +53,26 @@ namespace ca { namespace map {
 		/// Compute a 2D floating point position of the tile center.
 		/// \details In QUAD grids this is the same as the integer coordinate, whereas
 		///		HEX grids have alternating x-coords.
-		ei::Vec2 realCoord(const ei::IVec2& _coord)
+		ei::Vec2 realCoord(const ei::IVec2& _coord) const
 		{
 			if(m_type == Type::QUAD)
 				return ei::Vec2(_coord);
 			else
-				return ei::Vec2((_coord.x - (_coord.y & 1) * 0.5f) / 0.866025404f, (float)_coord.y);
+				return //ei::Vec2((_coord.x - (_coord.y & 1) * 0.5f) / 0.866025404f, (float)_coord.y);
+					ei::Vec2(1.732050808f * (_coord.x + _coord.y * 0.5f), 1.5f * _coord.y);
+		}
+
+		/// Compute a grid index from a real coordinate.
+		/// \details This uses standard rounding towards the closest number.
+		ei::IVec2 gridCoord(const ei::Vec2& _coord) const
+		{
+			if(m_type == Type::QUAD)
+				return round(_coord);
+			else {
+				return hexRound(Vec2(_coord.x * 1.732050808f - _coord.y, _coord.y * 2.0f) / 3.0f);
+				//int y = round(_coord.y);
+				//return ei::IVec2(round(_coord.x * 0.866025404f + (y & 1) * 0.5f), y);
+			}
 		}
 		
 		/// Compare occupied cells of _other and AND all the results.
@@ -260,11 +276,11 @@ namespace ca { namespace map {
 				} else {
 					switch(n) {
 						case 0: return NeighborIterator(m_gridRef, m_row, m_col, m_x + 1); break;
-						case 1: return NeighborIterator(m_gridRef, m_row - 1, m_col, m_x + (m_row & 1) ? 1 : 0); break;
-						case 2: return NeighborIterator(m_gridRef, m_row - 1, m_col, m_x + (m_row & 1) ? 0 : -1); break;
+						case 1: return NeighborIterator(m_gridRef, m_row - 1, m_col, m_x + 1); break;
+						case 2: return NeighborIterator(m_gridRef, m_row - 1, m_col, m_x); break;
 						case 3: return NeighborIterator(m_gridRef, m_row, m_col, m_x - 1); break;
-						case 4: return NeighborIterator(m_gridRef, m_row + 1, m_col, m_x + (m_row & 1) ? 0 : -1); break;
-						case 5: return NeighborIterator(m_gridRef, m_row + 1, m_col, m_x + (m_row & 1) ? 1 : 0); break;
+						case 4: return NeighborIterator(m_gridRef, m_row + 1, m_col, m_x - 1); break;
+						case 5: return NeighborIterator(m_gridRef, m_row + 1, m_col, m_x); break;
 					}
 				}
 			}
@@ -340,6 +356,27 @@ namespace ca { namespace map {
 			}
 			if(_row.xpos[l] == _x) { _m = 0; return true; }
 			return false;
+		}
+
+		static ei::IVec2 hexRound(const ei::Vec2& _p)
+		{
+			// Convert Axial to Cube (x+y+z=0) coordinates and round
+			int ix = ei::round(_p.x);
+			int iy = ei::round(-_p.x - _p.y);
+			int iz = ei::round(_p.y);
+
+			// Check if fractions satisfy x+y+z=0 constraint
+			float fx = abs(ix - _p.x);
+			float fy = abs(iy + _p.x + _p.y);
+			float fz = abs(iz - _p.y);
+
+			if(fx > fy && fx > fz)
+				ix = -iy-iz;
+			else if(fz > fy)
+				iz = -ix-iy;
+			// Neglegt case where y is largest because we discard it anyway.
+
+			return IVec2(ix, iz);
 		}
 	};
 }}
