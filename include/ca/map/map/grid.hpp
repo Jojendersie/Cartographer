@@ -157,7 +157,7 @@ namespace ca { namespace map {
 					row.xpos.insert(row.xpos.begin(), _coord.x);
 				}
 				// Insert at the end
-				else if(_coord.x >= row.xpos.back())
+				else if(_coord.x > row.xpos.back())
 				{
 					row.cells.push_back(std::move(_value));
 					row.xpos.push_back(_coord.x);
@@ -168,8 +168,9 @@ namespace ca { namespace map {
 					if(binSearch(row, _coord.x, m)) {
 						row.cells[m] = std::move(_value);
 					} else {
-						// Not found -> insert at m or m-1 ???? is only one case possible
-						if(_coord.x > row.xpos[m]) --m;
+						// Not found -> insert at m or m+1
+						if(_coord.x > row.xpos[m])
+							++m;
 						row.cells.insert(row.cells.begin() + m, std::move(_value));
 						row.xpos.insert(row.xpos.begin() + m, _coord.x);
 					}					
@@ -345,7 +346,7 @@ namespace ca { namespace map {
 			int l = 0;
 			int r = _row.xpos.size();
 			if(_x < _row.xpos[l]) { _m = l; return false; }
-			if(_x >= _row.xpos[r-1]) { _m = r; return false; }
+			if(_x > _row.xpos[r-1]) { _m = r; return false; }
 			// Binary search of the x-coordinate
 			while(l+1 < r)
 			{
