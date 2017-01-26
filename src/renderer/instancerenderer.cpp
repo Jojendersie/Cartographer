@@ -81,7 +81,7 @@ int InstanceRenderer::beginDef()
 	// Create new mesh definition without vertices so far.
 	MeshDefinition meshDef;
 	meshDef.indexCount = 0;
-	meshDef.indexOffset = (unsigned)m_indexData.size();
+	meshDef.indexOffset = (unsigned)m_indexData.size() * 4;
 	meshDef.numInstances = 0;
 	meshDef.vertexCount = 0;
 	meshDef.vertexOffset = (unsigned)m_vertexData.size();
@@ -227,7 +227,7 @@ void InstanceRenderer::endPrimitive()
 void InstanceRenderer::endDef()
 {
 	m_meshes.back().vertexCount = (m_vertexData.size() - m_meshes.back().vertexOffset) / m_vertexSize;
-	m_meshes.back().indexCount = m_indexData.size() - m_meshes.back().indexOffset;
+	m_meshes.back().indexCount = m_indexData.size() - (m_meshes.back().indexOffset / 4);
 
 	// TODO: remove redundant vertices
 	// TODO: improve cache order
@@ -242,9 +242,10 @@ void InstanceRenderer::endDef()
 
 void InstanceRenderer::defTriangle(uint32 _a, uint32 _b, uint32 _c)
 {
-	m_indexData.push_back(_a);
-	m_indexData.push_back(_b);
-	m_indexData.push_back(_c);
+	uint32 baseVertex = m_meshes.back().vertexOffset / m_vertexSize;
+	m_indexData.push_back(_a + baseVertex);
+	m_indexData.push_back(_b + baseVertex);
+	m_indexData.push_back(_c + baseVertex);
 }
 
 void InstanceRenderer::newInstance(int _meshID, const ei::Vec3& _position, const ei::Quaternion& _rotation)
@@ -294,7 +295,7 @@ void InstanceRenderer::draw() const
 				unsigned(m_glType),
 				it.indexCount,
 				GL_UNSIGNED_INT,
-				(void*)(it.indexOffset * 4),
+				(void*)(it.indexOffset),
 				it.numInstances,
 				instanceOffset);
 			instanceOffset += it.numInstances;

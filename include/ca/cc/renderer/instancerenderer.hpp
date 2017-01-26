@@ -38,6 +38,9 @@ namespace ca { namespace cc {
 		/// Upload mesh
 		void endDef();
 
+		/// Create a triangle for the current mesh (0-indexed).
+		/// \details An index offset is added automatically if this is not the first
+		///		model in the buffer.
 		void defTriangle(uint32 _a, uint32 _b, uint32 _c);
 		
 		/// \param [in] _position Position in world (x,y) and z for the "layer".
