@@ -13,6 +13,8 @@ namespace ca { namespace cc {
 	public:
 		uint getID() const { return m_textureID; }
 
+		Texture() : m_textureID(0) {}
+
 	protected:
 		uint m_textureID;
 	};

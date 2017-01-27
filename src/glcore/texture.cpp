@@ -24,15 +24,19 @@ namespace ca { namespace cc {
 		pa::logInfo("[ca::cc] Created raw texture ", m_textureID, " .");
 	}
 
-	Texture2D::Texture2D(const char* _textureFileName, const Sampler& _sampler, bool _srgb) : 
-		m_bindlessHandle(0),
-		m_sampler(&_sampler)
+	Texture2D::Texture2D(const char* _textureFileName, const Sampler& _sampler, bool _srgb) :
+		m_width(0),
+		m_height(0),
+		m_numComponents(0),
+		m_sampler(&_sampler),
+		m_bindlessHandle(0)
 	{
 		// Load from file
 		stbi_uc* textureData = stbi_load(_textureFileName, &m_width, &m_height, &m_numComponents, 0);
 		if(!textureData)
 		{
 			pa::logError("[ca::cc] Could not load texture '", _textureFileName, "'.");
+			return;
 		}
 		// Create openGL - resource
 		glGenTextures(1, &m_textureID);
