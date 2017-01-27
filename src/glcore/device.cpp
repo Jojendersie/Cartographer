@@ -8,6 +8,7 @@ namespace ca { namespace cc {
 	BlendFactor Device::s_srcFactor[8] 			= {BlendFactor::ONE};
 	BlendFactor Device::s_dstFactor[8] 			= {BlendFactor::ZERO};
 	bool Device::s_blendEnable					= false;
+	bool Device::s_alphaToCoverageEnable		= false;
 	CullMode Device::s_cullMode 				= CullMode::BACK;
 	FillMode Device::s_fillMode 				= FillMode::SOLID;
 	int Device::s_stencilRef					= 0;
@@ -62,6 +63,18 @@ namespace ca { namespace cc {
 			else
 				glCall(glDisable, GL_BLEND);
 			s_blendEnable = _enable;
+		}
+	}
+
+	void Device::enableAlphaToCoverage(bool _enable)
+	{
+		if(s_alphaToCoverageEnable != _enable)
+		{
+			if(_enable)
+				glCall(glEnable, GL_SAMPLE_ALPHA_TO_COVERAGE);
+			else
+				glCall(glDisable, GL_SAMPLE_ALPHA_TO_COVERAGE);
+			s_alphaToCoverageEnable = _enable;
 		}
 	}
 

@@ -76,6 +76,7 @@ namespace ca { namespace cc {
 		static void setBlendFactor(BlendFactor _srcFactor, BlendFactor _dstFactor, int _target = 0);
 		static void setBlendColor();
 		static void enableBlending(bool _enable);
+		static void enableAlphaToCoverage(bool _enable);
 		
 		static void setFillMode(FillMode _mode);
 		static void setCullMode(CullMode _mode);
@@ -98,6 +99,7 @@ namespace ca { namespace cc {
 		static BlendOp s_blendOp[8];
 		static BlendFactor s_srcFactor[8], s_dstFactor[8];
 		static bool s_blendEnable;
+		static bool s_alphaToCoverageEnable;
 		static CullMode s_cullMode;
 		static FillMode s_fillMode;
 		static int s_stencilRef;
