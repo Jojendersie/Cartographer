@@ -260,7 +260,7 @@ namespace ca { namespace map {
 							++m;
 						row.cells.insert(row.cells.begin() + m, std::move(T()));
 						row.xpos.insert(row.xpos.begin() + m, _coord.x);
-						return row.cells.front();
+						return row.cells[m];
 					}					
 				}
 			}
