@@ -195,7 +195,76 @@ namespace ca { namespace map {
 		
 		/// Get a cell. If it was not occupied before it gets filled with a default constructed
 		/// T element.
-		T& get(const ei::IVec2& _coord); // TODO: implement if needed
+		T& get(const ei::IVec2& _coord)
+		{
+			// First element at all?
+			if(m_rows.empty())
+			{
+				m_yPosition = _coord.y;
+				m_rows.push_back(Row());
+				m_rows.front().xpos.push_back(_coord.x);
+				m_rows.front().cells.resize(1);
+				return m_rows.front().cells.front();
+			}
+			// Add rows on top (front of the vector)
+			else if(_coord.y < m_yPosition)
+			{
+				for(int i = _coord.y; i < m_yPosition; ++i)
+					m_rows.insert(m_rows.begin(), Row());
+				m_yPosition = _coord.y;
+				// We now have an empty row -> fill in the element
+				m_rows.front().xpos.push_back(_coord.x);
+				m_rows.front().cells.resize(1);
+				return m_rows.front().cells.front();
+			}
+			// Add rows at bottom (back of the vector)
+			else if(_coord.y >= m_yPosition + (int)m_rows.size()) {
+				for(int i = int(m_yPosition + m_rows.size()); i <= _coord.y; ++i)
+					m_rows.push_back(Row());
+				// We now have an empty row -> fill in the element
+				m_rows.back().xpos.push_back(_coord.x);
+				m_rows.back().cells.resize(1);
+				return m_rows.back().cells.front();
+			}
+			// There is already a row, insert the element to it
+			else {
+				auto& row = m_rows[_coord.y - m_yPosition];
+				// Empty row?
+				if(row.cells.size() == 0) {
+					row.xpos.push_back(_coord.x);
+					row.cells.resize(1);
+					return row.cells.front();
+				}
+				// Insert in front of the other elements
+				else if(_coord.x < row.xpos.front())
+				{
+					row.cells.insert(row.cells.begin(), std::move(T()));
+					row.xpos.insert(row.xpos.begin(), _coord.x);
+					return row.cells.front();
+				}
+				// Insert at the end
+				else if(_coord.x > row.xpos.back())
+				{
+					row.cells.push_back(std::move(T()));
+					row.xpos.push_back(_coord.x);
+					return row.cells.back();
+				}
+				// Find the position with binary search
+				else {
+					int m;
+					if(binSearch(row, _coord.x, m)) {
+						return row.cells[m];
+					} else {
+						// Not found -> insert at m or m+1
+						if(_coord.x > row.xpos[m])
+							++m;
+						row.cells.insert(row.cells.begin() + m, std::move(T()));
+						row.xpos.insert(row.xpos.begin() + m, _coord.x);
+						return row.cells.front();
+					}					
+				}
+			}
+		}
 		
 		/// Iterator class which allows sequential access to all grid cells.
 		class SeqIterator
