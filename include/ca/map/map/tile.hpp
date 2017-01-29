@@ -2,12 +2,13 @@
 
 #include <ei/vector.hpp>
 #include "ca/map/action/input.hpp"
+#include <ca/pa/memory/refptr.hpp>
 
 namespace ca { namespace map {
 	
 	/// A tile is the smallest logical unit on each map.
 	/// It may have some graphical representation, an input action and unit triggers.
-	class Tile
+	class Tile : public ca::pa::ReferenceCountable
 	{
 	public:
 		virtual ~Tile() = default;
