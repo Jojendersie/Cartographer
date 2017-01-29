@@ -62,8 +62,8 @@ namespace ca { namespace pa {
 				_other.m_ptr = nullptr;
 		}
 
-		RefPtr& operator = (const RefPtr& _other)			{ this->~RefPtr(); m_ptr = _other.m_ptr; m_ptr->m_refCounter++; return *this; }
-		RefPtr& operator = (T* _other)						{ this->~RefPtr(); m_ptr = _other;       m_ptr->m_refCounter++; return *this; }
+		RefPtr& operator = (const RefPtr& _other)			{ this->~RefPtr(); m_ptr = _other.m_ptr; if(m_ptr) m_ptr->m_refCounter++; return *this; }
+		RefPtr& operator = (T* _other)						{ this->~RefPtr(); m_ptr = _other;       if(m_ptr) m_ptr->m_refCounter++; return *this; }
 		RefPtr& operator = (RefPtr&& _other)				{ this->~RefPtr(); m_ptr = _other.m_ptr; _other.m_ptr = nullptr; return *this; }
 
 		// Deletion
