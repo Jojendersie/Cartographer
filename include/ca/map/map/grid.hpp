@@ -62,6 +62,15 @@ namespace ca { namespace map {
 					ei::Vec2(1.732050808f * (_coord.x + _coord.y * 0.5f), 1.5f * _coord.y);
 		}
 
+		/// Convert floating point grid coordinates to real positions
+		ei::Vec2 realCoord(const ei::Vec2& _coord) const
+		{
+			if(m_type == Type::QUAD)
+				return _coord;
+			else
+				return ei::Vec2(1.732050808f * (_coord.x + _coord.y * 0.5f), 1.5f * _coord.y);
+		}
+
 		/// Compute a grid index from a real coordinate.
 		/// \details This uses standard rounding towards the closest number.
 		ei::IVec2 gridCoord(const ei::Vec2& _coord) const
