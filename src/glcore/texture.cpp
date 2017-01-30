@@ -38,6 +38,21 @@ namespace ca { namespace cc {
 			pa::logError("[ca::cc] Could not load texture '", _textureFileName, "'.");
 			return;
 		}
+
+		// Force black alpha
+		if(m_numComponents == 4)
+		{
+			for(int i = 0; i < m_width * m_height * 4; i += 4)
+			{
+				if(textureData[i + 3] == 0)
+				{
+					textureData[i] = 0;
+					textureData[i+1] = 0;
+					textureData[i+2] = 0;
+				}
+			}
+		}
+
 		// Create openGL - resource
 		glGenTextures(1, &m_textureID);
 		glCall(glBindTexture, GL_TEXTURE_2D, m_textureID);
