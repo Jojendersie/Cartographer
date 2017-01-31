@@ -11,6 +11,6 @@ namespace ca { namespace map {
 		/// Return a mask which tiles are solid.
 		/// \details The meaning of the ints can be specified manually.
 		///		It should be used in Grid::compare actions.
-		virtual Grid<int> getOccupancy() const = 0;
+//		virtual Grid<int> getOccupancy() const = 0;
 	};
 }}

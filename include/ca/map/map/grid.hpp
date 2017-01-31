@@ -4,22 +4,21 @@
 #include <vector>
 
 namespace ca { namespace map {
+
+	enum class GridType {
+		QUAD_4,		// A quad grid with 4-neighbors
+		QUAD_8,		// A quad grid with 8-neighbors
+		HEX,
+	};
 	
 	/// A grid is a row wise sparse array with either quad- or hex- neigborhood.
 	/// The origin is bottom-left and coordinates increase towards east and north.
 	/// \details
 	///		A good source for hexagonal coordinates: http://www.redblobgames.com/grids/hexagons/
-	template<typename T>
+	template<unsigned GridT, typename CellT>
 	class Grid
 	{
 	public:
-		enum class Type {
-			QUAD,
-			HEX,
-		};
-		
-		Grid(Type _type) : m_type(_type)
-		{}
 		
 		/// Rotates a grid by 90° or 60° times the number of ticks dependent on the type.
 		/// \details A rotation reorganizes the memory and is therefore expensive for large
@@ -27,18 +26,18 @@ namespace ca { namespace map {
 		void rotate(int _ticks)
 		{
 			ei::IMat2x2 rot;
-			if(_type == Type::QUAD)
+			if(GridT == unsigned(GridType::HEX))
 			{
-				// Create the rotation matrix for the coordiantes.
-				rot = ei::round(ei::rotation(PI / 2.0f * _ticks));
-			} else {
 				// The rotation of integral hex-coordinates requires +1/-1 in more dimensions.
 				// E.g. a rotation by 60° converts (0,0), (1,0), (2,0), (3,0) into (0,0), (1,1), (2,2), (3,3).
 				// I.e. the rotation matrix is not orthonormal/orthogonal. Ceil hopefully does this. TODO: test
 				rot = ei::ceil(ei::rotation(PI / 3.0f * _ticks));
+			} else {
+				// Create the rotation matrix for the coordiantes.
+				rot = ei::round(ei::rotation(PI / 2.0f * _ticks));
 			}
 			// Create a copy of the map and move the elements
-			Grid<T> tmp(Type::QUAD);
+			Grid<GridT, CellT> tmp;
 			for(int j = 0; j < m_rows.size(); ++j)
 			{
 				Row& row = m_rows[j];
@@ -55,42 +54,42 @@ namespace ca { namespace map {
 		///		HEX grids have alternating x-coords.
 		ei::Vec2 realCoord(const ei::IVec2& _coord) const
 		{
-			if(m_type == Type::QUAD)
-				return ei::Vec2(_coord);
-			else
+			if(GridT == unsigned(GridType::HEX))
 				return //ei::Vec2((_coord.x - (_coord.y & 1) * 0.5f) / 0.866025404f, (float)_coord.y);
 					ei::Vec2(1.732050808f * (_coord.x + _coord.y * 0.5f), 1.5f * _coord.y);
+			else
+				return ei::Vec2(_coord);
 		}
 
 		/// Convert floating point grid coordinates to real positions
 		ei::Vec2 realCoord(const ei::Vec2& _coord) const
 		{
-			if(m_type == Type::QUAD)
-				return _coord;
-			else
+			if(GridT == unsigned(GridType::HEX))
 				return ei::Vec2(1.732050808f * (_coord.x + _coord.y * 0.5f), 1.5f * _coord.y);
+			else
+				return _coord;
 		}
 
 		/// Compute a grid index from a real coordinate.
 		/// \details This uses standard rounding towards the closest number.
 		ei::IVec2 gridCoord(const ei::Vec2& _coord) const
 		{
-			if(m_type == Type::QUAD)
-				return round(_coord);
-			else {
+			if(GridT == unsigned(GridType::HEX)) {
 				return hexRound(Vec2(_coord.x * 1.732050808f - _coord.y, _coord.y * 2.0f) / 3.0f);
 				//int y = round(_coord.y);
 				//return ei::IVec2(round(_coord.x * 0.866025404f + (y & 1) * 0.5f), y);
+			} else {
+				return round(_coord);
 			}
 		}
-		
+
 		/// Compare occupied cells of _other and AND all the results.
 		/// \details To implement an OR or some else return value you may use exceptions.
 		///
 		///		Empty rows or cells of any grid are skipped. If the two maps do not
 		///		overlap the return value is true.
 		template<typename T2>
-		bool compare(const Grid<T2>& _other, std::function<bool(const T&, const T2&)> _comparator) const
+		bool compare(const Grid<GridT,T2>& _other, std::function<bool(const CellT&, const T2&)> _comparator) const
 		{
 			bool res = true;
 			// Iterate over a minimal range in y
@@ -120,7 +119,7 @@ namespace ca { namespace map {
 			}
 			return res;
 		}
-		
+
 		/// Set/overwrite any grid cell.
 		template<typename T2> // Recapture type for move sematic. T2 should be T in this case.
 		void set(const ei::IVec2& _coord, T2&& _value)
@@ -182,13 +181,13 @@ namespace ca { namespace map {
 							++m;
 						row.cells.insert(row.cells.begin() + m, std::move(_value));
 						row.xpos.insert(row.xpos.begin() + m, _coord.x);
-					}					
+					}
 				}
 			}
 		}
-		
+
 		/// Find out if a grid cell contains some element and returns an access pointer to it.
-		T* find(const ei::IVec2& _coord)
+		CellT* find(const ei::IVec2& _coord)
 		{
 			// Check y-range if element is on map at all.
 			if(_coord.y < m_yPosition) return nullptr;
@@ -201,10 +200,10 @@ namespace ca { namespace map {
 			// Not found = in some empty range
 			return nullptr;
 		}
-		
+
 		/// Get a cell. If it was not occupied before it gets filled with a default constructed
 		/// T element.
-		T& get(const ei::IVec2& _coord)
+		CellT& get(const ei::IVec2& _coord)
 		{
 			// First element at all?
 			if(m_rows.empty())
@@ -247,14 +246,14 @@ namespace ca { namespace map {
 				// Insert in front of the other elements
 				else if(_coord.x < row.xpos.front())
 				{
-					row.cells.insert(row.cells.begin(), std::move(T()));
+					row.cells.insert(row.cells.begin(), std::move(CellT()));
 					row.xpos.insert(row.xpos.begin(), _coord.x);
 					return row.cells.front();
 				}
 				// Insert at the end
 				else if(_coord.x > row.xpos.back())
 				{
-					row.cells.push_back(std::move(T()));
+					row.cells.push_back(std::move(CellT()));
 					row.xpos.push_back(_coord.x);
 					return row.cells.back();
 				}
@@ -267,14 +266,27 @@ namespace ca { namespace map {
 						// Not found -> insert at m or m+1
 						if(_coord.x > row.xpos[m])
 							++m;
-						row.cells.insert(row.cells.begin() + m, std::move(T()));
+						row.cells.insert(row.cells.begin() + m, std::move(CellT()));
 						row.xpos.insert(row.xpos.begin() + m, _coord.x);
 						return row.cells[m];
 					}					
 				}
 			}
 		}
-		
+
+		/// Determines the minimal number of grid cells between two locations.
+		/// This is the Manhatten-distance for quad-4 grids and something similar
+		/// for hex grids.
+		int gridDistance(const ei::IVec2& _a, const ei::IVec2& _b)
+		{
+			if(GridT == unsigned(GridType::QUAD_4))
+				return abs(_b.x - _a.x) + abs(_b.y - _a.y);
+			else if(GridT == unsigned(GridType::QUAD_8))
+				return max(abs(_b - _a));
+			else
+				return (abs(_a.x - _b.x) + abs(_a.x + _a.y - _b.x - _b.y) + abs(_a.y - _b.y)) / 2;
+		}
+
 		/// Iterator class which allows sequential access to all grid cells.
 		class SeqIterator
 		{
@@ -290,7 +302,7 @@ namespace ca { namespace map {
 				}
 				return *this;
 			}
-			
+
 			SeqIterator& operator -- ()
 			{
 				--m_col;
@@ -301,7 +313,7 @@ namespace ca { namespace map {
 				}
 				return *this;
 			}
-			
+
 			// Post increment
 			SeqIterator operator ++ (int) {
 				SeqIterator copy = *this;
@@ -313,28 +325,28 @@ namespace ca { namespace map {
 				--*this;
 				return copy;
 			}
-			
+
 			/// Is this a valid iterator?
 			operator bool () const
 			{
 				return (m_row < m_gridRef.m_rows.size()) &&
 						(m_col < m_gridRef.m_rows[m_row].cells.size());
 			}
-			
+
 			/// Access to the data (fails hard for invalid iterators)
-			T& dat() { return m_gridRef.m_rows[m_row].cells[m_col]; }
-			const T& dat() const { return m_gridRef.m_rows[m_row].cells[m_col]; }
+			CellT& dat() { return m_gridRef.m_rows[m_row].cells[m_col]; }
+			const CellT& dat() const { return m_gridRef.m_rows[m_row].cells[m_col]; }
 			/// Get the coordinate of the current grid cell.
 			ei::IVec2 pos() const { return ei::IVec2(m_gridRef.m_rows[m_row].xpos[m_col], m_gridRef.m_yPosition + m_row); }
 		private:
-			SeqIterator(Grid<T>& _gridRef) : m_gridRef(_gridRef), m_row(0), m_col(0) {}
-			Grid<T>& m_gridRef;
+			SeqIterator(Grid<GridT, CellT>& _gridRef) : m_gridRef(_gridRef), m_row(0), m_col(0) {}
+			Grid<GridT, CellT>& m_gridRef;
 			uint m_row, m_col;
-			friend class Grid<T>;
+			friend class Grid<GridT, CellT>;
 		};
-		
+
 		SeqIterator begin() { return SeqIterator(*this); }
-		
+
 		/// Iterator class for neighborhood searches.
 		/// \details This iterator can be valid/invalid. In valid cases it always points
 		///		to a non-empty cell.
@@ -363,7 +375,7 @@ namespace ca { namespace map {
 					}
 				}
 			}
-			
+
 			/// Is this a valid iterator?
 			operator bool () const
 			{
@@ -371,14 +383,14 @@ namespace ca { namespace map {
 						&& (m_col < m_gridRef.m_rows[m_row].cells.size())	// Inside the row?
 						&& (m_gridRef.m_rows[m_row].xpos[m_col] == m_x);	// Points to a filled cell?
 			}
-			
+
 			/// Access to the data (fails hard for invalid iterators)
 		//	T& dat() { return m_gridRef.m_rows[m_row].cells[m_col]; }
-			const T& dat() const { return m_gridRef.m_rows[m_row].cells[m_col]; }
+			const CellT& dat() const { return m_gridRef.m_rows[m_row].cells[m_col]; }
 			/// Get the coordinate of the current grid cell.
 			ei::IVec2 pos() const { return ei::IVec2(m_x, m_gridRef.m_yPosition + m_row); }
 		private:
-			NeighborIterator(Grid<T>& _gridRef, uint _row, uint _col, int _x) :
+			NeighborIterator(Grid<GridT, CellT>& _gridRef, uint _row, uint _col, int _x) :
 				m_gridRef(_gridRef),
 				m_row(_row),
 				m_col(_col),
@@ -392,30 +404,35 @@ namespace ca { namespace map {
 					while(m_col < m_gridRef.m_rows[m_row].cells.size() && m_gridRef.m_rows[m_row].xpos[m_col] > _x) --m_col;
 				}
 			}
-			
-			Grid<T>& m_gridRef;
+
+			Grid<GridT, CellT>& m_gridRef;
 			uint m_row, m_col;
 			int m_x;
-			friend class Grid<T>;
+			friend class Grid<GridT, CellT>;
 		};
+
+		/// A* path finding algorithm.
+		/// \param [out] _path Output buffer for the path. Previous contents of the buffer are removed.
+		/// \returns False if no path is possible.
+		bool findPath(std::vector<ei::IVec2>& _path, const ei::IVec2& _from, const ei::IVec2& _to)
+		{
+		}
 
 	protected:
 		struct Row {
 			// CRS (compressed row storage) like format.
 			// Stores the x positions of each occupied entry and its content
 			std::vector<int> xpos;
-			std::vector<T> cells;
+			std::vector<CellT> cells;
 		};
 		std::vector<Row> m_rows;
-		
+
 		// The position is a global reference position of the first tile of the first row.
 		int m_yPosition;
-		
-		Type m_type;
-		
+
 		friend class SeqIterator;
 		friend class NeighborIterator;
-		
+
 		// Search for a specific x-coordinate.
 		// \param [out] _m The coordiate where the binary search stopped.
 		// \returns true if the element was found.
