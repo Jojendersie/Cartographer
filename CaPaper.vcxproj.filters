@@ -13,6 +13,9 @@
     <Filter Include="include\memory">
       <UniqueIdentifier>{f08ff890-f195-4088-90be-124bd8ba48a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\containers">
+      <UniqueIdentifier>{840c9053-497d-48fd-a6f1-2b74545aa52f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ca\pa\log.hpp">
@@ -23,6 +26,12 @@
     </ClInclude>
     <ClInclude Include="include\ca\paper.hpp">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\pa\containers\hashmap.hpp">
+      <Filter>include\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ca\pa\containers\priorityqueue.hpp">
+      <Filter>include\containers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

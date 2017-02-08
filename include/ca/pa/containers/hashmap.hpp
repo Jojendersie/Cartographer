@@ -2,6 +2,7 @@
 #include <type_traits>
 #include <cstring>
 
+namespace ca { namespace pa {
 
 template<typename K, typename T, typename Hash = std::hash<K>, typename Compare = std::equal_to<K>>
 class HashMap
@@ -228,3 +229,5 @@ private:
 		return *_key;
 	}*/
 };
+
+}} // namespace ca::pa
