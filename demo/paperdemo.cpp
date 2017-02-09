@@ -37,6 +37,90 @@ public:
 	}
 };
 
+
+struct QuickHash
+{
+	uint32_t operator () (int _x) const
+	{
+		return _x;
+	}
+};
+uint32_t hashint( uint32_t a)
+{
+	a -= (a<<6);
+	a ^= (a>>17);
+	a -= (a<<9);
+	a ^= (a<<4);
+	a -= (a<<3);
+	a ^= (a<<10);
+	a ^= (a>>15);
+	return a;
+}
+
+void hashMapBenchmark()
+{
+	HRClock clock;
+	double totalTime;
+
+	// Sequential insertion
+	if(true)
+	{
+		HashMap<int, int, QuickHash> map;
+
+		clock.deltaTime();
+		for(int s = 0; s < 1024 * 8192; ++s)
+		{
+			map.add(s, s);
+			//map.emplace(s, s);
+		}
+		totalTime = clock.deltaTime();
+		logInfo("[HM Benchmark] Insertion of 8M elements (integer sequence): ", totalTime, " ms.");
+
+		// Test if all elements are contained
+		clock.deltaTime();
+		for(int i = 0; i < 1024 * 8192; ++i)
+			if(!map.find(i)) 
+				logError("Cannot find an element which should be there!");
+		totalTime = clock.deltaTime();
+		logInfo("[HM Benchmark] Finding of 8M contained elements (integer sequence): ", totalTime, " ms.");
+
+		// Test for a lot of non-contained elements
+		clock.deltaTime();
+		for(int i = 1024 * 8192; i < 2 * 1024 * 8192; ++i)
+			if(map.find(i))
+				logError("Found an element which should not be there!");
+		totalTime = clock.deltaTime();
+		logInfo("[HM Benchmark] Finding of 8M non-contained elements: ", totalTime, " ms.");
+	}
+
+	// Random insertion + deletion
+	if(true)
+	{
+		HashMap<int, int, QuickHash> map;
+
+		clock.deltaTime();
+		for(int s = 0; s < 1024 * 8192; ++s)
+		{
+			int x = hashint(s);
+			map.add(x, x);
+			//map.emplace(x, x);
+		}
+		totalTime = clock.deltaTime();
+		logInfo("[HM Benchmark] Insertion of 8M randomized integer elements: ", totalTime, " ms.");
+
+		// Random deletion
+		clock.deltaTime();
+		for(int s = 0; s < 1024 * 8192; ++s)
+		{
+			int x = hashint(s);
+			map.remove(x);
+			//map.emplace(x, x);
+		}
+		totalTime = clock.deltaTime();
+		logInfo("[HM Benchmark] Deletion of 8M randomized integer elements: ", totalTime, " ms.");
+	}
+}
+
 int main()
 {
 	// Output some log messages
@@ -90,6 +174,8 @@ int main()
 		RefPtr<OutputGuardB> ptr2 = ptr1;
 		ptr2->tell();
 	}
+
+	hashMapBenchmark();
 
 	return 0;
 }

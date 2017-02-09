@@ -33,7 +33,7 @@ public:
 	};
 
 	explicit HashMap(uint32_t _expectedElementCount = 15) :
-		m_capacity(estimateCapacity(_exptectedElementCount)),
+		m_capacity(estimateCapacity(_expectedElementCount)),
 		m_size(0)
 	{
 		m_keys = static_cast<Key*>(malloc(sizeof(Key) * m_capacity));
@@ -155,7 +155,7 @@ public:
 		uint32_t d = 0;
 		uint32_t h = (uint32_t)m_hash(_key);//hash(reinterpret_cast<const uint32_t*>(&_key), sizeof(_key) / 4);
 		uint32_t idx = h % m_capacity;
-		while(m_keys[idx].dist != 0xffffffff)// && d <= m_keys[idx].dist)
+		while(m_keys[idx].dist != 0xffffffff && d <= m_keys[idx].dist)
 		{
 			if (m_keyCompare(m_keys[idx].key, _key))
 				return Handle(this, idx);
@@ -171,7 +171,7 @@ public:
 		//if(_newCapacity == m_capacity) return;
 		if(_newCapacity < m_size) _newCapacity = m_size;
 
-		HashMap<K,T> tmp(_newCapacity);
+		HashMap tmp(_newCapacity);
 		// Find all data sets and readd them to the new temporary hm
 		for(uint32_t i = 0; i < m_capacity; ++i)
 		{
