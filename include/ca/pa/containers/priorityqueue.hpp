@@ -7,17 +7,22 @@ namespace ca { namespace pa {
 	class PriorityQueue
 	{
 	public:
-		explicit PriorityQueue(uint32_t _reserveSize) :
+		explicit PriorityQueue(uint32_t _reserveSize = 32) :
 			m_capacity(_reserveSize),
-			m_size(0)
+			m_size(0),
+			m_nextFreeData(0)
 		{
 			m_data = (DataTupel*)malloc(sizeof(DataTupel) * _reserveSize);
 			m_heap = (uint32_t*)malloc(sizeof(uint32_t) * _reserveSize);
+			// Create the next free element list
+			for(uint32_t i = 0; i < m_capacity; ++i)
+				m_data[i].heapIdx = i + 1;
 		}
 
 		PriorityQueue(PriorityQueue&& _other) :
 			m_capacity(_other.m_capacity),
 			m_size(_other.m_size),
+			m_nextFreeData(_other.m_nextFreeData),
 			m_data(_other.m_data),
 			m_heap(_other.m_heap)
 		{
@@ -30,6 +35,7 @@ namespace ca { namespace pa {
 			this->~PriorityQueue();
 			m_capacity = _rhs.m_capacity;
 			m_size = _rhs.m_size;
+			m_nextFreeData = _rhs.m_nextFreeData;
 			m_data = _rhs.m_data;
 			m_heap = _rhs.m_heap;
 			_rhs.m_data = nullptr;
@@ -45,8 +51,9 @@ namespace ca { namespace pa {
 				// Call destructors of allocated keys and data
 				for(uint32_t i = 0; i < m_size; ++i)
 				{
-					m_data[i].p.~PriorityT();
-					m_data[i].d.~DataT();
+					// Redirect because data is not packed thickly, but the heap is.
+					m_data[m_heap[i]].p.~PriorityT();
+					m_data[m_heap[i]].d.~DataT();
 				}
 				free(m_data);
 				free(m_heap);
@@ -60,15 +67,25 @@ namespace ca { namespace pa {
 			if(_reserveSize <= m_capacity)
 				return;
 
-			DataTupel* newMem = = (DataTupel*)malloc(sizeof(DataTupel) * _reserveSize);
+			DataTupel* newMem = (DataTupel*)malloc(sizeof(DataTupel) * _reserveSize);
+			// Copy only allocated elements
 			for(uint32_t i = 0; i < m_size; ++i)
-				new (&newMem[i])(PriorityT)(move(m_data[i]));
-
-			m_heap = (uint32_t*)realloc(m_heap, sizeof(uint32_t), _reserveSize);
-
+			{
+				new (&newMem[m_heap[i]].p)(PriorityT)(move(m_data[m_heap[i]].p));
+				new (&newMem[m_heap[i]].d)(DataT)(move(m_data[m_heap[i]].d));
+				newMem[i].heapIdx = m_data[i].heapIdx;
+			}
+			// Copy free list/heap indices for all elements
+			for(uint32_t i = 0; i < m_capacity; ++i)
+				newMem[i].heapIdx = m_data[i].heapIdx;
+			// Initialize new free list entries
+			for(uint32_t i = m_capacity; i < _reserveSize; ++i)
+				newMem[i].heapIdx = i + 1;
 			free(m_data);
-			free(m_heap);
 			m_data = newMem;
+
+			m_heap = (uint32_t*)realloc(m_heap, sizeof(uint32_t) * _reserveSize);
+
 			m_capacity = _reserveSize;
 		}
 
@@ -76,6 +93,11 @@ namespace ca { namespace pa {
 		const DataT& min() const
 		{
 			return m_data[m_heap[0]].d;
+		}
+
+		const PriorityT& minPriority() const
+		{
+			return m_data[m_heap[0]].p;
 		}
 
 		/// Remove the minimum element.
@@ -86,11 +108,14 @@ namespace ca { namespace pa {
 			{
 				// Fast array remove.
 				--m_size;
-				DataT tmp( move( m_data[0] ) );
-				m_data[0] = m_data[m_size];
+				uint32_t dataIdx = m_heap[0];
+				m_heap[0] = m_heap[m_size];
 				// Then repair the heap.
 				bubbleDown(0);
-				return tmp;
+				// The data is not moved, but the current cell is free now.
+				m_data[dataIdx].heapIdx = m_nextFreeData;
+				m_nextFreeData = dataIdx;
+				return move( m_data[dataIdx].d );
 			}
 			return DataT();
 		}
@@ -102,14 +127,18 @@ namespace ca { namespace pa {
 		/// If there is another datum with the same content both will have their own
 		/// instances and locations. There is no set mechanism.
 		template<class _PriorityT, class _DataT>
-		Handle add(_PriorityT&& _priority, _DataT&& _data)
+		Handle add(_DataT&& _data, _PriorityT&& _priority)
 		{
+			if(m_nextFreeData == m_capacity)
+				reserve(2 * m_capacity);
 			// Place element into array.
-			new (&m_data[m_size].p)(PriorityT)(std::forward<_PriorityT>(_priority));
-			new (&m_data[m_size].d)(DataT)(std::forward<_DataT>(_data));
-			m_data[m_size].heapIdx = m_size;
+			new (&m_data[m_nextFreeData].p)(PriorityT)(std::forward<_PriorityT>(_priority));
+			new (&m_data[m_nextFreeData].d)(DataT)(std::forward<_DataT>(_data));
+			uint32_t newNextFreeData = m_data[m_nextFreeData].heapIdx;
+			m_data[m_nextFreeData].heapIdx = m_size;
 			// Repair the heap.
-			m_heap[m_size] = m_size;
+			m_heap[m_size] = m_nextFreeData;
+			m_nextFreeData = newNextFreeData;
 			bubbleUp(m_size);
 			return m_size++;
 		}
@@ -119,15 +148,31 @@ namespace ca { namespace pa {
 			return m_data[_handle].p;
 		}
 
-		void changeKey(Handle _handle, PriorityT _newPriority)
+		template<class _PriorityT>
+		void changePriority(Handle _handle, _PriorityT&& _newPriority)
 		{
-			PriorityT oldPriority = m_data[_handle].p;
-			m_data[_handle].p = _newPriority;
+			using namespace std;
+			PriorityT oldPriority = move(m_data[_handle].p);
+			m_data[_handle].p = std::forward<_PriorityT>(_newPriority);
 			if(_newPriority < oldPriority)
 				bubbleUp(m_data[_handle].heapIdx);
 			else
 				bubbleDown(m_data[_handle].heapIdx);
 		}
+
+		bool empty() const { return m_size == 0; }
+
+		// TEST DEBUG STUFF
+	/*	bool isHeap() const
+		{
+			for(uint32_t i = 1; i < m_size; ++i)
+			{
+				uint32_t parent = (i - 1) / 2;
+				if(m_data[m_heap[i]].p < m_data[m_heap[parent]].p)
+					return false;
+			}
+			return true;
+		}*/
 
 	private:
 		uint32_t m_capacity;
@@ -141,6 +186,7 @@ namespace ca { namespace pa {
 
 		uint32_t* m_heap; // A heap-ordered array of references into the data.
 		DataTupel* m_data;
+		uint32_t m_nextFreeData;	// Free-list memory for the data (to guarantee constant positions on delete)
 
 		void bubbleUp(uint32_t _idx)
 		{
@@ -155,7 +201,7 @@ namespace ca { namespace pa {
 
 		void bubbleDown(uint32_t _idx)
 		{
-			uint32_t child = 2 * _idx;
+			uint32_t child = 2 * _idx + 1;
 			// While there are two children...
 			while(child + 1 < m_size)
 			{
@@ -166,7 +212,8 @@ namespace ca { namespace pa {
 				{
 					swapElem(_idx, smallest);
 					_idx = smallest;
-				}
+					child = 2 * _idx + 1;
+				} else return;
 			}
 			// There could still be another left children
 			if(child < m_size && m_data[m_heap[child]].p < m_data[m_heap[_idx]].p)

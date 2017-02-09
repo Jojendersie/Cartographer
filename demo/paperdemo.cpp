@@ -150,6 +150,60 @@ void hashMapBenchmark()
 	}
 }
 
+
+void priorityQueueBenchmark()
+{
+	HRClock clock;
+	double totalTime;
+	PriorityQueue<int, int> queue;
+
+	// Add elements
+	clock.deltaTime();
+	for(int s = 0; s < 1024 * 2048; ++s)
+	{
+		int x = hashint(s);
+		queue.add(s, x % 1357);
+	}
+	totalTime = clock.deltaTime();
+	logInfo("[PQ Benchmark] Insertion of 2M elements with random priorities: ", totalTime, " ms.");
+
+	//if(!queue.isHeap())
+		//logError("Corrupt heap after insertion!");
+
+	// Change some priorities
+	clock.deltaTime();
+	for(int s = 0; s < 1024 * 1024; ++s)
+	{
+		// The handles are indices -> we can create random handles.
+		uint32_t x = hashint(s);
+		uint32_t h = x & 0x1fffff;
+		queue.changePriority(h, int(x >> 21));
+	}
+	totalTime = clock.deltaTime();
+	logInfo("[PQ Benchmark] Changing priority of 1M elements: ", totalTime, " ms.");
+
+	//if(!queue.isHeap())
+		//logError("Corrupt heap after changing priorities!");
+
+	// Pop all elements and check their order
+	clock.deltaTime();
+	int prevPriority = queue.minPriority();
+	while(!queue.empty())
+	{
+		int priority = queue.minPriority();
+		if(priority < prevPriority)
+			logError("Invalid priority order. Queue is corrupt!");
+//		if(prevPriority != priority)
+	//		logInfo(prevPriority);
+		prevPriority = priority;
+		queue.popMin();
+	}
+	totalTime = clock.deltaTime();
+	logInfo("[PQ Benchmark] Poping all 2M elements in order: ", totalTime, " ms.");
+}
+
+
+
 int main()
 {
 	// Output some log messages
@@ -204,7 +258,8 @@ int main()
 		ptr2->tell();
 	}
 
-	hashMapBenchmark();
+//	hashMapBenchmark();
+	priorityQueueBenchmark();
 
 	return 0;
 }
