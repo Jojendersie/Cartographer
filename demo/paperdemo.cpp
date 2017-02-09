@@ -155,14 +155,14 @@ void priorityQueueBenchmark()
 {
 	HRClock clock;
 	double totalTime;
-	PriorityQueue<int, int> queue;
+	PriorityQueue<int> queue;
 
 	// Add elements
 	clock.deltaTime();
 	for(int s = 0; s < 1024 * 2048; ++s)
 	{
 		int x = hashint(s);
-		queue.add(s, x % 1357);
+		queue.add(x % 1357);
 	}
 	totalTime = clock.deltaTime();
 	logInfo("[PQ Benchmark] Insertion of 2M elements with random priorities: ", totalTime, " ms.");
@@ -187,10 +187,10 @@ void priorityQueueBenchmark()
 
 	// Pop all elements and check their order
 	clock.deltaTime();
-	int prevPriority = queue.minPriority();
+	int prevPriority = queue.min();
 	while(!queue.empty())
 	{
-		int priority = queue.minPriority();
+		int priority = queue.min();
 		if(priority < prevPriority)
 			logError("Invalid priority order. Queue is corrupt!");
 //		if(prevPriority != priority)

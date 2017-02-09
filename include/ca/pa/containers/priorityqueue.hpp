@@ -3,7 +3,13 @@
 namespace ca { namespace pa {
 
 	/// Min-heap implementation of a priority queue.
-	template<typename PriorityT, typename DataT>
+	/// \tparam DataT Type of the data to be stored. Must support the operator less <.
+	///		Further, there must be an 'PriorityT updatePriority(DataT&, PriorityT)' method
+	///		which changes the key of a datum and returns its previous priority. DataT and
+	///		PriorityT can be of the same type if there is no difference between elements
+	///		and priorities. There is a standard implementation which uses move() for
+	///		this case.
+	template<typename DataT>
 	class PriorityQueue
 	{
 	public:
@@ -52,8 +58,7 @@ namespace ca { namespace pa {
 				for(uint32_t i = 0; i < m_size; ++i)
 				{
 					// Redirect because data is not packed thickly, but the heap is.
-					m_data[m_heap[i]].p.~PriorityT();
-					m_data[m_heap[i]].d.~DataT();
+					m_data[m_heap[i]].data.~DataT();
 				}
 				free(m_data);
 				free(m_heap);
@@ -71,8 +76,7 @@ namespace ca { namespace pa {
 			// Copy only allocated elements
 			for(uint32_t i = 0; i < m_size; ++i)
 			{
-				new (&newMem[m_heap[i]].p)(PriorityT)(move(m_data[m_heap[i]].p));
-				new (&newMem[m_heap[i]].d)(DataT)(move(m_data[m_heap[i]].d));
+				new (&newMem[m_heap[i]].data)(DataT)(move(m_data[m_heap[i]].data));
 				newMem[i].heapIdx = m_data[i].heapIdx;
 			}
 			// Copy free list/heap indices for all elements
@@ -92,12 +96,7 @@ namespace ca { namespace pa {
 		/// Access the minimum element.
 		const DataT& min() const
 		{
-			return m_data[m_heap[0]].d;
-		}
-
-		const PriorityT& minPriority() const
-		{
-			return m_data[m_heap[0]].p;
+			return m_data[m_heap[0]].data;
 		}
 
 		/// Remove the minimum element.
@@ -115,7 +114,7 @@ namespace ca { namespace pa {
 				// The data is not moved, but the current cell is free now.
 				m_data[dataIdx].heapIdx = m_nextFreeData;
 				m_nextFreeData = dataIdx;
-				return move( m_data[dataIdx].d );
+				return move( m_data[dataIdx].data );
 			}
 			return DataT();
 		}
@@ -126,14 +125,13 @@ namespace ca { namespace pa {
 		/// Add an element and return its unique handle.
 		/// If there is another datum with the same content both will have their own
 		/// instances and locations. There is no set mechanism.
-		template<class _PriorityT, class _DataT>
-		Handle add(_DataT&& _data, _PriorityT&& _priority)
+		template<class _DataT>
+		Handle add(_DataT&& _data)
 		{
 			if(m_nextFreeData == m_capacity)
 				reserve(2 * m_capacity);
 			// Place element into array.
-			new (&m_data[m_nextFreeData].p)(PriorityT)(std::forward<_PriorityT>(_priority));
-			new (&m_data[m_nextFreeData].d)(DataT)(std::forward<_DataT>(_data));
+			new (&m_data[m_nextFreeData].data)(DataT)(std::forward<_DataT>(_data));
 			uint32_t newNextFreeData = m_data[m_nextFreeData].heapIdx;
 			m_data[m_nextFreeData].heapIdx = m_size;
 			// Repair the heap.
@@ -143,17 +141,16 @@ namespace ca { namespace pa {
 			return m_size++;
 		}
 
-		PriorityT getPriority(Handle _handle) const
+		DataT get(Handle _handle) const
 		{
-			return m_data[_handle].p;
+			return m_data[_handle].data;
 		}
 
 		template<class _PriorityT>
 		void changePriority(Handle _handle, _PriorityT&& _newPriority)
 		{
 			using namespace std;
-			PriorityT oldPriority = move(m_data[_handle].p);
-			m_data[_handle].p = std::forward<_PriorityT>(_newPriority);
+			_PriorityT oldPriority = updatePriority(m_data[_handle].data, std::forward<_PriorityT>(_newPriority));
 			if(_newPriority < oldPriority)
 				bubbleUp(m_data[_handle].heapIdx);
 			else
@@ -179,8 +176,7 @@ namespace ca { namespace pa {
 		uint32_t m_size;
 
 		struct DataTupel {
-			DataT d;
-			PriorityT p;
+			DataT data;
 			uint32_t heapIdx;
 		};
 
@@ -191,7 +187,7 @@ namespace ca { namespace pa {
 		void bubbleUp(uint32_t _idx)
 		{
 			uint32_t parent = (_idx - 1) / 2;
-			while(_idx > 0 && m_data[m_heap[parent]].p > m_data[m_heap[_idx]].p)
+			while(_idx > 0 && m_data[m_heap[parent]].data > m_data[m_heap[_idx]].data)
 			{
 				swapElem(parent, _idx);
 				_idx = parent;
@@ -206,8 +202,8 @@ namespace ca { namespace pa {
 			while(child + 1 < m_size)
 			{
 				uint32_t smallest = _idx;
-				if(m_data[m_heap[child]].p < m_data[m_heap[_idx]].p) smallest = child;
-				if(m_data[m_heap[child+1]].p < m_data[m_heap[smallest]].p) smallest = child + 1;
+				if(m_data[m_heap[child]].data < m_data[m_heap[_idx]].data) smallest = child;
+				if(m_data[m_heap[child+1]].data < m_data[m_heap[smallest]].data) smallest = child + 1;
 				if(smallest != _idx)
 				{
 					swapElem(_idx, smallest);
@@ -216,7 +212,7 @@ namespace ca { namespace pa {
 				} else return;
 			}
 			// There could still be another left children
-			if(child < m_size && m_data[m_heap[child]].p < m_data[m_heap[_idx]].p)
+			if(child < m_size && m_data[m_heap[child]].data < m_data[m_heap[_idx]].data)
 				swapElem(_idx, child);
 		}
 
@@ -226,6 +222,15 @@ namespace ca { namespace pa {
 			swap(m_heap[_heapIdxA], m_heap[_heapIdxB]);
 			m_data[m_heap[_heapIdxA]].heapIdx = _heapIdxA;
 			m_data[m_heap[_heapIdxB]].heapIdx = _heapIdxB;
+		}
+
+		template<typename T>
+		T updatePriority(T& _data, T&& _newPriority)
+		{
+			using namespace std;
+			T tmp( move(_data) );
+			new (&_data)(T)(std::forward<T>(_newPriority));
+			return move(tmp);
 		}
 	};
 
