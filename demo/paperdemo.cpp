@@ -57,6 +57,10 @@ uint32_t hashint( uint32_t a)
 	return a;
 }
 
+//#define STD_MAP_BENCH
+#ifdef STD_MAP_BENCH
+#include <unordered_map>
+#endif
 void hashMapBenchmark()
 {
 	HRClock clock;
@@ -65,13 +69,20 @@ void hashMapBenchmark()
 	// Sequential insertion
 	if(true)
 	{
+#ifdef STD_MAP_BENCH
+		std::unordered_map<int, int, QuickHash> map;
+#else
 		HashMap<int, int, QuickHash> map;
+#endif
 
 		clock.deltaTime();
 		for(int s = 0; s < 1024 * 8192; ++s)
 		{
+#ifdef STD_MAP_BENCH
+			map.emplace(s, s);
+#else
 			map.add(s, s);
-			//map.emplace(s, s);
+#endif
 		}
 		totalTime = clock.deltaTime();
 		logInfo("[HM Benchmark] Insertion of 8M elements (integer sequence): ", totalTime, " ms.");
@@ -79,7 +90,11 @@ void hashMapBenchmark()
 		// Test if all elements are contained
 		clock.deltaTime();
 		for(int i = 0; i < 1024 * 8192; ++i)
-			if(!map.find(i)) 
+#ifdef STD_MAP_BENCH
+			if(map.find(i) == map.end()) 
+#else
+			if(!map.find(i))
+#endif
 				logError("Cannot find an element which should be there!");
 		totalTime = clock.deltaTime();
 		logInfo("[HM Benchmark] Finding of 8M contained elements (integer sequence): ", totalTime, " ms.");
@@ -87,7 +102,11 @@ void hashMapBenchmark()
 		// Test for a lot of non-contained elements
 		clock.deltaTime();
 		for(int i = 1024 * 8192; i < 2 * 1024 * 8192; ++i)
+#ifdef STD_MAP_BENCH
+			if(map.find(i) != map.end()) 
+#else
 			if(map.find(i))
+#endif
 				logError("Found an element which should not be there!");
 		totalTime = clock.deltaTime();
 		logInfo("[HM Benchmark] Finding of 8M non-contained elements: ", totalTime, " ms.");
@@ -96,14 +115,21 @@ void hashMapBenchmark()
 	// Random insertion + deletion
 	if(true)
 	{
+#ifdef STD_MAP_BENCH
+		std::unordered_map<int, int, QuickHash> map;
+#else
 		HashMap<int, int, QuickHash> map;
+#endif
 
 		clock.deltaTime();
 		for(int s = 0; s < 1024 * 8192; ++s)
 		{
 			int x = hashint(s);
+#ifdef STD_MAP_BENCH
+			map.emplace(x, x);
+#else
 			map.add(x, x);
-			//map.emplace(x, x);
+#endif
 		}
 		totalTime = clock.deltaTime();
 		logInfo("[HM Benchmark] Insertion of 8M randomized integer elements: ", totalTime, " ms.");
@@ -113,8 +139,11 @@ void hashMapBenchmark()
 		for(int s = 0; s < 1024 * 8192; ++s)
 		{
 			int x = hashint(s);
+#ifdef STD_MAP_BENCH
+			map.erase(x);
+#else
 			map.remove(x);
-			//map.emplace(x, x);
+#endif
 		}
 		totalTime = clock.deltaTime();
 		logInfo("[HM Benchmark] Deletion of 8M randomized integer elements: ", totalTime, " ms.");

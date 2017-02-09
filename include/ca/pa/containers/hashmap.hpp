@@ -86,6 +86,7 @@ public:
 	template<class _KeyT, class _DataT>
 	void add(_KeyT&& _key, _DataT&& _data)
 	{
+		using namespace std;
 		uint32_t h = (uint32_t)m_hash(_key);//hash(reinterpret_cast<const uint32_t*>(&_key), sizeof(_key) / 4);
 	restartAdd:
 		uint32_t d = 0;
@@ -108,9 +109,9 @@ public:
 
 			if(m_keys[idx].dist < d) // Swap and then insert the element from this location instead
 			{
-				std::swap(_key, m_keys[idx].key);
-				std::swap(d, m_keys[idx].dist);
-				std::swap(_data, m_data[idx]);
+				swap(_key, m_keys[idx].key);
+				swap(d, m_keys[idx].dist);
+				swap(_data, m_data[idx]);
 			}
 			++d;
 		//	idx = (idx + 1) % m_capacity;
@@ -131,6 +132,7 @@ public:
 	// Remove an existing element
 	void remove(const Handle& _element)
 	{
+		using namespace std;
 		if(_element)
 		{
 			m_keys[_element.idx].dist = 0xffffffff;
@@ -141,9 +143,9 @@ public:
 			uint32_t next = (_element.idx + 1) % m_capacity;
 			while((m_keys[next].dist != 0) && (m_keys[next].dist != 0xffffffff))
 			{
-				std::swap(m_keys[i], m_keys[next]);
-				--m_keys[i].dist;
-				m_data[i] = std::move(m_data[next]);
+				m_keys[i].key = move(m_keys[next].key);
+				m_keys[i].dist = m_keys[next].dist - 1;
+				m_data[i] = move(m_data[next]);
 				i = next;
 				if(++next >= m_capacity) next = 0;
 			}
@@ -157,7 +159,7 @@ public:
 		uint32_t idx = h % m_capacity;
 		while(m_keys[idx].dist != 0xffffffff && d <= m_keys[idx].dist)
 		{
-			if (m_keyCompare(m_keys[idx].key, _key))
+			if(m_keyCompare(m_keys[idx].key, _key))
 				return Handle(this, idx);
 			if(++idx >= m_capacity) idx = 0;
 			++d;
@@ -168,6 +170,7 @@ public:
 	// Change the capacity if possible. It cannot be decreased below 'size'.
 	void resize(uint32_t _newCapacity)
 	{
+		using namespace std;
 		//if(_newCapacity == m_capacity) return;
 		if(_newCapacity < m_size) _newCapacity = m_size;
 
@@ -177,13 +180,13 @@ public:
 		{
 			if(m_keys[i].dist != 0xffffffff)
 			{
-				tmp.add(std::move(m_keys[i].key), std::move(m_data[i]));
+				tmp.add(move(m_keys[i].key), move(m_data[i]));
 				m_keys[i].dist = 0xffffffff;
 			}
 		}
 
 		// Use the temporary map now and let the old memory be destroyed.
-		std::swap(*this, tmp);
+		swap(*this, tmp);
 	}
 
 	void reserve(uint32_t _exptectedElementCount)
@@ -196,8 +199,8 @@ public:
 	// returns the first element found in the map or an invalid handle when the map is empty
 	Handle first()
 	{
-		for (uint32_t i = 0; i < m_capacity; ++i)
-			if (m_keys[i].dist != 0xffffffff)
+		for(uint32_t i = 0; i < m_capacity; ++i)
+			if(m_keys[i].dist != 0xffffffff)
 				return Handle(this, i);
 
 		return Handle(nullptr, 0);
@@ -209,7 +212,7 @@ private:
 	struct Key
 	{
 		K key;
-		unsigned dist; // robin hood cashing offset
+		uint32_t dist; // robin hood cashing offset
 	};
 
 	Key* m_keys;
