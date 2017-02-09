@@ -33,9 +33,15 @@
     <ClInclude Include="include\ca\pa\containers\priorityqueue.hpp">
       <Filter>include\containers</Filter>
     </ClInclude>
+    <ClInclude Include="include\ca\pa\highresclock.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\log.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\highresclock.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
