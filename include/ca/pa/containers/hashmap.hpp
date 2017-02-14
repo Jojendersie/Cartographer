@@ -81,10 +81,8 @@ public:
 		free(m_data);
 	}
 
-//	void add(const K& _key, const T& _data) { K k(_key); T t(_data); add(std::move(k), std::move(t)); }
-
-	template<class _KeyT, class _DataT>
-	void add(_KeyT&& _key, _DataT&& _data)
+	template<class _DataT>
+	void add(K _key, _DataT&& _data)
 	{
 		using namespace std;
 		uint32_t h = (uint32_t)m_hash(_key);//hash(reinterpret_cast<const uint32_t*>(&_key), sizeof(_key) / 4);
@@ -93,7 +91,7 @@ public:
 		uint32_t idx = h % m_capacity;
 		while(m_keys[idx].dist != 0xffffffff) // while not empty cell
 		{
-			if (m_keyCompare(m_keys[idx].key, _key)) // overwrite if keys are identically
+			if(m_keyCompare(m_keys[idx].key, _key)) // overwrite if keys are identically
 			{
 				m_data[idx] = _data;
 				return;
@@ -117,7 +115,7 @@ public:
 		//	idx = (idx + 1) % m_capacity;
 			if(++idx >= m_capacity) idx = 0;
 		}
-		new (&m_keys[idx].key)(K)(std::forward<_KeyT>(_key));
+		new (&m_keys[idx].key)(K)(move(_key));
 		m_keys[idx].dist = d;
 		new (&m_data[idx])(T)(std::forward<_DataT>(_data));
 		++m_size;
