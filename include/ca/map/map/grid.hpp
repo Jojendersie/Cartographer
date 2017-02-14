@@ -469,6 +469,7 @@ namespace ca { namespace map {
 		/// \param [out] _path Output buffer for the path. Previous contents of the buffer are removed.
 		///		The path contains all nodes from _to (inclusive) to _from (exclusive).
 		///		The order is reversed such that pop_back() can be used to efficently process the path.
+		///		If no path could be found the output contains a path which comes closest to the target.
 		/// \param [in] _cost A functor which assignes (entity specific) costs for each cell. Negative
 		///		costs mark obstacles.
 		/// \param [in] _maxCostOffset Path are not expandet if they cost more than
@@ -476,7 +477,6 @@ namespace ca { namespace map {
 		///		very long path searches for impossible paths.
 		/// \param [in] _maxCostFactor See _maxCostOffset.
 		/// \returns False if no path is possible.
-		// TODO: maybe return the best path which came closest to the target if no one is possible?
 		bool findPath(
 			std::vector<ei::IVec2>& _path,
 			const ei::IVec2& _from,
@@ -485,6 +485,9 @@ namespace ca { namespace map {
 			float _maxCostOffset = 100.0f,
 			float _maxCostFactor = 2.5f
 		) const {
+			_path.clear();
+			IVec2 bestPossiblePos = _from;
+
 			// Discovered but unevaluated nodes
 			pa::PriorityQueue<OpenNode> openSet;
 			// A second map with (partially) evaluated nodes.
@@ -503,8 +506,10 @@ namespace ca { namespace map {
 			{
 				OpenNode currentMinON = openSet.popMin();
 				// The shortest path to be evaluated contains the start position? -> finish
-				if(currentMinON.pos == _to)
+				if(currentMinON.pos == _to) {
+					bestPossiblePos = _to;
 					goto ReconstructPath;
+				}
 				// Mark the node as closed.
 				VisitedNode& currentVN = evalSet.find(currentMinON.pos).data();
 				currentVN.openHandle = ca::pa::PriorityQueue<OpenNode>::INVALID_HANDLE;
@@ -549,21 +554,36 @@ namespace ca { namespace map {
 				}
 			}
 
-			return false;
+			// There is no path from start to goal, but maybe we come close.
+			float closestDistance = (float)gridDistance(_from, _to);
+			float closestDistanceCost = maxCost;
+			for(auto&& it : evalSet)
+			{
+				float currentPathDistanceToGoal = (float)gridDistance(it.key(), _to);
+				float currentPathCost = it.data().minCost;
+				if(currentPathDistanceToGoal <= closestDistance)
+				{
+					if(currentPathDistanceToGoal < closestDistance || currentPathCost < closestDistanceCost)
+					{
+						closestDistance = currentPathDistanceToGoal;
+						closestDistanceCost = currentPathCost;
+						bestPossiblePos = it.key();
+					}
+				}
+			}
 
 		ReconstructPath:
 			// Go through the map and find all predecessors in order.
 			// Since we started at the start this backtracking goes from the goal
 			// to the start.
-			_path.clear();
-			IVec2 pos = _to;
+			IVec2 pos = bestPossiblePos;
 			while(pos != _from)
 			{
 				_path.push_back(pos);
 				auto h = evalSet.find(pos);
 				pos = h.data().cameFrom;
 			}
-			return true;
+			return bestPossiblePos == _to;
 		}
 
 	protected:
