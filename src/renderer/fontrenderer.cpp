@@ -1,7 +1,7 @@
 #include "ca/cc/renderer/fontrenderer.hpp"
 #include "ca/cc/glcore/opengl.hpp"
 #include "ca/cc/glcore/vertexformat.hpp"
-#include "ca/cc/utilities/hrclock.hpp"
+#include <ca/pa/highresclock.hpp>
 #include <ca/pa/log.hpp>
 
 #include <string>

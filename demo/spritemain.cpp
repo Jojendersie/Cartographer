@@ -1,4 +1,5 @@
 #include <ca/charcoal.hpp>
+#include <ca/paper.hpp>
 #include <thread>
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
@@ -83,7 +84,7 @@ void runMainLoop(GLFWwindow* _window)
 {
 	Device::setCullMode(CullMode::BACK);
 	Device::setZFunc(ComparisonFunc::LEQUAL);
-	HRClock clock;
+	ca::pa::HRClock clock;
 	while(!glfwWindowShouldClose(_window))
 	{
 		float deltaTime = (float)clock.deltaTime();

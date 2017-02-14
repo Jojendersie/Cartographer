@@ -101,7 +101,6 @@
     <ClInclude Include="include\ca\cc\renderer\linerenderer.hpp" />
     <ClInclude Include="include\ca\cc\renderer\spriterenderer.hpp" />
     <ClInclude Include="include\ca\cc\utilities\half.hpp" />
-    <ClInclude Include="include\ca\cc\utilities\hrclock.hpp" />
     <ClInclude Include="include\ca\charcoal.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,7 +159,6 @@
     <ClCompile Include="src\renderer\linerenderer.cpp" />
     <ClCompile Include="src\renderer\spriterenderer.cpp" />
     <ClCompile Include="src\utilities\half.cpp" />
-    <ClCompile Include="src\utilities\hrclock.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

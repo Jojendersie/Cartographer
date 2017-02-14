@@ -1,4 +1,5 @@
 #include <ca/charcoal.hpp>
+#include <ca/paper.hpp>
 #include <thread>
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
@@ -83,7 +84,7 @@ void runMainLoop(GLFWwindow* _window)
 	Device::setZFunc(ComparisonFunc::LESS);
 	while(!glfwWindowShouldClose(_window))
 	{
-		float time = float(HRClock::now()) / 1000.0f;
+		float time = float(ca::pa::HRClock::now()) / 1000.0f;
 		glCall(glClearColor, 0.0f, 0.0f, 0.0f, 0.0f);
 		glCall(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

@@ -60,9 +60,6 @@
     <ClInclude Include="include\ca\cc\renderer\fontrenderer.hpp">
       <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="include\ca\cc\utilities\hrclock.hpp">
-      <Filter>utilities</Filter>
-    </ClInclude>
     <ClInclude Include="include\ca\cc\utilities\half.hpp">
       <Filter>utilities</Filter>
     </ClInclude>
@@ -224,9 +221,6 @@
     </ClCompile>
     <ClCompile Include="src\renderer\spriterenderer.cpp">
       <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\utilities\hrclock.cpp">
-      <Filter>utilities</Filter>
     </ClCompile>
     <ClCompile Include="src\utilities\half.cpp">
       <Filter>utilities</Filter>

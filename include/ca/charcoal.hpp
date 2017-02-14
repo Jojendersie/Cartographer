@@ -11,4 +11,3 @@
 #include "cc/renderer/spriterenderer.hpp"
 #include "cc/renderer/fontrenderer.hpp"
 #include "cc/renderer/linerenderer.hpp"
-#include "cc/utilities/hrclock.hpp"
