@@ -202,6 +202,11 @@ namespace ca { namespace map {
 			return nullptr;
 		}
 
+		const CellT* find(const ei::IVec2& _coord) const
+		{
+			return const_cast<Grid*>(this)->find(_coord);
+		}
+
 		/// Get a cell. If it was not occupied before it gets filled with a default constructed
 		/// T element.
 		CellT& get(const ei::IVec2& _coord)
@@ -472,6 +477,10 @@ namespace ca { namespace map {
 		///		If no path could be found the output contains a path which comes closest to the target.
 		/// \param [in] _cost A functor which assignes (entity specific) costs for each cell. Negative
 		///		costs mark obstacles.
+		///		The arguments of the cost function are the cell itself, its position and
+		///		the comeFrom position. Therefore anisotropic functions are possible.
+		/// \param [in] _validGoal Predicate function to test if a cell can be used as final target.
+		///		This allows that some nodes can be passed temporarly.
 		/// \param [in] _maxCostOffset Path are not expandet if they cost more than
 		///		_maxCostOffset + _maxCostFactor * dist(start, goal). This criterial is to prevent
 		///		very long path searches for impossible paths.
@@ -481,9 +490,11 @@ namespace ca { namespace map {
 			std::vector<ei::IVec2>& _path,
 			const ei::IVec2& _from,
 			const ei::IVec2& _to,
-			std::function<float(const CellT&)> _cost,
+			std::function<float(const CellT&, const ei::IVec2&, const ei::IVec2&)> _cost,
+			std::function<bool(const CellT&, const ei::IVec2&, const ei::IVec2&)> _validGoal,
 			float _maxCostOffset = 100.0f,
-			float _maxCostFactor = 2.5f
+			float _maxCostFactor = 2.5f,
+			bool _findApproximateGoal = true
 		) const {
 			_path.clear();
 			IVec2 bestPossiblePos = _from;
@@ -505,17 +516,24 @@ namespace ca { namespace map {
 			while(!openSet.empty())
 			{
 				OpenNode currentMinON = openSet.popMin();
+				VisitedNode& currentVN = evalSet.find(currentMinON.pos).data();
+				auto it = beginNeighborhood(currentMinON.pos);
 				// The shortest path to be evaluated contains the start position? -> finish
 				if(currentMinON.pos == _to) {
-					bestPossiblePos = _to;
-					goto ReconstructPath;
+					if(_validGoal(it.dat(), currentMinON.pos, currentVN.cameFrom))
+					{
+						bestPossiblePos = _to;
+						goto ReconstructPath;
+					} else if(_findApproximateGoal) // The real target is not possible. Explore more to find a near neighbor
+						continue;
+					// End method, but to not go anywhere
+					else goto ReconstructPath;
 				}
 				// Mark the node as closed.
-				VisitedNode& currentVN = evalSet.find(currentMinON.pos).data();
 				currentVN.openHandle = ca::pa::PriorityQueue<OpenNode>::INVALID_HANDLE;
+				// Store costs, because adding neighbors invalidates the memory address.
 				float currentMinCost = currentVN.minCost;
 				// For each neighbor
-				auto it = beginNeighborhood(currentMinON.pos);
 				for(int i = 0; i < int(GridT); ++i)
 				{
 					auto neighborIt = it.getNeighbor(i);
@@ -523,7 +541,7 @@ namespace ca { namespace map {
 					if(neighborIt)
 					{
 						// Is it an obstacle?
-						float cost = _cost(neighborIt.dat());
+						float cost = _cost(neighborIt.dat(), neighborIt.pos(), currentMinON.pos);
 						if(cost >= 0.0f)
 						{
 							// Use the hashmap to find out if the neighbor is open, evaluated or new.
@@ -555,19 +573,22 @@ namespace ca { namespace map {
 			}
 
 			// There is no path from start to goal, but maybe we come close.
-			float closestDistance = (float)gridDistance(_from, _to);
-			float closestDistanceCost = maxCost;
-			for(auto&& it : evalSet)
+			if(_findApproximateGoal)
 			{
-				float currentPathDistanceToGoal = (float)gridDistance(it.key(), _to);
-				float currentPathCost = it.data().minCost;
-				if(currentPathDistanceToGoal <= closestDistance)
+				float closestDistance = ei::predecessor((float)gridDistance(_from, _to));
+				float closestDistanceCost = maxCost;
+				for(auto&& it : evalSet)
 				{
-					if(currentPathDistanceToGoal < closestDistance || currentPathCost < closestDistanceCost)
+					float currentPathDistanceToGoal = (float)gridDistance(it.key(), _to);
+					float currentPathCost = it.data().minCost;
+					if(currentPathDistanceToGoal <= closestDistance && _validGoal(*find(it.key()), it.key(), it.data().cameFrom))
 					{
-						closestDistance = currentPathDistanceToGoal;
-						closestDistanceCost = currentPathCost;
-						bestPossiblePos = it.key();
+						if(currentPathDistanceToGoal < closestDistance || currentPathCost < closestDistanceCost)
+						{
+							closestDistance = currentPathDistanceToGoal;
+							closestDistanceCost = currentPathCost;
+							bestPossiblePos = it.key();
+						}
 					}
 				}
 			}
