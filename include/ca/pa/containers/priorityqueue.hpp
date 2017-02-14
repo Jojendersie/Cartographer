@@ -121,6 +121,7 @@ namespace ca { namespace pa {
 
 		/// Unique handle of an inserted element
 		typedef uint32_t Handle;
+		enum:uint32_t {INVALID_HANDLE = 0xffffffff};
 
 		/// Add an element and return its unique handle.
 		/// If there is another datum with the same content both will have their own
@@ -141,7 +142,7 @@ namespace ca { namespace pa {
 			return m_size++;
 		}
 
-		DataT get(Handle _handle) const
+		const DataT& get(Handle _handle) const
 		{
 			return m_data[_handle].data;
 		}
@@ -150,7 +151,10 @@ namespace ca { namespace pa {
 		void changePriority(Handle _handle, _PriorityT&& _newPriority)
 		{
 			using namespace std;
-			_PriorityT oldPriority = updatePriority(m_data[_handle].data, std::forward<_PriorityT>(_newPriority));
+			// Requires casting operator for more complex types...
+			_PriorityT oldPriority = _PriorityT(m_data[_handle].data);
+			// ... and a special assignment to overwrite priorities.
+			m_data[_handle].data = std::forward<_PriorityT>(_newPriority);
 			if(_newPriority < oldPriority)
 				bubbleUp(m_data[_handle].heapIdx);
 			else
@@ -187,7 +191,7 @@ namespace ca { namespace pa {
 		void bubbleUp(uint32_t _idx)
 		{
 			uint32_t parent = (_idx - 1) / 2;
-			while(_idx > 0 && m_data[m_heap[parent]].data > m_data[m_heap[_idx]].data)
+			while(_idx > 0 && m_data[m_heap[_idx]].data < m_data[m_heap[parent]].data)
 			{
 				swapElem(parent, _idx);
 				_idx = parent;
