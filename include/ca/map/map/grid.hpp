@@ -2,13 +2,14 @@
 
 #include <functional>
 #include <vector>
+#include <ca/paper.hpp>
 
 namespace ca { namespace map {
 
 	enum class GridType {
-		QUAD_4,		// A quad grid with 4-neighbors
-		QUAD_8,		// A quad grid with 8-neighbors
-		HEX,
+		QUAD_4 = 4,		// A quad grid with 4-neighbors
+		QUAD_8 = 8,		// A quad grid with 8-neighbors
+		HEX = 6,
 	};
 	
 	/// A grid is a row wise sparse array with either quad- or hex- neigborhood.
@@ -19,7 +20,7 @@ namespace ca { namespace map {
 	class Grid
 	{
 	public:
-		
+
 		/// Rotates a grid by 90° or 60° times the number of ticks dependent on the type.
 		/// \details A rotation reorganizes the memory and is therefore expensive for large
 		///		grids.
@@ -277,7 +278,7 @@ namespace ca { namespace map {
 		/// Determines the minimal number of grid cells between two locations.
 		/// This is the Manhatten-distance for quad-4 grids and something similar
 		/// for hex grids.
-		int gridDistance(const ei::IVec2& _a, const ei::IVec2& _b)
+		int gridDistance(const ei::IVec2& _a, const ei::IVec2& _b) const
 		{
 			if(GridT == unsigned(GridType::QUAD_4))
 				return abs(_b.x - _a.x) + abs(_b.y - _a.y);
@@ -345,7 +346,7 @@ namespace ca { namespace map {
 			friend class Grid<GridT, CellT>;
 		};
 
-		SeqIterator begin() { return SeqIterator(*this); }
+		SeqIterator begin() const { return SeqIterator(*this); }
 
 		/// Iterator class for neighborhood searches.
 		/// \details This iterator can be valid/invalid. In valid cases it always points
@@ -359,7 +360,12 @@ namespace ca { namespace map {
 			///		grids (0 = east, 1 = north east, 2 = north west, ...).
 			NeighborIterator getNeighbor(uint n)
 			{
-				if(m_gridRef.m_type == Type::QUAD)
+				if(GridT == unsigned(GridType::QUAD_4))
+				{
+					int8 xoff[4] = {1, 0, -1, 0};
+					int8 yoff[4] = {0, -1, 0, 1};
+					return NeighborIterator(m_gridRef, m_row + yoff[n], m_col, m_x + xoff[n]);
+				} else if(GridT == unsigned(GridType::QUAD_8))
 				{
 					int8 xoff[8] = {1, 1, 0, -1, -1, -1, 0, 1};
 					int8 yoff[8] = {0, -1, -1, -1, 0, 1, 1, 1};
@@ -374,6 +380,7 @@ namespace ca { namespace map {
 						case 5: return NeighborIterator(m_gridRef, m_row + 1, m_col, m_x); break;
 					}
 				}
+				return NeighborIterator(m_gridRef, 0x7fffffff, 0x7fffffff, 0x7fffffff);
 			}
 
 			/// Is this a valid iterator?
@@ -390,7 +397,7 @@ namespace ca { namespace map {
 			/// Get the coordinate of the current grid cell.
 			ei::IVec2 pos() const { return ei::IVec2(m_x, m_gridRef.m_yPosition + m_row); }
 		private:
-			NeighborIterator(Grid<GridT, CellT>& _gridRef, uint _row, uint _col, int _x) :
+			NeighborIterator(const Grid<GridT, CellT>& _gridRef, uint _row, uint _col, int _x) :
 				m_gridRef(_gridRef),
 				m_row(_row),
 				m_col(_col),
@@ -398,24 +405,151 @@ namespace ca { namespace map {
 			{
 				// Make sure _col and _x match if possible.
 				// This assumes that we are always very close.
-				if(m_row < m_gridRef.m_rows.size())					// In row range?
+				if(m_row < m_gridRef.m_rows.size() && !m_gridRef.m_rows.empty())					// In row range?
 				{
-					while(m_col < m_gridRef.m_rows[m_row].cells.size() && m_gridRef.m_rows[m_row].xpos[m_col] < _x) ++m_col;
-					while(m_col < m_gridRef.m_rows[m_row].cells.size() && m_gridRef.m_rows[m_row].xpos[m_col] > _x) --m_col;
+					auto& row = m_gridRef.m_rows[m_row];
+					m_col = min(m_col, row.cells.size()-1);
+					while(m_col > 0                && row.xpos[m_col] > _x) --m_col;
+					while(m_col < row.cells.size() && row.xpos[m_col] < _x) ++m_col;
 				}
 			}
 
-			Grid<GridT, CellT>& m_gridRef;
+			const Grid<GridT, CellT>& m_gridRef;
 			uint m_row, m_col;
 			int m_x;
 			friend class Grid<GridT, CellT>;
 		};
 
+		NeighborIterator beginNeighborhood(const ei::IVec2& _coord) const
+		{
+			int y = _coord.y - m_yPosition;
+			if(y >= 0 && y < (int)m_rows.size())
+			{
+				int m;
+				binSearch(m_rows[y], _coord.x, m);
+				return NeighborIterator(*this, _coord.y - m_yPosition, m, _coord.x);
+			} else
+				return NeighborIterator(*this, _coord.y - m_yPosition, _coord.y, _coord.x);
+		}
+
+
+	private: // Path search helper structs and functions
+		// Discovered but unevaluated nodes
+		struct OpenNode {
+			ei::IVec2 pos;		// Axial-hex coordinate
+			float score;		// Heuristical length of a path from start to goal through this node
+			bool operator < (OpenNode& _rhs)
+			{
+				return score < _rhs.score;
+			}
+			explicit operator float () const
+			{
+				return score;
+			}
+			// Special assignment for new priorities
+			void operator = (float _newScore)
+			{
+				score = _newScore;
+			}
+		};
+		// (Partially) evaluated nodes.
+		struct VisitedNode {
+			ei::IVec2 cameFrom;
+			float minCost;						// Costs up to that point of the path
+			typename ca::pa::PriorityQueue<OpenNode>::Handle openHandle;	// Constant handle into the openSet. Can be invalid is this node is fully evaluated. 
+		};
+		struct FastIVec2Hash {
+			uint32_t operator () (const ei::IVec2& _v) {
+				return _v.x * 198491329 + _v.y * 879190747;
+			}
+		};
+
+	public:
 		/// A* path finding algorithm.
 		/// \param [out] _path Output buffer for the path. Previous contents of the buffer are removed.
+		///		The path contains all nodes from _to (inclusive) to _from (exclusive).
+		///		The order is reversed such that pop_back() can be used to efficently process the path.
+		/// \param [in] _cost A functor which assignes (entity specific) costs for each cell. Negative
+		///		costs mark obstacles.
 		/// \returns False if no path is possible.
-		bool findPath(std::vector<ei::IVec2>& _path, const ei::IVec2& _from, const ei::IVec2& _to)
+		// TODO: a max path-length restriction, TODO: maybe return the best path which came closest to the target if no one is possible?
+		bool findPath(std::vector<ei::IVec2>& _path, const ei::IVec2& _from, const ei::IVec2& _to, std::function<float(const CellT&)> _cost) const
 		{
+			// Discovered but unevaluated nodes
+			pa::PriorityQueue<OpenNode> openSet;
+			// A second map with (partially) evaluated nodes.
+			pa::HashMap<ei::IVec2, VisitedNode, FastIVec2Hash> evalSet;
+
+			// Add the start point (later backtracking will unroll the path in reversed order).
+			VisitedNode newVNode;
+			newVNode.openHandle = openSet.add(OpenNode{_from, (float)gridDistance(_from, _to)});
+			newVNode.cameFrom = _from;
+			newVNode.minCost = 0.0f;
+			evalSet.add(_from, newVNode);
+
+			while(!openSet.empty())
+			{
+				OpenNode currentMinON = openSet.popMin();
+				// The shortest path to be evaluated contains the start position? -> finish
+				if(currentMinON.pos == _to)
+					goto ReconstructPath;
+				// Mark the node as closed.
+				VisitedNode currentVN = evalSet.find(currentMinON.pos).data();
+				currentVN.openHandle = ca::pa::PriorityQueue<OpenNode>::INVALID_HANDLE;
+				// For each neighbor
+				auto it = beginNeighborhood(currentMinON.pos);
+				for(int i = 0; i < int(GridT); ++i)
+				{
+					auto neighborIt = it.getNeighbor(i);
+					// Is the neighbor an allocated cell?
+					if(neighborIt)
+					{
+						// Is it an obstacle?
+						float cost = _cost(neighborIt.dat());
+						if(cost >= 0.0f)
+						{
+							// Use the hashmap to find out if the neighbor is open, evaluated or new.
+							auto neighborVN = evalSet.find(neighborIt.pos());
+							float currentCost = currentVN.minCost + cost;
+							float newScore = currentCost + gridDistance(neighborIt.pos(), _to);
+							if(!neighborVN)
+							{
+								// Node never seen. Add to open set and then to the map.
+								VisitedNode newVNode;
+								newVNode.openHandle = openSet.add(OpenNode{neighborIt.pos(), newScore});
+								newVNode.cameFrom = currentMinON.pos;
+								newVNode.minCost = currentCost;
+								evalSet.add(neighborIt.pos(), newVNode);
+							} else if(neighborVN.data().openHandle != ca::pa::PriorityQueue<OpenNode>::INVALID_HANDLE)
+							{
+								// The node is already in the open set. Did the path improve?
+								if(newScore < openSet.get(neighborVN.data().openHandle).score)
+								{
+									neighborVN.data().cameFrom = currentMinON.pos;
+									neighborVN.data().minCost = currentCost;
+									openSet.changePriority(neighborVN.data().openHandle, newScore);
+								}
+							} // else the node is closed and can be ignored.
+						}
+					}
+				}
+			}
+
+			return false;
+
+		ReconstructPath:
+			// Go through the map and find all predecessors in order.
+			// Since we started at the start this backtracking goes from the goal
+			// to the start.
+			_path.clear();
+			IVec2 pos = _to;
+			while(pos != _from)
+			{
+				_path.push_back(pos);
+				auto h = evalSet.find(pos);
+				pos = h.data().cameFrom;
+			}
+			return true;
 		}
 
 	protected:
@@ -436,7 +570,7 @@ namespace ca { namespace map {
 		// Search for a specific x-coordinate.
 		// \param [out] _m The coordiate where the binary search stopped.
 		// \returns true if the element was found.
-		bool binSearch(const Row& _row, int _x, int& _m)
+		bool binSearch(const Row& _row, int _x, int& _m) const
 		{
 			int l = 0;
 			int r = _row.xpos.size();

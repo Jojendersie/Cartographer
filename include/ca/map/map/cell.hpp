@@ -29,14 +29,14 @@ namespace ca { namespace map {
 		/// Is a certain layer in this cell counting as occupied?
 		bool isOccupied(uint _layer) const
 		{
-			return (m_layer[_layer] != nullptr) && m_layer[_layer]->isOccupied();
+			return m_layer[_layer] != nullptr;
 		}
 		
 		/// Is any layer in this cell counting as occupied?
 		bool isOccupied() const
 		{
 			for(uint i = 0; i < N; ++i)
-				if( (m_layer[_layer] != nullptr) )
+				if( m_layer[i] != nullptr )
 					return true;
 			return false;
 		}
@@ -45,7 +45,7 @@ namespace ca { namespace map {
 		bool isSolid() const
 		{
 			for(uint i = 0; i < N; ++i)
-				if( (m_layer[_layer] != nullptr) && m_layer[_layer]->isOccupied() )
+				if( m_layer[i] != nullptr && m_layer[i]->isSolid() )
 					return true;
 			return false;
 		}
