@@ -1,5 +1,7 @@
 #include "ca/pa/highresclock.hpp"
 
+namespace ca { namespace pa {
+
 HRClock::HRClock() : m_timeStamp(now())
 {
 }
@@ -53,3 +55,5 @@ double HRClock::now()
 }
 
 #endif
+
+}} // namespace ca::pa

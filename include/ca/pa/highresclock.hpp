@@ -1,5 +1,7 @@
 #pragma once
 
+namespace ca { namespace pa {
+
 /// Plattform independent high resolution clock.
 ///
 /// This uses QueryPerformance counter with windows and
@@ -19,3 +21,5 @@ public:
 private:
 	double m_timeStamp;	/// Time since last call
 };
+
+}} // namespace ca::pa

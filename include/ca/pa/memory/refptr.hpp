@@ -82,13 +82,19 @@ namespace ca { namespace pa {
 		const T* get() const			{ return m_ptr; }
 
 		// Check
-		explicit operator bool ()				{ return m_ptr != nullptr; }
-		bool operator == (const RefPtr& _other)	{ return m_ptr == _other.m_ptr; }
-		bool operator != (const RefPtr& _other)	{ return m_ptr != _other.m_ptr; }
-		bool operator < (const RefPtr& _other)	{ return m_ptr < _other.m_ptr; }
-		bool operator <= (const RefPtr& _other)	{ return m_ptr <= _other.m_ptr; }
-		bool operator >= (const RefPtr& _other)	{ return m_ptr >= _other.m_ptr; }
-		bool operator > (const RefPtr& _other)	{ return m_ptr > _other.m_ptr; }
+		explicit operator bool () const					{ return m_ptr != nullptr; }
+		bool operator == (const RefPtr& _other) const	{ return m_ptr == _other.m_ptr; }
+		bool operator == (const T* _other) const		{ return m_ptr == _other; }
+		bool operator != (const RefPtr& _other) const	{ return m_ptr != _other.m_ptr; }
+		bool operator != (const T* _other) const		{ return m_ptr != _other; }
+		bool operator < (const RefPtr& _other) const	{ return m_ptr < _other.m_ptr; }
+		bool operator < (const T* _other) const			{ return m_ptr < _other; }
+		bool operator <= (const RefPtr& _other) const	{ return m_ptr <= _other.m_ptr; }
+		bool operator <= (const T* _other) const		{ return m_ptr <= _other; }
+		bool operator >= (const RefPtr& _other) const	{ return m_ptr >= _other.m_ptr; }
+		bool operator >= (const T* _other) const		{ return m_ptr >= _other; }
+		bool operator > (const RefPtr& _other) const	{ return m_ptr > _other.m_ptr; }
+		bool operator > (const T* _other) const			{ return m_ptr > _other; }
 
 	private:
 		T* m_ptr;
