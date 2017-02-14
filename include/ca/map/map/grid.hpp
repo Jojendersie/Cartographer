@@ -471,9 +471,13 @@ namespace ca { namespace map {
 		///		The order is reversed such that pop_back() can be used to efficently process the path.
 		/// \param [in] _cost A functor which assignes (entity specific) costs for each cell. Negative
 		///		costs mark obstacles.
+		/// \param [in] _maxCostOffset Path are not expandet if they cost more than
+		///		_maxCostOffset + _maxCostFactor * dist(start, goal). This criterial is to prevent
+		///		very long path searches for impossible paths.
+		/// \param [in] _maxCostFactor See _maxCostOffset.
 		/// \returns False if no path is possible.
 		// TODO: a max path-length restriction, TODO: maybe return the best path which came closest to the target if no one is possible?
-		bool findPath(std::vector<ei::IVec2>& _path, const ei::IVec2& _from, const ei::IVec2& _to, std::function<float(const CellT&)> _cost) const
+		bool findPath(std::vector<ei::IVec2>& _path, const ei::IVec2& _from, const ei::IVec2& _to, std::function<float(const CellT&)> _cost, float _maxCostOffset = 100.0f, float _maxCostFactor = 2.5f) const
 		{
 			// Discovered but unevaluated nodes
 			pa::PriorityQueue<OpenNode> openSet;
@@ -486,6 +490,8 @@ namespace ca { namespace map {
 			newVNode.cameFrom = _from;
 			newVNode.minCost = 0.0f;
 			evalSet.add(_from, newVNode);
+
+			float maxCost = gridDistance(_from, _to) * _maxCostFactor + _maxCostOffset;
 
 			while(!openSet.empty())
 			{
@@ -512,6 +518,7 @@ namespace ca { namespace map {
 							auto neighborVN = evalSet.find(neighborIt.pos());
 							float currentCost = currentVN.minCost + cost;
 							float newScore = currentCost + gridDistance(neighborIt.pos(), _to);
+							if(currentCost > maxCost) continue;
 							if(!neighborVN)
 							{
 								// Node never seen. Add to open set and then to the map.
