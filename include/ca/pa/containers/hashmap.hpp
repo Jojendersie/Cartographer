@@ -8,9 +8,9 @@ template<typename K, typename T, typename Hash = std::hash<K>, typename Compare 
 class HashMap
 {
 public:
-	// Handles are direct accesses into a specific hashmap.
-	// Any add or remove in the HM will invalidate the handle without notification.
-	// A handle might be usable afterwards, but there is no guaranty.
+	/// Handles are direct accesses into a specific hashmap.
+	/// Any add or remove in the HM will invalidate the handle without notification.
+	/// A handle might be usable afterwards, but there is no guaranty.
 	class Handle
 	{
 		HashMap* map;
@@ -30,6 +30,24 @@ public:
 		const T& data() const { return map->m_data[idx]; }
 
 		operator bool () const { return map != nullptr; }
+
+		Handle& operator ++ ()
+		{
+			++idx;
+			// Move forward while the element is empty.
+			while((idx < map->m_capacity) && (map->m_keys[idx].dist == 0xffffffff))
+				++idx;
+			// Set to invalid handle?
+			if(idx >= map->m_capacity) { idx = 0; map = nullptr; }
+			return *this;
+		}
+
+		bool operator == (const Handle& _other) const { return map == _other.map && idx == _other.idx; }
+		bool operator != (const Handle& _other) const { return map != _other.map || idx != _other.idx; }
+
+		// The dereference operator has no function other than making this handle compatible
+		// for range based loops.
+		const Handle& operator * () const { return *this; }
 	};
 
 	explicit HashMap(uint32_t _expectedElementCount = 15) :
@@ -194,15 +212,25 @@ public:
 
 	uint32_t size() const { return m_size; }
 
-	// returns the first element found in the map or an invalid handle when the map is empty
-	Handle first()
+	/// Returns the first element found in the map or an invalid handle when the map is empty.
+	Handle begin()
 	{
+		if(m_size == 0)
+			return Handle(nullptr, 0);
+
 		for(uint32_t i = 0; i < m_capacity; ++i)
 			if(m_keys[i].dist != 0xffffffff)
 				return Handle(this, i);
 
 		return Handle(nullptr, 0);
 	}
+
+	/// Return the invalid handle for range based for loops
+	Handle end()
+	{
+		return Handle(nullptr, 0);
+	}
+
 private:
 	uint32_t m_capacity;
 	uint32_t m_size;
