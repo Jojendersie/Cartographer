@@ -476,9 +476,15 @@ namespace ca { namespace map {
 		///		very long path searches for impossible paths.
 		/// \param [in] _maxCostFactor See _maxCostOffset.
 		/// \returns False if no path is possible.
-		// TODO: a max path-length restriction, TODO: maybe return the best path which came closest to the target if no one is possible?
-		bool findPath(std::vector<ei::IVec2>& _path, const ei::IVec2& _from, const ei::IVec2& _to, std::function<float(const CellT&)> _cost, float _maxCostOffset = 100.0f, float _maxCostFactor = 2.5f) const
-		{
+		// TODO: maybe return the best path which came closest to the target if no one is possible?
+		bool findPath(
+			std::vector<ei::IVec2>& _path,
+			const ei::IVec2& _from,
+			const ei::IVec2& _to,
+			std::function<float(const CellT&)> _cost,
+			float _maxCostOffset = 100.0f,
+			float _maxCostFactor = 2.5f
+		) const {
 			// Discovered but unevaluated nodes
 			pa::PriorityQueue<OpenNode> openSet;
 			// A second map with (partially) evaluated nodes.
@@ -500,8 +506,9 @@ namespace ca { namespace map {
 				if(currentMinON.pos == _to)
 					goto ReconstructPath;
 				// Mark the node as closed.
-				VisitedNode currentVN = evalSet.find(currentMinON.pos).data();
+				VisitedNode& currentVN = evalSet.find(currentMinON.pos).data();
 				currentVN.openHandle = ca::pa::PriorityQueue<OpenNode>::INVALID_HANDLE;
+				float currentMinCost = currentVN.minCost;
 				// For each neighbor
 				auto it = beginNeighborhood(currentMinON.pos);
 				for(int i = 0; i < int(GridT); ++i)
@@ -516,7 +523,7 @@ namespace ca { namespace map {
 						{
 							// Use the hashmap to find out if the neighbor is open, evaluated or new.
 							auto neighborVN = evalSet.find(neighborIt.pos());
-							float currentCost = currentVN.minCost + cost;
+							float currentCost = currentMinCost + cost;
 							float newScore = currentCost + gridDistance(neighborIt.pos(), _to);
 							if(currentCost > maxCost) continue;
 							if(!neighborVN)
