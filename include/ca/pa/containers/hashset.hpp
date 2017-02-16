@@ -46,7 +46,7 @@ public:
 
 		// The dereference operator has no function other than making this handle compatible
 		// for range based loops.
-		const Handle& operator * () const { return *this; }
+		const T& operator * () const { return map->m_keys[idx].value; }
 	};
 
 	explicit HashSet(uint32_t _expectedElementCount = 15) :
