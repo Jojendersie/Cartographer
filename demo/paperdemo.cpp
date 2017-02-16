@@ -110,6 +110,12 @@ void hashMapBenchmark()
 				logError("Found an element which should not be there!");
 		totalTime = clock.deltaTime();
 		logInfo("[HM Benchmark] Finding of 8M non-contained elements: ", totalTime, " ms.");
+
+		// Test of the clear call
+		clock.deltaTime();
+		map.clear();
+		totalTime = clock.deltaTime();
+		logInfo("[HM Benchmark] Time to clear the map: ", totalTime, " ms.");
 	}
 
 	// Random insertion + deletion
@@ -258,7 +264,7 @@ int main()
 		ptr2->tell();
 	}
 
-//	hashMapBenchmark();
+	hashMapBenchmark();
 	priorityQueueBenchmark();
 
 	return 0;

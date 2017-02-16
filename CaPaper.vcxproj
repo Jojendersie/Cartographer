@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClInclude Include="include\ca\paper.hpp" />
     <ClInclude Include="include\ca\pa\containers\hashmap.hpp" />
+    <ClInclude Include="include\ca\pa\containers\hashset.hpp" />
     <ClInclude Include="include\ca\pa\containers\priorityqueue.hpp" />
     <ClInclude Include="include\ca\pa\highresclock.hpp" />
     <ClInclude Include="include\ca\pa\log.hpp" />

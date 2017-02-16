@@ -28,7 +28,7 @@ namespace ca { namespace pa {
 	public:
 		// Construction and copies
 		RefPtr() : m_ptr(nullptr)							{}
-		explicit RefPtr(T* _object) : m_ptr(_object)		{ m_ptr->m_refCounter++; }
+		explicit RefPtr(T* _object) : m_ptr(_object)		{ if(m_ptr) m_ptr->m_refCounter++; }
 
 		template<typename T2, class = typename std::enable_if<std::is_convertible<T2*,T*>::value || std::is_base_of<T2,T>::value, void>::type>
 		RefPtr(const RefPtr<T2>& _other)

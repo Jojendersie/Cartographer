@@ -36,6 +36,9 @@
     <ClInclude Include="include\ca\pa\highresclock.hpp">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\ca\pa\containers\hashset.hpp">
+      <Filter>include\containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\log.cpp">
