@@ -13,27 +13,40 @@ public:
 	/// Handles are direct accesses into a specific hashmap.
 	/// Any add or remove in the HM will invalidate the handle without notification.
 	/// A handle might be usable afterwards, but there is no guaranty.
-	class Handle
+	template<typename MapT, typename DataT>
+	class HandleT
 	{
-		HashMap* map;
+		MapT* map;
 		uint32_t idx;
 
-		Handle(HashMap* _map, uint32_t _idx) :
+		HandleT(MapT* _map, uint32_t _idx = 0) :
 			map(_map),
 			idx(_idx)
-		{}
+		{
+			if(_map)
+			{
+				if(_map->m_size == 0)
+					map = nullptr;
+				else {
+					// Find a valid start value.
+					while(idx < _map->m_capacity && _map->m_keys[idx].dist == 0xffffffff)
+						++idx;
+			
+					if(idx == _map->m_capacity)
+						_map = nullptr;
+				}
+			}
+		}
 
 		friend HashMap;
 	public:
-		K& key() { return map->m_keys[idx].key; }
 		const K& key() const { return map->m_keys[idx].key; }
 
-		T& data() { return map->m_data[idx]; }
-		const T& data() const { return map->m_data[idx]; }
+		DataT& data() const { return map->m_data[idx]; }
 
 		operator bool () const { return map != nullptr; }
 
-		Handle& operator ++ ()
+		HandleT& operator ++ ()
 		{
 			++idx;
 			// Move forward while the element is empty.
@@ -44,13 +57,16 @@ public:
 			return *this;
 		}
 
-		bool operator == (const Handle& _other) const { return map == _other.map && idx == _other.idx; }
-		bool operator != (const Handle& _other) const { return map != _other.map || idx != _other.idx; }
+		bool operator == (const HandleT& _other) const { return map == _other.map && idx == _other.idx; }
+		bool operator != (const HandleT& _other) const { return map != _other.map || idx != _other.idx; }
 
 		// The dereference operator has no function other than making this handle compatible
 		// for range based loops.
-		const Handle& operator * () const { return *this; }
+		const HandleT& operator * () const { return *this; }
 	};
+
+	typedef HandleT<HashMap, T> Handle;
+	typedef HandleT<const HashMap, const T> ConstHandle;
 
 	explicit HashMap(uint32_t _expectedElementCount = 15) :
 		m_capacity(estimateCapacity(_expectedElementCount)),
@@ -233,20 +249,22 @@ public:
 	/// Returns the first element found in the map or an invalid handle when the map is empty.
 	Handle begin()
 	{
-		if(m_size == 0)
-			return Handle(nullptr, 0);
-
-		for(uint32_t i = 0; i < m_capacity; ++i)
-			if(m_keys[i].dist != 0xffffffff)
-				return Handle(this, i);
-
-		return Handle(nullptr, 0);
+		return Handle(this);
 	}
+	ConstHandle begin() const
+	{
+		return ConstHandle(this);
+	}
+
 
 	/// Return the invalid handle for range based for loops
 	Handle end()
 	{
-		return Handle(nullptr, 0);
+		return Handle(nullptr);
+	}
+	ConstHandle end() const
+	{
+		return ConstHandle(nullptr);
 	}
 
 private:
