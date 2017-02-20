@@ -129,7 +129,7 @@ public:
 		{
 			if(m_keyCompare(m_keys[idx].key, _key)) // overwrite if keys are identically
 			{
-				m_data[idx] = _data;
+				m_data[idx] = move(_data);
 				return;
 			}
 			// probing (collision)
@@ -153,7 +153,7 @@ public:
 		}
 		new (&m_keys[idx].key)(K)(move(_key));
 		m_keys[idx].dist = d;
-		new (&m_data[idx])(T)(std::forward<_DataT>(_data));
+		new (&m_data[idx])(T)(move(_data));
 		++m_size;
 	}
 
