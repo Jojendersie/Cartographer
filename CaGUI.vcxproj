@@ -154,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="include\ca\gui.hpp" />
     <ClInclude Include="include\ca\gui\backend\charcoal.hpp" />
+    <ClInclude Include="include\ca\gui\backend\keyboard.hpp" />
     <ClInclude Include="include\ca\gui\backend\mouse.hpp" />
     <ClInclude Include="include\ca\gui\backend\renderbackend.hpp" />
     <ClInclude Include="include\ca\gui\guimanager.hpp" />
@@ -185,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\backend\charcoal.cpp" />
+    <ClCompile Include="src\backend\keyboard.cpp" />
     <ClCompile Include="src\backend\mouse.cpp" />
     <ClCompile Include="src\guimanager.cpp" />
     <ClCompile Include="src\properties\anchorable.cpp" />

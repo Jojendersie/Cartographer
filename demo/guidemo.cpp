@@ -1,5 +1,6 @@
 #include <ca/gui.hpp>
 #include <ca/charcoal.hpp>
+#include <ca/paper.hpp>
 #include "../dependencies/stb_image.h" // Implementation included in Charcoal
 #include <GLFW/glfw3.h>
 #include "stdwindow.hpp"
@@ -294,7 +295,7 @@ void createGUI(GLFWwindow* _window)
 
 void runMainLoop(GLFWwindow* _window)
 {
-	HRClock clock;
+	ca::pa::HRClock clock;
 	while(!glfwWindowShouldClose(_window))
 	{
 		float deltaTime = (float)clock.deltaTime();

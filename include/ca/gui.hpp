@@ -15,6 +15,8 @@
 #include "gui/widgets/node.hpp"
 
 #include "gui/backend/charcoal.hpp"
+#include "gui/backend/mouse.hpp"
+#include "gui/backend/keyboard.hpp"
 
 #include "gui/rendering/flattheme.hpp"
 #include "gui/rendering/sharp3dtheme.hpp"

@@ -7,7 +7,7 @@ namespace ca { namespace gui {
 	/// Descriptor for the current mouse state.
 	struct MouseState
 	{
-		/// Cursor position in internal coordinates.
+		/// Cursor position in internal (pixel) coordinates.
 		/// \details Coordinates outside [0,width/heigh] are possible if the mouse leaves the window
 		///		while being pressed or if the window was resized and the mouse is not yet repositioned.
 		Coord2 position;

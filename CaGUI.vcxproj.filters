@@ -101,6 +101,9 @@
     <ClInclude Include="include\ca\gui\properties\textproperties.hpp">
       <Filter>properties</Filter>
     </ClInclude>
+    <ClInclude Include="include\ca\gui\backend\keyboard.hpp">
+      <Filter>backend</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\widgets\frame.cpp">
@@ -178,6 +181,9 @@
     </ClCompile>
     <ClCompile Include="src\widgets\group.cpp">
       <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\backend\keyboard.cpp">
+      <Filter>backend</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
