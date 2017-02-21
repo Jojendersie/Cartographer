@@ -35,6 +35,11 @@ namespace ca { namespace gui {
 			return _h * GUIManager::getHeight();
 		}
 
+		float maxRelativeWidth()
+		{
+			return GUIManager::getWidth() / float(GUIManager::getHeight());
+		}
+
 		Coord2 pixel(int _x, int _y)
 		{
 			return ei::Vec2((float)_x, (float)_y);

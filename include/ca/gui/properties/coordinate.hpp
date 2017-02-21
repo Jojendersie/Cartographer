@@ -22,6 +22,9 @@ namespace ca { namespace gui {
 		Coord2 relative(float _x, float _y);
 		Coord relativeWidth(float _w);
 		Coord relativeHeight(float _h);
+		/// Return the maximum x-value of the height-relative [0,a]x[0,1] coordinate system.
+		/// This is the same as the aspect ration w/h.
+		float maxRelativeWidth();
 		/// Convert an absolute pixel coordinate to internal
 		Coord2 pixel(int _x, int _y);
 		Coord pixel(int _pixels);
