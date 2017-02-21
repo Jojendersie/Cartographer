@@ -27,6 +27,7 @@ namespace ca { namespace gui {
 		/// USB HID Usage Tables v1.12 (p. 53-60).
 		enum class Key
 		{
+			UNKNOWN = 0,
 			A = 4,
 			B = 5,
 			C = 6,
@@ -78,7 +79,7 @@ namespace ca { namespace gui {
 			APOSTROPHE = 52,
 			GRAVE_ACCENT = 53,
 			COMMA = 54,
-			DOT = 55,
+			PERIOD = 55,
 			SLASH = 56,
 			CAPS_LOCK = 57,
 			F1 = 58,
@@ -106,10 +107,10 @@ namespace ca { namespace gui {
 			ARROW_LEFT = 80,
 			ARROW_DOWN = 81,
 			ARROW_UP = 82,
-			NUMPAD_NUM_LOCK = 83,
-			NUMPAD_DIV = 84,
-			NUMPAD_MUL = 85,
-			NUMPAD_MINUS = 86,
+			NUM_LOCK = 83,
+			NUMPAD_DIVIDE = 84,
+			NUMPAD_MULTIPLY = 85,
+			NUMPAD_SUBTRACT = 86,
 			NUMPAD_ADD = 87,
 			NUMPAD_ENTER = 88,
 			NUMPAD_1 = 89,
@@ -124,6 +125,21 @@ namespace ca { namespace gui {
 			NUMPAD_0 = 98,
 			NUMPAD_DELETE = 99,
 			BAR = 100,
+			MENU = 101,
+			NUMPAD_EQUAL = 103,
+
+			F13 = 104,
+			F14 = 105,
+			F15 = 106,
+			F16 = 107,
+			F17 = 108,
+			F18 = 109,
+			F19 = 110,
+			F20 = 111,
+			F21 = 112,
+			F22 = 113,
+			F23 = 114,
+			F24 = 115,
 
 			// A lot of unusual keys ... fill in if required
 
