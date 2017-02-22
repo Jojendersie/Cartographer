@@ -25,9 +25,14 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		/// \param [in] _innerLayer Stir rendering order within the component.
 		///		The larger the layer the later is the element drawn (more in foreground).
 		static void add(WidgetPtr _widget, unsigned _innerLayer = 0);
+		/// The named add allows to assign a unique value to each element to find it later.
+		static void add(uint _name, WidgetPtr _widget, unsigned _innerLayer = 0);
 
 		/// Find and remove a widget (O(n) with n = number of elements)
 		static void remove(WidgetPtr _widget);
+
+		/// Find a named element.
+		WidgetPtr find(uint _name);
 
 		/// Remove all current widgets.
 		/// \details This can be usefull to switch between different GUIs. As long as you

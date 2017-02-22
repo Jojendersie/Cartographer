@@ -49,11 +49,27 @@ namespace ca { namespace gui {
 		g_manager->m_topFrame->add(_widget, _innerLayer);
 	}
 
+	void GUIManager::add(uint _name, WidgetPtr _widget, unsigned _innerLayer)
+	{
+		if(!g_manager)
+			return logError("Uninitialized GUIManager! Cannot add components!");
+		g_manager->m_topFrame->add(_name, _widget, _innerLayer);
+	}
+
 	void GUIManager::remove(WidgetPtr _widget)
 	{
 		if(!g_manager)
 			return logError("Uninitialized GUIManager! Cannot remove components!");
 		g_manager->m_topFrame->remove(_widget);
+	}
+
+	WidgetPtr GUIManager::find(uint _name)
+	{
+		if(!g_manager) {
+			logError("Uninitialized GUIManager! Cannot find components!");
+			return WidgetPtr();
+		}
+		return std::move(g_manager->m_topFrame->find(_name));
 	}
 
 	void GUIManager::clear()

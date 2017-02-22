@@ -43,6 +43,12 @@ namespace ca { namespace gui {
 		}
 	}
 
+	void Group::add(uint _name, WidgetPtr _widget, unsigned _innerLayer)
+	{
+		add(_widget, _innerLayer);
+		m_nameMap.add(_name, std::move(_widget));
+	}
+
 	void Group::remove(WidgetPtr _widget)
 	{
 		// Search linearly in one of the lists.
@@ -52,6 +58,14 @@ namespace ca { namespace gui {
 				m_children.erase(it);
 				return;
 			}
+	}
+
+	WidgetPtr Group::find(uint _name)
+	{
+		auto it = m_nameMap.find(_name);
+		if(it)
+			return it.data();
+		return WidgetPtr();
 	}
 
 	void Group::clear()
