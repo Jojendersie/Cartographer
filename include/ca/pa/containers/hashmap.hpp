@@ -118,19 +118,19 @@ public:
 	}
 
 	template<class _DataT>
-	void add(K _key, _DataT&& _data)
+	Handle add(K _key, _DataT&& _data)
 	{
 		using namespace std;
 		uint32_t h = (uint32_t)m_hash(_key);//hash(reinterpret_cast<const uint32_t*>(&_key), sizeof(_key) / 4);
 	restartAdd:
-		uint32_t d = 0;
+		uint32_t insertIdx = ~0;		uint32_t d = 0;
 		uint32_t idx = h % m_capacity;
 		while(m_keys[idx].dist != 0xffffffff) // while not empty cell
 		{
 			if(m_keyCompare(m_keys[idx].key, _key)) // overwrite if keys are identically
 			{
 				m_data[idx] = move(_data);
-				return;
+				return Handle(this, idx);
 			}
 			// probing (collision)
 			// Since we have encountered a collision: should we resize?
@@ -146,6 +146,7 @@ public:
 				swap(_key, m_keys[idx].key);
 				swap(d, m_keys[idx].dist);
 				swap(_data, m_data[idx]);
+				if(insertIdx == ~0) insertIdx = idx;
 			}
 			++d;
 		//	idx = (idx + 1) % m_capacity;
@@ -155,6 +156,8 @@ public:
 		m_keys[idx].dist = d;
 		new (&m_data[idx])(T)(move(_data));
 		++m_size;
+		if(insertIdx == ~0) insertIdx = idx;
+		return Handle(this, insertIdx);
 	}
 
 	// Remove an element if it exists
