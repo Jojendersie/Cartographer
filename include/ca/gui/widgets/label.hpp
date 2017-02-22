@@ -1,11 +1,12 @@
 #pragma once
 
 #include "widget.hpp"
+#include "ca/gui/properties/textproperties.hpp"
 
 namespace ca { namespace gui {
 
 	/// Simple text element
-	class Label : public Widget
+	class Label : public Widget, public TextProperties
 	{
 	public:
 		Label();

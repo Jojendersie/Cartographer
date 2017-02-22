@@ -15,9 +15,10 @@ namespace ca { namespace gui {
 	void Label::draw() const
 	{
 		float downScale = ei::min(1.0f, ei::min(
-			m_refFrame.width() / m_textSize.x,
-			m_refFrame.height() / m_textSize.y
+			m_refFrame.width() / (m_textSize.x * m_relativeTextSize),
+			m_refFrame.height() / (m_textSize.y * m_relativeTextSize)
 			));
+		downScale *= m_relativeTextSize;
 
 		Coord2 center = Coord2(m_refFrame.left() + m_refFrame.right(), m_refFrame.bottom() + m_refFrame.top()) * 0.5f;
 		center -= m_textSize * 0.5f * downScale;
