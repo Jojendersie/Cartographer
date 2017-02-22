@@ -9,6 +9,7 @@
 #include "gui/widgets/editbox.hpp"
 #include "gui/widgets/frame.hpp"
 #include "gui/widgets/label.hpp"
+#include "gui/widgets/image.hpp"
 #include "gui/widgets/multilineeditbox.hpp"
 #include "gui/widgets/slider.hpp"
 #include "gui/widgets/treelist.hpp"

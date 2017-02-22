@@ -104,6 +104,9 @@
     <ClInclude Include="include\ca\gui\backend\keyboard.hpp">
       <Filter>backend</Filter>
     </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\image.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\widgets\frame.cpp">
@@ -184,6 +187,9 @@
     </ClCompile>
     <ClCompile Include="src\backend\keyboard.cpp">
       <Filter>backend</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\image.cpp">
+      <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
