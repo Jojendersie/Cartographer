@@ -93,4 +93,39 @@ namespace ca { namespace gui {
 		mutable float m_mouseT;			///< Store curve parameter 't' of last isMouseOver test. This is undefined if m_isMouseOver is false.
 	};
 
+	/// Spline connector which can connect any Widget.
+	/// In contrast to the NodeConnector it does not allow interaction in form of snapping
+	/// and reassignment.
+	class WidgetConnector : public Widget, public IRegion
+	{
+	public:
+		WidgetConnector();
+
+		/// Implement the draw method.
+		/// The curve will visually start at the border of the widged region.
+		void draw() const override;
+
+		/// Recompute the reference frame dependent on the two nodes
+		void refitToAnchors() override;
+
+		/// \param [in] _angle Direction in radiant in which the edge will start.
+		void setSource(WidgetPtr _node, float _angle)	{m_sourceNode = _node; m_sourceAngle = _angle;}
+		void setDest(WidgetPtr _node, float _angle)		{m_destNode = _node; m_destAngle = _angle;}
+	protected:
+		WidgetPtr m_sourceNode;
+		WidgetPtr m_destNode;
+		float m_sourceAngle;
+		float m_destAngle;
+
+		std::vector<ei::Vec3> m_curve;
+
+		/// Implementation of IRegion::isMouseOver.
+		bool isMouseOver(const Coord2& _mousePos) const override;
+
+		mutable bool m_isMouseOver;		///< Store the result of the last test
+	//	mutable float m_mouseT;			///< Store curve parameter 't' of last isMouseOver test. This is undefined if m_isMouseOver is false.
+	};
+
+	typedef pa::RefPtr<WidgetConnector> WidgetConnectorPtr;
+
 }} // namespace ca::gui

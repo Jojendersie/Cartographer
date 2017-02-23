@@ -147,7 +147,7 @@ namespace ca { namespace gui {
 	}
 
 
-	
+
 	NodeConnector::NodeConnector() :
 		Widget(false, true, false, false),
 		m_isMouseOver(false),
@@ -223,6 +223,7 @@ namespace ca { namespace gui {
 
 	bool NodeConnector::isMouseOver(const Coord2& _mousePos) const
 	{
+		m_isMouseOver = false;
 		if(!m_refFrame.isMouseOver(_mousePos))
 			return false;
 
@@ -251,7 +252,6 @@ namespace ca { namespace gui {
 			}
 			line.a = line.b;
 		}
-		m_isMouseOver = false;
 		return false;
 	}
 
@@ -294,6 +294,100 @@ namespace ca { namespace gui {
 		}
 
 		return m_tmpHandleState != HandleState::ATTACHED;
+	}
+
+
+	WidgetConnector::WidgetConnector() :
+		Widget(false, true, false, false),
+		m_isMouseOver(false)
+	{
+		m_clickComponent->setClickRegion(this, false);
+	}
+
+	void WidgetConnector::draw() const
+	{
+		// TODO: Color
+		GUIManager::theme().drawLine(m_curve.data(), m_curve.size(), Vec4(1.0f), Vec4(1.0f));
+	}
+
+	static void findWidgetBorder(const IRegion* _region, Vec2& _pos, const Vec2& _dir)
+	{
+		Vec2 tmp = _pos + _dir;
+		bool isInside1 = _region->isMouseOver(tmp);
+		for(int i = 0; i < 16; ++i)
+		{
+			if(isInside1)
+			{
+				// Linear ray march until point 1 is outside
+				_pos = tmp;
+				tmp += _dir;
+				isInside1 = _region->isMouseOver(tmp);
+			} else {
+				// Binary search
+				Vec2 center = (tmp + _pos) * 0.5f;
+				bool isInsideC = _region->isMouseOver(center);
+				if(isInsideC)
+					_pos = center;
+				else tmp = center;
+			}
+		}
+	}
+
+	void WidgetConnector::refitToAnchors()
+	{
+		Vec2 p0 = m_sourceNode->getRefFrame().center();
+		Vec2 p3 = m_destNode->getRefFrame().center();
+		Vec2 adir(cos(m_sourceAngle), sin(m_sourceAngle)); // TODO: scale with widget size
+		Vec2 bdir(cos(m_destAngle), sin(m_destAngle));
+
+		// Find the borders of the source/dest widget
+		const IRegion* region = m_sourceNode->getRegion();
+		findWidgetBorder(region, p0, adir * (sum(m_sourceNode->getSize()) / 4.0f));
+		region = m_destNode->getRegion();
+		findWidgetBorder(region, p3, bdir * (sum(m_destNode->getSize()) / 4.0f));
+
+		// Create the Bezier spline
+		Coord2 boundingRect[2] = {Coord2(min(p0, p3)), Coord2(max(p0, p3))};
+		float nodeDistance = len(p0 - p3) / 3.0f;
+		Vec2 p1 = p0 + adir * nodeDistance;
+		Vec2 p2 = p3 + bdir * nodeDistance;
+		m_curve.clear();
+		for(int i = 0; i < CONNECTOR_NUM_POINTS; ++i)
+		{
+			// TODO: adaptive step length to increase sample density in heigh
+			// curvature areas
+			float t = i / (CONNECTOR_NUM_POINTS - 1.0f);
+			float ti = 1.0f - t;
+			m_curve.push_back(Vec3( ti*ti*ti * p0 + 3.0f*ti*ti*t * p1 + 3.0f*ti*t*t * p2 + t*t*t * p3, 0.0f));
+			boundingRect[0] = min(boundingRect[0], Coord2(m_curve[i]));
+			boundingRect[1] = max(boundingRect[1], Coord2(m_curve[i]));
+		}
+
+		m_refFrame.sides[SIDE::LEFT] = boundingRect[0].x - 3.0f;
+		m_refFrame.sides[SIDE::BOTTOM] = boundingRect[0].y - 3.0f;
+		m_refFrame.sides[SIDE::RIGHT] = boundingRect[1].x + 3.0f;
+		m_refFrame.sides[SIDE::TOP] = boundingRect[1].y + 3.0f;
+	}
+
+	bool WidgetConnector::isMouseOver(const Coord2 & _mousePos) const
+	{
+		// Early exit if not on the frame
+		m_isMouseOver = false;
+		if(!m_refFrame.isMouseOver(_mousePos))
+			return false;
+
+		for(uint i = 0; i < m_curve.size()-1; ++i)
+		{
+			Segment2D line;
+			line.a = Vec2(m_curve[i]);
+			line.b = Vec2(m_curve[i+1]);
+			// Test if the _mousePos is close to the line segment l0-l1
+			if(distanceSq(line, _mousePos) <= 9.0f) {
+				m_isMouseOver = true;
+				return true;
+			}
+		}
+		return false;
 	}
 
 }} // namespace ca::gui

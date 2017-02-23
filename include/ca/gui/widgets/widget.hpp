@@ -80,6 +80,8 @@ namespace ca { namespace gui {
 		/// Add or remove the clickable property (you can add CLICK and DBLCLICK callbacks)
 		/// The old click component is kept if there is already one.
 		void setClickable(bool _enable);
+		/// Every component has an interactio region. If not explicitly set this is the reference frame.
+		virtual const IRegion* getRegion() const;
 		/// Add or remove the anchor property (this element can be anchored).
 		/// The old anchor component is kept if there is already one.
 		void setAnchorable(bool _enable);

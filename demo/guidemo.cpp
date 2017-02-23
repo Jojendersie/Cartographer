@@ -291,6 +291,54 @@ void createGUI(GLFWwindow* _window)
 	connector0->setSource(h00);
 	connector0->setDest(h30);
 	GUIManager::add(connector0, 1);
+
+	// Create a set of images with widget-connectors
+	FramePtr f4(new Frame(true, false, true, false));
+	f4->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
+	BorderAnchorProvider* anchorsf4 = static_cast<BorderAnchorProvider*>(f4->getAnchorProvider());
+	f4->setExtent(Vec2(115.0f, 360.0f), Vec2(200.0f, 255.0f));
+	GUIManager::add(f4);
+	ImagePtr i0(new Image);
+	i0->setExtent(f4->getPosition() + Vec2(20.0f, 10.0f), Vec2(32.0f));
+	i0->setTexture("textures/ca_icon32.png");
+	i0->autoAnchor(anchorsf4);
+	f4->add(i0);
+	ImagePtr i1(new Image);
+	i1->setExtent(f4->getPosition() + Vec2(10.0f, 70.0f), Vec2(32.0f));
+	i1->setTexture("textures/ca_icon32.png");
+	i1->autoAnchor(anchorsf4);
+	f4->add(i1);
+	ImagePtr i2(new Image);
+	i2->setExtent(f4->getPosition() + Vec2(100.0f, 100.0f), Vec2(32.0f));
+	i2->setTexture("textures/ca_icon32.png");
+	i2->autoAnchor(anchorsf4);
+	f4->add(i2);
+	ImagePtr i3(new Image);
+	i3->setExtent(f4->getPosition() + Vec2(20.0f, 140.0f), Vec2(32.0f));
+	i3->setTexture("textures/ca_icon32.png");
+	i3->autoAnchor(anchorsf4);
+	f4->add(i3);
+	ImagePtr i4(new Image);
+	i4->setExtent(f4->getPosition() + Vec2(140.0f, 190.0f), Vec2(32.0f));
+	i4->setTexture("textures/ca_icon32.png");
+	i4->autoAnchor(anchorsf4);
+	f4->add(i4);
+	WidgetConnectorPtr con0(new WidgetConnector);
+	con0->setSource(i0, 2.0f);
+	con0->setDest(i1, -2.0f);
+	f4->add(con0);
+	WidgetConnectorPtr con1(new WidgetConnector);
+	con1->setSource(i1, 2.0f);
+	con1->setDest(i3, -1.0f);
+	f4->add(con1);
+	WidgetConnectorPtr con2(new WidgetConnector);
+	con2->setSource(i1, 0.0f);
+	con2->setDest(i2, -3.0f);
+	f4->add(con2);
+	WidgetConnectorPtr con3(new WidgetConnector);
+	con3->setSource(i0, 0.0f);
+	con3->setDest(i4, -1.0f);
+	f4->add(con3);
 }
 
 void runMainLoop(GLFWwindow* _window)
