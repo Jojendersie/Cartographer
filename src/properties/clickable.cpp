@@ -5,9 +5,8 @@
 
 namespace ca { namespace gui {
 
-	Clickable::Clickable(RefFrame* _selfFrame) :
-		m_clickRegion(_selfFrame),
-		m_deleteRegion(false)
+	Clickable::Clickable(const IRegion* _selfRegion) :
+		m_clickRegion(_selfRegion)
 	{
 		for(int b = 0; b < 8; ++b)
 		{
@@ -18,8 +17,6 @@ namespace ca { namespace gui {
 
 	Clickable::~Clickable()
 	{
-		if(m_deleteRegion)
-			delete m_clickRegion;
 	}
 
 	bool Clickable::processInput(const MouseState& _mouseState)
@@ -85,13 +82,9 @@ namespace ca { namespace gui {
 		m_statesMasks.push_back(_stateMask);
 	}
 
-	void Clickable::setClickRegion(IRegion* _region, bool _delete)
-	{
-		m_clickRegion = _region;
-		m_deleteRegion = _delete;
-	}
 
-	EllipseRegion::EllipseRegion(RefFrame* _selfFrame) :
+
+	EllipseRegion::EllipseRegion(const RefFrame* _selfFrame) :
 		m_selfFrame(_selfFrame)
 	{
 	}

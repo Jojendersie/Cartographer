@@ -12,7 +12,7 @@ namespace ca { namespace gui {
 	class Clickable
 	{
 	public:
-		Clickable(RefFrame* _selfFrame);
+		Clickable(const IRegion* _selfRegion);
 		~Clickable();
 
 		/// Process mouse input (uses the callbacks).
@@ -31,22 +31,12 @@ namespace ca { namespace gui {
 		///		is called for all those states.
 		void addOnButtonChangeFunc(OnButtonChange _callback, MouseState::ButtonState _stateMask);
 
-		/// Set a handler to detect if the mouse is in the region of this object.
-		/// \param [in] _region Valid click-regions are CircleRegion and MaskRegion.
-		///
-		///		The clickable takes the ownership of the given object if _delete is true. Make
-		///		sure that delete will not fail.
-		///
-		///		If nothing is set/the nullptr is given, the own reference frame defines the region.
-		/// \param [in] _delete The region object must be deleted.
-		void setClickRegion(IRegion* _region, bool _delete = true);
-
 		const IRegion* getClickRegion() const { return m_clickRegion; }
+		void setClickRegion(const IRegion* _region) { m_clickRegion = _region; }
 
 		bool isAnyButtonDown() const { for(int i = 0; i < 8; ++i) if(m_buttonDownReceived[i]) return true; return false; }
 	protected:
-		IRegion* m_clickRegion;
-		bool m_deleteRegion;
+		const IRegion* m_clickRegion;
 		std::vector<OnButtonChange> m_changeFuncs;
 		std::vector<MouseState::ButtonState> m_statesMasks; // Call callbacks only for desired events
 		bool m_buttonDownReceived[8];	// Detect for each button, if it was pressed on this element (for CLICK events)
@@ -58,11 +48,11 @@ namespace ca { namespace gui {
 	{
 	public:
 		/// \param [in] _selfFrame The reference frame for the clickable area
-		EllipseRegion(RefFrame* _selfFrame);
+		EllipseRegion(const RefFrame* _selfFrame);
 
 		virtual bool isMouseOver(const Coord2& _mousePos) const override;
 	private:
-		RefFrame* m_selfFrame;
+		const RefFrame* m_selfFrame;
 	};
 
 	/// Use a bitmap mask to detect click events.

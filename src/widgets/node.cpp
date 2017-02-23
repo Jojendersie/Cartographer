@@ -100,7 +100,7 @@ namespace ca { namespace gui {
 		m_color(1.0f)
 	{
 		Widget::setAnchorModes(Anchorable::Mode::NO_RESIZE);
-		m_clickComponent->setClickRegion(new EllipseRegion(&m_refFrame));
+		Widget::setRegion(std::make_unique<EllipseRegion>(&m_refFrame));
 
 		if(_register)
 			NodeList::addNode(this);
@@ -153,7 +153,7 @@ namespace ca { namespace gui {
 		m_isMouseOver(false),
 		m_tmpHandleState(HandleState::ATTACHED)
 	{
-		m_clickComponent->setClickRegion(this, false);
+		m_clickComponent->setClickRegion(this);
 
 		// Make sure that the mouse node is always existing.
 		if(!s_tmpMouseNode)
@@ -301,7 +301,7 @@ namespace ca { namespace gui {
 		Widget(false, true, false, false),
 		m_isMouseOver(false)
 	{
-		m_clickComponent->setClickRegion(this, false);
+		m_clickComponent->setClickRegion(this);
 	}
 
 	void WidgetConnector::draw() const

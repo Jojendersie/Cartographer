@@ -18,7 +18,6 @@ namespace ca { namespace gui {
 	{
 		Widget::setKeyboardFocusable(true);
 		m_enabled = true;
-		m_clickComponent->setClickRegion(&m_refFrame, false);
 	}
 
 	void Button::setText(const char* _text)

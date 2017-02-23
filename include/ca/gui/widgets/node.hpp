@@ -74,6 +74,8 @@ namespace ca { namespace gui {
 
 		void setSource(NodeHandlePtr _node)		{m_sourceNode = _node;}
 		void setDest(NodeHandlePtr _node)		{m_destNode = _node;}
+
+		virtual const IRegion* getRegion() const override { return this; }
 	protected:
 		NodeHandlePtr m_sourceNode;
 		NodeHandlePtr m_destNode;
@@ -111,6 +113,8 @@ namespace ca { namespace gui {
 		/// \param [in] _angle Direction in radiant in which the edge will start.
 		void setSource(WidgetPtr _node, float _angle)	{m_sourceNode = _node; m_sourceAngle = _angle;}
 		void setDest(WidgetPtr _node, float _angle)		{m_destNode = _node; m_destAngle = _angle;}
+
+		virtual const IRegion* getRegion() const override { return this; }
 	protected:
 		WidgetPtr m_sourceNode;
 		WidgetPtr m_destNode;

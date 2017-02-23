@@ -172,14 +172,21 @@ namespace ca { namespace gui {
 	void Widget::setClickable(bool _enable)
 	{
 		if(_enable && !m_clickComponent)
-			m_clickComponent = std::make_unique<Clickable>(&m_refFrame);
+			m_clickComponent = std::make_unique<Clickable>(getRegion());
 	}
 
 	const IRegion * Widget::getRegion() const
 	{
-		if(m_clickComponent)
-			return m_clickComponent->getClickRegion();
+		if(m_region)
+			return m_region.get();
 		return &m_refFrame;
+	}
+
+	void Widget::setRegion(std::unique_ptr<IRegion> _region)
+	{
+		m_region = move(_region);
+		if(m_clickComponent)
+			m_clickComponent->setClickRegion(m_region.get());
 	}
 
 	void Widget::setAnchorable(bool _enable)

@@ -77,11 +77,19 @@ namespace ca { namespace gui {
 		/// Get the anchor component (can be nullptr)
 		IAnchorProvider* getAnchorProvider() const	{ return m_anchorProvider.get(); }
 
+		/// Every component has an interactio region. If not explicitly set this is the reference frame.
+		virtual const IRegion* getRegion() const;
+		/// Set a handler to detect if the mouse is in the region of this object.
+		/// This setter also registers the region in the click-componen if existent.
+		/// \param [in] _region Valid interaction-regions are CircleRegion and MaskRegion.
+		///
+		///		If nothing is set/the nullptr is given, the own reference frame defines the region.
+		/// \param [in] _delete The region object must be deleted.
+		void setRegion(std::unique_ptr<IRegion> _region);
+
 		/// Add or remove the clickable property (you can add CLICK and DBLCLICK callbacks)
 		/// The old click component is kept if there is already one.
 		void setClickable(bool _enable);
-		/// Every component has an interactio region. If not explicitly set this is the reference frame.
-		virtual const IRegion* getRegion() const;
 		/// Add or remove the anchor property (this element can be anchored).
 		/// The old anchor component is kept if there is already one.
 		void setAnchorable(bool _enable);
@@ -104,6 +112,7 @@ namespace ca { namespace gui {
 
 		RefFrame m_refFrame;
 		// List of optional components (can be nullptr)
+		std::unique_ptr<IRegion> m_region;				///< Special interaction region.
 		std::unique_ptr<Anchorable> m_anchorComponent;
 		std::unique_ptr<Clickable> m_clickComponent;
 		std::unique_ptr<Moveable> m_moveComponent;
