@@ -34,9 +34,11 @@ namespace ca { namespace gui {
 		m_iconPadding = _padding;
 	}
 
-	void Button::setBackgroundTexture(const char* _textureFile, bool _smooth)
+	void Button::setBackgroundTexture(const char* _textureFile, const char* _hoverTextureFile, const char* _downTextureFile, bool _smooth)
 	{
 		m_backgroundTexture = GUIManager::renderBackend().getTexture(_textureFile, _smooth);
+		if(_hoverTextureFile) m_hoverTexture = GUIManager::renderBackend().getTexture(_hoverTextureFile, _smooth);
+		if(_downTextureFile) m_downTexture = GUIManager::renderBackend().getTexture(_downTextureFile, _smooth);
 	}
 
 	void Button::draw() const
@@ -44,9 +46,14 @@ namespace ca { namespace gui {
 		// Background
 		bool mouseOver = GUIManager::hasMouseFocus(this)
 			&& m_refFrame.isMouseOver(GUIManager::getMouseState().position);
-		if(m_backgroundTexture)
-			GUIManager::theme().drawImage(m_refFrame, m_backgroundTexture);
-		else
+		if(m_backgroundTexture) {
+			if(m_clickComponent->isAnyButtonDown() && m_downTexture)
+				GUIManager::theme().drawImage(m_refFrame, m_downTexture);
+			else if(mouseOver && m_hoverTexture)
+				GUIManager::theme().drawImage(m_refFrame, m_hoverTexture);
+			else
+				GUIManager::theme().drawImage(m_refFrame, m_backgroundTexture);
+		} else
 			GUIManager::theme().drawButton(m_refFrame, mouseOver, m_clickComponent->isAnyButtonDown());
 
 		// Compute text and icon positions

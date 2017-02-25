@@ -114,6 +114,12 @@ namespace ca { namespace gui {
 		void setSource(WidgetPtr _node, float _angle)	{m_sourceNode = _node; m_sourceAngle = _angle;}
 		void setDest(WidgetPtr _node, float _angle)		{m_destNode = _node; m_destAngle = _angle;}
 
+		// TODO: call refitToAnchors after each set?
+		float getSourceAngle() const { return m_sourceAngle; }
+		void setSourceAngle(float _angle) { m_sourceAngle = _angle; }
+		float getDestAngle() const { return m_destAngle; }
+		void setDestAngle(float _angle) { m_destAngle = _angle; }
+
 		virtual const IRegion* getRegion() const override { return this; }
 	protected:
 		WidgetPtr m_sourceNode;

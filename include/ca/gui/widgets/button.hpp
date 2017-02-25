@@ -33,8 +33,10 @@ namespace ca { namespace gui {
 
 		/// Set a custom look instead of the theme's background rendering.
 		/// \param [in] _textureFile Name of an image file.
+		/// \param [in] _hoverTextureFile A second texture if the mouse is over the button. Can be nullptr.
+		/// \param [in] _hoverTextureFile A third texture if a mouse button is down the button. Can be nullptr.
 		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
-		void setBackgroundTexture(const char* _textureFile, bool _smooth = true);
+		void setBackgroundTexture(const char* _textureFile, const char* _hoverTextureFile, const char* _downTextureFile, bool _smooth = true);
 
 		/// Forward to Clickable::addOnButtonChangeFunc
 		void addOnButtonChangeFunc(Clickable::OnButtonChange _callback, MouseState::ButtonState _stateMask) { m_clickComponent->addOnButtonChangeFunc(std::move(_callback), _stateMask); }
@@ -45,7 +47,12 @@ namespace ca { namespace gui {
 		Coord2 m_iconSize;
 		Coord m_iconPadding;
 		uint64 m_iconTexture;
+		// The next three textures are most often used together and represent one image for
+		// each state. If the background is not given none of the others is used. If one of
+		// hover or down is not given it is replaced with the background image.
 		uint64 m_backgroundTexture;
+		uint64 m_hoverTexture;
+		uint64 m_downTexture;
 	};
 
 	typedef pa::RefPtr<Button> ButtonPtr;
