@@ -123,7 +123,7 @@ namespace ca { namespace gui {
 		friend class Group; // Parent must be set from someone
 
 		/// Optional method to react on resize events. This is necessary to reset provided anchors.
-		virtual void onExtentChanged();
+		virtual void onExtentChanged(bool _positionChanged, bool _sizeChanged);
 	};
 
 	typedef pa::RefPtr<Widget> WidgetPtr;

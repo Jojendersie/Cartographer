@@ -35,7 +35,7 @@ namespace ca { namespace gui {
 		m_refFrame.sides[SIDE::RIGHT] = m_refFrame.left() + _size.x;
 		m_refFrame.sides[SIDE::TOP] = m_refFrame.bottom() + _size.y;
 		if(oldFrame != m_refFrame)
-			onExtentChanged();
+			onExtentChanged(false, true);
 	}
 
 	Coord2 Widget::getSize() const
@@ -51,7 +51,7 @@ namespace ca { namespace gui {
 		m_refFrame.sides[SIDE::LEFT]   = _position.x;
 		m_refFrame.sides[SIDE::BOTTOM] = _position.y;
 		if(oldFrame != m_refFrame)
-			onExtentChanged();
+			onExtentChanged(true, false);
 	}
 
 	Coord2 Widget::getPosition() const
@@ -67,7 +67,7 @@ namespace ca { namespace gui {
 		m_refFrame.sides[SIDE::RIGHT]  = _position.x + _size.x;
 		m_refFrame.sides[SIDE::TOP]    = _position.y + _size.y;
 		if(oldFrame != m_refFrame)
-			onExtentChanged();
+			onExtentChanged(true, true);
 	}
 
 	bool Widget::processInput(const struct MouseState& _mouseState)
@@ -86,7 +86,7 @@ namespace ca { namespace gui {
 			{
 				GUIManager::setMouseFocus(this, (_mouseState.buttons[0] & (MouseState::DOWN | MouseState::PRESSED)) != 0);
 				if(oldFrame != m_refFrame)
-					onExtentChanged();
+					onExtentChanged(false, true);
 				return true;
 			}
 		if(m_moveComponent)
@@ -95,7 +95,7 @@ namespace ca { namespace gui {
 				GUIManager::setCursorType(CursorType::MOVE);
 				GUIManager::setMouseFocus(this, true);
 				if(oldFrame != m_refFrame)
-					onExtentChanged();
+					onExtentChanged(true, false);
 				return true;
 			}
 		if(GUIManager::getStickyMouseFocussed() == this)
@@ -220,10 +220,10 @@ namespace ca { namespace gui {
 	{
 		if(m_anchorComponent)
 			if(m_anchorComponent->refitToAnchors())
-				onExtentChanged();
+				onExtentChanged(true, true);
 	}
 
-	void Widget::onExtentChanged()
+	void Widget::onExtentChanged(bool _positionChanged, bool _sizeChanged)
 	{
 		// Make sure the anchoring does not reset the object to its previous position.
 		if(m_anchorComponent)

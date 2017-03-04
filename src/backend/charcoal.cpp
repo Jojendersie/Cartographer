@@ -503,6 +503,11 @@ namespace ca { namespace gui {
 		return m_spriteRenderer->defSprite(0.0f, 0.0f, tex);
 	}
 
+	ei::IVec2 CharcoalBackend::getTextureSize(uint64 _handle)
+	{
+		return ei::IVec2(m_spriteSizes[size_t(_handle)]);
+	}
+
 	void CharcoalBackend::drawLine(const ei::Vec3* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB)
 	{
 		m_lineRenderer->beginLine();

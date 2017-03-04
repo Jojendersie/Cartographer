@@ -65,6 +65,9 @@ namespace ca { namespace gui {
 		/// \return Some handle to reference the texture for the draw commands. The handle can
 		///		be chosen implementation dependent but 0 must always be the null-reference.
 		virtual uint64 getTexture(const char* _textureFile, bool _smooth) = 0;
+
+		/// Get the size of a loaded texture.
+		virtual ei::IVec2 getTextureSize(uint64 _handle) = 0;
 	};
 
 }} // namespace ca::gui

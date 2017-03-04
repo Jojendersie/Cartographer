@@ -24,6 +24,7 @@ namespace ca { namespace gui {
 		virtual void drawTextureRect(const class RefFrame& _rect, uint64 _texture, float _opacity) override;
 		virtual void drawTriangle(const ei::Triangle2D& _triangle, const ei::Vec4& _color0, const ei::Vec4& _color1, const ei::Vec4& _color2) override;
 		virtual uint64 getTexture(const char* _textureFile, bool _smooth) override;
+		virtual ei::IVec2 getTextureSize(uint64 _handle) override;
 		virtual void drawLine(const ei::Vec3* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB) override;
 
 	private:
