@@ -56,6 +56,10 @@ namespace ca { namespace gui {
 		void hide() { m_visible = false; }
 		void setVisible(bool _state) { m_visible = _state; }
 
+		/// True if the mouse is on the interaction region and the element is focused by
+		/// the GUIManager. I.e. there is no other element in front of this one.
+		bool isMouseOver() const;
+
 		/// Can this element get the focus?
 		bool isKeyboardFocusable() const { return m_keyboardFocusable; }
 

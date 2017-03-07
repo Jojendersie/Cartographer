@@ -44,8 +44,7 @@ namespace ca { namespace gui {
 	void Button::draw() const
 	{
 		// Background
-		bool mouseOver = GUIManager::hasMouseFocus(this)
-			&& m_refFrame.isMouseOver(GUIManager::getMouseState().position);
+		bool mouseOver = isMouseOver();
 		if(m_backgroundTexture) {
 			if(m_clickComponent->isAnyButtonDown() && m_downTexture)
 				GUIManager::theme().drawImage(m_refFrame, m_downTexture);

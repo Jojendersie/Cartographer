@@ -111,6 +111,12 @@ namespace ca { namespace gui {
 		return false;
 	}
 
+	bool Widget::isMouseOver() const
+	{
+		return GUIManager::hasMouseFocus(this)
+			&& getRegion()->isMouseOver(GUIManager::getMouseState().position);
+	}
+
 	void Widget::setAnchoring(SIDE::Val _side, AnchorPtr _anchor)
 	{
 		if(m_anchorComponent)
