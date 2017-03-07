@@ -100,11 +100,9 @@ namespace ca { namespace gui {
 			}
 		if(GUIManager::getStickyMouseFocussed() == this)
 			return true;
-		if(m_refFrame.isMouseOver(_mouseState.position)) {
+		if(getRegion()->isMouseOver(_mouseState.position)) {
 			GUIManager::setMouseFocus(this);
-			// Clickables may define special areas, if not the reference frame defines the real
-			// element area and the cursor is on this element.
-			if(!m_clickComponent) return true;
+			return true;
 		// The current element has the focus but now reason to keep it.
 		} else if(GUIManager::hasMouseFocus(this))
 			GUIManager::setMouseFocus(nullptr);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "widgets/widget.hpp"
+#include "backend/keyboard.hpp"
 #include <stack>
 
 namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++17
@@ -55,8 +56,11 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		/// Process mouse input.
 		/// \return true if the input was consumed by any element in the GUI.
 		static bool processInput(const struct MouseState& _mouseState);
+		/// Process keyboard input.
+		static bool processInput(const struct KeyboardState& _keyboardState);
 
 		static const struct MouseState& getMouseState();
+		static const struct KeyboardState& getKeyboardState();
 
 		/// Does a specific element has the focus?
 		/// \details Only one element can have the focus at a time. The focus can be changed by
@@ -110,6 +114,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 
 		std::stack<ei::IVec4, std::vector<ei::IVec4>> m_clipRegionStack;
 		MouseState m_mouseState;		///< Buffer the last seen mouse state
+		KeyboardState m_keyboardState;
 		CursorType m_cursorType;		///< Current desired cursor shape
 
 		/// Globally check all elements for changes and cause a refitting of sizes and positions.

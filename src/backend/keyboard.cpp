@@ -21,4 +21,10 @@ namespace ca { namespace gui {
 		characterInput = "";
 	}
 
+	bool KeyboardState::isKeyDown(Key _key) const
+	{
+		return keys[int(_key)] == KeyState::DOWN
+			|| keys[int(_key)] == KeyState::PRESSED;
+	}
+
 }} // namespace ca::gui

@@ -158,6 +158,9 @@ namespace ca { namespace gui {
 
 		/// Reset/change states
 		void clear();
+
+		/// Returns true if the of the key is DOWN or PRESSED
+		bool isKeyDown(Key _key) const;
 	};
 
 }} // namespace ca::gui

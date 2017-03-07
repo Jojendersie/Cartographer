@@ -144,9 +144,25 @@ namespace ca { namespace gui {
 		} else return g_manager->m_topFrame->processInput( _mouseState );
 	}
 
+	bool GUIManager::processInput(const KeyboardState & _keyboardState)
+	{
+		if(!g_manager) {
+			logError("Uninitialized GUIManager! Cannot process input!");
+			return false;
+		}
+
+		g_manager->m_keyboardState = _keyboardState;
+		return false;
+	}
+
 	const MouseState& GUIManager::getMouseState()
 	{
 		return g_manager->m_mouseState;
+	}
+
+	const KeyboardState & GUIManager::getKeyboardState()
+	{
+		return g_manager->m_keyboardState;
 	}
 
 	bool GUIManager::hasKeyboardFocus(const WidgetPtr& _widget)
