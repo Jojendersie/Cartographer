@@ -114,7 +114,7 @@ namespace ca { namespace gui {
 	void NodeHandle::draw() const
 	{
 		bool mouseOver = GUIManager::hasMouseFocus(this)
-			&& m_clickComponent->getClickRegion()->isMouseOver(GUIManager::getMouseState().position);
+			&& getRegion()->isMouseOver(GUIManager::getMouseState().position);
 		GUIManager::theme().drawNodeHandle(
 			0.5f * Coord2(m_refFrame.left() + m_refFrame.right(), m_refFrame.bottom() + m_refFrame.top()),
 			0.5f * m_refFrame.width(),
@@ -153,7 +153,7 @@ namespace ca { namespace gui {
 		m_isMouseOver(false),
 		m_tmpHandleState(HandleState::ATTACHED)
 	{
-		m_clickComponent->setClickRegion(this);
+		m_region = this;
 
 		// Make sure that the mouse node is always existing.
 		if(!s_tmpMouseNode)
@@ -301,7 +301,7 @@ namespace ca { namespace gui {
 		Widget(false, true, false, false),
 		m_isMouseOver(false)
 	{
-		m_clickComponent->setClickRegion(this);
+		m_region = this;
 	}
 
 	void WidgetConnector::draw() const

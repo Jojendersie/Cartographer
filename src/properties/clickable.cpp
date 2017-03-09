@@ -1,12 +1,13 @@
 #pragma once
 
 #include "ca/gui/properties/clickable.hpp"
+#include "ca/gui/widgets/widget.hpp"
 #include <ctime>
 
 namespace ca { namespace gui {
 
-	Clickable::Clickable(const IRegion* _selfRegion) :
-		m_clickRegion(_selfRegion)
+	Clickable::Clickable(Widget* _thisWidget) :
+		m_widget(_thisWidget)
 	{
 		for(int b = 0; b < 8; ++b)
 		{
@@ -21,7 +22,7 @@ namespace ca { namespace gui {
 
 	bool Clickable::processInput(const MouseState& _mouseState)
 	{
-		if(m_clickRegion->isMouseOver(_mouseState.position))
+		if(m_widget->getRegion()->isMouseOver(_mouseState.position))
 		{
 			// Handle each button
 			for(int b = 0; b < 8; ++b)
@@ -30,7 +31,7 @@ namespace ca { namespace gui {
 				{
 					for(size_t i = 0; i < m_changeFuncs.size(); ++i)
 						if(m_statesMasks[i] & MouseState::DOWN)
-							m_changeFuncs[i](_mouseState.position, b, MouseState::DOWN);
+							m_changeFuncs[i](m_widget, _mouseState.position, b, MouseState::DOWN);
 					m_buttonDownReceived[b] = true;
 				}
 
@@ -38,7 +39,7 @@ namespace ca { namespace gui {
 				{
 					for(size_t i = 0; i < m_changeFuncs.size(); ++i)
 						if(m_statesMasks[i] & MouseState::UP)
-							m_changeFuncs[i](_mouseState.position, b, MouseState::UP);
+							m_changeFuncs[i](m_widget, _mouseState.position, b, MouseState::UP);
 					if(m_buttonDownReceived[b])
 					{
 						float currentTime = clock() / float(CLOCKS_PER_SEC);
@@ -47,12 +48,12 @@ namespace ca { namespace gui {
 							m_lastClick[b] = -10000.0f;
 							for(size_t i = 0; i < m_changeFuncs.size(); ++i)
 								if(m_statesMasks[i] & MouseState::DBL_CLICKED)
-									m_changeFuncs[i](_mouseState.position, b, MouseState::DBL_CLICKED);
+									m_changeFuncs[i](m_widget, _mouseState.position, b, MouseState::DBL_CLICKED);
 						} else {
 							m_lastClick[b] = currentTime;
 							for(size_t i = 0; i < m_changeFuncs.size(); ++i)
 								if(m_statesMasks[i] & MouseState::CLICKED)
-									m_changeFuncs[i](_mouseState.position, b, MouseState::CLICKED);
+									m_changeFuncs[i](m_widget, _mouseState.position, b, MouseState::CLICKED);
 						}
 					}
 					m_buttonDownReceived[b] = false;
@@ -62,7 +63,7 @@ namespace ca { namespace gui {
 				{
 					for(size_t i = 0; i < m_changeFuncs.size(); ++i)
 						if(m_statesMasks[i] & MouseState::PRESSED)
-							m_changeFuncs[i](_mouseState.position, b, MouseState::PRESSED);
+							m_changeFuncs[i](m_widget, _mouseState.position, b, MouseState::PRESSED);
 				}
 			}
 			return true;

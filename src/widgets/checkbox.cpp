@@ -14,8 +14,8 @@ namespace ca { namespace gui {
 		Widget::setKeyboardFocusable(true);
 		m_checkmarkTexture[0] = m_checkmarkTexture[1] = 0;
 		m_clickComponent->addOnButtonChangeFunc(
-			[this](const Coord2&, int, MouseState::ButtonState){
-				this->m_checked = !this->m_checked;
+			[](Widget* _thisBtn, const Coord2&, int, MouseState::ButtonState){
+				static_cast<CheckBox*>(_thisBtn)->m_checked = !static_cast<CheckBox*>(_thisBtn)->m_checked;
 			},
 			MouseState::ButtonState(MouseState::CLICKED | MouseState::DBL_CLICKED));
 	}

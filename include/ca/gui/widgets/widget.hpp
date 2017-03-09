@@ -116,7 +116,8 @@ namespace ca { namespace gui {
 
 		RefFrame m_refFrame;
 		// List of optional components (can be nullptr)
-		std::unique_ptr<IRegion> m_region;				///< Special interaction region.
+		IRegion* m_region;				///< Special interaction region.
+		std::unique_ptr<IRegion> m_regionDeallocator;
 		std::unique_ptr<Anchorable> m_anchorComponent;
 		std::unique_ptr<Clickable> m_clickComponent;
 		std::unique_ptr<Moveable> m_moveComponent;

@@ -22,7 +22,7 @@ namespace ca { namespace gui {
 		if(_anchorable)
 			m_anchorComponent = std::make_unique<Anchorable>(&m_refFrame);
 		if(_clickable)
-			m_clickComponent = std::make_unique<Clickable>(&m_refFrame);
+			m_clickComponent = std::make_unique<Clickable>(this);
 		if(_moveable)
 			m_moveComponent = std::make_unique<Moveable>(&m_refFrame, m_anchorComponent.get());
 		if(_resizeable)
@@ -176,21 +176,20 @@ namespace ca { namespace gui {
 	void Widget::setClickable(bool _enable)
 	{
 		if(_enable && !m_clickComponent)
-			m_clickComponent = std::make_unique<Clickable>(getRegion());
+			m_clickComponent = std::make_unique<Clickable>(this);
 	}
 
 	const IRegion * Widget::getRegion() const
 	{
 		if(m_region)
-			return m_region.get();
+			return m_region;
 		return &m_refFrame;
 	}
 
 	void Widget::setRegion(std::unique_ptr<IRegion> _region)
 	{
-		m_region = move(_region);
-		if(m_clickComponent)
-			m_clickComponent->setClickRegion(m_region.get());
+		m_regionDeallocator = move(_region);
+		m_region = m_regionDeallocator.get();
 	}
 
 	void Widget::setAnchorable(bool _enable)

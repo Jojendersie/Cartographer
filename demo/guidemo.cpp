@@ -122,8 +122,8 @@ void createGUI(GLFWwindow* _window)
 		b0->setExtent(f0->getPosition() + Vec2(5.0f, 5.0f + i*25.0f), Vec2(90.0f, 20.0f));
 		std::string name = "Test " + std::to_string(i);
 		b0->setText(name.c_str());
-		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " clicked.\n"; }, MouseState::CLICKED);
-		b0->addOnButtonChangeFunc([i,name](const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " double clicked.\n"; }, MouseState::DBL_CLICKED);
+		b0->addOnButtonChangeFunc([i,name](Widget*, const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " clicked.\n"; }, MouseState::CLICKED);
+		b0->addOnButtonChangeFunc([i,name](Widget*, const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " double clicked.\n"; }, MouseState::DBL_CLICKED);
 		b0->autoAnchor(f0->getAnchorProvider());
 		b0->setAnchorModes(Anchorable::PREFER_MOVE, Anchorable::PREFER_RESIZE);
 		f0->add(b0);

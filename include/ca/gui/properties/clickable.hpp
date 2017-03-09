@@ -12,17 +12,18 @@ namespace ca { namespace gui {
 	class Clickable
 	{
 	public:
-		Clickable(const IRegion* _selfRegion);
+		Clickable(class Widget* _thisWidget);
 		~Clickable();
 
 		/// Process mouse input (uses the callbacks).
 		bool processInput(const struct MouseState& _mouseState);
 
 		/// Type for click callbacks.
+		/// \param [in] _thisBtn A pointer to the widget for which the event is triggered.
 		/// \param [in] _where Internal position as info.
 		/// \param [in] _button Index of the changed mouse button.
 		/// \param [in] _state New state of the changed mouse button.
-		typedef std::function<void(const Coord2& _where, int _button, MouseState::ButtonState _state)> OnButtonChange;
+		typedef std::function<void(class Widget* _thisBtn, const Coord2& _where, int _button, MouseState::ButtonState _state)> OnButtonChange;
 
 		/// Attach another callback to the element.
 		/// \details It is not possible to detach function pointers.
@@ -31,12 +32,9 @@ namespace ca { namespace gui {
 		///		is called for all those states.
 		void addOnButtonChangeFunc(OnButtonChange _callback, MouseState::ButtonState _stateMask);
 
-		const IRegion* getClickRegion() const { return m_clickRegion; }
-		void setClickRegion(const IRegion* _region) { m_clickRegion = _region; }
-
 		bool isAnyButtonDown() const { for(int i = 0; i < 8; ++i) if(m_buttonDownReceived[i]) return true; return false; }
 	protected:
-		const IRegion* m_clickRegion;
+		class Widget* m_widget;
 		std::vector<OnButtonChange> m_changeFuncs;
 		std::vector<MouseState::ButtonState> m_statesMasks; // Call callbacks only for desired events
 		bool m_buttonDownReceived[8];	// Detect for each button, if it was pressed on this element (for CLICK events)
