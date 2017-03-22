@@ -164,6 +164,7 @@
     <ClInclude Include="include\ca\gui\properties\coordinate.hpp" />
     <ClInclude Include="include\ca\gui\properties\moveable.hpp" />
     <ClInclude Include="include\ca\gui\properties\refframe.hpp" />
+    <ClInclude Include="include\ca\gui\properties\regionshapes.hpp" />
     <ClInclude Include="include\ca\gui\properties\resizeable.hpp" />
     <ClInclude Include="include\ca\gui\properties\textproperties.hpp" />
     <ClInclude Include="include\ca\gui\rendering\flattheme.hpp" />
@@ -196,6 +197,7 @@
     <ClCompile Include="src\properties\coordinate.cpp" />
     <ClCompile Include="src\properties\moveable.cpp" />
     <ClCompile Include="src\properties\refframe.cpp" />
+    <ClCompile Include="src\properties\regionshapes.cpp" />
     <ClCompile Include="src\properties\resizeable.cpp" />
     <ClCompile Include="src\rendering\flattheme.cpp" />
     <ClCompile Include="src\rendering\sharp3dtheme.cpp" />

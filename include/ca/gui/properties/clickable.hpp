@@ -41,23 +41,4 @@ namespace ca { namespace gui {
 		float m_lastClick[8];			// Time stamp for the last click to detect DBL_CLICK events
 	};
 
-	/// Use the reference frame fitted ellipse to detect click events.
-	class EllipseRegion : public IRegion
-	{
-	public:
-		/// \param [in] _selfFrame The reference frame for the clickable area
-		EllipseRegion(const RefFrame* _selfFrame);
-
-		virtual bool isMouseOver(const Coord2& _mousePos) const override;
-	private:
-		const RefFrame* m_selfFrame;
-	};
-
-	/// Use a bitmap mask to detect click events.
-	class MaskRegion : public IRegion
-	{
-	public:
-		virtual bool isMouseOver(const Coord2& _mousePos) const override;
-	};
-
 }} // namespace ca::gui

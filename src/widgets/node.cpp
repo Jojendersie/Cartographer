@@ -2,6 +2,7 @@
 #include "ca/gui/guimanager.hpp"
 #include "ca/gui/rendering/theme.hpp"
 #include "ca/gui/backend/renderbackend.hpp"
+#include "ca/gui/properties/regionshapes.hpp"
 
 #include <ei/2dintersection.hpp>
 

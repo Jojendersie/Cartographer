@@ -14,6 +14,7 @@
 #include "gui/widgets/slider.hpp"
 #include "gui/widgets/treelist.hpp"
 #include "gui/widgets/node.hpp"
+#include "ca/gui/properties/regionshapes.hpp"
 
 #include "gui/backend/charcoal.hpp"
 #include "gui/backend/mouse.hpp"

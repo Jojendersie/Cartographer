@@ -107,6 +107,9 @@
     <ClInclude Include="include\ca\gui\widgets\image.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
+    <ClInclude Include="include\ca\gui\properties\regionshapes.hpp">
+      <Filter>properties</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\widgets\frame.cpp">
@@ -190,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="src\widgets\image.cpp">
       <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\properties\regionshapes.cpp">
+      <Filter>properties</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
