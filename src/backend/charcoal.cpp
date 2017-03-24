@@ -340,8 +340,8 @@ namespace ca { namespace gui {
 
 	CharcoalBackend::CharcoalBackend(const char* _fontFile) :
 		m_fontRenderer(new cc::FontRenderer),
-		m_linearSampler(cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR),
-		m_pointSampler(cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT)
+		m_linearSampler(cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR, cc::Sampler::Border::CLAMP),
+		m_pointSampler(cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT, cc::Sampler::Border::CLAMP)
 	{
 		m_spriteShader.attach( cc::ShaderManager::get(VS_SPRITE, cc::ShaderType::VERTEX, false) );
 		m_spriteShader.attach( cc::ShaderManager::get(GS_SPRITE, cc::ShaderType::GEOMETRY, false) );
