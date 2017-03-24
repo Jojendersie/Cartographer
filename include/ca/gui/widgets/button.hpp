@@ -21,7 +21,7 @@ namespace ca { namespace gui {
 		void setText(const char* _text);
 		const char* getText() { return m_text.c_str(); }
 
-		/// Set an image as icon
+		/// Set an image as icon relative to the text.
 		/// \param [in] _textureFile Name of an image file.
 		/// \param [in] _side The size of the text on which the icon should be placed.
 		///		if there is no text the icon is always centered.
@@ -30,6 +30,11 @@ namespace ca { namespace gui {
 		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
 		/// \param [in] _padding Distance of the icon to the border and to the text.
 		void setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, bool _smooth = true, Coord _padding = 2.0f);
+		/// Set an image as icon with absolute positioning.
+		/// An absolute positioned icon can be behind the text and even outside the button.
+		/// Further, it will not be scaled down automatically.
+		/// \param [in] _position An absolute coordinate in the window.
+		void setIcon(const char* _textureFile, const Coord2& _position, const Coord2& _size, bool _smooth = true);
 
 		/// Set a custom look instead of the theme's background rendering.
 		/// \param [in] _textureFile Name of an image file.
@@ -42,17 +47,27 @@ namespace ca { namespace gui {
 		void addOnButtonChangeFunc(Clickable::OnButtonChange _callback, MouseState::ButtonState _stateMask) { m_clickComponent->addOnButtonChangeFunc(std::move(_callback), _stateMask); }
 	private:
 		std::string m_text;
-		Coord2 m_textSize;	///< Precomputed size of the text for placement of the icon
-		SIDE::Val m_iconPos;
+		Coord2 m_textSize;		///< Precomputed size of the text for placement of the icon
+		SIDE::Val m_iconPlacement;	///< Absolute icon positions are marked with SIDE::CENTER
 		Coord2 m_iconSize;
 		Coord m_iconPadding;
 		uint64 m_iconTexture;
+		// Computed positions and scalings from recomputeIconNTextPositions()
+		Coord2 m_textPos;
+		Coord2 m_iconPos;
+		float m_downScale;
 		// The next three textures are most often used together and represent one image for
 		// each state. If the background is not given none of the others is used. If one of
 		// hover or down is not given it is replaced with the background image.
 		uint64 m_backgroundTexture;
 		uint64 m_hoverTexture;
 		uint64 m_downTexture;
+
+		// Computes text and icon positions
+		void recomputeIconNTextPositions();
+		virtual void onExtentChanged(bool, bool) override { recomputeIconNTextPositions(); }
+		virtual void onTextScaleChanged() override { recomputeIconNTextPositions(); };
+		bool isIconPlacementAbsolute() const { return m_iconPlacement == SIDE::CENTER; }
 	};
 
 	typedef pa::RefPtr<Button> ButtonPtr;
