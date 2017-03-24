@@ -46,6 +46,7 @@ namespace ca { namespace gui {
 		float verticalCenter() const { return 0.5f * (sides[SIDE::TOP] + sides[SIDE::BOTTOM]); }
 		ei::Vec2 center() const { return ei::Vec2(horizontalCenter(), verticalCenter()); }
 		ei::Vec2 size() const { return ei::Vec2(width(), height()); }
+		ei::Vec2 position() const { return ei::Vec2(left(), bottom()); }
 
 		/// Check if the mouse cursor is on this reference frame.
 		/// \param [in] _mousePos Position of the cursor in screen space [0,1]^2.
