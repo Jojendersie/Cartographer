@@ -23,16 +23,17 @@ namespace ca { namespace gui {
 		return lensq(pos) <= 1.0f;
 	}
 
+
 	AnnulusSegmentRegion::AnnulusSegmentRegion(
-		const Coord2 & _centerPos,
+		const Coord2& _center,
 		Coord _innerRadius,
 		Coord _outerRadius,
 		float _startAngle,
 		float _endAngle
 	) :
-		m_centerPos(_centerPos),
+		m_relativeCenter(_center),
 		m_innerRadius(min(_innerRadius, _outerRadius)),
-		m_outerRadius(max(_outerRadius, _outerRadius)),
+		m_outerRadius(max(_innerRadius, _outerRadius)),
 		m_startAngle(ei::mod(_startAngle, 2.0f*ei::PI)),
 		m_endAngle(ei::mod(_endAngle, 2.0f*ei::PI))
 	{
@@ -42,8 +43,9 @@ namespace ca { namespace gui {
 
 	bool AnnulusSegmentRegion::isMouseOver(const Coord2 & _mousePos) const
 	{
+		Coord2 toMouse = _mousePos - (Coord2(m_selfFrame->left(), m_selfFrame->bottom()) + m_relativeCenter);
+
 		// Test if the point is within the ring
-		Coord2 toMouse = _mousePos - m_centerPos;
 		float distSq = lensq(toMouse);
 		if(distSq < m_innerRadiusSq || distSq > m_outerRadiusSq)
 			return false;
@@ -56,36 +58,40 @@ namespace ca { namespace gui {
 		return isAngleInRange(angle);
 	}
 
-	void AnnulusSegmentRegion::fitRect(RefFrame & _frame)
+	void AnnulusSegmentRegion::attach(RefFrame & _frame)
 	{
 		// If the up-vector is inside the segment the maximum component is center+radius.
 		// The same goes for all other extremal vectors.
 		// If one of the vectors is not in the segment the maximum/minimum is determined
 		// by one of the boundary points.
 		if( isAngleInRange(PI/2.0f) )
-			_frame.sides[SIDE::TOP] = m_centerPos.y + m_outerRadius;
+			_frame.sides[SIDE::TOP] = m_relativeCenter.y + m_outerRadius;
 		else {
 			float t = max(sin(m_startAngle), sin(m_endAngle));
-			_frame.sides[SIDE::TOP] = m_centerPos.y + (t < 0.0f ? m_innerRadius * t : m_outerRadius * t);
+			_frame.sides[SIDE::TOP] = m_relativeCenter.y + (t < 0.0f ? m_innerRadius * t : m_outerRadius * t);
 		}
 		if( isAngleInRange(PI*1.5f) )
-			_frame.sides[SIDE::BOTTOM] = m_centerPos.y - m_outerRadius;
+			_frame.sides[SIDE::BOTTOM] = m_relativeCenter.y - m_outerRadius;
 		else {
 			float t = min(sin(m_startAngle), sin(m_endAngle));
-			_frame.sides[SIDE::BOTTOM] = m_centerPos.y + (t > 0.0f ? m_innerRadius * t : m_outerRadius * t);
+			_frame.sides[SIDE::BOTTOM] = m_relativeCenter.y + (t > 0.0f ? m_innerRadius * t : m_outerRadius * t);
 		}
 		if( isAngleInRange(0.0f) )
-			_frame.sides[SIDE::RIGHT] = m_centerPos.x + m_outerRadius;
+			_frame.sides[SIDE::RIGHT] = m_relativeCenter.x + m_outerRadius;
 		else {
 			float t = max(cos(m_startAngle), cos(m_endAngle));
-			_frame.sides[SIDE::RIGHT] = m_centerPos.x + (t < 0.0f ? m_innerRadius * t : m_outerRadius * t);
+			_frame.sides[SIDE::RIGHT] = m_relativeCenter.x + (t < 0.0f ? m_innerRadius * t : m_outerRadius * t);
 		}
 		if( isAngleInRange(PI) )
-			_frame.sides[SIDE::LEFT] = m_centerPos.x - m_outerRadius;
+			_frame.sides[SIDE::LEFT] = m_relativeCenter.x - m_outerRadius;
 		else {
 			float t = min(cos(m_startAngle), cos(m_endAngle));
-			_frame.sides[SIDE::LEFT] = m_centerPos.x + (t > 0.0f ? m_innerRadius * t : m_outerRadius * t);
+			_frame.sides[SIDE::LEFT] = m_relativeCenter.x + (t > 0.0f ? m_innerRadius * t : m_outerRadius * t);
 		}
+
+		// Make the center position relative
+		m_selfFrame = &_frame;
+		m_relativeCenter -= Coord2(m_selfFrame->left(), m_selfFrame->bottom());
 	}
 
 }} // namespace ca::gui

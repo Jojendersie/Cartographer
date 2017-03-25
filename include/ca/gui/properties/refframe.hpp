@@ -10,6 +10,13 @@ namespace ca { namespace gui {
 		/// Check if the mouse position is over this element.
 		/// \param [in] _mousePos Position of the cursor in screen space [0,1]^2.
 		virtual bool isMouseOver(const Coord2& _mousePos) const = 0;
+
+	private:
+		friend class Widget;
+		/// Optional method which is called from Widget::setRegion() to fit the widgets
+		/// reference frame to the region.
+		/// The region must still be able to handle move and resize events of the reference frame.
+		virtual void attach(class RefFrame& _selfFrame) {}
 	};
 
 	/// A general purpose enum to define positioning schemes

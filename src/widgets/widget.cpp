@@ -190,6 +190,7 @@ namespace ca { namespace gui {
 	{
 		m_regionDeallocator = move(_region);
 		m_region = m_regionDeallocator.get();
+		m_region->attach(m_refFrame);
 	}
 
 	void Widget::setAnchorable(bool _enable)
