@@ -56,7 +56,7 @@ namespace ca { namespace gui {
 		uint64 m_iconTexture;
 		// Computed positions and scalings from recomputeIconNTextPositions()
 		Coord2 m_textPos;
-		Coord2 m_iconPos;
+		Coord2 m_iconPosRel;	///< Icon position relative to the reference center.
 		float m_downScale;
 		// The next three textures are most often used together and represent one image for
 		// each state. If the background is not given none of the others is used. If one of

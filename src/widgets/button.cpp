@@ -45,7 +45,7 @@ namespace ca { namespace gui {
 		m_iconPlacement = SIDE::CENTER; // Mark absolute positions with an invalid value
 		m_iconSize = _size;
 		m_iconPadding = 0.0f;
-		m_iconPos = _position;
+		m_iconPosRel = _position - m_refFrame.center();
 		recomputeIconNTextPositions();
 	}
 
@@ -59,21 +59,20 @@ namespace ca { namespace gui {
 	void Button::recomputeIconNTextPositions()
 	{
 		Coord2 effectiveTextSize = m_textSize * m_relativeTextSize;
+		Coord2 refCenter = m_refFrame.center();
 		if(!m_iconTexture || isIconPlacementAbsolute())
 		{
 			// autoscale if width or height is greater then the reference frame.
 			m_downScale = ei::min(1.0f, m_refFrame.width() / (effectiveTextSize.x),
 				m_refFrame.height() / (effectiveTextSize.y));
-			m_textPos.x = (m_refFrame.left() + m_refFrame.right()) * 0.5f;
-			m_textPos.y = (m_refFrame.bottom() + m_refFrame.top()) * 0.5f;
+			m_textPos = refCenter;
 			m_textPos -= effectiveTextSize * m_downScale * 0.5f;
 		} else if(m_text.empty()) {
 			// autoscale if width or height is greater then the reference frame.
 			m_downScale = ei::min(1.0f, m_refFrame.width() / (m_iconSize.x + m_iconPadding * 2.0f),
 				m_refFrame.height() / (m_iconSize.y + m_iconPadding * 2.0f));
-			m_iconPos.x = (m_refFrame.left() + m_refFrame.right()) * 0.5f;
-			m_iconPos.y = (m_refFrame.bottom() + m_refFrame.top()) * 0.5f;
-			m_iconPos -= m_iconSize * m_downScale * 0.5f;
+			// Center the icon
+			m_iconPosRel = -m_iconSize * m_downScale * 0.5f;
 		} else if(m_iconPlacement == SIDE::LEFT || m_iconPlacement == SIDE::RIGHT)
 		{
 			float width = m_iconSize.x + effectiveTextSize.x + m_iconPadding * 2.0f;
@@ -81,15 +80,16 @@ namespace ca { namespace gui {
 			// autoscale if width or height is greater then the reference frame.
 			m_downScale = ei::min(1.0f, m_refFrame.width() / width,
 				m_refFrame.height() / height);
-			m_iconPos.y = m_textPos.y = (m_refFrame.bottom() + m_refFrame.top()) * 0.5f;
+			m_textPos.y = refCenter.y;
+			m_iconPosRel.y = 0.0f;
 			m_textPos.y -= effectiveTextSize.y * m_downScale * 0.5f;
-			m_iconPos.y -= m_iconSize.y * m_downScale * 0.5f;
+			m_iconPosRel.y -= m_iconSize.y * m_downScale * 0.5f;
 			if(m_iconPlacement == SIDE::LEFT)
 			{
-				m_iconPos.x = m_refFrame.left() + m_iconPadding * m_downScale;
+				m_iconPosRel.x = m_refFrame.left() + m_iconPadding * m_downScale - refCenter.x;
 				m_textPos.x = m_refFrame.left() + (m_iconPadding * 2.0f + m_iconSize.x) * m_downScale;
 			} else {
-				m_iconPos.x = m_refFrame.right() - (m_iconPadding + m_iconSize.x) * m_downScale;
+				m_iconPosRel.x = m_refFrame.right() - (m_iconPadding + m_iconSize.x) * m_downScale - refCenter.x;
 				m_textPos.x = m_refFrame.right() - (m_iconPadding * 2.0f + m_iconSize.x + effectiveTextSize.x) * m_downScale;
 			}
 		} else {
@@ -98,15 +98,16 @@ namespace ca { namespace gui {
 			// autoscale if width or height is greater then the reference frame.
 			m_downScale = ei::min(1.0f, m_refFrame.width() / width,
 				m_refFrame.height() / height);
-			m_iconPos.x = m_textPos.x = (m_refFrame.left() + m_refFrame.right()) * 0.5f;
+			m_textPos.x = refCenter.x;
+			m_iconPosRel.x = 0.0f;
 			m_textPos.x -= effectiveTextSize.x * m_downScale * 0.5f;
-			m_iconPos.x -= m_iconSize.x * m_downScale * 0.5f;
+			m_iconPosRel.x -= m_iconSize.x * m_downScale * 0.5f;
 			if(m_iconPlacement == SIDE::BOTTOM)
 			{
-				m_iconPos.y = m_refFrame.bottom() + m_iconPadding * m_downScale;
+				m_iconPosRel.y = m_refFrame.bottom() + m_iconPadding * m_downScale - refCenter.y;
 				m_textPos.y = m_refFrame.bottom() + (m_iconPadding * 2.0f + m_iconSize.y) * m_downScale;
 			} else {
-				m_iconPos.y = m_refFrame.top() - (m_iconPadding + m_iconSize.y) * m_downScale;
+				m_iconPosRel.y = m_refFrame.top() - (m_iconPadding + m_iconSize.y) * m_downScale - refCenter.y;
 				m_textPos.y = m_refFrame.top() - (m_iconPadding * 2.0f + m_iconSize.y + effectiveTextSize.y) * m_downScale;
 			}
 		}
@@ -129,11 +130,12 @@ namespace ca { namespace gui {
 		// Icon
 		if(m_iconTexture)
 		{
+			Coord2 iconPos = m_iconPosRel + m_refFrame.center();
 			RefFrame rect;
-			rect.sides[SIDE::LEFT]   = floorf(m_iconPos.x);
-			rect.sides[SIDE::RIGHT]  = floorf(m_iconPos.x + m_iconSize.x * (isIconPlacementAbsolute() ? 1.0f : m_downScale));
-			rect.sides[SIDE::BOTTOM] = floorf(m_iconPos.y);
-			rect.sides[SIDE::TOP]    = floorf(m_iconPos.y + m_iconSize.y * (isIconPlacementAbsolute() ? 1.0f : m_downScale));
+			rect.sides[SIDE::LEFT]   = floorf(iconPos.x);
+			rect.sides[SIDE::RIGHT]  = floorf(iconPos.x + m_iconSize.x * (isIconPlacementAbsolute() ? 1.0f : m_downScale));
+			rect.sides[SIDE::BOTTOM] = floorf(iconPos.y);
+			rect.sides[SIDE::TOP]    = floorf(iconPos.y + m_iconSize.y * (isIconPlacementAbsolute() ? 1.0f : m_downScale));
 			GUIManager::theme().drawImage(rect, m_iconTexture);
 		}
 
