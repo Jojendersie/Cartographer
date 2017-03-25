@@ -27,19 +27,22 @@ namespace ca { namespace gui {
 		recomputeIconNTextPositions();
 	}
 
-	void Button::setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, bool _smooth, Coord _padding)
+	void Button::setIconImg(const char * _textureFile, bool _smooth)
+	{
+		m_iconTexture = GUIManager::renderBackend().getTexture(_textureFile, _smooth);
+	}
+
+	void Button::setIconExtent(SIDE::Val _side, const Coord2& _size, Coord _padding)
 	{
 		m_iconPlacement = _side;
-		m_iconTexture = GUIManager::renderBackend().getTexture(_textureFile, _smooth);
 		m_iconSize = _size;
 		m_iconPadding = _padding;
 		recomputeIconNTextPositions();
 	}
 
-	void Button::setIcon(const char * _textureFile, const Coord2 & _position, const Coord2 & _size, bool _smooth)
+	void Button::setIconExtent(const Coord2 & _position, const Coord2 & _size)
 	{
 		m_iconPlacement = SIDE::CENTER; // Mark absolute positions with an invalid value
-		m_iconTexture = GUIManager::renderBackend().getTexture(_textureFile, _smooth);
 		m_iconSize = _size;
 		m_iconPadding = 0.0f;
 		m_iconPos = _position;

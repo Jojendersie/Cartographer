@@ -21,20 +21,22 @@ namespace ca { namespace gui {
 		void setText(const char* _text);
 		const char* getText() { return m_text.c_str(); }
 
-		/// Set an image as icon relative to the text.
+		/// Just change the icon image without repositioning.
 		/// \param [in] _textureFile Name of an image file.
+		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
+		void setIconImg(const char* _textureFile, bool _smooth = true);
+		/// Set an image as icon relative to the text.
 		/// \param [in] _side The size of the text on which the icon should be placed.
 		///		if there is no text the icon is always centered.
 		/// \param [in] _size Target size of the icon. If necessary the icon size is reduced
 		///		automatically.
-		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
 		/// \param [in] _padding Distance of the icon to the border and to the text.
-		void setIcon(const char* _textureFile, SIDE::Val _side, const Coord2& _size, bool _smooth = true, Coord _padding = 2.0f);
+		void setIconExtent(SIDE::Val _side, const Coord2& _size, Coord _padding = 2.0f);
 		/// Set an image as icon with absolute positioning.
 		/// An absolute positioned icon can be behind the text and even outside the button.
 		/// Further, it will not be scaled down automatically.
 		/// \param [in] _position An absolute coordinate in the window.
-		void setIcon(const char* _textureFile, const Coord2& _position, const Coord2& _size, bool _smooth = true);
+		void setIconExtent(const Coord2& _position, const Coord2& _size);
 
 		/// Set a custom look instead of the theme's background rendering.
 		/// \param [in] _textureFile Name of an image file.

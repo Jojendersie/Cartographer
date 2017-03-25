@@ -147,34 +147,39 @@ void createGUI(GLFWwindow* _window)
 
 	ButtonPtr b1(new Button);
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 5.0f), Vec2(90.0f, 40.0f));
-	b1->setIcon("textures/ca_icon32.png", SIDE::LEFT, coord::pixel(32,32), false);
+	b1->setIconImg("textures/ca_icon32.png", false);
+	b1->setIconExtent(SIDE::LEFT, coord::pixel(32,32));
 	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
 	b1 = ButtonPtr(new Button);
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 50.0f), Vec2(90.0f, 40.0f));
-	b1->setIcon("textures/ca_icon32.png", SIDE::LEFT, coord::pixel(20,20), false, 5.0f);
+	b1->setIconImg("textures/ca_icon32.png", false);
+	b1->setIconExtent(SIDE::LEFT, coord::pixel(20,20), 5.0f);
 	b1->setText("Icon Left");
 	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
 	b1 = ButtonPtr(new Button);
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 95.0f), Vec2(90.0f, 40.0f));
-	b1->setIcon("textures/ca_icon32.png", SIDE::RIGHT, coord::pixel(20,20), false, 2.0f);
+	b1->setIconImg("textures/ca_icon32.png", false);
+	b1->setIconExtent(SIDE::RIGHT, coord::pixel(20,20), 2.0f);
 	b1->setText("Icon Right");
 	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
 	b1 = ButtonPtr(new Button);
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 140.0f), Vec2(90.0f, 40.0f));
-	b1->setIcon("textures/ca_icon32.png", SIDE::BOTTOM, coord::pixel(20,20), false, 2.0f);
+	b1->setIconImg("textures/ca_icon32.png", false);
+	b1->setIconExtent(SIDE::BOTTOM, coord::pixel(20,20), 2.0f);
 	b1->setText("Icon Bottom");
 	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
 
 	b1 = ButtonPtr(new Button);
 	b1->setExtent(f1->getPosition() + Vec2(5.0f, 185.0f), Vec2(90.0f, 40.0f));
-	b1->setIcon("textures/ca_icon32.png", SIDE::TOP, coord::pixel(20,20), false, 2.0f);
+	b1->setIconImg("textures/ca_icon32.png", false);
+	b1->setIconExtent(SIDE::TOP, coord::pixel(20,20), 2.0f);
 	b1->setText("Icon Top");
 	b1->autoAnchor(anchorsf1);
 	f1->add(b1);
