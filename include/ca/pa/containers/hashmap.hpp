@@ -203,6 +203,21 @@ public:
 		}
 		return Handle(nullptr, 0);
 	}
+	ConstHandle find(const K& _key) const
+	{
+		// COPY OF find() <noconst>
+		uint32_t d = 0;
+		uint32_t h = (uint32_t)m_hash(_key);//hash(reinterpret_cast<const uint32_t*>(&_key), sizeof(_key) / 4);
+		uint32_t idx = h % m_capacity;
+		while(m_keys[idx].dist != 0xffffffff && d <= m_keys[idx].dist)
+		{
+			if(m_keyCompare(m_keys[idx].key, _key))
+				return ConstHandle(this, idx);
+			if(++idx >= m_capacity) idx = 0;
+			++d;
+		}
+		return ConstHandle(nullptr, 0);
+	}
 
 	/// Get access to an element. If it was not in the map before it will be added with default construction.
 	/// TODO: SFINAE if T does not support default construction

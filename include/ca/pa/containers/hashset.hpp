@@ -13,24 +13,24 @@ public:
 	/// Handles are direct accesses into a specific hashmap.
 	/// Any add or remove in the HM will invalidate the handle without notification.
 	/// A handle might be usable afterwards, but there is no guaranty.
-	class Handle
+	template<typename SetT, typename DataT>
+	class HandleT
 	{
-		HashSet* map;
+		SetT* map;
 		uint32_t idx;
 
-		Handle(HashSet* _map, uint32_t _idx) :
+		HandleT(SetT* _map, uint32_t _idx) :
 			map(_map),
 			idx(_idx)
 		{}
 
 		friend HashSet;
 	public:
-		T& value() { return map->m_keys[idx].value; }
-		const T& value() const { return map->m_keys[idx].value; }
+		DataT& value() const { return map->m_keys[idx].value; }
 
 		operator bool () const { return map != nullptr; }
 
-		Handle& operator ++ ()
+		HandleT& operator ++ ()
 		{
 			++idx;
 			// Move forward while the element is empty.
@@ -41,13 +41,18 @@ public:
 			return *this;
 		}
 
-		bool operator == (const Handle& _other) const { return map == _other.map && idx == _other.idx; }
-		bool operator != (const Handle& _other) const { return map != _other.map || idx != _other.idx; }
+		bool operator == (const HandleT& _other) const { return map == _other.map && idx == _other.idx; }
+		bool operator != (const HandleT& _other) const { return map != _other.map || idx != _other.idx; }
 
 		// The dereference operator has no function other than making this handle compatible
 		// for range based loops.
-		const T& operator * () const { return map->m_keys[idx].value; }
+		const DataT& operator * () const { return map->m_keys[idx].value; }
 	};
+
+	typedef HandleT<HashSet, T> Handle;
+	typedef HandleT<const HashSet, const T> ConstHandle;
+
+
 
 	explicit HashSet(uint32_t _expectedElementCount = 15) :
 		m_capacity(estimateCapacity(_expectedElementCount)),
@@ -230,11 +235,27 @@ public:
 
 		return Handle(nullptr, 0);
 	}
+	ConstHandle begin() const
+	{
+		// COPY of begin() <noconst>
+		if(m_size == 0)
+			return ConstHandle(nullptr, 0);
+
+		for(uint32_t i = 0; i < m_capacity; ++i)
+			if(m_keys[i].dist != 0xffffffff)
+				return ConstHandle(this, i);
+
+		return ConstHandle(nullptr, 0);
+	}
 
 	/// Return the invalid handle for range based for loops
 	Handle end()
 	{
 		return Handle(nullptr, 0);
+	}
+	ConstHandle end() const
+	{
+		return ConstHandle(nullptr, 0);
 	}
 
 private:
