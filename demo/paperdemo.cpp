@@ -81,7 +81,8 @@ void hashMapBenchmark()
 #ifdef STD_MAP_BENCH
 			map.emplace(s, s);
 #else
-			map.add(s, s);
+			//map.add(s, s);
+			map[s] = s;
 #endif
 		}
 		totalTime = clock.deltaTime();

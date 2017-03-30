@@ -204,6 +204,35 @@ public:
 		return Handle(nullptr, 0);
 	}
 
+	/// Get access to an element. If it was not in the map before it will be added with default construction.
+	/// TODO: SFINAE if T does not support default construction
+	T& operator [] (const K& _key)
+	{
+		uint32_t d = 0;
+		uint32_t h = (uint32_t)m_hash(_key);//hash(reinterpret_cast<const uint32_t*>(&_key), sizeof(_key) / 4);
+		uint32_t idx = h % m_capacity;
+		while(m_keys[idx].dist != 0xffffffff && d <= m_keys[idx].dist)
+		{
+			if(m_keyCompare(m_keys[idx].key, _key))
+				return m_data[idx];
+			if(++idx >= m_capacity) idx = 0;
+			++d;
+		}
+		// Stopped at an empty cell -> insert here.
+		if(m_keys[idx].dist == 0xffffffff)
+		{
+			new (&m_keys[idx].key)(K)(_key);
+			new (&m_data[idx])(T)(); // New default element
+			m_keys[idx].dist = d;
+			++m_size;
+		} else { // Stopped because of a collision.
+			if(m_size > 0.77 * m_capacity)
+				reserve(m_size * 2);
+			idx = reinsertUnique(_key, T(), h);
+		}
+		return m_data[idx];
+	}
+
 	// Change the capacity if possible. It cannot be decreased below 'size'.
 	void resize(uint32_t _newCapacity)
 	{
@@ -217,7 +246,10 @@ public:
 		{
 			if(m_keys[i].dist != 0xffffffff)
 			{
-				tmp.add(move(m_keys[i].key), move(m_data[i]));
+				// We can use a reduced version of add, since we know the element is unique
+				// and will not cause a resize.
+				uint32_t h = (uint32_t)m_hash(m_keys[i].key);
+				tmp.reinsertUnique(move(m_keys[i].key), move(m_data[i]), h);
 				m_keys[i].dist = 0xffffffff;
 			}
 		}
@@ -296,6 +328,38 @@ private:
 		// TODO: general purpose hash function
 		return *_key;
 	}*/
+
+	/// Kernel of the Add method, but without resizing,  hash computation and
+	/// key compares. I.e. this method assumes that the element is not contained, but
+	/// space is available.
+	/// \returns The internal index for interal use (may be used to create the Handle).
+	template<class _DataT>
+	uint32_t reinsertUnique(K _key, _DataT&& _data, uint32_t h)
+	{
+		using namespace std;
+		uint32_t insertIdx = ~0;
+		uint32_t d = 0;
+		uint32_t idx = h % m_capacity;
+		while(m_keys[idx].dist != 0xffffffff) // while not empty cell
+		{
+			if(m_keys[idx].dist < d) // Swap and then insert the element from this location instead
+			{
+				swap(_key, m_keys[idx].key);
+				swap(d, m_keys[idx].dist);
+				swap(_data, m_data[idx]);
+				if(insertIdx == ~0) insertIdx = idx;
+			}
+			++d;
+			//	idx = (idx + 1) % m_capacity;
+			if(++idx >= m_capacity) idx = 0;
+		}
+		new (&m_keys[idx].key)(K)(move(_key));
+		m_keys[idx].dist = d;
+		new (&m_data[idx])(T)(move(_data));
+		++m_size;
+		if(insertIdx == ~0) insertIdx = idx;
+		return insertIdx;
+	}
 };
 
 }} // namespace ca::pa
