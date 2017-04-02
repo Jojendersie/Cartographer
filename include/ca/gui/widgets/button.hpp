@@ -47,7 +47,8 @@ namespace ca { namespace gui {
 
 		/// Forward to Clickable::addOnButtonChangeFunc
 		void addOnButtonChangeFunc(Clickable::OnButtonChange _callback, MouseState::ButtonState _stateMask) { m_clickComponent->addOnButtonChangeFunc(std::move(_callback), _stateMask); }
-	private:
+
+	protected:
 		std::string m_text;
 		Coord2 m_textSize;		///< Precomputed size of the text for placement of the icon
 		SIDE::Val m_iconPlacement;	///< Absolute icon positions are marked with SIDE::CENTER
@@ -70,6 +71,7 @@ namespace ca { namespace gui {
 		virtual void onExtentChanged(bool, bool) override { recomputeIconNTextPositions(); }
 		virtual void onTextScaleChanged() override { recomputeIconNTextPositions(); };
 		bool isIconPlacementAbsolute() const { return m_iconPlacement == SIDE::CENTER; }
+		RefFrame computeIconRect() const;
 	};
 
 	typedef pa::RefPtr<Button> ButtonPtr;

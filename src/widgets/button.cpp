@@ -130,17 +130,22 @@ namespace ca { namespace gui {
 		// Icon
 		if(m_iconTexture)
 		{
-			Coord2 iconPos = m_iconPosRel + m_refFrame.center();
-			RefFrame rect;
-			rect.sides[SIDE::LEFT]   = floorf(iconPos.x);
-			rect.sides[SIDE::RIGHT]  = floorf(iconPos.x + m_iconSize.x * (isIconPlacementAbsolute() ? 1.0f : m_downScale));
-			rect.sides[SIDE::BOTTOM] = floorf(iconPos.y);
-			rect.sides[SIDE::TOP]    = floorf(iconPos.y + m_iconSize.y * (isIconPlacementAbsolute() ? 1.0f : m_downScale));
-			GUIManager::theme().drawImage(rect, m_iconTexture);
+			GUIManager::theme().drawImage(computeIconRect(), m_iconTexture);
 		}
 
 		// Text
 		GUIManager::theme().drawText(m_textPos, m_text.c_str(), m_downScale * m_relativeTextSize, mouseOver);
+	}
+
+	RefFrame Button::computeIconRect() const
+	{
+		Coord2 iconPos = m_iconPosRel + m_refFrame.center();
+		RefFrame rect;
+		rect.sides[SIDE::LEFT]   = floorf(iconPos.x);
+		rect.sides[SIDE::RIGHT]  = floorf(iconPos.x + m_iconSize.x * (isIconPlacementAbsolute() ? 1.0f : m_downScale));
+		rect.sides[SIDE::BOTTOM] = floorf(iconPos.y);
+		rect.sides[SIDE::TOP]    = floorf(iconPos.y + m_iconSize.y * (isIconPlacementAbsolute() ? 1.0f : m_downScale));
+		return rect;
 	}
 
 }} // namespace ca::gui
