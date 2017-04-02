@@ -109,6 +109,10 @@ namespace ca { namespace gui {
 
 		/// Realign component to its anchors. If there is no anchor-component do nothing.
 		virtual void refitToAnchors();
+
+		/// A number which can be used by the user to attach some extra information.
+		/// If you encode a pointer make sure you handle the memory somewhere else.
+		uint64 metaData = 0;
 	protected:
 		bool m_enabled;					///< The element can currently receive input (not disabled).
 		bool m_keyboardFocusable;		///< Can this object have the focus?
