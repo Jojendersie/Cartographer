@@ -25,7 +25,7 @@ namespace ca { namespace gui {
 		{
 			LINEAR,			///< Interpolate linear between the two points and extend the same values to infinity on perpendicular lines between the points.
 			CIRCULAR,		///< Take A as the center and B as a point on the circumcirle. Intepolate colors according to the radius
-			RECTANGULAR,	///< A defines the center and B an arbitrary corner of a rectangle. Interpolation goes linear towards edges.
+			RECTANGULAR,	///< A defines an overfill offset up to which distance ColorA should be used and B an underfill offset how fast it should end before reaching colorB.
 		};
 
 		/// Prepare the render pipeline for upcomming GUI draw-calls.

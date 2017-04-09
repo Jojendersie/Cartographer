@@ -174,15 +174,14 @@ namespace ca { namespace gui {
 				color = mix(in_colorA, in_colorB, t);
 				break; }
 			case 3: { // IRenderBackend::GradientMode::RECTANGULAR
-				// Get smallest distance to one of the borders
-				float mindist;
-				mindist = max(0.0, in_texCoord.x - in_posAB.x);
-				mindist = min(mindist, max(0.0, in_posAB.z - in_texCoord.x));
-				mindist = min(mindist, max(0.0, in_texCoord.y - in_posAB.y));
-				mindist = min(mindist, max(0.0, in_posAB.w - in_texCoord.y));
-				// Normalize to maximal possible distance
-				mindist /= min(in_posAB.z - in_posAB.x, in_posAB.w - in_posAB.y) * 0.5;
-				color = mix(in_colorA, in_colorB, mindist);
+				vec2 AtoXAbs = abs(in_texCoord - 0.5);
+				//vec2 rectSize = abs(in_posAB.zw - in_posAB.xy);
+				// Normalize to a 0-1 distance within the rect
+				AtoXAbs *= 2.0;
+				// Overfill and underfill
+				vec2 finalDist = (AtoXAbs - in_posAB.xy) / (1.0 + in_posAB.zw - in_posAB.xy);
+				float maxDist = max(0, max(finalDist.x, finalDist.y));
+				color = mix(in_colorA, in_colorB, maxDist);
 				break; }
 			case 4:
 				color = in_colorInterpolated;
@@ -457,7 +456,7 @@ namespace ca { namespace gui {
 		m_spriteRenderer->newInstance(0, Vec3(_rect.left(), _rect.bottom(), 0.0f), 0.0f, Vec2(_rect.width(), _rect.height()));
 
 		AdditionalVertexInfo info;
-		info.a = _a;
+		info.a = saturate(_a);
 		info.b = _b;
 		info.colorA = Vec<uint8, 4>(saturate(_colorA) * 255.0f);
 		info.colorB = Vec<uint8, 4>(saturate(_colorB) * 255.0f);
