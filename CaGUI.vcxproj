@@ -182,6 +182,7 @@
     <ClInclude Include="include\ca\gui\widgets\label.hpp" />
     <ClInclude Include="include\ca\gui\widgets\multilineeditbox.hpp" />
     <ClInclude Include="include\ca\gui\widgets\node.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\progressbar.hpp" />
     <ClInclude Include="include\ca\gui\widgets\slider.hpp" />
     <ClInclude Include="include\ca\gui\widgets\treelist.hpp" />
     <ClInclude Include="include\ca\gui\widgets\widget.hpp" />
@@ -213,6 +214,7 @@
     <ClCompile Include="src\widgets\label.cpp" />
     <ClCompile Include="src\widgets\multilineeditbox.cpp" />
     <ClCompile Include="src\widgets\node.cpp" />
+    <ClCompile Include="src\widgets\progressbar.cpp" />
     <ClCompile Include="src\widgets\slider.cpp" />
     <ClCompile Include="src\widgets\treelist.cpp" />
     <ClCompile Include="src\widgets\widget.cpp" />

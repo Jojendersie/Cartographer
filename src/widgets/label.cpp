@@ -20,7 +20,7 @@ namespace ca { namespace gui {
 			));
 		downScale *= m_relativeTextSize;
 
-		Coord2 center = Coord2(m_refFrame.left() + m_refFrame.right(), m_refFrame.bottom() + m_refFrame.top()) * 0.5f;
+		Coord2 center = m_refFrame.center();
 		center -= m_textSize * 0.5f * downScale;
 		Coord2 pos;
 		switch(m_textPosition)

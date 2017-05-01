@@ -110,6 +110,9 @@
     <ClInclude Include="include\ca\gui\properties\regionshapes.hpp">
       <Filter>properties</Filter>
     </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\progressbar.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\widgets\frame.cpp">
@@ -196,6 +199,9 @@
     </ClCompile>
     <ClCompile Include="src\properties\regionshapes.cpp">
       <Filter>properties</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\progressbar.cpp">
+      <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
