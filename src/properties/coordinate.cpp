@@ -25,19 +25,24 @@ namespace ca { namespace gui {
 			return ei::Vec2(_x * GUIManager::getHeight(), _y * GUIManager::getHeight());
 		}
 
-		Coord relativeWidth(float _w)
+		Coord relative(float _x)
 		{
-			return _w * GUIManager::getHeight();
-		}
-
-		Coord relativeHeight(float _h)
-		{
-			return _h * GUIManager::getHeight();
+			return _x * GUIManager::getHeight();
 		}
 
 		float maxRelativeWidth()
 		{
 			return GUIManager::getWidth() / float(GUIManager::getHeight());
+		}
+
+		Coord2 relativeI(float _x, float _y)
+		{
+			return ei::Vec2(round(_x * GUIManager::getHeight()), round(_y * GUIManager::getHeight()));
+		}
+
+		Coord relativeI(float _x)
+		{
+			return round(_x * GUIManager::getHeight());
 		}
 
 		Coord2 pixel(int _x, int _y)
