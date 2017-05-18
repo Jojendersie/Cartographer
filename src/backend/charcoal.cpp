@@ -190,10 +190,12 @@ namespace ca { namespace gui {
 			// Premultiply color alpha
 			color.rgb *= color.a;
 			// Is there a texture?
+			// If so it is never used with gradients together -> use in_posAB.xy
+			// for tiling.
 			if(in_textureHandle.x != 0 || in_textureHandle.y != 0)
 			{
 				sampler2D tex = sampler2D(in_textureHandle);
-				color *= texture(tex, in_texCoord);
+				color *= texture(tex, in_texCoord * in_posAB.xy);
 			}
 
 			if(color.a < 0.005) discard;
@@ -339,8 +341,8 @@ namespace ca { namespace gui {
 
 	CharcoalBackend::CharcoalBackend(const char* _fontFile) :
 		m_fontRenderer(new cc::FontRenderer),
-		m_linearSampler(cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR, cc::Sampler::Border::CLAMP),
-		m_pointSampler(cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT, cc::Sampler::Border::CLAMP)
+		m_linearSampler(cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR, cc::Sampler::Filter::LINEAR, cc::Sampler::Border::REPEAT),
+		m_pointSampler(cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT, cc::Sampler::Filter::POINT, cc::Sampler::Border::REPEAT)
 	{
 		m_spriteShader.attach( cc::ShaderManager::get(VS_SPRITE, cc::ShaderType::VERTEX, false) );
 		m_spriteShader.attach( cc::ShaderManager::get(GS_SPRITE, cc::ShaderType::GEOMETRY, false) );
@@ -465,18 +467,21 @@ namespace ca { namespace gui {
 		m_perInstanceData.push_back(info);
 	}
 
-	void gui::CharcoalBackend::drawTextureRect(const RefFrame& _rect, uint64 _texture, float _opacity)
+	void gui::CharcoalBackend::drawTextureRect(const RefFrame& _rect, uint64 _texture, float _opacity, bool _tiling)
 	{
-		m_spriteRenderer->newInstance((int)_texture, Vec3(_rect.left(), _rect.bottom(), 0.0f), 0.0f,
-			Vec2(_rect.width() / m_spriteSizes[(int)_texture].x, _rect.height() / m_spriteSizes[(int)_texture].y));
+		Vec2 spriteScale(_rect.width() / m_spriteSizes[(int)_texture].x, _rect.height() / m_spriteSizes[(int)_texture].y);
 
 		AdditionalVertexInfo info;
-		info.a = Vec2(0.0f);
+		info.a = _tiling ? spriteScale : Vec2((m_spriteSizes[(int)_texture] - 1.0f) / m_spriteSizes[(int)_texture]);
 		info.b = Vec2(0.0f);
 		info.colorA = Vec<uint8, 4>(255, 255, 255, uint8(saturate(_opacity) * 255.0f));
 		info.colorB = Vec<uint8, 4>(0);
 		info.colorC = Vec<uint8, 4>(0);
 		info.gradientType = 0;
+
+		m_spriteRenderer->newInstance((int)_texture, Vec3(_rect.left(), _rect.bottom(), 0.0f),
+			0.0f, spriteScale);
+
 		m_perInstanceData.push_back(info);
 	}
 

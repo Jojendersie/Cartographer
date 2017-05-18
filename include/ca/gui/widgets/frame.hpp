@@ -27,12 +27,14 @@ namespace ca { namespace gui {
 		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
 		/// \param [in] _opacity An [0,1] transparency value (alpha). The value is multiplied with
 		///		the image during rendering. The default alpha is opaque (1).
-		void setBackground(const char* _imageFile, bool _smooth = true, float _opacity = 1.0f);
+		/// \param [in] _tiling Repeat the texture (the texture is scaled pixel perfect).
+		void setBackground(const char* _imageFile, bool _smooth = true, float _opacity = 1.0f, bool _tiling = false);
 		// TODO: recursive transparency?
 		void setBackgroundOpacity(float _opacity);
 
 	private:
 		float m_opacity;
+		bool m_tiling;
 		uint64 m_texture;
 	};
 

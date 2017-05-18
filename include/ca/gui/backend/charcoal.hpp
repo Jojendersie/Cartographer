@@ -21,7 +21,7 @@ namespace ca { namespace gui {
 		virtual ei::Rect2D getTextBB(const ei::Vec2& _position, const char* _text, float _size, float _alignX = 0.0f, float _alignY = 0.0f, float _rotation = 0.0f) override;
 		virtual void drawRect(const class RefFrame& _rect, const ei::Vec4& _color) override;
 		virtual void drawRect(const class RefFrame& _rect, const ei::Vec2& _a, const ei::Vec2& _b, const ei::Vec4& _colorA, const ei::Vec4& _colorB, GradientMode _mode = GradientMode::LINEAR) override;
-		virtual void drawTextureRect(const class RefFrame& _rect, uint64 _texture, float _opacity) override;
+		virtual void drawTextureRect(const class RefFrame& _rect, uint64 _texture, float _opacity, bool _tiling) override;
 		virtual void drawTriangle(const ei::Triangle2D& _triangle, const ei::Vec4& _color0, const ei::Vec4& _color1, const ei::Vec4& _color2) override;
 		virtual uint64 getTexture(const char* _textureFile, bool _smooth) override;
 		virtual ei::IVec2 getTextureSize(uint64 _handle) override;

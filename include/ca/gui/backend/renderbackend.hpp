@@ -53,7 +53,8 @@ namespace ca { namespace gui {
 		/// \param [in] _a Reference rect relative coordinate in [0,1]^2 as gradient source.
 		/// \param [in] _b Reference rect relative coordinate in [0,1]^2 as gradient target.
 		virtual void drawRect(const class RefFrame& _rect, const ei::Vec2& _a, const ei::Vec2& _b, const ei::Vec4& _colorA, const ei::Vec4& _colorB, GradientMode _mode = GradientMode::LINEAR) = 0;
-		virtual void drawTextureRect(const class RefFrame& _rect, uint64 _texture, float _opacity) = 0;
+		/// \param [in] _tiling Repeat the texture (pixel perfect without scale).
+		virtual void drawTextureRect(const class RefFrame& _rect, uint64 _texture, float _opacity, bool _tiling) = 0;
 		/// \param [in] _colorX Color of the vertex with index X.
 		virtual void drawTriangle(const ei::Triangle2D& _triangle, const ei::Vec4& _color0, const ei::Vec4& _color1, const ei::Vec4& _color2) = 0;
 		/// Draw a polygon with a color gradient from the first to the last vertex.

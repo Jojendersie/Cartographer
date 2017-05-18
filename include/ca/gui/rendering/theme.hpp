@@ -32,7 +32,7 @@ namespace ca { namespace gui {
 		/// \param [in] _relativeScale A number to scale the text relative to the global font size.
 		virtual ei::Rect2D getTextBB(const Coord2& _position, const char* _text, float _relativeScale, float _alignX = 0.0f, float _alignY = 0.0f) = 0;
 		/// Draw an image
-		virtual void drawImage(const class RefFrame& _rect, uint64 _texHandle, float _opacity = 1.0f) = 0;
+		virtual void drawImage(const class RefFrame& _rect, uint64 _texHandle, float _opacity = 1.0f, bool _tiling = false) = 0;
 		/// Draw an arrow for sliders, scrollbars or drop down menus
 		virtual void drawArrowButton(const class RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver) = 0;
 		/// Query the global basis font size. Headers or similar can differ from that (element dependent).

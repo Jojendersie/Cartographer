@@ -80,10 +80,10 @@ namespace ca { namespace gui {
 			0.0f );
 	}
 
-	void FlatTheme::drawImage(const RefFrame& _rect, uint64 _texHandle, float _opacity)
+	void FlatTheme::drawImage(const RefFrame& _rect, uint64 _texHandle, float _opacity, bool _tiling)
 	{
 		if(_opacity > 0.0f)
-			GUIManager::renderBackend().drawTextureRect(_rect, _texHandle, _opacity);
+			GUIManager::renderBackend().drawTextureRect(_rect, _texHandle, _opacity, _tiling);
 	}
 
 	void FlatTheme::drawArrowButton(const class RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver)

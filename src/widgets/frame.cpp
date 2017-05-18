@@ -32,7 +32,7 @@ namespace ca { namespace gui {
 			{
 				// Draw the frame background
 				if(m_texture)
-					GUIManager::theme().drawImage(m_refFrame, m_texture, m_opacity);
+					GUIManager::theme().drawImage(m_refFrame, m_texture, m_opacity, m_tiling);
 				else
 					GUIManager::theme().drawBackgroundArea(m_refFrame, m_opacity);
 
@@ -55,10 +55,11 @@ namespace ca { namespace gui {
 		return Widget::processInput(_mouseState);
 	}
 
-	void Frame::setBackground(const char* _imageFile, bool _smooth, float _opacity)
+	void Frame::setBackground(const char* _imageFile, bool _smooth, float _opacity, bool _tiling)
 	{
 		m_texture = GUIManager::renderBackend().getTexture(_imageFile, _smooth);
 		m_opacity = _opacity;
+		m_tiling = _tiling;
 	}
 
 	void Frame::setBackgroundOpacity(float _opacity)
