@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ca/pa/log.hpp>
 #include "ca/gui/properties/anchorable.hpp"
 #include "ca/gui/properties/anchorprovider.hpp"
 
@@ -23,6 +24,10 @@ namespace ca { namespace gui {
 
 	void Anchorable::autoAnchor(const IAnchorProvider* _anchorProvider)
 	{
+		if(!_anchorProvider) {
+			pa::logWarning("[ca::gui] No anchor provider given in autoAnchor().");
+			return;
+		}
 		setAnchor(SIDE::LEFT,   _anchorProvider->findClosestAnchor(m_selfFrame->left(), IAnchorProvider::SearchDirection::LEFT));
 		setAnchor(SIDE::RIGHT,  _anchorProvider->findClosestAnchor(m_selfFrame->right(), IAnchorProvider::SearchDirection::RIGHT));
 		setAnchor(SIDE::BOTTOM, _anchorProvider->findClosestAnchor(m_selfFrame->bottom(), IAnchorProvider::SearchDirection::DOWN));
@@ -63,9 +68,14 @@ namespace ca { namespace gui {
 
 	bool Anchorable::refitToAnchors()
 	{
-		// If host vanished detach this element
+		// If host vanished detach this element. Early out if no anchor is set.
+		bool hasReference = false;
 		for(int i = 0; i < 4; ++i)
+		{
 			m_anchors[i].checkReference();
+			hasReference |= m_anchors[i].reference != nullptr;
+		}
+		if(!hasReference) return false;
 
 		RefFrame oldFrame = *m_selfFrame;
 
