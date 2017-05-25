@@ -107,6 +107,9 @@ namespace ca { namespace gui {
 		/// Add or remove keyboard-focus property (this element can be focused by the toggle-focus-key).
 		void setKeyboardFocusable(bool _enable) { m_keyboardFocusable = _enable; }
 
+		Moveable* getMoveComponent() { return m_moveComponent.get(); }
+		const Moveable* getMoveComponent() const { return m_moveComponent.get(); }
+
 		/// Realign component to its anchors. If there is no anchor-component do nothing.
 		virtual void refitToAnchors();
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 namespace ca { namespace gui {
 
 	/// A moveable component is moved when the left mouse button is pushed while beeing over the
@@ -23,10 +25,26 @@ namespace ca { namespace gui {
 		/// Should the anchor component change update this component.
 		/// \param [in] _anchorable The new anchor component or new if there is none afterwards.
 		void registerAnchorCompoentent(class Anchorable* _anchorable) { m_anchorable = _anchorable; }
+
+		/// Given a continous position compute some restricted position which should be
+		/// used instead.
+		typedef std::function<Coord2(const Coord2&)> RestrictionFunction;
+
+		/// Snapping: set a condition which transforms a continous position into some
+		/// restricted position.
+		/// Automatically enables the restriction.
+		/// TODO: premade snapping functions e.g. for anchorProviders.
+		void restrictMovement(RestrictionFunction _restrictionFunction);
+		/// (Temporarly) enable or disable the restriction (snapping) function.
+		void setEnableRestriction(bool _enable) { m_useRestriction = _enable; }
 	private:
 		class RefFrame* m_refFrame;
 		class Anchorable* m_anchorable;
 		bool m_moving;	/// Currently actively moving
+		bool m_useRestriction;
+
+		RestrictionFunction m_snapFunction;
+		Coord2 m_floatingPosition;	/// Current continous position - may differ from the widged position if snapping is active.
 	};
 
 }} // namespace ca::gui
