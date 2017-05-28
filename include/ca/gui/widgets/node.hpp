@@ -39,6 +39,7 @@ namespace ca { namespace gui {
 
 		/// Set the radius in which a connector can snap to the node.
 		static void setConnectorSnapRadius(Coord _radius);
+
 	private:
 		std::vector<NodeConnectorPtr> m_edges;
 		ei::Vec3 m_color;
@@ -76,9 +77,16 @@ namespace ca { namespace gui {
 		void setDest(NodeHandlePtr _node)		{m_destNode = _node;}
 
 		virtual const IRegion* getRegion() const override { return this; }
+
+		/// Set the bending strength at the start points.
+		/// The stiffness effectivly determines the relative distance of the
+		/// Bezier-control points. The default is 1.0/3.0
+		void setStiffness(float _stiffness) { m_stiffness = _stiffness; }
+
 	protected:
 		NodeHandlePtr m_sourceNode;
 		NodeHandlePtr m_destNode;
+		float m_stiffness;
 
 		enum class HandleState
 		{
@@ -111,6 +119,7 @@ namespace ca { namespace gui {
 		void refitToAnchors() override;
 
 		/// \param [in] _angle Direction in radiant in which the edge will start.
+		///		0 is on the right side.
 		void setSource(WidgetPtr _node, float _angle)	{m_sourceNode = _node; m_sourceAngle = _angle;}
 		void setDest(WidgetPtr _node, float _angle)		{m_destNode = _node; m_destAngle = _angle;}
 
@@ -120,12 +129,18 @@ namespace ca { namespace gui {
 		float getDestAngle() const { return m_destAngle; }
 		void setDestAngle(float _angle) { m_destAngle = _angle; }
 
+		/// Set the bending strength at the start points.
+		/// The stiffness effectivly determines the relative distance of the
+		/// Bezier-control points. The default is 1.0/3.0
+		void setStiffness(float _stiffness) { m_stiffness = _stiffness; }
+
 		virtual const IRegion* getRegion() const override { return this; }
 	protected:
 		WidgetPtr m_sourceNode;
 		WidgetPtr m_destNode;
 		float m_sourceAngle;
 		float m_destAngle;
+		float m_stiffness;
 
 		std::vector<ei::Vec3> m_curve;
 

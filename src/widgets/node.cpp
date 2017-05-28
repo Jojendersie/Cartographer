@@ -152,7 +152,8 @@ namespace ca { namespace gui {
 	NodeConnector::NodeConnector() :
 		Widget(false, true, false, false),
 		m_isMouseOver(false),
-		m_tmpHandleState(HandleState::ATTACHED)
+		m_tmpHandleState(HandleState::ATTACHED),
+		m_stiffness(1.0f/3.0f)
 	{
 		m_region = this;
 
@@ -182,7 +183,7 @@ namespace ca { namespace gui {
 			p3 = m_destNode->getRefFrame().center();
 			p3 += m_destNode->getConnectorDirection() * m_destNode->getRefFrame().size() / 2.0f;
 		}
-		float distance = len(p0 - p3) / 3.0f;
+		float distance = len(p0 - p3) * m_stiffness;
 		if((m_tmpHandleState == HandleState::TMP_SRC && mouseFarAwayFromSrc)
 			|| (m_tmpHandleState == HandleState::TMP_DST && mouseFarAwayFromDst))
 			distance /= 2.0f;
@@ -234,7 +235,7 @@ namespace ca { namespace gui {
 		p0 += m_sourceNode->getConnectorDirection() * m_sourceNode->getRefFrame().size() / 2.0f;
 		Vec2 p3 = m_destNode->getRefFrame().center();
 		p3 += m_destNode->getConnectorDirection() * m_destNode->getRefFrame().size() / 2.0f;
-		float nodeDistance = len(p0 - p3) / 3.0f;
+		float nodeDistance = len(p0 - p3) * m_stiffness;
 		Vec2 p1 = p0 + m_sourceNode->getConnectorDirection() * nodeDistance;
 		Vec2 p2 = p3 + m_destNode->getConnectorDirection() * nodeDistance;
 
@@ -300,7 +301,8 @@ namespace ca { namespace gui {
 
 	WidgetConnector::WidgetConnector() :
 		Widget(false, true, false, false),
-		m_isMouseOver(false)
+		m_isMouseOver(false),
+		m_stiffness(1.0f/3.0f)
 	{
 		m_region = this;
 	}
@@ -349,7 +351,7 @@ namespace ca { namespace gui {
 
 		// Create the Bezier spline
 		Coord2 boundingRect[2] = {Coord2(min(p0, p3)), Coord2(max(p0, p3))};
-		float nodeDistance = len(p0 - p3) / 3.0f;
+		float nodeDistance = len(p0 - p3) * m_stiffness;
 		Vec2 p1 = p0 + adir * nodeDistance;
 		Vec2 p2 = p3 + bdir * nodeDistance;
 		m_curve.clear();
