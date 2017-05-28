@@ -195,6 +195,7 @@ namespace ca { namespace gui {
 			if(in_textureHandle.x != 0 || in_textureHandle.y != 0)
 			{
 				sampler2D tex = sampler2D(in_textureHandle);
+				//vec2 pixelSize = 1.0 / textureSize(tex, 0);
 				color *= texture(tex, in_texCoord * in_posAB.xy);
 			}
 
@@ -469,10 +470,11 @@ namespace ca { namespace gui {
 
 	void gui::CharcoalBackend::drawTextureRect(const RefFrame& _rect, uint64 _texture, float _opacity, bool _tiling)
 	{
+		//Vec2 spriteScale((_rect.width() - 1.0f) / m_spriteSizes[(int)_texture].x, (_rect.height() - 1.0f) / m_spriteSizes[(int)_texture].y);
 		Vec2 spriteScale(_rect.width() / m_spriteSizes[(int)_texture].x, _rect.height() / m_spriteSizes[(int)_texture].y);
 
 		AdditionalVertexInfo info;
-		info.a = _tiling ? spriteScale : Vec2((m_spriteSizes[(int)_texture] - 1.0f) / m_spriteSizes[(int)_texture]);
+		info.a = _tiling ? spriteScale : Vec2(1.0f);//Vec2((m_spriteSizes[(int)_texture] - 1.0f) / m_spriteSizes[(int)_texture]);
 		info.b = Vec2(0.0f);
 		info.colorA = Vec<uint8, 4>(255, 255, 255, uint8(saturate(_opacity) * 255.0f));
 		info.colorB = Vec<uint8, 4>(0);

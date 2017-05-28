@@ -120,8 +120,8 @@ namespace ca { namespace gui {
 
 		/// \param [in] _angle Direction in radiant in which the edge will start.
 		///		0 is on the right side.
-		void setSource(WidgetPtr _node, float _angle)	{m_sourceNode = _node; m_sourceAngle = _angle;}
-		void setDest(WidgetPtr _node, float _angle)		{m_destNode = _node; m_destAngle = _angle;}
+		void setSource(ConstWidgetPtr _node, float _angle)	{ m_sourceNode = _node; m_sourceAngle = _angle; }
+		void setDest(ConstWidgetPtr _node, float _angle)	{ m_destNode = _node; m_destAngle = _angle; }
 
 		// TODO: call refitToAnchors after each set?
 		float getSourceAngle() const { return m_sourceAngle; }
@@ -136,8 +136,8 @@ namespace ca { namespace gui {
 
 		virtual const IRegion* getRegion() const override { return this; }
 	protected:
-		WidgetPtr m_sourceNode;
-		WidgetPtr m_destNode;
+		ConstWidgetPtr m_sourceNode;
+		ConstWidgetPtr m_destNode;
 		float m_sourceAngle;
 		float m_destAngle;
 		float m_stiffness;

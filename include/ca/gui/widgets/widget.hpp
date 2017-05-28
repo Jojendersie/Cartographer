@@ -139,5 +139,6 @@ namespace ca { namespace gui {
 	};
 
 	typedef pa::RefPtr<Widget> WidgetPtr;
+	typedef pa::RefPtr<const Widget> ConstWidgetPtr;
 
 }} // namespace ca::gui
