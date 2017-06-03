@@ -302,15 +302,16 @@ namespace ca { namespace gui {
 	WidgetConnector::WidgetConnector() :
 		Widget(false, true, false, false),
 		m_isMouseOver(false),
-		m_stiffness(1.0f/3.0f)
+		m_stiffness(1.0f/3.0f),
+		m_sourceColor(1.0f),
+		m_destColor(1.0f)
 	{
 		m_region = this;
 	}
 
 	void WidgetConnector::draw() const
 	{
-		// TODO: Color
-		GUIManager::theme().drawLine(m_curve.data(), m_curve.size(), Vec4(1.0f), Vec4(1.0f));
+		GUIManager::theme().drawLine(m_curve.data(), m_curve.size(), Vec4(m_sourceColor, 1.0f), Vec4(m_destColor, 1.0f));
 	}
 
 	static void findWidgetBorder(const IRegion* _region, Vec2& _pos, const Vec2& _dir)

@@ -129,6 +129,15 @@ namespace ca { namespace gui {
 		float getDestAngle() const { return m_destAngle; }
 		void setDestAngle(float _angle) { m_destAngle = _angle; }
 
+		/// Sets the color for the entire edge.
+		/// It is also possible to use an gradient (setSourceColor, setDestColor).
+		void setColor(const ei::Vec3& _color) { m_sourceColor = m_destColor = _color; }
+		const ei::Vec3& getColor() const { return m_sourceColor; }
+		void setSourceColor(const ei::Vec3& _color) { m_sourceColor = _color; }
+		const ei::Vec3& getSourceColor() const { return m_sourceColor; }
+		void setDestColor(const ei::Vec3& _color) { m_destColor = _color; }
+		const ei::Vec3& getDestColor() const { return m_destColor; }
+
 		/// Set the bending strength at the start points.
 		/// The stiffness effectivly determines the relative distance of the
 		/// Bezier-control points. The default is 1.0/3.0
@@ -138,6 +147,8 @@ namespace ca { namespace gui {
 	protected:
 		ConstWidgetPtr m_sourceNode;
 		ConstWidgetPtr m_destNode;
+		ei::Vec3 m_sourceColor;
+		ei::Vec3 m_destColor;
 		float m_sourceAngle;
 		float m_destAngle;
 		float m_stiffness;
