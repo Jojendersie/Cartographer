@@ -15,7 +15,7 @@ static Program s_shader;
 void prepareFont()
 {
 	s_fontRenderer = new FontRenderer;
-	s_fontRenderer->createFont("calibri.ttf", u8" 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzäöüß#´`'\"^_@&|,.:!?~+-*/(){}[]<>\U000003B5\U000003A9\U0000262F\U00002713");
+	s_fontRenderer->createFont("calibri.ttf", u8" 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzäöüß#´`'\"^_@%&|,.:!?~+-*/(){}[]<>\U000003B5\U000003A9\U0000262F\U00002713");
 	s_fontRenderer->storeCaf("calibri.caf");
 	s_fontRenderer->loadCaf("calibri.caf");
 }
