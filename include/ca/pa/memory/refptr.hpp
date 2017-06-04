@@ -18,7 +18,7 @@ namespace ca { namespace pa {
 	private:
 		// RefPtr should be the only class to manage the reference counter.
 		template<typename T> friend class RefPtr;
-		unsigned m_refCounter = 0;
+		mutable unsigned m_refCounter = 0;
 	};
 
 	/// A pointer which behaves like a shared_ptr.
