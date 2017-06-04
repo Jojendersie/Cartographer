@@ -31,6 +31,7 @@ namespace ca { namespace gui {
 		void setBackground(const char* _imageFile, bool _smooth = true, float _opacity = 1.0f, bool _tiling = false);
 		// TODO: recursive transparency?
 		void setBackgroundOpacity(float _opacity);
+		float getBackgroundOpacity() const { return m_opacity; }
 
 	private:
 		float m_opacity;
