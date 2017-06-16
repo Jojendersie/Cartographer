@@ -85,7 +85,8 @@ namespace ca { namespace gui {
 			for(int i = (int)m_children.size()-1; i >= 0; --i)
 			{
 				WidgetPtr& e = m_children[i].widget;
-				if(e->isEnabled() && e->getRefFrame().isMouseOver(GUIManager::getMouseState().position)
+				if(e->isEnabled() && e->isVisible()
+					&& e->getRefFrame().isMouseOver(GUIManager::getMouseState().position)
 					&& e->processInput(_mouseState))
 				{
 					// If a group took the input change the order

@@ -175,8 +175,10 @@ namespace ca { namespace gui {
 
 	void Widget::setClickable(bool _enable)
 	{
-		if(_enable && !m_clickComponent)
+		if(_enable && !m_clickComponent) {
 			m_clickComponent = std::make_unique<Clickable>(this);
+			m_enabled = true;
+		}
 	}
 
 	const IRegion * Widget::getRegion() const

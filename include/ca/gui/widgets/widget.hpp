@@ -93,6 +93,7 @@ namespace ca { namespace gui {
 
 		/// Add or remove the clickable property (you can add CLICK and DBLCLICK callbacks)
 		/// The old click component is kept if there is already one.
+		/// If a new clickable is created, the Widget will be enabled too.
 		void setClickable(bool _enable);
 		/// Add or remove the anchor property (this element can be anchored).
 		/// The old anchor component is kept if there is already one.
@@ -109,6 +110,8 @@ namespace ca { namespace gui {
 
 		Moveable* getMoveComponent() { return m_moveComponent.get(); }
 		const Moveable* getMoveComponent() const { return m_moveComponent.get(); }
+		Clickable* getClickComponent() { return m_clickComponent.get(); }
+		const Clickable* getClickComponent() const { return m_clickComponent.get(); }
 
 		/// Realign component to its anchors. If there is no anchor-component do nothing.
 		virtual void refitToAnchors();
