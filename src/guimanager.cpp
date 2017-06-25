@@ -158,6 +158,7 @@ namespace ca { namespace gui {
 			// time passed to show it.
 			if( now - g_manager->m_lastMouseMoveTime > 0.33f
 				&& g_manager->m_mouseFocus
+				&& g_manager->m_mouseFocus->getRefFrame().isMouseOver(_mouseState.position)
 				&& g_manager->m_mouseFocus->getInfoPopup()
 			)
 				showPopup(g_manager->m_mouseFocus->getInfoPopup());

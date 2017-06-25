@@ -365,10 +365,8 @@ void createGUI(GLFWwindow* _window)
 	f5->add(l0);
 
 	LabelPtr l1(new Label);
-	l1->setText("Info popup.");
-	l1->setSize(Coord2(65.0f, 14.0f));
+	l1->setText("Info popup.", true);
 	f5->setInfoPopup(l1);
-	l0->setInfoPopup(l1);
 }
 
 void runMainLoop(GLFWwindow* _window)

@@ -16,12 +16,12 @@ namespace ca { namespace gui {
 
 	static void chooseCursor(bool _flags[4])
 	{
-		if(_flags[0] && _flags[2])		GUIManager::setCursorType(CursorType::RESIZE_DUP);
-		else if(_flags[0] && _flags[3])	GUIManager::setCursorType(CursorType::RESIZE_DDOWN);
-		else if(_flags[1] && _flags[3])	GUIManager::setCursorType(CursorType::RESIZE_DUP);
-		else if(_flags[1] && _flags[2])	GUIManager::setCursorType(CursorType::RESIZE_DDOWN);
-		else if(_flags[0] || _flags[1]) GUIManager::setCursorType(CursorType::RESIZE_H);
-		else if(_flags[2] || _flags[3]) GUIManager::setCursorType(CursorType::RESIZE_V);
+		if(_flags[SIDE::LEFT] && _flags[SIDE::BOTTOM])		 GUIManager::setCursorType(CursorType::RESIZE_DUP);
+		else if(_flags[SIDE::LEFT] && _flags[SIDE::TOP])	 GUIManager::setCursorType(CursorType::RESIZE_DDOWN);
+		else if(_flags[SIDE::RIGHT] && _flags[SIDE::TOP])	 GUIManager::setCursorType(CursorType::RESIZE_DUP);
+		else if(_flags[SIDE::RIGHT] && _flags[SIDE::BOTTOM]) GUIManager::setCursorType(CursorType::RESIZE_DDOWN);
+		else if(_flags[SIDE::LEFT] || _flags[SIDE::RIGHT])	 GUIManager::setCursorType(CursorType::RESIZE_H);
+		else if(_flags[SIDE::BOTTOM] || _flags[SIDE::TOP])	 GUIManager::setCursorType(CursorType::RESIZE_V);
 	}
 
 	bool Resizeable::processInput(const MouseState& _mouseState)
