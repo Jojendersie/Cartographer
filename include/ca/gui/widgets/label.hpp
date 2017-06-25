@@ -16,7 +16,8 @@ namespace ca { namespace gui {
 
 		/// Set the description text (utf8 w/o BOM)
 		/// \param [in] _text New text for the checkbox (utf8 w/o BOM). The text is copied internally.
-		void setText(const char* _text);
+		/// \param [in] _fitSize Change the label size to the size of the text.
+		void setText(const char* _text, bool _fitSize = false);
 		const char* getText() { return m_text.c_str(); }
 
 		/// Set on which side including the center the text should be aligned.

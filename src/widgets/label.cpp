@@ -34,10 +34,13 @@ namespace ca { namespace gui {
 		GUIManager::theme().drawText(pos, m_text.c_str(), downScale, false);
 	}
 
-	void Label::setText(const char* _text)
+	void Label::setText(const char* _text, bool _fitSize)
 	{
 		m_text = _text;
 		m_textSize = GUIManager::theme().getTextBB(Coord2(0.0f), _text, 1.0f).max;
+		// Automatically change the label size
+		if(_fitSize)
+			m_refFrame.rect.max = m_refFrame.rect.min + m_textSize;
 	}
 
 }} // namespace ca::gui
