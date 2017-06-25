@@ -102,15 +102,24 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		///		created for a part of the real app, but usually it is expected to cover the entire
 		///		frame buffer.
 		static int getHeight();
+
+		/// Unhides and positionates a widget and starts tracking its visibility state.
+		/// \details The popup is hidden if the mouse distance to the widget increases.
+		///		All popups are tracked on a stack. Only the topmost one is hidden in one
+		///		step. This allows chains of info popups.
+		static void showPopup(WidgetPtr& _popup);
 	private:
 		std::shared_ptr<class IRenderBackend> m_renderer;
 		std::shared_ptr<class ITheme> m_theme;
 		std::shared_ptr<class Group> m_topFrame;
+		std::vector<WidgetPtr> m_popupStack;
+		float m_cursorToPopupDistance;
 
 		Widget* m_keyboardFocus;		///< The element with the keyboard-focus or nullptr
 		Widget* m_mouseFocus;			///< The element with the mouse-focus or nullptr
 		bool m_stickyKeyboardFocus;		///< The focus guarantees exclusive input handling by the element. The element must release this active.
 		bool m_stickyMouseFocus[2];		///< The focus guarantees exclusive input handling by the element.
+		float m_lastMouseMoveTime;		///< Point in time where the mouse was moved the last.
 
 		std::stack<ei::IVec4, std::vector<ei::IVec4>> m_clipRegionStack;
 		MouseState m_mouseState;		///< Buffer the last seen mouse state

@@ -82,8 +82,8 @@ namespace ca { namespace gui {
 		// Fit horizontal and vertical independent in two passes
 		for(int i = 0; i < 2; ++i)
 		{
-			SIDE::Val sa = SIDE::Val(i * 2);
-			SIDE::Val sb = SIDE::Val(i * 2 + 1);
+			SIDE::Val sa = SIDE::Val(i);
+			SIDE::Val sb = SIDE::Val(i + 2);
 			if(m_anchors[sa].reference || m_anchors[sb].reference)
 			{
 				switch(i==0 ? m_horizontalMode : m_verticalMode)

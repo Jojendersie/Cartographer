@@ -3,9 +3,12 @@
 #include "ca/gui.hpp"
 #include "ca/gui/backend/renderbackend.hpp"
 #include <ca/pa/log.hpp>
+#include <ei/2dintersection.hpp>
+#include <ctime>
 
 namespace ca { namespace gui {
 	using namespace pa;
+	using namespace ei;
 
 	std::unique_ptr<GUIManager> g_manager;
 
@@ -29,6 +32,7 @@ namespace ca { namespace gui {
 		g_manager->m_stickyKeyboardFocus = false;
 		g_manager->m_stickyMouseFocus[0] = false;
 		g_manager->m_stickyMouseFocus[1] = false;
+		g_manager->m_lastMouseMoveTime = 0.0f;
 		logInfo("[ca::gui] Initialized GUIManager.");
 	}
 
@@ -84,6 +88,9 @@ namespace ca { namespace gui {
 		refitAllToAnchors();
 		g_manager->m_renderer->beginDraw();
 		g_manager->m_topFrame->draw();
+		// Draw info popups on top of everything else.
+		for(auto& it : g_manager->m_popupStack)
+			it->draw();
 		g_manager->m_renderer->endDraw();
 		// TODO: Assert g_manager->m_clipRegionStack.size() == 1
 	}
@@ -129,6 +136,33 @@ namespace ca { namespace gui {
 		}
 
 		refitAllToAnchors();
+
+		// Show and hide popups
+		float now = clock() / float(CLOCKS_PER_SEC);
+		if(_mouseState.position != g_manager->m_mouseState.position)
+		{
+			g_manager->m_lastMouseMoveTime = now;
+			// Hide if this mouse move is farther away then the last.
+			if(!g_manager->m_popupStack.empty())
+			{
+				float dist = max(0.0f, distance(_mouseState.position, g_manager->m_popupStack.back()->getRefFrame().rect));
+				if(dist > g_manager->m_cursorToPopupDistance)
+				{
+					g_manager->m_popupStack.back()->hide();
+					g_manager->m_popupStack.pop_back();
+				}
+				g_manager->m_cursorToPopupDistance = dist;
+			}
+		} else {
+			// Check if the current widget in focus has a popup and if enough
+			// time passed to show it.
+			if( now - g_manager->m_lastMouseMoveTime > 0.33f
+				&& g_manager->m_mouseFocus
+				&& g_manager->m_mouseFocus->getInfoPopup()
+			)
+				showPopup(g_manager->m_mouseFocus->getInfoPopup());
+		}
+
 		g_manager->m_mouseState = _mouseState;
 		g_manager->m_cursorType = CursorType::ARROW;
 
@@ -141,7 +175,12 @@ namespace ca { namespace gui {
 			bool ret = g_manager->m_mouseFocus->processInput( _mouseState );
 			g_manager->m_stickyMouseFocus[0] = g_manager->m_stickyMouseFocus[1];
 			return ret;
-		} else return g_manager->m_topFrame->processInput( _mouseState );
+		} else {
+			// First process popups (they overlay the rest)
+			for(auto& it : g_manager->m_popupStack)
+				if(it->processInput( _mouseState )) return true;
+			return g_manager->m_topFrame->processInput( _mouseState );
+		}
 	}
 
 	bool GUIManager::processInput(const KeyboardState & _keyboardState)
@@ -249,6 +288,34 @@ namespace ca { namespace gui {
 	int GUIManager::getHeight()
 	{
 		return (int)g_manager->m_topFrame->getSize().y;
+	}
+
+	void GUIManager::showPopup(WidgetPtr & _popup)
+	{
+		if(_popup->isVisible()) return;
+
+		// Try to place the popup at the bottom right of the cursor.
+		Coord2 pos = g_manager->m_mouseState.position + Coord2(12.0f, -12.0f);
+		pos.y -= _popup->getSize().y;
+		// If there is not enough place to the right side move to the left.
+		float maxW = float(getWidth());
+		if(_popup->parent())
+			maxW = _popup->parent()->getRefFrame().right();
+		pos.x += min(0.0f, maxW - (pos.x + _popup->getSize().x));
+		// If it does not fit verticaly toggle it upward.
+		float minH = 0.0f;
+		if(_popup->parent())
+			minH = _popup->parent()->getRefFrame().bottom();
+		if(pos.y - _popup->getSize().y < minH)
+			pos.y += _popup->getSize().y + 14.0f;
+
+		// Show and track the popup
+		_popup->setPosition(pos);
+		_popup->show();
+		g_manager->m_popupStack.push_back(_popup);
+		g_manager->m_cursorToPopupDistance = max(0.0f, distance(
+			g_manager->m_mouseState.position,
+			_popup->getRefFrame().rect));
 	}
 
 	void GUIManager::refitAllToAnchors()

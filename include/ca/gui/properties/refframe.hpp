@@ -1,6 +1,7 @@
 #pragma once
 
 #include "coordinate.hpp"
+#include <ei/2dtypes.hpp>
 
 namespace ca { namespace gui {
 
@@ -27,8 +28,8 @@ namespace ca { namespace gui {
 		enum Val
 		{
 			LEFT = 0,
-			RIGHT = 1,
-			BOTTOM = 2,
+			RIGHT = 2,
+			BOTTOM = 1,
 			TOP = 3,
 			CENTER = 4,
 		};
@@ -38,10 +39,13 @@ namespace ca { namespace gui {
 	class RefFrame: public IRegion
 	{
 	public:
-		RefFrame() = default;
+		RefFrame() {}
 		RefFrame(float _l, float _r, float _b, float _t);
 
-		float sides[4];	/// An array of the four side coordinates sorted after SIDE
+		union {
+			float sides[4];	/// An array of the four side coordinates sorted after SIDE
+			ei::Rect2D rect;
+		};
 
 		float left() const { return sides[SIDE::LEFT]; }
 		float right() const { return sides[SIDE::RIGHT]; }

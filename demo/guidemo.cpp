@@ -349,6 +349,26 @@ void createGUI(GLFWwindow* _window)
 	con3->setSource(i0, 0.0f);
 	con3->setDest(i4, -1.0f);
 	f4->add(con3);
+
+	// A frame which triggers a popup
+	FramePtr f5(new Frame(true, false, true, true));
+	f5->setExtent(f0->getPosition() + Coord2(f0->getSize().x + 10.0f, 0.0f), Coord2(f4->getSize().x, f0->getSize().y));
+	f5->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
+	GUIManager::add(f5);
+
+	l0 = LabelPtr(new Label);
+	l0->setExtent(f5->getPosition() + 2.0f, f5->getSize() - Coord2(4.0f, 4.0f));
+	l0->setText("This area triggers a popup.");
+	l0->setAlignment(SIDE::CENTER);
+	l0->autoAnchor(f5->getAnchorProvider());
+	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
+	f5->add(l0);
+
+	LabelPtr l1(new Label);
+	l1->setText("Info popup.");
+	l1->setSize(Coord2(65.0f, 14.0f));
+	f5->setInfoPopup(l1);
+	l0->setInfoPopup(l1);
 }
 
 void runMainLoop(GLFWwindow* _window)

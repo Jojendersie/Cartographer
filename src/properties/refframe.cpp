@@ -6,10 +6,10 @@ namespace ca { namespace gui {
 
 	RefFrame::RefFrame(float _l, float _r, float _b, float _t)
 	{
-		sides[0] = _l;
-		sides[1] = _r;
-		sides[2] = _b;
-		sides[3] = _t;
+		sides[SIDE::LEFT] = _l;
+		sides[SIDE::RIGHT] = _r;
+		sides[SIDE::BOTTOM] = _b;
+		sides[SIDE::TOP] = _t;
 	}
 
 	bool RefFrame::isMouseOver(const Coord2& _mousePos) const

@@ -11,6 +11,10 @@
 
 namespace ca { namespace gui {
 
+	class Widget;
+	typedef pa::RefPtr<Widget> WidgetPtr;
+	typedef pa::RefPtr<const Widget> ConstWidgetPtr;
+
 	/// Base class with mandatory attributes for all widgets.
 	/// \details A widget only contains the state. State handling in general is up to the derived
 	///		elements.
@@ -116,6 +120,12 @@ namespace ca { namespace gui {
 		/// Realign component to its anchors. If there is no anchor-component do nothing.
 		virtual void refitToAnchors();
 
+		/// Set another widget as the info popup. Info popups are opened and closed
+		/// by the GUIManager automatically.
+		/// \details The component will be hidden after the call (invariant of popups).
+		void setInfoPopup(WidgetPtr _popup) { m_infoPopup = _popup; _popup->hide(); }
+		WidgetPtr& getInfoPopup() { return m_infoPopup; }
+
 		/// A number which can be used by the user to attach some extra information.
 		/// If you encode a pointer make sure you handle the memory somewhere else.
 		uint64 metaData = 0;
@@ -133,6 +143,7 @@ namespace ca { namespace gui {
 		std::unique_ptr<Moveable> m_moveComponent;
 		std::unique_ptr<Resizeable> m_resizeComponent;
 		std::unique_ptr<IAnchorProvider> m_anchorProvider;
+		WidgetPtr m_infoPopup;
 
 		Widget* m_parent;
 		friend class Group; // Parent must be set from someone
@@ -140,8 +151,5 @@ namespace ca { namespace gui {
 		/// Optional method to react on resize events. This is necessary to reset provided anchors.
 		virtual void onExtentChanged(bool _positionChanged, bool _sizeChanged);
 	};
-
-	typedef pa::RefPtr<Widget> WidgetPtr;
-	typedef pa::RefPtr<const Widget> ConstWidgetPtr;
 
 }} // namespace ca::gui
