@@ -139,7 +139,8 @@ namespace ca { namespace gui {
 
 		// Show and hide popups
 		float now = clock() / float(CLOCKS_PER_SEC);
-		if(_mouseState.position != g_manager->m_mouseState.position)
+		if(_mouseState.position != g_manager->m_mouseState.position
+			|| _mouseState.anyButtonDown || _mouseState.anyButtonPressed)
 		{
 			g_manager->m_lastMouseMoveTime = now;
 			// Hide if this mouse move is farther away then the last.
