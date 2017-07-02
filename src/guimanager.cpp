@@ -162,7 +162,7 @@ namespace ca { namespace gui {
 				&& g_manager->m_mouseFocus->getRefFrame().isMouseOver(_mouseState.position)
 				&& g_manager->m_mouseFocus->getInfoPopup()
 			)
-				showPopup(g_manager->m_mouseFocus->getInfoPopup());
+				showPopup(g_manager->m_mouseFocus->getInfoPopup(), g_manager->m_mouseFocus);
 		}
 
 		g_manager->m_mouseState = _mouseState;
@@ -292,7 +292,7 @@ namespace ca { namespace gui {
 		return (int)g_manager->m_topFrame->getSize().y;
 	}
 
-	void GUIManager::showPopup(WidgetPtr & _popup)
+	void GUIManager::showPopup(WidgetPtr & _popup, const Widget* _originator)
 	{
 		if(_popup->isVisible()) return;
 
@@ -313,7 +313,7 @@ namespace ca { namespace gui {
 
 		// Show and track the popup
 		_popup->setPosition(pos);
-		_popup->show();
+		_popup->showAsPopup(_originator);
 		g_manager->m_popupStack.push_back(_popup);
 		g_manager->m_cursorToPopupDistance = max(0.0f, distance(
 			g_manager->m_mouseState.position,

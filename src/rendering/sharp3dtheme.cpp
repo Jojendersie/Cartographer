@@ -33,11 +33,11 @@ namespace ca { namespace gui {
 		GUIManager::renderBackend().drawRect(rect, m_properties.textBackColor);
 	}
 
-	void Sharp3DTheme::drawBackgroundArea(const RefFrame& _rect, float _opacity)
+	void Sharp3DTheme::drawBackgroundArea(const RefFrame& _rect, float _opacity, const ei::Vec3& _individualColor)
 	{
 		if(_opacity > 0.0f)
 		{
-			Vec4 color = m_properties.basicColor;
+			Vec4 color = _individualColor >= 0.0f ? Vec4(_individualColor, 1.0f) : m_properties.basicColor;
 			color.a *= _opacity;
 			if(m_properties.borderWidth)
 			{

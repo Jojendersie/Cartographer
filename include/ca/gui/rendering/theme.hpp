@@ -16,8 +16,10 @@ namespace ca { namespace gui {
 	public:
 		/// Draw a background for text
 		virtual void drawTextArea(const class RefFrame& _rect) = 0;
-		/// Draw a background for frames...
-		virtual void drawBackgroundArea(const class RefFrame& _rect, float _opacity = 1.0f) = 0;
+		/// Draw a background for frames, labels, ...
+		/// \param [in] _individualColor Use an individual color. If negative (default) the
+		///		theme colors are used.
+		virtual void drawBackgroundArea(const class RefFrame& _rect, float _opacity = 1.0f, const ei::Vec3& _individualColor = ei::Vec3(-1.0f)) = 0;
 		/// Draw the background for buttons
 		virtual void drawButton(const class RefFrame& _rect, bool _mouseOver, bool _mouseDown) = 0;
 		/// Draw the box with the check mark

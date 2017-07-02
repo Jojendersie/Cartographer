@@ -24,7 +24,7 @@ namespace ca { namespace gui {
 		FlatTheme(const FlatProperties& _desc);
 
 		virtual void drawTextArea(const class RefFrame& _rect) override;
-		virtual void drawBackgroundArea(const class RefFrame& _rect, float _opacity = 1.0f) override;
+		virtual void drawBackgroundArea(const class RefFrame& _rect, float _opacity = 1.0f, const ei::Vec3& _individualColor = ei::Vec3(-1.0f)) override;
 		virtual void drawButton(const class RefFrame& _rect, bool _mouseOver, bool _mouseDown) override;
 		virtual void drawCheckbox(const class RefFrame& _rect, bool _checked, bool _mouseOver) override;
 		virtual void drawSliderBar(const class RefFrame& _rect, float _relativeValue) override;

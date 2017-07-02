@@ -58,6 +58,8 @@ GLFWwindow* setupStdWindow(const char* _titel, bool _vsync)
 //#ifdef _DEBUG
 	width -= 32;
 	height -= 72;
+	width = 1920;
+	height = 1080;
 	GLFWwindow* window = glfwCreateWindow(width, height, _titel, nullptr, nullptr);
 	glfwSetWindowPos(window, 10, 20);
 //#else

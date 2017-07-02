@@ -8,12 +8,16 @@ namespace ca { namespace gui {
 	Label::Label() :
 		Widget(true, false, false, false),
 		m_textSize(0.0f),
-		m_textPosition(SIDE::LEFT)
+		m_textPosition(SIDE::LEFT),
+		m_backgroundColor(-1.0f)
 	{
 	}
 
 	void Label::draw() const
 	{
+		if(m_backgroundColor.a > 0.0f)
+			GUIManager::theme().drawBackgroundArea(m_refFrame, m_backgroundColor.a, ei::Vec3(m_backgroundColor));
+
 		float downScale = ei::min(1.0f, ei::min(
 			m_refFrame.width() / (m_textSize.x * m_relativeTextSize),
 			m_refFrame.height() / (m_textSize.y * m_relativeTextSize)

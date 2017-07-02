@@ -56,9 +56,22 @@ namespace ca { namespace gui {
 
 		/// Is the current element visible/hidden?
 		bool isVisible() const { return m_visible; }
-		void show() { m_visible = true; }
-		void hide() { m_visible = false; }
-		void setVisible(bool _state) { m_visible = _state; }
+		void show() { if(!m_visible) { m_visible = true; if(onVisibilityChanged) onVisibilityChanged(this); } }
+		void hide() { if(m_visible) { m_visible = false; if(onVisibilityChanged) onVisibilityChanged(this); } }
+		void setVisible(bool _state) { if(m_visible != _state) { m_visible = _state; if(onVisibilityChanged) onVisibilityChanged(this); } }
+
+		/// Some functions which are triggered on visiblity events.
+		/// The OnVisibilityChanged is called after the visibility state of the element changed.
+		/// \param [in] _this This widget (the one which is shown/hidden).
+		typedef std::function<void(Widget* _this)> OnVisibilityChanged;
+		void setOnVisibilityChangedFunc(OnVisibilityChanged _callback) { onVisibilityChanged = _callback; }
+		/// The OnPopup function is called after the OnVisibilityChanged in case the
+		/// trigger was a popup show (not on hide).
+		/// \param [in] _this This widget (the one which is shown).
+		/// \param [in] _originator The element whose popup is shown.
+		typedef std::function<void(Widget* _this, const Widget* _originator)> OnPopup;
+		void setOnPopupFunc(OnPopup _callback) { onPopup = _callback; }
+		void showAsPopup(const Widget* _originator) { show(); if(onPopup) onPopup(this, _originator); }
 
 		/// True if the mouse is on the interaction region and the element is focused by
 		/// the GUIManager. I.e. there is no other element in front of this one.
@@ -150,6 +163,8 @@ namespace ca { namespace gui {
 
 		/// Optional method to react on resize events. This is necessary to reset provided anchors.
 		virtual void onExtentChanged(bool _positionChanged, bool _sizeChanged);
+		OnVisibilityChanged onVisibilityChanged;
+		OnPopup onPopup;
 	};
 
 }} // namespace ca::gui

@@ -18,11 +18,11 @@ namespace ca { namespace gui {
 		GUIManager::renderBackend().drawRect(_rect, m_properties.textBackColor);
 	}
 
-	void FlatTheme::drawBackgroundArea(const class RefFrame& _rect, float _opacity)
+	void FlatTheme::drawBackgroundArea(const class RefFrame& _rect, float _opacity, const ei::Vec3& _individualColor)
 	{
 		if(_opacity > 0.0f)
 		{
-			Vec4 color = m_properties.backgroundColor;
+			Vec4 color = _individualColor >= 0.0f ? Vec4(_individualColor, 1.0f) : m_properties.backgroundColor;
 			color.a *= _opacity;
 			GUIManager::renderBackend().drawRect(_rect, color);
 		}

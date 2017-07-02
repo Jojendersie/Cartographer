@@ -24,10 +24,20 @@ namespace ca { namespace gui {
 		/// \details The default alignment is LEFT.
 		void setAlignment(SIDE::Val _position) { m_textPosition = _position; }
 		SIDE::Val getAlignment() const { return m_textPosition; }
+
+		/// \param [in] _color Set an individual RGB color (0-1) including alpha value.
+		///		If the label color should depend on the theme consider setBackgroundOpacity.
+		void setBackgroundColor(const ei::Vec4& _color) { m_backgroundColor = _color; }
+		const ei::Vec4& getBackgroundColor() const { return m_backgroundColor; }
+
+		/// Overwrite background opacity only (keep color/use theme color).
+		void setBackgroundOpacity(float _opacity) { m_backgroundColor.a = _opacity; }
+		float getBackgroundOpacity() const { return m_backgroundColor.a; }
 	private:
 		std::string m_text;				///< Descriptive text
 		ei::Vec2 m_textSize;
 		SIDE::Val m_textPosition;
+		ei::Vec4 m_backgroundColor;
 	};
 
 	typedef pa::RefPtr<Label> LabelPtr;

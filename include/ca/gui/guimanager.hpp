@@ -107,7 +107,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		/// \details The popup is hidden if the mouse distance to the widget increases.
 		///		All popups are tracked on a stack. Only the topmost one is hidden in one
 		///		step. This allows chains of info popups.
-		static void showPopup(WidgetPtr& _popup);
+		static void showPopup(WidgetPtr& _popup, const Widget* _originator);
 	private:
 		std::shared_ptr<class IRenderBackend> m_renderer;
 		std::shared_ptr<class ITheme> m_theme;
