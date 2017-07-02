@@ -332,6 +332,9 @@ namespace ca { namespace gui {
 				IAnchorProvider::resetChangedStatus();
 				// Recursively call for all components
 				g_manager->m_topFrame->refitToAnchors();
+				// Also refit popups (if visible). They are not necessarily part of the hierarchy.
+				for(auto& it : g_manager->m_popupStack)
+					it->refitToAnchors();
 				// Changing components might have changed anchor points again
 				if(IAnchorProvider::someAnchorChanged() && s_numRunningRefits < 3)
 					++s_numRunningRefits;
