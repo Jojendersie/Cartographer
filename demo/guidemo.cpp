@@ -365,7 +365,7 @@ void createGUI(GLFWwindow* _window)
 	f5->add(l0);
 
 	LabelPtr l1(new Label);
-	l1->setText("Info popup.", true);
+	l1->setText("Info popup.", 2.0f);
 	l1->setBackgroundOpacity(1.0f);
 	f5->setInfoPopup(l1);
 }

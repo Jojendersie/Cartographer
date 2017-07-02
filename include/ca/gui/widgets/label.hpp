@@ -16,8 +16,9 @@ namespace ca { namespace gui {
 
 		/// Set the description text (utf8 w/o BOM)
 		/// \param [in] _text New text for the checkbox (utf8 w/o BOM). The text is copied internally.
-		/// \param [in] _fitSize Change the label size to the size of the text.
-		void setText(const char* _text, bool _fitSize = false);
+		/// \param [in] _fitSize Change the label size to the size of the text plus boundary. Negtive
+		///		values disable fitting (previous size is kept).
+		void setText(const char* _text, float _fitSize = -1.0f);
 		const char* getText() { return m_text.c_str(); }
 
 		/// Set on which side including the center the text should be aligned.
@@ -33,9 +34,17 @@ namespace ca { namespace gui {
 		/// Overwrite background opacity only (keep color/use theme color).
 		void setBackgroundOpacity(float _opacity) { m_backgroundColor.a = _opacity; }
 		float getBackgroundOpacity() const { return m_backgroundColor.a; }
+
+		/// Set a distance between reference frame border and the text (as long as the text is not
+		/// down scaled).
+		/// On down scaling the margin is scaled too.
+		/// The margin is set automatically if setText with  a fitSize is used.
+		void setMargin(Coord _margin) { m_margin = _margin; }
+		float getMargin() const { return m_margin; }
 	private:
 		std::string m_text;				///< Descriptive text
 		ei::Vec2 m_textSize;
+		float m_margin;					///< Distance of the text to the sides
 		SIDE::Val m_textPosition;
 		ei::Vec4 m_backgroundColor;
 	};
