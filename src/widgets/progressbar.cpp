@@ -51,7 +51,7 @@ namespace ca { namespace gui {
 
 			Coord2 center = m_refFrame.center();
 			center -= m_textSize * 0.5f * downScale;
-			GUIManager::theme().drawText(center, m_text.c_str(), downScale, false);
+			GUIManager::theme().drawText(center, m_text.c_str(), downScale, false, m_textColor);
 		}
 	}
 

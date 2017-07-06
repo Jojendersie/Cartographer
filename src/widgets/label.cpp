@@ -37,7 +37,7 @@ namespace ca { namespace gui {
 			case SIDE::TOP: pos = Coord2(center.x, m_refFrame.top() - m_textSize.y*downScale - margin); break;
 			case SIDE::CENTER: pos = center; break;
 		}
-		GUIManager::theme().drawText(pos, m_text.c_str(), downScale, false);
+		GUIManager::theme().drawText(pos, m_text.c_str(), downScale, false, m_textColor);
 	}
 
 	void Label::setText(const char* _text, float _fitSize)

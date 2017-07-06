@@ -35,7 +35,7 @@ namespace ca { namespace gui {
 			Coord2 textPos;
 			textPos.x = m_refFrame.left() + (m_refFrame.width() - 6.0f) * m_labelPos + 4.0f;
 			textPos.y = m_refFrame.bottom() + m_refFrame.height() * 0.5f;
-			GUIManager::theme().drawText(textPos, valueString, 1.0f, false, m_labelPos, 0.5f);
+			GUIManager::theme().drawText(textPos, valueString, 1.0f, false, ei::Vec4(-1.0f), m_labelPos, 0.5f);
 		}
 	}
 

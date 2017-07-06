@@ -134,7 +134,7 @@ namespace ca { namespace gui {
 		}
 
 		// Text
-		GUIManager::theme().drawText(m_textPos, m_text.c_str(), m_downScale * m_relativeTextSize, mouseOver);
+		GUIManager::theme().drawText(m_textPos, m_text.c_str(), m_downScale * m_relativeTextSize, mouseOver, m_textColor);
 	}
 
 	RefFrame Button::computeIconRect() const

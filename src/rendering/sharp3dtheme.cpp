@@ -98,11 +98,13 @@ namespace ca { namespace gui {
 		}
 	}
 
-	void Sharp3DTheme::drawText(const Coord2& _position, const char * _text, float _relativeScale, bool _mouseOver, float _alignX, float _alignY)
+	void Sharp3DTheme::drawText(const Coord2& _position, const char * _text, float _relativeScale, bool _mouseOver, ei::Vec4 _color, float _alignX, float _alignY)
 	{
+		if(_color.r < 0.0f)
+			_color = _mouseOver ? m_properties.hoverTextColor : m_properties.textColor;
 		GUIManager::renderBackend().drawText(_position, _text,
 					m_properties.textSize * _relativeScale,
-					_mouseOver ? m_properties.hoverTextColor : m_properties.textColor,
+					_color,
 					_alignX, _alignY,
 					0.0f, true // TODO: dynamic rounding mode for moving components
 			);
