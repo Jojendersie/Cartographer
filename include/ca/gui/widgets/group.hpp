@@ -15,6 +15,27 @@ namespace ca { namespace gui {
 	///	show/hide/enable/disable all the group.
 	class Group : public Widget
 	{
+		template<typename GroupT, typename DataT>
+		class IteratorT
+		{
+			uint m_idx;
+			GroupT* m_group;
+			IteratorT(GroupT* _group, uint _idx) : m_group(_group), m_idx(_idx) {}
+			friend GroupT;
+		public:
+			IteratorT& operator ++ ()
+			{
+				++m_idx;
+				return *this;
+			}
+
+			bool operator == (const IteratorT& _other) const { return m_group == _other.m_group && m_idx == _other.m_idx; }
+			bool operator != (const IteratorT& _other) const { return m_group != _other.m_group || m_idx != _other.m_idx; }
+
+			DataT& operator * () const { return *m_group->m_children[m_idx].widget; }
+
+			operator bool () const { return m_group != nullptr && m_idx < m_group->m_children.size(); }
+		};
 	public:
 		Group();
 
@@ -46,6 +67,16 @@ namespace ca { namespace gui {
 
 		/// Recursive refit
 		virtual void refitToAnchors() override;
+
+		typedef IteratorT<Group, Widget> Iterator;
+		typedef IteratorT<const Group, const Widget> ConstIterator;
+		/// Returns the first element or an invalid handle, if there is no children.
+		Iterator begin() { return Iterator(this, 0); }
+		ConstIterator begin() const { return ConstIterator(this, 0); }
+
+		/// Return the invalid handle for range based for loops
+		Iterator end() { return Iterator(this, m_children.size()); }
+		ConstIterator end() const { return ConstIterator(this, m_children.size()); }
 	protected:
 		struct WEntry {
 			WidgetPtr widget;
