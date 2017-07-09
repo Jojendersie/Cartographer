@@ -142,6 +142,13 @@ namespace ca { namespace gui {
 		return oldFrame != *m_selfFrame;
 	}
 
+	void Anchorable::setAnchorable(bool _enable)
+	{
+		if(_enable != m_anchoringEnabled)
+			resetAnchors();
+		m_anchoringEnabled = _enable;
+	}
+
 	void gui::Anchorable::Anchor::checkReference()
 	{
 		if(reference && !reference->host)

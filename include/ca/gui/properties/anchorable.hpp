@@ -64,7 +64,7 @@ namespace ca { namespace gui {
 
 		// TODO: enable/disable
 		bool isAnchoringEnabled() const { return m_anchoringEnabled; }
-		void setAnchorable(bool _enable) { m_anchoringEnabled = _enable; }
+		void setAnchorable(bool _enable);
 	private:
 		struct Anchor
 		{

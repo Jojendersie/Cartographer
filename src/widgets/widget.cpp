@@ -57,22 +57,22 @@ namespace ca { namespace gui {
 			m_refFrame.sides[SIDE::RIGHT] += _deltaPosition.x;
 			m_refFrame.sides[SIDE::BOTTOM] += _deltaPosition.y;
 			m_refFrame.sides[SIDE::TOP] += _deltaPosition.y;
-			// Make sure the anchoring does not reset the object
-			if(isAnchoringEnabled())
-				resetAnchors();
 			onExtentChanged(true, false);
 		}
 	}
 
 	void Widget::setExtent(const Coord2& _position, const Coord2& _size)
 	{
-		RefFrame oldFrame = m_refFrame;
-		m_refFrame.sides[SIDE::LEFT]   = _position.x;
-		m_refFrame.sides[SIDE::BOTTOM] = _position.y;
-		m_refFrame.sides[SIDE::RIGHT]  = _position.x + _size.x;
-		m_refFrame.sides[SIDE::TOP]    = _position.y + _size.y;
-		if(oldFrame != m_refFrame)
-			onExtentChanged(true, true);
+		bool posChanged = _position != m_refFrame.position();
+		bool sizeChanged = _size != m_refFrame.size();
+		if(posChanged || sizeChanged)
+		{
+			m_refFrame.sides[SIDE::LEFT]   = _position.x;
+			m_refFrame.sides[SIDE::BOTTOM] = _position.y;
+			m_refFrame.sides[SIDE::RIGHT]  = _position.x + _size.x;
+			m_refFrame.sides[SIDE::TOP]    = _position.y + _size.y;
+			onExtentChanged(posChanged, sizeChanged);
+		}
 	}
 
 	void Widget::resize(float _deltaLeft, float _deltaRight, float _deltaBottom, float _deltaTop)
@@ -84,9 +84,6 @@ namespace ca { namespace gui {
 		m_refFrame.sides[SIDE::TOP] = ei::max(m_refFrame.top() + _deltaTop, m_refFrame.bottom() + 1.0f);
 		if(oldFrame != m_refFrame)
 		{
-			// Make sure the anchoring does not reset the object
-			if(isAnchoringEnabled())
-				resetAnchors();
 			onExtentChanged(false, true);
 		}
 	}
@@ -166,8 +163,8 @@ namespace ca { namespace gui {
 	void Widget::onExtentChanged(bool _positionChanged, bool _sizeChanged)
 	{
 		// Make sure the anchoring does not reset the object to its previous position.
-		//if(m_anchorComponent)
-			//m_anchorComponent->resetAnchors();
+		if(isAnchoringEnabled())
+			resetAnchors();
 		if(m_anchorProvider)
 			m_anchorProvider->recomputeAnchors( m_refFrame );
 	}
