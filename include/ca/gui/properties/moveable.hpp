@@ -1,30 +1,29 @@
 #pragma once
 
 #include <functional>
+#include "ca/gui/backend/mouse.hpp"
 
 namespace ca { namespace gui {
 
 	/// A moveable component is moved when the left mouse button is pushed while beeing over the
 	/// component and then moved.
-	class Moveable
+	class Moveable: public IMouseProcessAble
 	{
 	public:
 		/// Make a reference frame moveable.
-		/// \param [in,opt] _anchorable Since positioning of anchorables is done automaically
-		///		it must be reset/disabled by the moveable. Non-anchorable widgets can pass a
-		///		nullptr others should always provide access to their anchorable component.
-		Moveable(class RefFrame* _selfFrame, class Anchorable* _anchorable);
+		/// \param [in] _thisWidget Widget where this component belongs to. Uses reference frame
+		///		and anchorable component of the widget. Since positioning of anchorables is
+		///		done automatically it must be reset/disabled by the moveable. Non-anchorable
+		///		widgets can pass a nullptr others should always provide access to their
+		///		anchorable component.
+		Moveable(class Widget * _thisWidget);
 
 		/// Process mouse input for drag & drop like movement.
 		/// \param [in] _mouseState State of the mouse buttons and position. Required to start/end
 		///		movements.
-		bool processInput(const struct MouseState& _mouseState);
+		virtual bool processInput(class Widget & _thisWidget, const struct MouseState & _mouseState, bool _cursorOnWidget, bool & _ensureNextInput) override;
 
 		bool isMoving() const { return m_moving; }
-
-		/// Should the anchor component change update this component.
-		/// \param [in] _anchorable The new anchor component or new if there is none afterwards.
-		void registerAnchorCompoentent(class Anchorable* _anchorable) { m_anchorable = _anchorable; }
 
 		/// Given a continous position compute some restricted position which should be
 		/// used instead.
@@ -37,11 +36,13 @@ namespace ca { namespace gui {
 		void restrictMovement(RestrictionFunction _restrictionFunction);
 		/// (Temporarly) enable or disable the restriction (snapping) function.
 		void setEnableRestriction(bool _enable) { m_useRestriction = _enable; }
+
+		bool isMovingEnabled() const { return m_movingEnabled; }
+		void setMoveable(bool _enable) { m_movingEnabled = _enable; }
 	private:
-		class RefFrame* m_refFrame;
-		class Anchorable* m_anchorable;
 		bool m_moving;	/// Currently actively moving
 		bool m_useRestriction;
+		bool m_movingEnabled;
 
 		RestrictionFunction m_snapFunction;
 		Coord2 m_floatingPosition;	/// Current continous position - may differ from the widged position if snapping is active.

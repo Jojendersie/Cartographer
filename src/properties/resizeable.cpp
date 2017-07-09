@@ -8,10 +8,10 @@
 
 namespace ca { namespace gui {
 
-	Resizeable::Resizeable(RefFrame* _selfFrame, Anchorable* _anchorable) :
-		m_refFrame(_selfFrame),
-		m_anchorable(_anchorable)
+	Resizeable::Resizeable(Widget* _thisWidget) :
+		m_resizingEnabled(true)
 	{
+		_thisWidget->registerMouseInputComponent(this);
 	}
 
 	static void chooseCursor(bool _flags[4])
@@ -24,8 +24,9 @@ namespace ca { namespace gui {
 		else if(_flags[SIDE::BOTTOM] || _flags[SIDE::TOP])	 GUIManager::setCursorType(CursorType::RESIZE_V);
 	}
 
-	bool Resizeable::processInput(const MouseState& _mouseState)
+	bool Resizeable::processInput(Widget & _thisWidget, const MouseState & _mouseState, bool _cursorOnWidget, bool & _ensureNextInput)
 	{
+		if(!m_resizingEnabled) return false;
 		if(m_active)
 		{
 			chooseCursor(m_resizing);
@@ -33,33 +34,40 @@ namespace ca { namespace gui {
 			if(_mouseState.buttons[0] == MouseState::PRESSED)
 			{
 				Coord2 deltaPos = _mouseState.deltaPos();
-				if(m_resizing[SIDE::LEFT])		m_refFrame->sides[SIDE::LEFT] = ei::min(m_refFrame->sides[SIDE::LEFT] + deltaPos.x, m_refFrame->sides[SIDE::RIGHT]-1.0f);
-				if(m_resizing[SIDE::RIGHT])		m_refFrame->sides[SIDE::RIGHT] = ei::max(m_refFrame->sides[SIDE::RIGHT] + deltaPos.x, m_refFrame->sides[SIDE::LEFT]+1.0f);
-				if(m_resizing[SIDE::BOTTOM])	m_refFrame->sides[SIDE::BOTTOM] = ei::min(m_refFrame->sides[SIDE::BOTTOM] + deltaPos.y, m_refFrame->sides[SIDE::TOP]-1.0f);
-				if(m_resizing[SIDE::TOP])		m_refFrame->sides[SIDE::TOP] = ei::max(m_refFrame->sides[SIDE::TOP] + deltaPos.y, m_refFrame->sides[SIDE::BOTTOM]+1.0f);
-				// Make sure the anchoring does not reset the object
-				if(m_anchorable)
-					m_anchorable->resetAnchors();
+				if(deltaPos != Coord2(0.0f))
+				{
+					_thisWidget.resize(m_resizing[SIDE::LEFT] ? deltaPos.x : 0.0f,
+						m_resizing[SIDE::RIGHT] ? deltaPos.x : 0.0f,
+						m_resizing[SIDE::BOTTOM] ? deltaPos.y : 0.0f,
+						m_resizing[SIDE::TOP] ? deltaPos.y : 0.0f);
+				}
+				GUIManager::setMouseFocus(&_thisWidget, true);
+				_ensureNextInput = true;
 			} else m_active = false;
 			return true;
 		} else {
 			// Is the cursor within range?
-			if(_mouseState.position.x >= m_refFrame->left()-2.0f
-				&& _mouseState.position.x <= m_refFrame->right()+2.0f
-				&& _mouseState.position.y >= m_refFrame->bottom()-2.0f
-				&& _mouseState.position.y <= m_refFrame->top()+2.0f)
+			if(_mouseState.position.x >= _thisWidget.getRefFrame().left()-2.0f
+				&& _mouseState.position.x <= _thisWidget.getRefFrame().right()+2.0f
+				&& _mouseState.position.y >= _thisWidget.getRefFrame().bottom()-2.0f
+				&& _mouseState.position.y <= _thisWidget.getRefFrame().top()+2.0f)
 			{
 				// Is the mouse cursor within a margin around the reference frame?
-				m_resizing[SIDE::LEFT] = abs(m_refFrame->left() - _mouseState.position.x) <= 2.0f;
-				m_resizing[SIDE::RIGHT] = abs(m_refFrame->right() - _mouseState.position.x) <= 2.0f;
-				m_resizing[SIDE::BOTTOM] = abs(m_refFrame->bottom() - _mouseState.position.y) <= 2.0f;
-				m_resizing[SIDE::TOP] = abs(m_refFrame->top() - _mouseState.position.y) <= 2.0f;
+				m_resizing[SIDE::LEFT] = abs(_thisWidget.getRefFrame().left() - _mouseState.position.x) <= 2.0f;
+				m_resizing[SIDE::RIGHT] = abs(_thisWidget.getRefFrame().right() - _mouseState.position.x) <= 2.0f;
+				m_resizing[SIDE::BOTTOM] = abs(_thisWidget.getRefFrame().bottom() - _mouseState.position.y) <= 2.0f;
+				m_resizing[SIDE::TOP] = abs(_thisWidget.getRefFrame().top() - _mouseState.position.y) <= 2.0f;
 				bool anyFlag = (m_resizing[0] || m_resizing[1] || m_resizing[2] || m_resizing[3]);
 
 				// Set a cursor if in margin
 				chooseCursor(m_resizing);
 
 				m_active = _mouseState.buttons[0] == MouseState::DOWN && anyFlag;
+				if(m_active)
+				{
+					GUIManager::setMouseFocus(&_thisWidget, true);
+					_ensureNextInput = true;
+				}
 				return anyFlag;
 			}
 		}

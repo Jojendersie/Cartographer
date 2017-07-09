@@ -8,25 +8,15 @@ namespace ca { namespace gui {
 
 	using namespace pa;
 
-	Widget::Widget(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable) : 
-		m_anchorComponent(nullptr),
-		m_clickComponent(nullptr),
-		m_moveComponent(nullptr),
-		m_resizeComponent(nullptr),
+	Widget::Widget() : 
+		Anchorable(&m_refFrame),
 		m_anchorProvider(nullptr),
-		m_enabled(_clickable || _moveable || _resizeable),
+		m_activeComponent(nullptr),
+		m_enabled(true),
 		m_keyboardFocusable(false),
 		m_visible(true),
 		m_parent(nullptr)
 	{
-		if(_anchorable)
-			m_anchorComponent = std::make_unique<Anchorable>(&m_refFrame);
-		if(_clickable)
-			m_clickComponent = std::make_unique<Clickable>(this);
-		if(_moveable)
-			m_moveComponent = std::make_unique<Moveable>(&m_refFrame, m_anchorComponent.get());
-		if(_resizeable)
-			m_resizeComponent = std::make_unique<Resizeable>(&m_refFrame, m_anchorComponent.get());
 	}
 
 	void Widget::setSize(const Coord2& _size)
@@ -56,7 +46,22 @@ namespace ca { namespace gui {
 
 	Coord2 Widget::getPosition() const
 	{
-		return Coord2(m_refFrame.left(), m_refFrame.bottom());
+		return m_refFrame.position();
+	}
+
+	void Widget::move(const Coord2 & _deltaPosition)
+	{
+		if(_deltaPosition != Coord2(0.0f))
+		{
+			m_refFrame.sides[SIDE::LEFT] += _deltaPosition.x;
+			m_refFrame.sides[SIDE::RIGHT] += _deltaPosition.x;
+			m_refFrame.sides[SIDE::BOTTOM] += _deltaPosition.y;
+			m_refFrame.sides[SIDE::TOP] += _deltaPosition.y;
+			// Make sure the anchoring does not reset the object
+			if(isAnchoringEnabled())
+				resetAnchors();
+			onExtentChanged(true, false);
+		}
 	}
 
 	void Widget::setExtent(const Coord2& _position, const Coord2& _size)
@@ -70,34 +75,44 @@ namespace ca { namespace gui {
 			onExtentChanged(true, true);
 	}
 
+	void Widget::resize(float _deltaLeft, float _deltaRight, float _deltaBottom, float _deltaTop)
+	{
+		RefFrame oldFrame = m_refFrame;
+		m_refFrame.sides[SIDE::LEFT] = ei::min(m_refFrame.left() + _deltaLeft, m_refFrame.right() - 1.0f);
+		m_refFrame.sides[SIDE::RIGHT] = ei::max(m_refFrame.right() + _deltaRight, m_refFrame.left() + 1.0f);
+		m_refFrame.sides[SIDE::BOTTOM] = ei::min(m_refFrame.bottom() + _deltaBottom, m_refFrame.top() - 1.0f);
+		m_refFrame.sides[SIDE::TOP] = ei::max(m_refFrame.top() + _deltaTop, m_refFrame.bottom() + 1.0f);
+		if(oldFrame != m_refFrame)
+		{
+			// Make sure the anchoring does not reset the object
+			if(isAnchoringEnabled())
+				resetAnchors();
+			onExtentChanged(false, true);
+		}
+	}
+
 	bool Widget::processInput(const struct MouseState& _mouseState)
 	{
-		if(m_clickComponent)
-			if(m_clickComponent->processInput(_mouseState))
+		bool cursorOnWidget = getRegion()->isMouseOver(_mouseState.position);
+		if(m_activeComponent)
+		{
+			bool ensureNextInput = false;
+			bool ret = m_activeComponent->processInput(*this, _mouseState, cursorOnWidget, ensureNextInput);
+			if(!ensureNextInput)
+				m_activeComponent = nullptr;
+			return ret;
+		} else {
+			// Let the behaviors check the input in order, once someone used the input stop and return.
+			for(size_t i = 0; i < m_mouseInputSubcomponents.size(); ++i)
 			{
-				GUIManager::setMouseFocus(this, _mouseState.anyButtonDown || _mouseState.anyButtonPressed);
-				return true;
-			}// else GUIManager::setMouseFocus(nullptr, false);
-		RefFrame oldFrame = m_refFrame;
-		// Do resize before move, because it adds a little different behavior if the same input
-		// is done close to the border.
-		if(m_resizeComponent && !(m_moveComponent && m_moveComponent->isMoving()))
-			if(m_resizeComponent->processInput(_mouseState))
-			{
-				GUIManager::setMouseFocus(this, (_mouseState.buttons[0] & (MouseState::DOWN | MouseState::PRESSED)) != 0);
-				if(oldFrame != m_refFrame)
-					onExtentChanged(false, true);
-				return true;
+				bool ensureNextInput = false;
+				bool ret = m_mouseInputSubcomponents[i]->processInput(*this, _mouseState, cursorOnWidget, ensureNextInput);
+				if(ensureNextInput && ret)
+					m_activeComponent = m_mouseInputSubcomponents[i];
+				if(ret) return true;
 			}
-		if(m_moveComponent)
-			if(m_moveComponent->processInput(_mouseState))
-			{
-				GUIManager::setCursorType(CursorType::MOVE);
-				GUIManager::setMouseFocus(this, true);
-				if(oldFrame != m_refFrame)
-					onExtentChanged(true, false);
-				return true;
-			}
+		}
+
 		if(GUIManager::getStickyMouseFocussed() == this)
 			return true;
 		if(getRegion()->isMouseOver(_mouseState.position)) {
@@ -115,70 +130,11 @@ namespace ca { namespace gui {
 			&& getRegion()->isMouseOver(GUIManager::getMouseState().position);
 	}
 
-	void Widget::setAnchoring(SIDE::Val _side, AnchorPtr _anchor)
-	{
-		if(m_anchorComponent)
-		{
-			m_anchorComponent->setAnchor(_side, _anchor);
-		} else
-			logError("Cannot set an anchor for a non-anchorable component!");
-	}
-
-	void Widget::setHorizontalAnchorMode(Anchorable::Mode _mode)
-	{
-		if(m_anchorComponent)
-		{
-			m_anchorComponent->setHorizontalAnchorMode(_mode);
-		} else
-			logError("Cannot set horizontal anchor mode for a non-anchorable component!");
-	}
-
-	void Widget::setVerticalAnchorMode(Anchorable::Mode _mode)
-	{
-		if(m_anchorComponent)
-		{
-			m_anchorComponent->setVerticalAnchorMode(_mode);
-		} else
-			logError("Cannot set vertical anchor mode for a non-anchorable component!");
-	}
-
-	void Widget::setAnchorModes(Anchorable::Mode _mode)
-	{
-		if(m_anchorComponent)
-		{
-			m_anchorComponent->setAnchorModes(_mode);
-		} else
-			logError("Cannot set anchor modes for a non-anchorable component!");
-	}
-
-	void Widget::setAnchorModes(Anchorable::Mode _horizontalMode, Anchorable::Mode _verticalMode)
-	{
-		if(m_anchorComponent)
-		{
-			m_anchorComponent->setAnchorModes(_horizontalMode, _verticalMode);
-		} else
-			logError("Cannot set anchor modes for a non-anchorable component!");
-	}
-
-	void Widget::autoAnchor(const IAnchorProvider* _anchorProvider)
-	{
-		if(m_anchorComponent)
-			m_anchorComponent->autoAnchor(_anchorProvider);
-	}
-
 	void Widget::setAnchorProvider(std::unique_ptr<IAnchorProvider> _anchorProvider)
 	{
-		m_anchorProvider = move(_anchorProvider);
+		m_anchorProvider = std::move(_anchorProvider);
 		if(m_anchorProvider)
 			m_anchorProvider->recomputeAnchors(m_refFrame);
-	}
-
-	void Widget::setClickable(bool _enable)
-	{
-		if(_enable && !m_clickComponent) {
-			m_clickComponent = std::make_unique<Clickable>(this);
-			m_enabled = true;
-		}
 	}
 
 	const IRegion * Widget::getRegion() const
@@ -190,50 +146,28 @@ namespace ca { namespace gui {
 
 	void Widget::setRegion(std::unique_ptr<IRegion> _region)
 	{
-		m_regionDeallocator = move(_region);
+		m_regionDeallocator = std::move(_region);
 		m_region = m_regionDeallocator.get();
 		m_region->attach(m_refFrame);
 	}
 
-	void Widget::setAnchorable(bool _enable)
-	{
-		if(_enable && !m_anchorComponent) {
-			m_anchorComponent = std::make_unique<Anchorable>(&m_refFrame);
-			if(m_moveComponent) m_moveComponent->registerAnchorCompoentent(m_anchorComponent.get());
-			if(m_resizeComponent) m_resizeComponent->registerAnchorCompoentent(m_anchorComponent.get());
-		} else if(!_enable && m_anchorComponent) {
-			if(m_moveComponent) m_moveComponent->registerAnchorCompoentent(nullptr);
-			if(m_resizeComponent) m_resizeComponent->registerAnchorCompoentent(nullptr);
-			m_anchorComponent = nullptr;
-		}
-	}
-
-	void Widget::setMoveable(bool _enable)
-	{
-		if(_enable && !m_moveComponent)
-			m_moveComponent = std::make_unique<Moveable>(&m_refFrame, m_anchorComponent.get());
-		else m_moveComponent = nullptr;
-	}
-
-	void Widget::setResizeable(bool _enable)
-	{
-		if(_enable && !m_resizeComponent)
-			m_resizeComponent = std::make_unique<Resizeable>(&m_refFrame, m_anchorComponent.get());
-		else m_resizeComponent = nullptr;
-	}
 
 	void Widget::refitToAnchors()
 	{
-		if(m_anchorComponent)
-			if(m_anchorComponent->refitToAnchors())
-				onExtentChanged(true, true);
+		if(Anchorable::refitToAnchors())
+			onExtentChanged(true, true);
+	}
+
+	void Widget::registerMouseInputComponent(IMouseProcessAble * _component)
+	{
+		m_mouseInputSubcomponents.push_back(_component);
 	}
 
 	void Widget::onExtentChanged(bool _positionChanged, bool _sizeChanged)
 	{
 		// Make sure the anchoring does not reset the object to its previous position.
-		if(m_anchorComponent)
-			m_anchorComponent->resetAnchors();
+		//if(m_anchorComponent)
+			//m_anchorComponent->resetAnchors();
 		if(m_anchorProvider)
 			m_anchorProvider->recomputeAnchors( m_refFrame );
 	}

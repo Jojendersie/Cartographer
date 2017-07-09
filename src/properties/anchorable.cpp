@@ -7,6 +7,7 @@
 namespace ca { namespace gui {
 
 	Anchorable::Anchorable(RefFrame* _selfFrame) :
+		m_anchoringEnabled(true),
 		m_selfFrame(_selfFrame),
 		m_horizontalMode(NO_RESIZE),
 		m_verticalMode(NO_RESIZE)
@@ -68,6 +69,7 @@ namespace ca { namespace gui {
 
 	bool Anchorable::refitToAnchors()
 	{
+		if(!m_anchoringEnabled) return false;
 		// If host vanished detach this element. Early out if no anchor is set.
 		bool hasReference = false;
 		for(int i = 0; i < 4; ++i)

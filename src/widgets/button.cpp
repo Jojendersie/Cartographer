@@ -8,7 +8,7 @@
 namespace ca { namespace gui {
 
 	Button::Button() :
-		Widget(true, true, false, false),
+		Clickable(this),
 		m_textSize(0.0f),
 		m_iconPlacement(SIDE::LEFT),
 		m_iconSize(0.0f),
@@ -118,14 +118,14 @@ namespace ca { namespace gui {
 		// Background
 		bool mouseOver = isMouseOver();
 		if(m_backgroundTexture) {
-			if(m_clickComponent->isAnyButtonDown() && m_downTexture)
+			if(isAnyButtonDown() && m_downTexture)
 				GUIManager::theme().drawImage(m_refFrame, m_downTexture);
 			else if(mouseOver && m_hoverTexture)
 				GUIManager::theme().drawImage(m_refFrame, m_hoverTexture);
 			else
 				GUIManager::theme().drawImage(m_refFrame, m_backgroundTexture);
 		} else
-			GUIManager::theme().drawButton(m_refFrame, mouseOver, m_clickComponent->isAnyButtonDown());
+			GUIManager::theme().drawButton(m_refFrame, mouseOver, isAnyButtonDown());
 
 		// Icon
 		if(m_iconTexture)

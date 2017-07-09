@@ -96,7 +96,7 @@ namespace ca { namespace gui {
 	NodeHandlePtr s_tmpMouseNode;		///< An additional node which is held by the mouse.
 
 	NodeHandle::NodeHandle(bool _register) :
-		Widget(true, true, false, false),
+		Clickable(this),
 		m_angle(0.0f),
 		m_color(1.0f)
 	{
@@ -131,10 +131,10 @@ namespace ca { namespace gui {
 
 	void NodeHandle::autoAnchor(const class IAnchorProvider* _anchorProvider)
 	{
-		Widget::setAnchoring(SIDE::LEFT, _anchorProvider->findClosestAnchor(m_refFrame.horizontalCenter(), IAnchorProvider::SearchDirection::LEFT));
-		Widget::setAnchoring(SIDE::RIGHT, _anchorProvider->findClosestAnchor(m_refFrame.horizontalCenter(), IAnchorProvider::SearchDirection::RIGHT));
-		Widget::setAnchoring(SIDE::BOTTOM, _anchorProvider->findClosestAnchor(m_refFrame.verticalCenter(), IAnchorProvider::SearchDirection::DOWN));
-		Widget::setAnchoring(SIDE::TOP, _anchorProvider->findClosestAnchor(m_refFrame.verticalCenter(), IAnchorProvider::SearchDirection::UP));
+		Widget::setAnchor(SIDE::LEFT, _anchorProvider->findClosestAnchor(m_refFrame.horizontalCenter(), IAnchorProvider::SearchDirection::LEFT));
+		Widget::setAnchor(SIDE::RIGHT, _anchorProvider->findClosestAnchor(m_refFrame.horizontalCenter(), IAnchorProvider::SearchDirection::RIGHT));
+		Widget::setAnchor(SIDE::BOTTOM, _anchorProvider->findClosestAnchor(m_refFrame.verticalCenter(), IAnchorProvider::SearchDirection::DOWN));
+		Widget::setAnchor(SIDE::TOP, _anchorProvider->findClosestAnchor(m_refFrame.verticalCenter(), IAnchorProvider::SearchDirection::UP));
 	}
 
 	ei::Vec2 NodeHandle::getConnectorDirection() const
@@ -150,12 +150,13 @@ namespace ca { namespace gui {
 
 
 	NodeConnector::NodeConnector() :
-		Widget(false, true, false, false),
+		Clickable(this),
 		m_isMouseOver(false),
 		m_tmpHandleState(HandleState::ATTACHED),
 		m_stiffness(1.0f/3.0f)
 	{
 		m_region = this;
+		setAnchorable(false);
 
 		// Make sure that the mouse node is always existing.
 		if(!s_tmpMouseNode)
@@ -300,13 +301,14 @@ namespace ca { namespace gui {
 
 
 	WidgetConnector::WidgetConnector() :
-		Widget(false, true, false, false),
+		Clickable(this),
 		m_isMouseOver(false),
 		m_stiffness(1.0f/3.0f),
 		m_sourceColor(1.0f),
 		m_destColor(1.0f)
 	{
 		m_region = this;
+		setAnchorable(false);
 	}
 
 	void WidgetConnector::draw() const
@@ -339,6 +341,8 @@ namespace ca { namespace gui {
 
 	void WidgetConnector::refitToAnchors()
 	{
+		if(!m_sourceNode || !m_destNode) return;
+
 		Vec2 p0 = m_sourceNode->getRefFrame().center();
 		Vec2 p3 = m_destNode->getRefFrame().center();
 		Vec2 adir(cos(m_sourceAngle), sin(m_sourceAngle)); // TODO: scale with widget size

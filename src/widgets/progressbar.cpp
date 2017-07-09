@@ -6,7 +6,6 @@
 namespace ca { namespace gui {
 
 	ProgressBar::ProgressBar() :
-		Widget(true, false, false, false),
 		m_backgroundTexture(0),
 		m_foregroundTexture(0),
 		m_progress(0.0f),

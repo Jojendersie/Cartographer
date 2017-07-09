@@ -18,10 +18,10 @@ namespace ca { namespace gui {
 	/// Base class with mandatory attributes for all widgets.
 	/// \details A widget only contains the state. State handling in general is up to the derived
 	///		elements.
-	class Widget: public pa::ReferenceCountable
+	class Widget: public pa::ReferenceCountable, public Anchorable
 	{
 	public:
-		Widget(bool _anchorable = false, bool _clickable = false, bool _moveable = false, bool _resizeable = false);
+		Widget();
 		virtual ~Widget() = default;
 
 		/// Set the button width and heigh (resets anchoring)
@@ -32,8 +32,16 @@ namespace ca { namespace gui {
 		void setPosition(const Coord2& _position);
 		Coord2 getPosition() const;
 
+		/// Move the component and reset anchoring if necessary. Also causes OnExtentChanged() if
+		/// _deltaPosition is unequal zero.
+		void move(const Coord2& _deltaPosition);
+
 		/// Set both: position and size (resets anchoring)
 		void setExtent(const Coord2& _position, const Coord2& _size);
+
+		/// Change the size of one or multiple sides and reset anchoring if necessary.
+		/// \details Calls onExtentChanged if something changed.
+		void resize(float _deltaLeft, float _deltaRight, float _deltaBottom, float _deltaTop);
 
 		/// Get the bounding box of the component
 		const RefFrame& getRefFrame() const { return m_refFrame; }
@@ -83,16 +91,6 @@ namespace ca { namespace gui {
 		const Widget* parent() const { return m_parent; }
 		Widget* parent() { return m_parent; }
 
-		/// Attach one of the four reference sides to an anchor point
-		/// \details If the element was created without anchoring this fails with an error message.
-		void setAnchoring(SIDE::Val _side, AnchorPtr _anchor);
-		void setHorizontalAnchorMode(Anchorable::Mode _mode);
-		void setVerticalAnchorMode(Anchorable::Mode _mode);
-		void setAnchorModes(Anchorable::Mode _mode);
-		void setAnchorModes(Anchorable::Mode _horizontalMode, Anchorable::Mode _verticalMode);
-		/// Automatically attach all four anchor points to the closest anchors in the provider.
-		/// \details Fails silently if the component is not anchorable
-		void autoAnchor(const class IAnchorProvider* _anchorProvider);
 		/// Let this widget create anchors for others
 		void setAnchorProvider(std::unique_ptr<IAnchorProvider> _anchorProvider);
 		/// Get the anchor component (can be nullptr)
@@ -108,27 +106,8 @@ namespace ca { namespace gui {
 		/// \param [in] _delete The region object must be deleted.
 		void setRegion(std::unique_ptr<IRegion> _region);
 
-		/// Add or remove the clickable property (you can add CLICK and DBLCLICK callbacks)
-		/// The old click component is kept if there is already one.
-		/// If a new clickable is created, the Widget will be enabled too.
-		void setClickable(bool _enable);
-		/// Add or remove the anchor property (this element can be anchored).
-		/// The old anchor component is kept if there is already one.
-		void setAnchorable(bool _enable);
-		/// Add or remove the move property (this element is moved, if mouse is pressed and then moved).
-		/// The old move component is kept if there is already one. The resize and move
-		/// components are updated if necessary.
-		void setMoveable(bool _enable);
-		/// Add or remove the resize property (this element can be resized by mouse).
-		/// The old resize component is kept if there is already one.
-		void setResizeable(bool _enable);
 		/// Add or remove keyboard-focus property (this element can be focused by the toggle-focus-key).
 		void setKeyboardFocusable(bool _enable) { m_keyboardFocusable = _enable; }
-
-		Moveable* getMoveComponent() { return m_moveComponent.get(); }
-		const Moveable* getMoveComponent() const { return m_moveComponent.get(); }
-		Clickable* getClickComponent() { return m_clickComponent.get(); }
-		const Clickable* getClickComponent() const { return m_clickComponent.get(); }
 
 		/// Realign component to its anchors. If there is no anchor-component do nothing.
 		virtual void refitToAnchors();
@@ -142,6 +121,10 @@ namespace ca { namespace gui {
 		/// A number which can be used by the user to attach some extra information.
 		/// If you encode a pointer make sure you handle the memory somewhere else.
 		uint64 metaData = 0;
+
+		/// Enable calls to processInput of a subcomponent.
+		/// \details This is meant to be used in the constructor of IMouseProcessAble components.
+		void registerMouseInputComponent(IMouseProcessAble* _component);
 	protected:
 		bool m_enabled;					///< The element can currently receive input (not disabled).
 		bool m_keyboardFocusable;		///< Can this object have the focus?
@@ -151,11 +134,10 @@ namespace ca { namespace gui {
 		// List of optional components (can be nullptr)
 		IRegion* m_region;				///< Special interaction region.
 		std::unique_ptr<IRegion> m_regionDeallocator;
-		std::unique_ptr<Anchorable> m_anchorComponent;
-		std::unique_ptr<Clickable> m_clickComponent;
-		std::unique_ptr<Moveable> m_moveComponent;
-		std::unique_ptr<Resizeable> m_resizeComponent;
 		std::unique_ptr<IAnchorProvider> m_anchorProvider;
+		std::vector<IMouseProcessAble*> m_mouseInputSubcomponents;	///< A list of behavior components to handle mouse inputs. The order is determined by inheritance order.
+		IMouseProcessAble* m_activeComponent;	///< Some components want to have exclusive mouse input once they started. If this is != nullptr it will be executed as the first one.
+
 		WidgetPtr m_infoPopup;
 
 		Widget* m_parent;

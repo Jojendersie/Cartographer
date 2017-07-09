@@ -6,7 +6,6 @@
 namespace ca { namespace gui {
 
 	Image::Image() :
-		Widget(true, false, false, false),
 		m_imageTexture(0)
 	{
 	}
@@ -20,6 +19,13 @@ namespace ca { namespace gui {
 	void Image::setTexture(const char* _textureFile, bool _smooth)
 	{
 		m_imageTexture = GUIManager::renderBackend().getTexture(_textureFile, _smooth);
+	}
+
+
+
+	ImageButton::ImageButton() :
+		Clickable(this)
+	{
 	}
 
 }} // namespace ca::gui

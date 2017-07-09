@@ -111,7 +111,9 @@ void createGUI(GLFWwindow* _window)
 	// A resizeable frame with different anchored buttons
 	GroupPtr f0group(new Group); // Contains f0 and the node based handles
 	GUIManager::add(f0group);
-	FramePtr f0(new Frame(true, false, true, true));
+	FramePtr f0(new Frame);
+	f0->setMoveable(true);
+	f0->setResizeable(true);
 	f0->setExtent(Vec2(5.0f), Vec2(100.0f, 105.0f));
 	f0->setAnchorProvider( std::make_unique<GridAnchorProvider>(3, 5) );
 	f0group->add(f0);
@@ -139,7 +141,9 @@ void createGUI(GLFWwindow* _window)
 	f0group->add(h00, 1);
 
 	// Second frame with image buttons
-	FramePtr f1(new Frame(true, false, true, true));
+	FramePtr f1(new Frame);
+	f1->setMoveable(true);
+	f1->setResizeable(true);
 	f1->setExtent(Vec2(5.0f, 120.0f), Vec2(100.0f, 230.0f));
 	f1->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	BorderAnchorProvider* anchorsf1 = static_cast<BorderAnchorProvider*>(f1->getAnchorProvider());
@@ -185,7 +189,9 @@ void createGUI(GLFWwindow* _window)
 	f1->add(b1);
 
 	// Third frame with checkboxes and sliders
-	FramePtr f2(new Frame(true, false, true, true));
+	FramePtr f2(new Frame);
+	f2->setMoveable(true);
+	f2->setResizeable(true);
 	f2->setExtent(Vec2(5.0f, 360.0f), Vec2(100.0f, 255.0f));
 	f2->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	BorderAnchorProvider* anchorsf2 = static_cast<BorderAnchorProvider*>(f2->getAnchorProvider());
@@ -214,7 +220,9 @@ void createGUI(GLFWwindow* _window)
 	// Fourth frame with labels (window fake)
 	GroupPtr f3group(new Group); // Contains f3 and the node based handles
 	GUIManager::add(f3group);
-	FramePtr f3(new Frame(true, false, true, true));
+	FramePtr f3(new Frame);
+	f3->setMoveable(true);
+	f3->setResizeable(true);
 	f3->setExtent(Vec2(115.0f, 120.0f), Vec2(200.0f, 230.0f));
 	f3->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	BorderAnchorProvider* anchorsf3 = static_cast<BorderAnchorProvider*>(f3->getAnchorProvider());
@@ -239,17 +247,17 @@ void createGUI(GLFWwindow* _window)
 	LabelPtr l0(new Label);
 	l0->setExtent(f3->getPosition() + Coord2(0.0f, f3->getSize().y - 20.0f) + 2.0f, Coord2(f3->getSize().x, 16.0f));
 	l0->setText(" Usually useless titelbar");
-	l0->setAnchoring(SIDE::LEFT, anchorsf3->getAnchor(SIDE::LEFT));
-	l0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
-	l0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	l0->setAnchor(SIDE::LEFT, anchorsf3->getAnchor(SIDE::LEFT));
+	l0->setAnchor(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
+	l0->setAnchor(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
 	l0->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
 	f3->add(l0);
 
 	ButtonPtr b0(new Button);
 	b0->setExtent(f3->getPosition() + f3->getSize() - 20.0f, Coord2(16.0f));
 	b0->setText(" X");//TODO: why is centering wrong here?
-	b0->setAnchoring(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
-	b0->setAnchoring(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	b0->setAnchor(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
+	b0->setAnchor(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
 	f3->add(b0);
 
 	l0 = LabelPtr(new Label);
@@ -298,7 +306,8 @@ void createGUI(GLFWwindow* _window)
 	GUIManager::add(connector0, 1);
 
 	// Create a set of images with widget-connectors
-	FramePtr f4(new Frame(true, false, true, false));
+	FramePtr f4(new Frame);
+	f4->setMoveable(true);
 	f4->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	BorderAnchorProvider* anchorsf4 = static_cast<BorderAnchorProvider*>(f4->getAnchorProvider());
 	f4->setExtent(Vec2(115.0f, 360.0f), Vec2(200.0f, 255.0f));
@@ -351,7 +360,9 @@ void createGUI(GLFWwindow* _window)
 	f4->add(con3);
 
 	// A frame which triggers a popup
-	FramePtr f5(new Frame(true, false, true, true));
+	FramePtr f5(new Frame);
+	f5->setMoveable(true);
+	f5->setResizeable(true);
 	f5->setExtent(f0->getPosition() + Coord2(f0->getSize().x + 10.0f, 0.0f), Coord2(f4->getSize().x, f0->getSize().y));
 	f5->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
 	GUIManager::add(f5);

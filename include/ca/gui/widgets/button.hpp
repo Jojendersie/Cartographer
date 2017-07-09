@@ -8,7 +8,7 @@
 namespace ca { namespace gui {
 
 	/// A standard clickable button with text and optional icon
-	class Button : public Widget, public TextProperties
+	class Button : public Widget, public Clickable, public TextProperties
 	{
 	public:
 		Button();
@@ -44,9 +44,6 @@ namespace ca { namespace gui {
 		/// \param [in] _hoverTextureFile A third texture if a mouse button is down the button. Can be nullptr.
 		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
 		void setBackgroundTexture(const char* _textureFile, const char* _hoverTextureFile, const char* _downTextureFile, bool _smooth = true);
-
-		/// Forward to Clickable::addOnButtonChangeFunc
-		void addOnButtonChangeFunc(Clickable::OnButtonChange _callback, MouseState::ButtonState _stateMask) { m_clickComponent->addOnButtonChangeFunc(std::move(_callback), _stateMask); }
 
 	protected:
 		std::string m_text;

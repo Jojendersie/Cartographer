@@ -8,7 +8,7 @@ namespace ca { namespace gui {
 
 	/// A small handle for node based editors which can connect to other nodes
 	/// usin spline connectors.
-	class NodeHandle : public Widget
+	class NodeHandle : public Widget, public Clickable
 	{
 		/// Internal default constructor. May register the handle in the global
 		/// list for node searches.
@@ -59,7 +59,7 @@ namespace ca { namespace gui {
 	typedef pa::RefPtr<NodeHandle> NodeHandlePtr;
 
 	/// Spline connector as edges of the node graph.
-	class NodeConnector : public Widget, public IRegion
+	class NodeConnector : public Widget, public IRegion, public Clickable
 	{
 	public:
 		NodeConnector();
@@ -106,7 +106,7 @@ namespace ca { namespace gui {
 	/// Spline connector which can connect any Widget.
 	/// In contrast to the NodeConnector it does not allow interaction in form of snapping
 	/// and reassignment.
-	class WidgetConnector : public Widget, public IRegion
+	class WidgetConnector : public Widget, public IRegion, public Clickable
 	{
 	public:
 		WidgetConnector();

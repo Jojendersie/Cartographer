@@ -8,14 +8,14 @@
 
 namespace ca { namespace gui {
 
-	Frame::Frame(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable) :
+	Frame::Frame() :
+		Resizeable(this),
+		Moveable(this),
 		m_opacity(1.0f),
 		m_texture(0)
 	{
-		Widget::setAnchorable(_anchorable);
-		Widget::setClickable(_clickable);
-		Widget::setMoveable(_moveable);
-		Widget::setResizeable(_resizeable);
+		setMoveable(false);
+		setResizeable(false);
 	}
 
 	Frame::~Frame()

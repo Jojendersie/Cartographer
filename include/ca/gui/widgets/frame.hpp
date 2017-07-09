@@ -7,10 +7,10 @@
 namespace ca { namespace gui {
 
 	/// The frame is a container with a drawn background and clipping for its subcomponents.
-	class Frame : public Group
+	class Frame : public Group, public Resizeable, public Moveable
 	{
 	public:
-		Frame(bool _anchorable, bool _clickable, bool _moveable, bool _resizeable);
+		Frame();
 		~Frame();
 
 		/// Implement the draw method

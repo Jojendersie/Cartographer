@@ -6,14 +6,14 @@
 namespace ca { namespace gui {
 
 	CheckBox::CheckBox() :
-		Widget(true, true, false, false),
+		Clickable(this),
 		m_textWidth(0.0f),
 		m_checked(false),
 		m_backgroundTexture(0)
 	{
 		Widget::setKeyboardFocusable(true);
 		m_checkmarkTexture[0] = m_checkmarkTexture[1] = 0;
-		m_clickComponent->addOnButtonChangeFunc(
+		addOnButtonChangeFunc(
 			[](Widget* _thisBtn, const Coord2&, int, MouseState::ButtonState){
 				static_cast<CheckBox*>(_thisBtn)->m_checked = !static_cast<CheckBox*>(_thisBtn)->m_checked;
 			},

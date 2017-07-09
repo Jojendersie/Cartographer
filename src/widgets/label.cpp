@@ -6,12 +6,12 @@
 namespace ca { namespace gui {
 
 	Label::Label() :
-		Widget(true, false, false, false),
 		m_textSize(0.0f),
 		m_margin(0.0f),
 		m_textPosition(SIDE::LEFT),
 		m_backgroundColor(-1.0f)
 	{
+		setEnabled(false);
 	}
 
 	void Label::draw() const

@@ -22,5 +22,15 @@ namespace ca { namespace gui {
 	};
 
 	typedef pa::RefPtr<Image> ImagePtr;
+	typedef pa::RefPtr<const Image> ConstImagePtr;
+
+	class ImageButton : public Image, public Clickable
+	{
+	public:
+		ImageButton();
+	};
+
+	typedef pa::RefPtr<ImageButton> ImageButtonPtr;
+	typedef pa::RefPtr<const ImageButton> ConstImageButtonPtr;
 
 }} // namespace ca::gui

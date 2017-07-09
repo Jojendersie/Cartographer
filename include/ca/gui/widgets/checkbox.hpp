@@ -5,7 +5,7 @@
 namespace ca { namespace gui {
 
 	/// Element to make a binary choice (true/false)
-	class CheckBox : public Widget
+	class CheckBox : public Widget, protected Clickable
 	{
 	public:
 		CheckBox();

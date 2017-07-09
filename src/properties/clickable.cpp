@@ -2,27 +2,31 @@
 
 #include "ca/gui/properties/clickable.hpp"
 #include "ca/gui/widgets/widget.hpp"
+#include "ca/gui/guimanager.hpp"
 #include <ctime>
 
 namespace ca { namespace gui {
 
 	Clickable::Clickable(Widget* _thisWidget) :
-		m_widget(_thisWidget)
+		m_clickingEnabled(true)
 	{
 		for(int b = 0; b < 8; ++b)
 		{
 			m_lastClick[b] = -10000.0f;
 			m_buttonDownReceived[b] = false;
 		}
+		_thisWidget->registerMouseInputComponent(this);
 	}
 
 	Clickable::~Clickable()
 	{
 	}
 
-	bool Clickable::processInput(const MouseState& _mouseState)
+	bool Clickable::processInput(Widget & _thisWidget, const MouseState & _mouseState, bool _cursorOnWidget, bool & _ensureNextInput)
 	{
-		if(m_widget->getRegion()->isMouseOver(_mouseState.position))
+		if(!m_clickingEnabled) return false;
+		bool usedInput = false;
+		if(_cursorOnWidget)
 		{
 			// Handle each button
 			for(int b = 0; b < 8; ++b)
@@ -31,7 +35,7 @@ namespace ca { namespace gui {
 				{
 					for(size_t i = 0; i < m_changeFuncs.size(); ++i)
 						if(m_statesMasks[i] & MouseState::DOWN)
-							m_changeFuncs[i](m_widget, _mouseState.position, b, MouseState::DOWN);
+							m_changeFuncs[i](&_thisWidget, _mouseState.position, b, MouseState::DOWN);
 					m_buttonDownReceived[b] = true;
 				}
 
@@ -39,7 +43,7 @@ namespace ca { namespace gui {
 				{
 					for(size_t i = 0; i < m_changeFuncs.size(); ++i)
 						if(m_statesMasks[i] & MouseState::UP)
-							m_changeFuncs[i](m_widget, _mouseState.position, b, MouseState::UP);
+							m_changeFuncs[i](&_thisWidget, _mouseState.position, b, MouseState::UP);
 					if(m_buttonDownReceived[b])
 					{
 						float currentTime = clock() / float(CLOCKS_PER_SEC);
@@ -48,12 +52,12 @@ namespace ca { namespace gui {
 							m_lastClick[b] = -10000.0f;
 							for(size_t i = 0; i < m_changeFuncs.size(); ++i)
 								if(m_statesMasks[i] & MouseState::DBL_CLICKED)
-									m_changeFuncs[i](m_widget, _mouseState.position, b, MouseState::DBL_CLICKED);
+									m_changeFuncs[i](&_thisWidget, _mouseState.position, b, MouseState::DBL_CLICKED);
 						} else {
 							m_lastClick[b] = currentTime;
 							for(size_t i = 0; i < m_changeFuncs.size(); ++i)
 								if(m_statesMasks[i] & MouseState::CLICKED)
-									m_changeFuncs[i](m_widget, _mouseState.position, b, MouseState::CLICKED);
+									m_changeFuncs[i](&_thisWidget, _mouseState.position, b, MouseState::CLICKED);
 						}
 					}
 					m_buttonDownReceived[b] = false;
@@ -63,10 +67,10 @@ namespace ca { namespace gui {
 				{
 					for(size_t i = 0; i < m_changeFuncs.size(); ++i)
 						if(m_statesMasks[i] & MouseState::PRESSED)
-							m_changeFuncs[i](m_widget, _mouseState.position, b, MouseState::PRESSED);
+							m_changeFuncs[i](&_thisWidget, _mouseState.position, b, MouseState::PRESSED);
 				}
 			}
-			return true;
+			usedInput = true;
 		}
 
 		// If mouse is released somewhere else clear the state
@@ -74,7 +78,11 @@ namespace ca { namespace gui {
 			if(!_mouseState.buttons[b] || _mouseState.buttons[b] & MouseState::UP)
 				m_buttonDownReceived[b] = false;
 
-		return isAnyButtonDown();
+		usedInput |= isAnyButtonDown();
+		// TODO: is this focus handling still necessary?
+		if(usedInput)
+			GUIManager::setMouseFocus(&_thisWidget, _mouseState.anyButtonDown || _mouseState.anyButtonPressed);
+		return usedInput;
 	}
 
 	void Clickable::addOnButtonChangeFunc(OnButtonChange _callback, MouseState::ButtonState _stateMask)

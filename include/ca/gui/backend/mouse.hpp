@@ -76,4 +76,20 @@ namespace ca { namespace gui {
 		WAIT,					///< Hour-glass or similar
 	};
 
+	class IMouseProcessAble
+	{
+	public:
+		/// \param [in] _thisWidget Reference to the widged which is calling this behavior. This avoids
+		///		that subcomponents need references to their parent.
+		/// \param [in] _cursorOnWidget Precomputed value of getRegion()->isMouseOver();
+		/// \param [out] _ensureNextInput Make sure the next input to the widget is passed to this
+		///		component again.
+		virtual bool processInput(
+			class Widget& _thisWidget,
+			const struct MouseState& _mouseState,
+			bool _cursorOnWidget,
+			bool& _ensureNextInput
+		) = 0;
+	};
+
 }} // namespace ca::gui

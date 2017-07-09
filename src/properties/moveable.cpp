@@ -4,20 +4,23 @@
 #include "ca/gui/properties/anchorable.hpp"
 #include "ca/gui/properties/moveable.hpp"
 #include "ca/gui/backend/mouse.hpp"
+#include "ca/gui/widgets/widget.hpp"
+#include "ca/gui/guimanager.hpp"
 
 namespace ca { namespace gui {
 
-	Moveable::Moveable(RefFrame* _selfFrame, Anchorable* _anchorable) :
-		m_refFrame(_selfFrame),
-		m_anchorable(_anchorable),
+	Moveable::Moveable(Widget* _thisWidget) :
+		m_movingEnabled(true),
 		m_moving(false),
 		m_useRestriction(false)
 	{
 		// TODO: assert _selfFrame != nullptr
+		_thisWidget->registerMouseInputComponent(this);
 	}
 
-	bool Moveable::processInput(const MouseState& _mouseState)
+	bool Moveable::processInput(Widget& _thisWidget, const MouseState& _mouseState, bool _cursorOnWidget, bool& _ensureNextInput)
 	{
+		if(!m_movingEnabled) return false;
 		if(m_moving)
 		{
 			// If key was released stop floating
@@ -29,22 +32,22 @@ namespace ca { namespace gui {
 				if(m_useRestriction)
 					targetPosition = m_snapFunction(m_floatingPosition);
 				// Move the object
-				Coord2 deltaPos = targetPosition - m_refFrame->position();
-				m_refFrame->sides[SIDE::LEFT] += deltaPos.x;
-				m_refFrame->sides[SIDE::RIGHT] += deltaPos.x;
-				m_refFrame->sides[SIDE::BOTTOM] += deltaPos.y;
-				m_refFrame->sides[SIDE::TOP] += deltaPos.y;
-				// Make sure the anchoring does not reset the object
-				if(m_anchorable)
-					m_anchorable->resetAnchors();
+				Coord2 deltaPos = targetPosition - _thisWidget.getPosition();
+				_thisWidget.move(deltaPos);
 			} else m_moving = false;
 		} else {
 			// Is the mouse over the component and is the left button pressed?
 			m_moving = _mouseState.buttons[0] == MouseState::DOWN
-				&& m_refFrame->isMouseOver(_mouseState.position);
+				&& _cursorOnWidget;
 			// Get the current position as starting float-position
 			if(m_moving)
-				m_floatingPosition = m_refFrame->position();
+				m_floatingPosition = _thisWidget.getPosition();
+		}
+		if(m_moving)
+		{
+			GUIManager::setCursorType(CursorType::MOVE);
+			GUIManager::setMouseFocus(&_thisWidget, true);
+			_ensureNextInput = true;
 		}
 		return m_moving;
 	}

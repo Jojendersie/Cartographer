@@ -8,7 +8,6 @@
 namespace ca { namespace gui {
 
 	Slider::Slider() :
-		Widget(true, false, false, false),
 		m_value(0.5),
 		m_min(0.0),
 		m_range(1.0),

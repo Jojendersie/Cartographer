@@ -8,10 +8,9 @@
 
 namespace ca { namespace gui {
 
-	Group::Group() :
-		Widget(false, false, false, false)
+	Group::Group()
 	{
-		Widget::enable();
+		setAnchorable(false);
 		// Just use extreme large coordinates to make the group always visible
 		setExtent(Coord2(0.0f), Coord2(5000.0f));
 	}

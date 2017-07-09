@@ -61,6 +61,10 @@ namespace ca { namespace gui {
 		/// Resize/renew position the object dependent on the current anchor points
 		/// \return True if any property was changed by the refit method.
 		bool refitToAnchors();
+
+		// TODO: enable/disable
+		bool isAnchoringEnabled() const { return m_anchoringEnabled; }
+		void setAnchorable(bool _enable) { m_anchoringEnabled = _enable; }
 	private:
 		struct Anchor
 		{
@@ -73,5 +77,6 @@ namespace ca { namespace gui {
 		RefFrame* m_selfFrame;
 		Mode m_horizontalMode;			///< The component can be rescaled in horizontal direction to satisfy left/right anchors
 		Mode m_verticalMode;			///< The component can be rescaled in vertical direction to satisfy bottom/top anchors
+		bool m_anchoringEnabled;
 	};
 }} // namespace ca::gui
