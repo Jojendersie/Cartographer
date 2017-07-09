@@ -46,7 +46,7 @@ public:
 
 		// The dereference operator has no function other than making this handle compatible
 		// for range based loops.
-		const DataT& operator * () const { return map->m_keys[idx].value; }
+		DataT& operator * () const { return map->m_keys[idx].value; }
 	};
 
 	typedef HandleT<HashSet, T> Handle;
