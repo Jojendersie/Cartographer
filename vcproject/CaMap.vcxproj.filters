@@ -20,6 +20,18 @@
     <ClInclude Include="..\include\ca\map\action\input.hpp">
       <Filter>action</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\ca\map\map\sparsegrid.hpp">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ca\map\map\gridbase.hpp">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ca\map\map\iterator.hpp">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ca\map\algorithm\astar.hpp">
+      <Filter>algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="action">
@@ -30,6 +42,9 @@
     </Filter>
     <Filter Include="unit">
       <UniqueIdentifier>{bdb6b852-54d8-44a6-b126-eb70a06bfb02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm">
+      <UniqueIdentifier>{92fe6770-96c0-4985-b28b-4274207f67f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

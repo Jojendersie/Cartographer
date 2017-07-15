@@ -6,3 +6,5 @@
 #include "ca/map/map/construct.hpp"
 #include "ca/map/map/cell.hpp"
 #include "ca/map/map/grid.hpp"
+#include "ca/map/map/iterator.hpp"
+#include "ca/map/algorithm/astar.hpp"

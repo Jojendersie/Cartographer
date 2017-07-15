@@ -21,9 +21,13 @@
   <ItemGroup>
     <ClInclude Include="..\include\ca\camap.hpp" />
     <ClInclude Include="..\include\ca\map\action\input.hpp" />
+    <ClInclude Include="..\include\ca\map\algorithm\astar.hpp" />
     <ClInclude Include="..\include\ca\map\map\cell.hpp" />
     <ClInclude Include="..\include\ca\map\map\construct.hpp" />
     <ClInclude Include="..\include\ca\map\map\grid.hpp" />
+    <ClInclude Include="..\include\ca\map\map\gridbase.hpp" />
+    <ClInclude Include="..\include\ca\map\map\iterator.hpp" />
+    <ClInclude Include="..\include\ca\map\map\sparsegrid.hpp" />
     <ClInclude Include="..\include\ca\map\map\tile.hpp" />
     <ClInclude Include="..\include\ca\map\unit\unit.hpp" />
   </ItemGroup>
@@ -88,7 +92,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)../lib/</OutDir>
     <IntDir>$(SolutionDir)build/$(Platform)/$(Configuration)/</IntDir>
-    <IncludePath>$(SolutionDir)../../Paper/include/;$(SolutionDir)../include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)../../Paper/include/;$(SolutionDir)../include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)../lib/</OutDir>
