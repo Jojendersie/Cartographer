@@ -165,7 +165,7 @@ namespace ca { namespace map {
 					m_yPosition = newY;
 				}
 
-				auto& row = m_rows[_coord.y - m_yPosition];
+				Row& row = m_rows[_coord.y - m_yPosition];
 				if(row.cells.empty())
 				{
 					row.xmin = _coord.x;
@@ -186,6 +186,59 @@ namespace ca { namespace map {
 					return row.cells[_coord.x - row.xmin];
 				}
 			}
+		}
+
+		/// Remove empty rows and empty cells at the begin/end of a row.
+		/// \details This cannot remove cells incide a row!
+		/// \param [in] _isEmpty Predicate function to check if a cell is not needed/empty.
+		void clean(std::function<bool(CellT&)> _isEmpty)
+		{
+			// Clean up begin and endings of rows.
+			for(Row& row : m_rows)
+			{
+				// Count until first non-empty.
+				size_t numEmptyFront = 0;
+				for(; numEmptyFront < row.cells.size(); ++numEmptyFront)
+					if(!_isEmpty(row.cells[numEmptyFront]))
+						break;
+
+				// Count again form the end, if there is still some element (juding at i).
+				size_t numEmptyBack = 0;
+				for(int i = int(row.cells.size())-1; i > int(numEmptyFront); --i)
+				{
+					if(_isEmpty(row.cells[i]))
+						++numEmptyBack;
+					else break;
+				}
+
+				// Move the non-empty range to a new thickly fitted row.
+				size_t numNonEmpty = row.cells.size() - numEmptyFront - numEmptyBack;
+				Row tmpRow(numNonEmpty);
+				for(size_t i = numEmptyFront; i < row.cells.size() - numEmptyBack; ++i)
+					tmpRow.cells[i - numEmptyFront] = std::move(row.cells[i]);
+				tmpRow.xmin = row.xmin + numEmptyFront;
+				std::swap(row, tmpRow);
+			}
+
+			// Remove empty rows the same way.
+			size_t numEmptyFront = 0;
+			for(; numEmptyFront < m_rows.size(); ++numEmptyFront)
+				if(!m_rows[numEmptyFront].cells.empty())
+					break;
+			size_t numEmptyBack = 0;
+			for(int i = int(m_rows.size())-1; i > int(numEmptyFront); --i)
+			{
+				if(m_rows[i].cells.empty())
+					++numEmptyBack;
+				else break;
+			}
+
+			size_t numNonEmpty = m_rows.size() - numEmptyFront - numEmptyBack;
+			std::vector<Row> tmpRows(numNonEmpty, Row(0));
+			for(size_t i = numEmptyFront; i < m_rows.size() - numEmptyBack; ++i)
+				tmpRows[i - numEmptyFront] = std::move(m_rows[i]);
+			std::swap(m_rows, tmpRows);
+			m_yPosition += numEmptyFront;
 		}
 
 		/// Iterator class which allows sequential access to all grid cells.
