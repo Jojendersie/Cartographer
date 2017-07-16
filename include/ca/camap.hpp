@@ -8,3 +8,4 @@
 #include "ca/map/map/grid.hpp"
 #include "ca/map/map/iterator.hpp"
 #include "ca/map/algorithm/astar.hpp"
+#include "ca/map/algorithm/connectedcomponents.hpp"

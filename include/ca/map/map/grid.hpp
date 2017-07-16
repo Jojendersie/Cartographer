@@ -15,6 +15,9 @@ namespace ca { namespace map {
 	class Grid
 	{
 	public:
+		// For other templates...
+		static constexpr unsigned TGridType = GridT;
+		typedef CellT TCellType;
 
 		/// Rotates a grid by 90° or 60° times the number of ticks dependent on the type.
 		/// \details A rotation reorganizes the memory and is therefore expensive for large
@@ -127,10 +130,10 @@ namespace ca { namespace map {
 			if(_coord.y < minY()) return nullptr;
 			if(_coord.y >= maxY()) return nullptr;
 			
-			auto& row = m_rows[_coord.y - m_yPosition];
+			Row & row = m_rows[_coord.y - m_yPosition];
 			if(_coord.x < row.minX()) return nullptr;
 			if(_coord.x >= row.maxX()) return nullptr;
-			return &row.cells[_coord.x - row.xmin];
+			return &(row.cells[_coord.x - row.xmin]);
 		}
 
 		const CellT* find(const ei::IVec2& _coord) const
@@ -299,7 +302,8 @@ namespace ca { namespace map {
 			friend class Grid<GridT, CellT>;
 		};
 
-		SeqIterator begin() const { return SeqIterator(*this); }
+//		const SeqIterator begin() const { return std::move(SeqIterator(*this)); }
+		SeqIterator begin() { return std::move(SeqIterator(*this)); }
 
 		int minY() const { return m_yPosition; }
 		int maxY() const { return m_yPosition + m_rows.size(); }
