@@ -156,6 +156,7 @@ public:
 				i = next;
 				if(++next >= m_capacity) next = 0;
 			}
+			m_keys[i].dist = 0xffffffff;
 		}
 	}
 
@@ -222,6 +223,7 @@ public:
 	}
 
 	uint32_t size() const { return m_size; }
+	bool empty() const { return m_size == 0; }
 
 	/// Returns the first element found in the map or an invalid handle when the map is empty.
 	Handle begin()
