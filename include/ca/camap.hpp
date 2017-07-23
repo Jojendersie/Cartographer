@@ -9,3 +9,4 @@
 #include "ca/map/map/iterator.hpp"
 #include "ca/map/algorithm/astar.hpp"
 #include "ca/map/algorithm/connectedcomponents.hpp"
+#include "ca/map/algorithm/populate.hpp"

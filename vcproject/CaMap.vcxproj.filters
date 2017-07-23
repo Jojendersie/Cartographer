@@ -35,6 +35,9 @@
     <ClInclude Include="..\include\ca\map\algorithm\connectedcomponents.hpp">
       <Filter>algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\ca\map\algorithm\populate.hpp">
+      <Filter>algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="action">

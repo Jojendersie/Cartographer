@@ -77,50 +77,6 @@ namespace ca { namespace map {
 		void set(const GridCoord& _coord, T2&& _value)
 		{
 			get(_coord) = std::move(_value);
-			// First element at all?
-			/*if(m_rows.empty())
-			{
-				m_yPosition = _coord.y;
-				m_rows.push_back(Row());
-				m_rows.xmin = _coord.x;
-				m_rows.front().cells.push_back(std::move(_value));
-			} else {
-				// Insert empty rows at end or beginning if necessray
-				if(_coord.y < m_yPosition || _coord.y >= m_yPosition + (int)m_rows.size())
-				{
-					int newY = min(_coord.y, m_yPosition);
-					// Add a range of row by simple reservation
-					std::vector<Row> tmpRows(max(_coord.y, m_yPosition + (int)m_rows.size()) - newY + 1);
-					// Move the old rows
-					int yOff = max(0, m_yPosition - newY);
-					for(size_t i = 0; i < m_rows.size(); ++i)
-						tmpRows[i+yOff] = std::move(m_rows[i]);
-					// Use the new rows
-					std::swap(m_rows, tmpRows);
-					m_yPosition = newY;
-				}
-
-				auto& row = m_rows[_coord.y - m_yPosition];
-				if(row.empty)
-				{
-					row.xmin = _coord.x;
-					row.cells.push_back(std::move(_value));
-				} else {
-					// Need to allocate?
-					if(_coord.x < row.xmin || _coord.x >= row.xmin + int(row.cells.size()))
-					{
-						int newX = min(_coord.x, row.xmin);
-						Row tmpRow;
-						int xOff = max(0, row.xmin - newX);
-						for(size_t i = 0; i < row.cells.size(); ++i)
-							tmpRow.cells[i+xOff] = std::move(row.cells[i]);
-						tmpRow.xmin = newX;
-						std::swap(row, tmpRow);
-					}
-					// Overwrite
-					row[_coord.x - row.xmin] = std::move(_value);
-				}
-			}*/
 		}
 
 		/// Find out if a grid cell contains some element and returns an access pointer to it.

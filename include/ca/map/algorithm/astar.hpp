@@ -11,7 +11,7 @@ namespace ca { namespace map {
 		struct OpenNode {
 			GridCoord pos;		// Axial-hex coordinate
 			float score;		// Heuristical length of a path from start to goal through this node
-			bool operator < (OpenNode& _rhs)
+			bool operator < (const OpenNode& _rhs)
 			{
 				return score < _rhs.score;
 			}
