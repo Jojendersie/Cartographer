@@ -54,7 +54,7 @@ namespace ca { namespace map {
 		std::function<void(const GridCoord&)> _spawn)
 	{
 		// Determine free space for all tiles (regardless of threshold).
-		pa::PriorityQueue<::details::CellInfo> tiles;
+		pa::PriorityQueue<::details::CellInfo> queue;
 		for(typename MapT::SeqIterator it = _map.begin(); it; ++it) if(!_isEmpty(it.dat()))
 		{
 			::details::CellInfo cinfo;
@@ -69,56 +69,72 @@ namespace ca { namespace map {
 						cinfo.space--; // Min-heap -> use negative numbers
 				}
 			}
-			tiles.add(cinfo);
+			queue.add(cinfo);
 		}
 
 		// Fill a set for poisson disc sampling using the priorised elements.
 		// Either take all elements which fulfil the space requirement or more,
 		// if _forceNum could not be satisfied otherwise.
-		pa::HashSet<::details::CellInfo> validTiles;	// Valid in space and poisson distance
-		pa::HashSet<::details::CellInfo> freeTiles;	// Fulfil space condition as much as possible and are not used yet.
-		while(!tiles.empty() && (abs(tiles.min().space) >= _spaceAmount || int(validTiles.size()) < _forceNum))
+		pa::HashSet<GridCoord> validTiles;	// Valid in space and poisson distance
+		pa::HashSet<GridCoord> freeTiles;	// Fulfil space condition as much as possible and are not used yet.
+		pa::HashSet<GridCoord> usedTiles;
+		while(!queue.empty() && (abs(queue.min().space) >= _spaceAmount || int(validTiles.size()) < _forceNum))
 		{
-			freeTiles.add(tiles.min());
-			validTiles.add(tiles.popMin());
+			// If the forceNum forced the usage of a too small tile, use all other tiles
+			// of the same size too (they are not worse).
+			_spaceAmount = min(_spaceAmount, abs(queue.min().space));
+
+			freeTiles.add(queue.min().coord);
+			validTiles.add(queue.popMin().coord);
 		}
 
 		// Remove tiles around seed.
+		usedTiles.add(_seed);
 		for(auto n = NeighborIterator<MapT::TGridType>(_seed, _minDistance); n; ++n)
-		{
-			::details::CellInfo cinfo;
-			cinfo.coord = n.coord();
-			validTiles.remove(cinfo);
-		}
+			validTiles.remove(n.coord());
 
 		int numCreated = 0;
 		while(!validTiles.empty())
 		{
 			// Take a random tile from the validList. Since hashes are random
 			// we simply take the first element.
-			::details::CellInfo cinfo = validTiles.begin().value();
-			validTiles.remove(cinfo);
-			freeTiles.remove(cinfo);
+			GridCoord coord = validTiles.begin().value();
+			validTiles.remove(coord);
+			freeTiles.remove(coord);
+			usedTiles.add(coord);
 			++numCreated;
-			_spawn(cinfo.coord);
+			_spawn(coord);
 
 			// Remove all the elements which are too close to the new element.
 			// TODO: improve by using visible range iterator.
-			for(auto n = NeighborIterator<MapT::TGridType>(cinfo.coord, _minDistance); n; ++n)
-			{
-				cinfo.coord = n.coord();
-				validTiles.remove(cinfo);
-			}
+			for(auto n = NeighborIterator<MapT::TGridType>(coord, _minDistance); n; ++n)
+				validTiles.remove(n.coord());
 		}
 
-		// Fill with random unused tiles from the freeTiles list.
+		// Fill with random unused tiles from the freeTiles list. For each element
+		// we want to make sure it has the larget possible distance to all spawned tiles.
+		// First we create a priority queue where the radius of clearance is the (negative) priority.
+		for(auto it : freeTiles)
+		{
+			::details::CellInfo cinfo;
+			cinfo.coord = it;
+			cinfo.space = -1000000;
+			for(auto itUsed : usedTiles)
+				cinfo.space = -min(-cinfo.space, distance<MapT::TGridType>(it, itUsed));
+			queue.add(cinfo);
+		}
+		// Now spawn the first element from the queue and update the priorities of all others.
+		// All tiles with the same priority are nicely randomized, because we took them from an
+		// hash map.
 		while(numCreated < _forceNum)
 		{
-			for(auto it : freeTiles)
-			{
-				_spawn(it.coord);
-				++numCreated;
-			}
+			GridCoord coord = queue.popMin().coord;
+			_spawn(coord);
+			++numCreated;
+			// Update distances for the remaining elements in the queue.
+			for(auto& it : queue)
+				it.space = -min(-it.space, distance<MapT::TGridType>(it.coord, coord));
+			queue.heapify();
 		}
 
 		return numCreated;
