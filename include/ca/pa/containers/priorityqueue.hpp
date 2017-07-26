@@ -13,6 +13,42 @@ namespace ca { namespace pa {
 	class PriorityQueue
 	{
 	public:
+		/// Range loop iterable handle. Handles are guaranteed to be valid over the
+		/// entire lifetime of a datum.
+		template<typename HeapT, typename _DataT>
+		class HandleT
+		{
+			HeapT* heap;
+			uint32_t dataIdx;
+
+			HandleT(HeapT* _heap, uint32_t _dataIdx) :
+				heap(_heap),
+				dataIdx(_dataIdx)
+			{}
+
+			friend PriorityQueue;
+		public:
+			HandleT() : heap(nullptr), dataIdx(0) {}
+			operator bool () const { return heap != nullptr; }
+			bool operator == (const HandleT& _other) const { return heap == _other.heap && dataIdx == _other.dataIdx; }
+			bool operator != (const HandleT& _other) const { return heap != _other.heap || dataIdx != _other.dataIdx; }
+			
+			HandleT& operator ++ ()
+			{
+				uint32_t i = heap->m_data[dataIdx].heapIdx + 1;
+				// Set to invalid handle?
+				if(i >= heap->m_size) { dataIdx = 0; heap = nullptr; }
+				else dataIdx = heap->m_heap[i];
+				return *this;
+			}
+
+			_DataT& operator * () const { return heap->m_data[dataIdx].data; }
+			_DataT* operator -> () const { return &heap->m_data[dataIdx].data; }
+		};
+
+		typedef HandleT<PriorityQueue, DataT> Handle;
+		typedef HandleT<const PriorityQueue, const DataT> ConstHandle;
+
 		explicit PriorityQueue(uint32_t _reserveSize = 32) :
 			m_capacity(_reserveSize),
 			m_size(0),
@@ -119,9 +155,6 @@ namespace ca { namespace pa {
 			return DataT();
 		}
 
-		/// Unique handle of an inserted element
-		typedef uint32_t Handle;
-		enum:uint32_t {INVALID_HANDLE = 0xffffffff};
 
 		/// Add an element and return its unique handle.
 		/// If there is another datum with the same content both will have their own
@@ -134,34 +167,50 @@ namespace ca { namespace pa {
 			// Place element into array.
 			new (&m_data[m_nextFreeData].data)(DataT)(std::forward<_DataT>(_data));
 			uint32_t newNextFreeData = m_data[m_nextFreeData].heapIdx;
-			m_data[m_nextFreeData].heapIdx = m_size;
-			// Repair the heap.
-			m_heap[m_size] = m_nextFreeData;
+			uint32_t dataIdx = m_nextFreeData;
 			m_nextFreeData = newNextFreeData;
+			m_data[dataIdx].heapIdx = m_size;
+			// Repair the heap.
+			m_heap[m_size] = dataIdx;
 			bubbleUp(m_size);
-			return m_size++;
+			m_size++;
+			return Handle(this, dataIdx);
 		}
 
-		const DataT& get(Handle _handle) const
-		{
-			return m_data[_handle].data;
-		}
-
+		/// Change the priority of a single element.
+		/// To efficiently change the priority of many elements, change the priorities and use
+		/// heapify() afterwards.
 		template<class _PriorityT>
 		void changePriority(Handle _handle, _PriorityT&& _newPriority)
 		{
 			using namespace std;
 			// Requires casting operator for more complex types...
-			_PriorityT oldPriority = _PriorityT(m_data[_handle].data);
+			_PriorityT oldPriority = _PriorityT(*_handle);
 			// ... and a special assignment to overwrite priorities.
-			m_data[_handle].data = std::forward<_PriorityT>(_newPriority);
+			*_handle = std::forward<_PriorityT>(_newPriority);
 			if(_newPriority < oldPriority)
-				bubbleUp(m_data[_handle].heapIdx);
+				bubbleUp(m_data[_handle.dataIdx].heapIdx);
 			else
-				bubbleDown(m_data[_handle].heapIdx);
+				bubbleDown(m_data[_handle.dataIdx].heapIdx);
+		}
+
+		/// If the priority of a single element was changed using [] access, then
+		/// call the priorityChanged() method to repair the heap.
+		/*void priorityChanged(Handle _handle)
+		{
+		}*/
+
+		/// If the priority of one or multiple elements where changed using [] access
+		/// (not changePriority), then heapify() must be called to repair the heap.
+		/// The full heapify has a runtime of O(n).
+		void heapify()
+		{
+			for(int32_t i = m_size/2-1; i>=0; --i)
+				bubbleDown(i);
 		}
 
 		bool empty() const { return m_size == 0; }
+		uint32_t size() const { return m_size; }
 
 		// TEST DEBUG STUFF
 	/*	bool isHeap() const
@@ -174,6 +223,33 @@ namespace ca { namespace pa {
 			}
 			return true;
 		}*/
+
+		ConstHandle operator [] (uint32_t _heapIdx) const { return Handle(this, m_heap[_heapIdx]); }
+		Handle operator [] (uint32_t _heapIdx) { return Handle(this, m_heap[_heapIdx]); }
+
+		/// Get an iterator to the first element on the heap.
+		Handle begin()
+		{
+			if(m_size == 0)
+				return Handle(nullptr, 0);
+			return Handle(this, m_heap[0]);
+		}
+		ConstHandle begin() const
+		{
+			if(m_size == 0)
+				return ConstHandle(nullptr, 0);
+			return ConstHandle(this, m_heap[0]);
+		}
+
+		/// Return the invalid handle for range based for loops
+		Handle end()
+		{
+			return Handle(nullptr, 0);
+		}
+		ConstHandle end() const
+		{
+			return ConstHandle(nullptr, 0);
+		}
 
 	private:
 		uint32_t m_capacity;

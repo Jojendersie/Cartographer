@@ -184,7 +184,7 @@ void priorityQueueBenchmark()
 		// The handles are indices -> we can create random handles.
 		uint32_t x = hashint(s);
 		uint32_t h = x & 0x1fffff;
-		queue.changePriority(h, int(x >> 21));
+		queue.changePriority(queue[h], int(x >> 21));
 	}
 	totalTime = clock.deltaTime();
 	logInfo("[PQ Benchmark] Changing priority of 1M elements: ", totalTime, " ms.");
