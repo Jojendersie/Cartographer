@@ -21,15 +21,14 @@ namespace ca { namespace map {
 		//	or marked cell is reached.
 		// - go one line up and down and loop over all neighbors, seeing the marked range.
 		// - for each unmarked, unempty neighbor call recursively.
-		template<typename MapT>
-		int scanlineFloodFill(const MapT& _map, Grid<MapT::TGridType, Marker>& _markers, const GridCoord& _seed, const std::function<bool(typename const MapT::TCellType&)>& _isEmpty)
+		template<typename MapT, typename MarkerT>
+		int scanlineFloodFill(const MapT& _map, Grid<MapT::TGridType, MarkerT>& _markers, MarkerT _mark, const GridCoord& _seed, const std::function<bool(typename const MapT::TCellType&)>& _isEmpty)
 		{
 			auto * cell = _map.find(_seed);
 			if(!cell) return 0;
-			// Each cell should only be touched once.
-			_markers.set(_seed, true);
 			if(_isEmpty(*cell)) return 0;
-
+			// Each cell should only be touched once.
+			_markers.set(_seed, _mark);
 
 			// Prepare scanline marking. Capture the range for recursive calls.
 			int count = 1;
@@ -41,10 +40,10 @@ namespace ca { namespace map {
 			while(true) {
 				++pos.x;
 				cell = _map.find(pos);
-				if(cell) _markers.set(pos, true); else break;
+				if(!cell) break;
 				if(!_isEmpty(*cell))
 				{
-					_markers.set(pos, true);
+					_markers.set(pos, _mark);
 					++count;
 					++rangeMax;
 				} else break;
@@ -54,10 +53,10 @@ namespace ca { namespace map {
 			while(true) {
 				--pos.x;
 				cell = _map.find(pos);
-				if(cell) _markers.set(pos, true); else break;
+				if(!cell) break;
 				if(!_isEmpty(*cell))
 				{
-					_markers.set(pos, true);
+					_markers.set(pos, _mark);
 					++count;
 					--rangeMin;
 				} else break;
@@ -76,11 +75,11 @@ namespace ca { namespace map {
 			for(int i = rangeMin; i < rangeMax; ++i)
 			{
 				GridCoord posUp(i + xOffUp, _seed.y + 1);
-				details::Marker * markerCell = _markers.find(posUp);
-				if(!markerCell || !*markerCell) count += scanlineFloodFill(_map, _markers, posUp, _isEmpty);
+				MarkerT * markerCell = _markers.find(posUp);
+				if(!markerCell || *markerCell != _mark) count += scanlineFloodFill(_map, _markers, _mark, posUp, _isEmpty);
 				GridCoord posDown(i + xOffDown, _seed.y - 1);
 				markerCell = _markers.find(posDown);
-				if(!markerCell || !*markerCell) count += scanlineFloodFill(_map, _markers, posDown, _isEmpty);
+				if(!markerCell || *markerCell != _mark) count += scanlineFloodFill(_map, _markers, _mark, posDown, _isEmpty);
 			}
 
 			return count;
@@ -98,7 +97,7 @@ namespace ca { namespace map {
 		// TODO: size?
 
 		// Mark connected cells
-		int count = details::scanlineFloodFill(_map, markerMap, _seed, _isEmpty);
+		int count = details::scanlineFloodFill(_map, markerMap, details::Marker(true), _seed, _isEmpty);
 
 		// Loop over all elements in map, clean all unmarked
 		for(auto it = _map.begin(); it; ++it)
@@ -108,6 +107,41 @@ namespace ca { namespace map {
 		}
 
 		return count;
+	}
+
+	struct Component
+	{
+		GridCoord reprCoord;
+		int size;
+	};
+
+	/// Find all connected tiles and mark them in a marker map.
+	/// \param [out] _markerMap A map in which each connected component will be set to an individual
+	///		number. The number corresponds to the index in the output. All empty tiles are set to -1.
+	///		The map should be in a clean state without any number set.
+	/// \returns A list of representative coordinates for each component (the first found tile of a
+	///		component.
+	template<typename MapT>// TODO _map const (iterator problems)
+	std::vector<Component> findComponents(MapT& _map, Grid<MapT::TGridType, int>& _markerMap,
+		std::function<bool(typename const MapT::TCellType&)> _isEmpty)
+	{
+		std::vector<Component> representatives;
+
+		// Loop over all tiles and set to -1
+		for(auto it = _map.begin(); it; ++it)
+			_markerMap.set(it.coord(), -1);
+
+		// Loop again and search the components
+		for(auto it = _map.begin(); it; ++it)
+		{
+			if(!_isEmpty(it.dat()) && _markerMap.get(it.coord()) == -1)
+			{
+				int size = details::scanlineFloodFill(_map, _markerMap, int(representatives.size()), it.coord(), _isEmpty);
+				representatives.push_back({it.coord(), size});
+			}
+		}
+
+		return move(representatives);
 	}
 
 }} // namespace ca::map

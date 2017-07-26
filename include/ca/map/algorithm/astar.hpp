@@ -99,7 +99,7 @@ namespace ca { namespace map {
 				else goto ReconstructPath;
 			}
 			// Mark the node as closed.
-			currentVN.openHandle = ca::pa::PriorityQueue<OpenNode>::INVALID_HANDLE;
+			currentVN.openHandle = openSet.end();
 			// Store costs, because adding neighbors invalidates the memory address.
 			float currentMinCost = currentVN.minCost;
 			// For each neighbor
@@ -123,10 +123,10 @@ namespace ca { namespace map {
 						newVNode.cameFrom = currentMinON.pos;
 						newVNode.minCost = currentCost;
 						evalSet.add(neighborIt.coord(), newVNode);
-					} else if(neighborVN.data().openHandle != ca::pa::PriorityQueue<OpenNode>::INVALID_HANDLE)
+					} else if(neighborVN.data().openHandle != openSet.end())
 					{
 						// The node is already in the open set. Did the path improve?
-						if(newScore < openSet.get(neighborVN.data().openHandle).score)
+						if(newScore < neighborVN.data().openHandle->score)
 						{
 							neighborVN.data().cameFrom = currentMinON.pos;
 							neighborVN.data().minCost = currentCost;
