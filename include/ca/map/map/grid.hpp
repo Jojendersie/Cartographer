@@ -92,9 +92,22 @@ namespace ca { namespace map {
 			return &(row.cells[_coord.x - row.xmin]);
 		}
 
-		const CellT* find(const ei::IVec2& _coord) const
+		const CellT* find(const GridCoord& _coord) const
 		{
 			return const_cast<Grid*>(this)->find(_coord);
+		}
+
+		/// Fastest grid accessor. No range check, tile must exist, otherwise a access
+		/// violation occurs.
+		CellT& operator [] (const GridCoord& _coord)
+		{
+			Row & row = m_rows[_coord.y - m_yPosition];
+			return row.cells[_coord.x - row.xmin];
+		}
+		const CellT& operator [] (const GridCoord& _coord) const
+		{
+			Row & row = m_rows[_coord.y - m_yPosition];
+			return row.cells[_coord.x - row.xmin];
 		}
 
 		/// Get a cell. If it was not occupied before it gets filled with a default constructed

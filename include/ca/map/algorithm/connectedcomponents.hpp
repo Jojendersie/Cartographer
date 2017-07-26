@@ -134,7 +134,7 @@ namespace ca { namespace map {
 		// Loop again and search the components
 		for(auto it = _map.begin(); it; ++it)
 		{
-			if(!_isEmpty(it.dat()) && _markerMap.get(it.coord()) == -1)
+			if(!_isEmpty(it.dat()) && _markerMap[it.coord()] == -1)
 			{
 				int size = details::scanlineFloodFill(_map, _markerMap, int(representatives.size()), it.coord(), _isEmpty);
 				representatives.push_back({it.coord(), size});
