@@ -2,41 +2,9 @@
 
 #include "ca/map/map/gridbase.hpp"
 #include "ca/map/map/iterator.hpp"
+#include "ca/map/algorithm/utilities.hpp"
 
 namespace ca { namespace map {
-
-	// Path search helper structs and functions
-	namespace details {
-		// Discovered but unevaluated nodes
-		struct OpenNode {
-			GridCoord pos;		// Axial-hex coordinate
-			float score;		// Heuristical length of a path from start to goal through this node
-			bool operator < (const OpenNode& _rhs)
-			{
-				return score < _rhs.score;
-			}
-			explicit operator float () const
-			{
-				return score;
-			}
-			// Special assignment for new priorities
-			void operator = (float _newScore)
-			{
-				score = _newScore;
-			}
-		};
-		// (Partially) evaluated nodes.
-		struct VisitedNode {
-			GridCoord cameFrom;
-			float minCost;						// Costs up to that point of the path
-			typename ca::pa::PriorityQueue<OpenNode>::Handle openHandle;	// Constant handle into the openSet. Can be invalid is this node is fully evaluated. 
-		};
-		struct FastCoordHash {
-			uint32_t operator () (const GridCoord& _v) {
-				return _v.x * 198491329 + _v.y * 879190747;
-			}
-		};
-	}
 
 	/// A* path finding algorithm.
 	/// \param [out] _path Output buffer for the path. Previous contents of the buffer are removed.
@@ -65,7 +33,7 @@ namespace ca { namespace map {
 		float _maxCostFactor = 2.5f,
 		bool _findApproximateGoal = true
 	) {
-		using namespace details;
+		using namespace ::details;
 		_path.clear();
 		GridCoord bestPossiblePos = _from;
 
@@ -86,10 +54,10 @@ namespace ca { namespace map {
 		while(!openSet.empty())
 		{
 			OpenNode currentMinON = openSet.popMin();
-			VisitedNode& currentVN = evalSet.find(currentMinON.pos).data();
+			VisitedNode& currentVN = evalSet.find(currentMinON.coord).data();
 			// The shortest path to be evaluated contains the start position? -> finish
-			if(currentMinON.pos == _to) {
-				if(_validGoal(currentMinON.pos, currentVN.cameFrom))
+			if(currentMinON.coord == _to) {
+				if(_validGoal(currentMinON.coord, currentVN.cameFrom))
 				{
 					bestPossiblePos = _to;
 					goto ReconstructPath;
@@ -103,34 +71,34 @@ namespace ca { namespace map {
 			// Store costs, because adding neighbors invalidates the memory address.
 			float currentMinCost = currentVN.minCost;
 			// For each neighbor
-			auto neighborIt = NeighborIterator<GridT>(currentMinON.pos, 1);
-			for(; neighborIt; ++neighborIt) if(neighborIt.coord() != currentMinON.pos)
+			auto neighborIt = NeighborIterator<GridT>(currentMinON.coord, 1);
+			for(; neighborIt; ++neighborIt) if(neighborIt.coord() != currentMinON.coord)
 			{
 				// Is it an obstacle?
-				float cost = _cost(neighborIt.coord(), currentMinON.pos);
+				float cost = _cost(neighborIt.coord(), currentMinON.coord);
 				if(cost >= 0.0f)
 				{
 					// Use the hashmap to find out if the neighbor is open, evaluated or new.
 					auto neighborVN = evalSet.find(neighborIt.coord());
 					float currentCost = currentMinCost + cost;
-					float newScore = currentCost + distance<GridT>(neighborIt.coord(), _to);
+					float newCost = currentCost + distance<GridT>(neighborIt.coord(), _to);
 					if(currentCost > maxCost) continue;
 					if(!neighborVN)
 					{
 						// Node never seen. Add to open set and then to the map.
 						VisitedNode newVNode;
-						newVNode.openHandle = openSet.add(OpenNode{neighborIt.coord(), newScore});
-						newVNode.cameFrom = currentMinON.pos;
+						newVNode.openHandle = openSet.add(OpenNode{neighborIt.coord(), newCost});
+						newVNode.cameFrom = currentMinON.coord;
 						newVNode.minCost = currentCost;
 						evalSet.add(neighborIt.coord(), newVNode);
 					} else if(neighborVN.data().openHandle != openSet.end())
 					{
 						// The node is already in the open set. Did the path improve?
-						if(newScore < neighborVN.data().openHandle->score)
+						if(newCost < neighborVN.data().openHandle->expectedCost)
 						{
-							neighborVN.data().cameFrom = currentMinON.pos;
+							neighborVN.data().cameFrom = currentMinON.coord;
 							neighborVN.data().minCost = currentCost;
-							openSet.changePriority(neighborVN.data().openHandle, newScore);
+							openSet.changePriority(neighborVN.data().openHandle, newCost);
 						}
 					} // else the node is closed and can be ignored.
 				}
