@@ -2,6 +2,7 @@
 
 #include "ca/map/map/grid.hpp"
 #include "ca/map/map/iterator.hpp"
+#include "ca/map/algorithm/utilities.hpp"
 #include <ei/stdextensions.hpp>
 
 namespace details {
@@ -106,9 +107,13 @@ namespace ca { namespace map {
 			_spawn(coord);
 
 			// Remove all the elements which are too close to the new element.
+			ReachableSet reachableTiles;
+			findReachable(_map, reachableTiles, coord, _minDistance, _isEmpty);
+			for(auto coord : reachableTiles)
+				validTiles.remove(coord);
 			// TODO: improve by using visible range iterator.
-			for(auto n = NeighborIterator<MapT::TGridType>(coord, _minDistance); n; ++n)
-				validTiles.remove(n.coord());
+			//for(auto n = NeighborIterator<MapT::TGridType>(coord, _minDistance); n; ++n)
+				//validTiles.remove(n.coord());
 		}
 
 		// Fill with random unused tiles from the freeTiles list. For each element

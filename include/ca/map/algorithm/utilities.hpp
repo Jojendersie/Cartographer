@@ -49,10 +49,10 @@ namespace ca { namespace map {
 
 	/// Simple reachable method, in which each tile has a constant cost if not empty.
 	/// The range is equal to the grid distance.
-	template<unsigned GridT>
-	void findReachable(ReachableSet& _reachableTiles,
+	template<typename MapT>
+	void findReachable(const MapT& _map, ReachableSet& _reachableTiles,
 		const GridCoord& _from, int _maxDistance,
-		std::function<bool(const GridCoord&)> _isEmpty
+		std::function<bool(typename const MapT::TCellType&)> _isEmpty
 	) {
 		using namespace ::details;
 		_reachableTiles.clear();
@@ -66,10 +66,11 @@ namespace ca { namespace map {
 			float newCost = queue.front().expectedCost + 1.0f;
 			if(newCost <= _maxDistance)
 			{
-				for(NeighborIterator<GridT> it( queue.front().coord, 1 ); it; ++it) if(it.coord() != queue.front().coord)
+				for(NeighborIterator<MapT::TGridType> it( queue.front().coord, 1 ); it; ++it) if(it.coord() != queue.front().coord)
 				{
 					// Not evaluated yet?
-					if(!_reachableTiles.find(it.coord()) && !_isEmpty(it.coord()))
+					auto cell = _map.find(it.coord());
+					if(cell && !_isEmpty(*cell) && !_reachableTiles.find(it.coord()))
 					{
 						queue.push({it.coord(), newCost});
 						_reachableTiles.add(it.coord());
