@@ -146,7 +146,11 @@ namespace ca { namespace pa {
 				uint32_t dataIdx = m_heap[0];
 				m_heap[0] = m_heap[m_size];
 				// Then repair the heap.
-				bubbleDown(0);
+				if(m_size > 0)
+				{
+					m_data[m_heap[0]].heapIdx = 0;
+					bubbleDown(0);
+				}
 				// The data is not moved, but the current cell is free now.
 				m_data[dataIdx].heapIdx = m_nextFreeData;
 				m_nextFreeData = dataIdx;
@@ -172,8 +176,8 @@ namespace ca { namespace pa {
 			m_data[dataIdx].heapIdx = m_size;
 			// Repair the heap.
 			m_heap[m_size] = dataIdx;
-			bubbleUp(m_size);
 			m_size++;
+			bubbleUp(m_size-1);
 			return Handle(this, dataIdx);
 		}
 
@@ -194,11 +198,38 @@ namespace ca { namespace pa {
 				bubbleDown(m_data[_handle.dataIdx].heapIdx);
 		}
 
+		/// Delete an arbitrary element from the queue
+		void remove(Handle _handle)
+		{
+			// Remove from heap. We take an element from the back to fill
+			// the hole. Since this element was a child before it can only conflict on
+			// deeper levels -> bubbleDown.
+			--m_size;
+			uint32_t freeHeapIdx = m_data[_handle.dataIdx].heapIdx;
+			if(freeHeapIdx != m_size)
+			{
+				m_heap[freeHeapIdx] = m_heap[m_size];
+				m_data[m_heap[m_size]].heapIdx = freeHeapIdx;
+				bubbleDown(freeHeapIdx);
+				eiAssert(m_data[m_heap[m_size]].heapIdx < m_size, "Element moved out of heap!");
+				m_heap[m_size] = ~0;
+			}
+			// Remove from data
+			m_data[_handle.dataIdx].data.~DataT();
+			m_data[_handle.dataIdx].heapIdx = m_nextFreeData;
+			m_nextFreeData = _handle.dataIdx;
+		}
+
 		/// If the priority of a single element was changed using [] access, then
 		/// call the priorityChanged() method to repair the heap.
-		/*void priorityChanged(Handle _handle)
+		void priorityChanged(Handle _handle)
 		{
-		}*/
+			eiAssert(_handle.dataIdx < m_capacity && m_data[_handle.dataIdx].heapIdx < m_size, "Out of bounds!");
+			// Check both directions, we don't know how the data changed.
+			bubbleUp(m_data[_handle.dataIdx].heapIdx);
+			bubbleDown(m_data[_handle.dataIdx].heapIdx);
+			eiAssert(m_data[_handle.dataIdx].heapIdx < m_size, "Out of bounds!");
+		}
 
 		/// If the priority of one or multiple elements where changed using [] access
 		/// (not changePriority), then heapify() must be called to repair the heap.
@@ -213,16 +244,16 @@ namespace ca { namespace pa {
 		uint32_t size() const { return m_size; }
 
 		// TEST DEBUG STUFF
-	/*	bool isHeap() const
+		bool isHeap() const
 		{
 			for(uint32_t i = 1; i < m_size; ++i)
 			{
 				uint32_t parent = (i - 1) / 2;
-				if(m_data[m_heap[i]].p < m_data[m_heap[parent]].p)
+				if(m_data[m_heap[i]].data < m_data[m_heap[parent]].data)
 					return false;
 			}
 			return true;
-		}*/
+		}
 
 		ConstHandle operator [] (uint32_t _heapIdx) const { return Handle(this, m_heap[_heapIdx]); }
 		Handle operator [] (uint32_t _heapIdx) { return Handle(this, m_heap[_heapIdx]); }
@@ -266,6 +297,7 @@ namespace ca { namespace pa {
 
 		void bubbleUp(uint32_t _idx)
 		{
+			eiAssert(_idx < m_size, "Out of bounds!");
 			uint32_t parent = (_idx - 1) / 2;
 			while(_idx > 0 && m_data[m_heap[_idx]].data < m_data[m_heap[parent]].data)
 			{
@@ -277,6 +309,7 @@ namespace ca { namespace pa {
 
 		void bubbleDown(uint32_t _idx)
 		{
+			eiAssert(_idx < m_size, "Out of bounds!");
 			uint32_t child = 2 * _idx + 1;
 			// While there are two children...
 			while(child + 1 < m_size)
@@ -302,15 +335,6 @@ namespace ca { namespace pa {
 			swap(m_heap[_heapIdxA], m_heap[_heapIdxB]);
 			m_data[m_heap[_heapIdxA]].heapIdx = _heapIdxA;
 			m_data[m_heap[_heapIdxB]].heapIdx = _heapIdxB;
-		}
-
-		template<typename T>
-		T updatePriority(T& _data, T&& _newPriority)
-		{
-			using namespace std;
-			T tmp( move(_data) );
-			new (&_data)(T)(std::forward<T>(_newPriority));
-			return move(tmp);
 		}
 	};
 

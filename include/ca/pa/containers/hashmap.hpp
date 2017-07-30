@@ -180,9 +180,10 @@ public:
 			uint32_t next = (_element.idx + 1) % m_capacity;
 			while((m_keys[next].dist != 0) && (m_keys[next].dist != 0xffffffff))
 			{
-				m_keys[i].key = move(m_keys[next].key);
+				new (&m_keys[i].key)(K)( move(m_keys[next].key) );
+				new (&m_data[i])(T)( move(m_data[next]) );
 				m_keys[i].dist = m_keys[next].dist - 1;
-				m_data[i] = move(m_data[next]);
+				m_keys[next].dist = 0xffffffff;
 				i = next;
 				if(++next >= m_capacity) next = 0;
 			}
