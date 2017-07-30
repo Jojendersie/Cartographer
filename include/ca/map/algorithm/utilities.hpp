@@ -45,7 +45,7 @@ namespace details {
 
 namespace ca { namespace map {
 
-	typedef pa::HashSet<GridCoord, ::details::FastCoordHash> ReachableSet;
+	typedef pa::HashMap<GridCoord, int, ::details::FastCoordHash> ReachableSet;
 
 	/// Simple reachable method, in which each tile has a constant cost if not empty.
 	/// The range is equal to the grid distance.
@@ -59,7 +59,7 @@ namespace ca { namespace map {
 		// Breadth first search with a queue
 		std::queue<OpenNode> queue;
 		queue.push({_from, 0.0f});
-		_reachableTiles.add(_from);
+		_reachableTiles.add(_from, 0);
 		while(!queue.empty())
 		{
 			// Are neighbors close enough?
@@ -73,7 +73,7 @@ namespace ca { namespace map {
 					if(cell && !_isEmpty(*cell) && !_reachableTiles.find(it.coord()))
 					{
 						queue.push({it.coord(), newCost});
-						_reachableTiles.add(it.coord());
+						_reachableTiles.add(it.coord(), int(newCost));
 					}
 				}
 			}
@@ -83,7 +83,7 @@ namespace ca { namespace map {
 
 	/// More involved method to find reachable tiles with a cost function.
 	/// \param [in] _reachableTiles Set which is cleared and then filled with the results.
-	///		It contains all reachable tiles excluding the start tile.
+	///		It contains all reachable tiles including the start tile.
 	/// \param [in] _maxCost Find all tiles which have at most _maxCost path costs.
 	/// \param [in] _cost A functor which assignes (entity specific) costs for each cell. Negative
 	///		costs mark obstacles.

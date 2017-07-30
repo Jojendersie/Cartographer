@@ -97,6 +97,25 @@ namespace ca { namespace map {
 		return (abs(_a.x - _b.x) + abs(_a.x + _a.y - _b.x - _b.y) + abs(_a.y - _b.y)) / 2;
 	}
 
+	/// Get the number of grid cells within a given range.
+	template<unsigned GridT>
+	inline int numCellsInRange(int _range)
+	{
+		// QUAD4: 1, 5, 13, 25, 41
+		return 2 * (_range * _range + _range) + 1;
+	}
+	template<>
+	inline int numCellsInRange<unsigned(GridType::QUAD_8)>(int _range)
+	{
+		return (_range * 2 + 1) * (_range * 2 + 1);
+	}
+	template<>
+	inline int numCellsInRange<unsigned(GridType::HEX)>(int _range)
+	{
+		// 1, 7, 19, 37, 61
+		return 3 * (_range * _range + _range) + 1;
+	}
+
 	// Shorter names avoiding the lengthy casted-enum to specialize manually.
 	// Unfortunatelly, there is no using... The cleanest way would be a variadic
 	// with perfect forwarding.

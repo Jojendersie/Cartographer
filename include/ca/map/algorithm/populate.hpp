@@ -9,17 +9,20 @@ namespace details {
 	struct CellInfo
 	{
 		ca::map::GridCoord coord;
-		int space;
+		float spaceCost;
+		float distCost;
 
 		bool operator < (const CellInfo& _rhs) const
 		{
-			return space < _rhs.space;
+			return cost() < _rhs.cost();
 		}
 
 		bool operator == (const CellInfo& _rhs) const
 		{
 			return coord == _rhs.coord;
 		}
+
+		float cost() const { return spaceCost + distCost; }
 	};
 }
 
@@ -111,9 +114,6 @@ namespace ca { namespace map {
 			findReachable(_map, reachableTiles, coord, _minDistance, _isEmpty);
 			for(auto coord : reachableTiles)
 				validTiles.remove(coord);
-			// TODO: improve by using visible range iterator.
-			//for(auto n = NeighborIterator<MapT::TGridType>(coord, _minDistance); n; ++n)
-				//validTiles.remove(n.coord());
 		}
 
 		// Fill with random unused tiles from the freeTiles list. For each element
@@ -140,6 +140,85 @@ namespace ca { namespace map {
 			for(auto& it : queue)
 				it.space = -min(-it.space, distance<MapT::TGridType>(it.coord, coord));
 			queue.heapify();
+		}
+
+		return numCreated;
+	}
+
+	// New layout:
+	// * Fill priority queue with costs = number of free space violations
+	// * Mark all things close to the start tile
+	// * Take element from queue
+	// * Update priority of neighborhood:
+	//   - find using hashmap
+	//   - add an increasing cost the closer the element is
+	template<typename MapT>
+	int populate2(MapT& _map, const GridCoord& _seed, int _minDistance,
+		int _minSpaceRadius, int _requiredSpace, int _forceNum,
+		std::function<bool(typename const MapT::TCellType&)> _isEmpty,
+		std::function<void(const GridCoord&)> _spawn)
+	{
+		using namespace ::details;
+		eiAssert(numCellsInRange<MapT::TGridType>(_minSpaceRadius) >= _requiredSpace, "Required space condition cannot be met.");
+		// A queue combined with a hashmap to find elements in the queue
+		pa::PriorityQueue<CellInfo> queue;
+		pa::HashMap<GridCoord, pa::PriorityQueue<CellInfo>::Handle, FastCoordHash> findInQueueMap;
+		// Get the free space of all tiles
+		for(typename MapT::SeqIterator it = _map.begin(); it; ++it) if(!_isEmpty(it.dat()) && it.coord() != _seed)
+		{
+			int space = 0;
+			if(_minSpaceRadius > 0)
+			{
+				for(auto n = NeighborIterator<MapT::TGridType>(it.coord(), _minSpaceRadius); n; ++n)
+				{
+					typename MapT::TCellType* ncell = _map.find(n.coord());
+					if(ncell && !_isEmpty(*ncell))
+						space++;
+				}
+			} else space = 1;
+			::details::CellInfo cinfo;
+			cinfo.coord = it.coord();
+			// Relative cost 0-100% for space violation
+			cinfo.spaceCost = ei::max(_requiredSpace - space, 0) / ei::max(float(_requiredSpace), 1e-10f);
+			cinfo.distCost = 0.0f;
+			findInQueueMap.add(it.coord(), queue.add(cinfo));
+		}
+
+		// Add costs when close to start.
+		ReachableSet reachableTiles;
+		findReachable(_map, reachableTiles, _seed, _minDistance, _isEmpty);
+		for(auto it : reachableTiles)
+		{
+			auto handle = findInQueueMap.find(it.key());
+			if(handle)
+			{
+				float distCost = (_minDistance - it.data() + 1) / float(_minDistance);
+				handle.data()->distCost = distCost;
+				queue.priorityChanged(handle.data());
+			}
+		}
+
+		// Spawn elements
+		int numCreated = 0;
+		while(!queue.empty()
+			&& !(numCreated >= _forceNum && queue.min().cost() > 0.0f) // Still valid tiles, or required tiles
+		) {
+			auto cinfo = queue.popMin();
+			findInQueueMap.remove(cinfo.coord);
+			_spawn(cinfo.coord);
+			++numCreated;
+			// Increase costs of all close by tiles, based on free radius.
+			findReachable(_map, reachableTiles, cinfo.coord, _minDistance, _isEmpty);
+			for(auto it : reachableTiles)
+			{
+				auto handle = findInQueueMap.find(it.key());
+				if(handle)
+				{
+					float distCost = (_minDistance - it.data() + 1) / float(_minDistance);
+					handle.data()->distCost += ei::max(distCost, handle.data()->distCost);
+					queue.priorityChanged(handle.data());
+				}
+			}
 		}
 
 		return numCreated;
