@@ -6,3 +6,4 @@
 #include "pa/containers/hashmap.hpp"
 #include "pa/containers/hashset.hpp"
 #include "pa/containers/priorityqueue.hpp"
+#include "pa/containers/hashpriorityqueue.hpp"

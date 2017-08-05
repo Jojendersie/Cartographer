@@ -144,7 +144,7 @@ public:
 		using namespace std;
 		if(_element)
 		{
-			m_keys[_element.idx].dist = 0xffffffff;
+			//m_keys[_element.idx].dist = 0xffffffff;
 			m_keys[_element.idx].value.~T();
 			--m_size;
 			uint32_t i = _element.idx;

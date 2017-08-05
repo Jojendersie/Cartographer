@@ -39,6 +39,9 @@
     <ClInclude Include="include\ca\pa\containers\hashset.hpp">
       <Filter>include\containers</Filter>
     </ClInclude>
+    <ClInclude Include="include\ca\pa\containers\hashpriorityqueue.hpp">
+      <Filter>include\containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\log.cpp">
