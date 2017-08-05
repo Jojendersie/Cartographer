@@ -24,6 +24,27 @@ namespace details {
 
 		float cost() const { return spaceCost + distCost; }
 	};
+
+	// Helper which changes the distCost of all cellinfos within a given range.
+	template<typename MapT>
+	static void updateCostsInRange(const MapT& _map,
+		ca::map::ReachableSet& _reachableTiles,
+		const ca::map::GridCoord& _from, int _maxDistance,
+		const std::function<bool(typename const MapT::TCellType&)>& _isEmpty,
+		ca::pa::HashPriorityQueue<CellInfo>& _queue)
+	{
+		findReachable(_map, _reachableTiles, _from, _maxDistance, _isEmpty);
+		for(auto it : _reachableTiles)
+		{
+			auto handle = _queue.find(CellInfo{it.key(), 0.0f, 0.0f});
+			if(handle)
+			{
+				float distCost = (_maxDistance - it.data() + 1) / float(_maxDistance);
+				handle->distCost = ei::max(distCost, handle->distCost);
+				_queue.priorityChanged(handle);
+			}
+		}
+	}
 }
 
 namespace std {
@@ -161,8 +182,7 @@ namespace ca { namespace map {
 		using namespace ::details;
 		eiAssert(numCellsInRange<MapT::TGridType>(_minSpaceRadius) >= _requiredSpace, "Required space condition cannot be met.");
 		// A queue combined with a hashmap to find elements in the queue
-		pa::PriorityQueue<CellInfo> queue;
-		pa::HashMap<GridCoord, pa::PriorityQueue<CellInfo>::Handle, FastCoordHash> findInQueueMap;
+		pa::HashPriorityQueue<CellInfo> queue(2000);
 		// Get the free space of all tiles
 		for(typename MapT::SeqIterator it = _map.begin(); it; ++it) if(!_isEmpty(it.dat()) && it.coord() != _seed)
 		{
@@ -181,22 +201,12 @@ namespace ca { namespace map {
 			// Relative cost 0-100% for space violation
 			cinfo.spaceCost = ei::max(_requiredSpace - space, 0) / ei::max(float(_requiredSpace), 1e-10f);
 			cinfo.distCost = 0.0f;
-			findInQueueMap.add(it.coord(), queue.add(cinfo));
+			queue.add(cinfo);
 		}
 
 		// Add costs when close to start.
 		ReachableSet reachableTiles;
-		findReachable(_map, reachableTiles, _seed, _minDistance, _isEmpty);
-		for(auto it : reachableTiles)
-		{
-			auto handle = findInQueueMap.find(it.key());
-			if(handle)
-			{
-				float distCost = (_minDistance - it.data() + 1) / float(_minDistance);
-				handle.data()->distCost = distCost;
-				queue.priorityChanged(handle.data());
-			}
-		}
+		updateCostsInRange(_map, reachableTiles, _seed, _minDistance, _isEmpty, queue);
 
 		// Spawn elements
 		int numCreated = 0;
@@ -204,21 +214,10 @@ namespace ca { namespace map {
 			&& !(numCreated >= _forceNum && queue.min().cost() > 0.0f) // Still valid tiles, or required tiles
 		) {
 			auto cinfo = queue.popMin();
-			findInQueueMap.remove(cinfo.coord);
 			_spawn(cinfo.coord);
 			++numCreated;
 			// Increase costs of all close by tiles, based on free radius.
-			findReachable(_map, reachableTiles, cinfo.coord, _minDistance, _isEmpty);
-			for(auto it : reachableTiles)
-			{
-				auto handle = findInQueueMap.find(it.key());
-				if(handle)
-				{
-					float distCost = (_minDistance - it.data() + 1) / float(_minDistance);
-					handle.data()->distCost += ei::max(distCost, handle.data()->distCost);
-					queue.priorityChanged(handle.data());
-				}
-			}
+			updateCostsInRange(_map, reachableTiles, cinfo.coord, _minDistance, _isEmpty, queue);
 		}
 
 		return numCreated;
