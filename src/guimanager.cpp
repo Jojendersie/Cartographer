@@ -38,6 +38,8 @@ namespace ca { namespace gui {
 
 	void GUIManager::exit()
 	{
+		g_manager->m_popupStack.clear();
+		g_manager->m_topFrame = nullptr;
 		g_manager.reset(nullptr);
 		logInfo("[ca::gui] Released GUIManager.");
 	}
@@ -208,22 +210,22 @@ namespace ca { namespace gui {
 
 	bool GUIManager::hasKeyboardFocus(const WidgetPtr& _widget)
 	{
-		return g_manager->m_keyboardFocus == _widget.get();
+		return g_manager && g_manager->m_keyboardFocus == _widget.get();
 	}
 
 	bool GUIManager::hasKeyboardFocus(const Widget* _widget)
 	{
-		return g_manager->m_keyboardFocus == _widget;
+		return g_manager && g_manager->m_keyboardFocus == _widget;
 	}
 
 	bool GUIManager::hasMouseFocus(const WidgetPtr& _widget)
 	{
-		return g_manager->m_mouseFocus == _widget.get();
+		return g_manager && g_manager->m_mouseFocus == _widget.get();
 	}
 
 	bool GUIManager::hasMouseFocus(const Widget* _widget)
 	{
-		return g_manager->m_mouseFocus == _widget;
+		return g_manager && g_manager->m_mouseFocus == _widget;
 	}
 
 	Widget* GUIManager::getKeyboardFocussed()

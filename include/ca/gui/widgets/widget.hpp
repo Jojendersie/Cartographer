@@ -22,7 +22,7 @@ namespace ca { namespace gui {
 	{
 	public:
 		Widget();
-		virtual ~Widget() = default;
+		virtual ~Widget();
 
 		/// Set the button width and heigh (resets anchoring)
 		void setSize(const Coord2& _size);

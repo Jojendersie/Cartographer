@@ -19,6 +19,14 @@ namespace ca { namespace gui {
 	{
 	}
 
+	Widget::~Widget()
+	{
+		if(GUIManager::hasMouseFocus(this))
+			GUIManager::setMouseFocus(nullptr);
+		if(GUIManager::hasKeyboardFocus(this))
+			GUIManager::setKeyboardFocus(nullptr);
+	}
+
 	void Widget::setSize(const Coord2& _size)
 	{
 		RefFrame oldFrame = m_refFrame;
