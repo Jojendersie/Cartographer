@@ -30,8 +30,7 @@ namespace ca { namespace gui {
 		g_manager->m_keyboardFocus = nullptr;
 		g_manager->m_mouseFocus = nullptr;
 		g_manager->m_stickyKeyboardFocus = false;
-		g_manager->m_stickyMouseFocus[0] = false;
-		g_manager->m_stickyMouseFocus[1] = false;
+		g_manager->m_stickyMouseFocus = false;
 		g_manager->m_lastMouseMoveTime = 0.0f;
 		logInfo("[ca::gui] Initialized GUIManager.");
 	}
@@ -172,12 +171,15 @@ namespace ca { namespace gui {
 
 		// Reset sticky-state. The component must actively regain this.
 		// Otherwise some component may keep the state forever.
-		g_manager->m_stickyMouseFocus[1] = false;
+		bool wasStickyMouseFocus = g_manager->m_stickyMouseFocus;
+		g_manager->m_stickyMouseFocus = false;
+		// If the focussed element is invisible release its focus.
+		if(g_manager->m_mouseFocus && !g_manager->m_mouseFocus->isVisible())
+			g_manager->m_mouseFocus = nullptr;
 
-		if(g_manager->m_stickyMouseFocus[0] && g_manager->m_mouseFocus)
+		if(wasStickyMouseFocus && g_manager->m_mouseFocus)
 		{
 			bool ret = g_manager->m_mouseFocus->processInput( _mouseState );
-			g_manager->m_stickyMouseFocus[0] = g_manager->m_stickyMouseFocus[1];
 			return ret;
 		} else {
 			// First process popups (they overlay the rest)
@@ -247,7 +249,7 @@ namespace ca { namespace gui {
 
 	Widget * GUIManager::getStickyMouseFocussed()
 	{
-		if(g_manager->m_stickyMouseFocus[0])
+		if(g_manager->m_stickyMouseFocus)
 			return g_manager->m_mouseFocus;
 		return nullptr;
 	}
@@ -261,7 +263,7 @@ namespace ca { namespace gui {
 	void GUIManager::setMouseFocus(Widget* _widget, bool _sticky)
 	{
 		g_manager->m_mouseFocus = _widget;
-		g_manager->m_stickyMouseFocus[0] = g_manager->m_stickyMouseFocus[1] = _sticky;
+		g_manager->m_stickyMouseFocus = _sticky;
 	}
 
 	CursorType GUIManager::getCursorType()
@@ -297,6 +299,7 @@ namespace ca { namespace gui {
 	void GUIManager::showPopup(WidgetPtr & _popup, const Widget* _originator)
 	{
 		if(_popup->isVisible()) return;
+		if(!_originator->isVisible()) return;
 
 		// Try to place the popup at the bottom right of the cursor.
 		Coord2 pos = g_manager->m_mouseState.position + Coord2(12.0f, -12.0f);

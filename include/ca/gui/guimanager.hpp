@@ -118,7 +118,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		Widget* m_keyboardFocus;		///< The element with the keyboard-focus or nullptr
 		Widget* m_mouseFocus;			///< The element with the mouse-focus or nullptr
 		bool m_stickyKeyboardFocus;		///< The focus guarantees exclusive input handling by the element. The element must release this active.
-		bool m_stickyMouseFocus[2];		///< The focus guarantees exclusive input handling by the element.
+		bool m_stickyMouseFocus;		///< The focus guarantees exclusive input handling by the element.
 		float m_lastMouseMoveTime;		///< Point in time where the mouse was moved the last.
 
 		std::stack<ei::IVec4, std::vector<ei::IVec4>> m_clipRegionStack;
