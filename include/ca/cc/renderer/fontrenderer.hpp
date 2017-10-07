@@ -55,7 +55,7 @@ namespace ca { namespace cc {
 		void draw(const ei::Vec3& _position, const char* _text, float _size, const ei::Vec4& _color, float _rotation = 0.0f, float _alignX = 0.0f, float _alignY = 0.0f, bool _roundToPixel = false);
 
 		/// Simulate a text rendering and get the bounding box of the resulting drawn text.
-		ei::Rect2D getBoundingBox(const ei::Vec3& _position, const char* _text, float _size, float _rotation = 0.0f, float _alignX = 0.0f, float _alignY = 0.0f);
+		ei::Rect2D getBoundingBox(const ei::Vec3& _position, const char* _text, float _size, float _rotation = 0.0f, float _alignX = 0.0f, float _alignY = 0.0f, bool _roundToPixel = false);
 
 		/// Remove all previously drawn texts
 		void clearText();

@@ -175,7 +175,7 @@ namespace ca { namespace cc {
 		m_dirty = true;
 	}
 
-	Rect2D FontRenderer::getBoundingBox(const Vec3& _position, const char* _text, float _size, float _rotation, float _alignX, float _alignY)
+	Rect2D FontRenderer::getBoundingBox(const Vec3& _position, const char* _text, float _size, float _rotation, float _alignX, float _alignY, bool _roundToPixel)
 	{
 		Rect2D out;
 
@@ -186,12 +186,16 @@ namespace ca { namespace cc {
 		float sinAlpha = sin(_rotation), cosAlpha = cos(_rotation);
 		Vec2 adX( cosAlpha * scale, sinAlpha * scale);
 		Vec2 adY(-sinAlpha * scale, cosAlpha * scale);
+		Vec3 position = _position;
+		if(_roundToPixel)
+			position.y = roundf(position.y - m_baseLineOffset * scale) + m_baseLineOffset * scale;
 
 		// Create a cursor in text-space (without rotation and scale)
 		Vec2 cursor(0.0f);
 		out.min = Vec2(0.0f);
 		out.max = Vec2(0.0f, (float)BASE_SIZE);
 		auto lastC = m_chars.end();
+		bool firstInLine = true;
 		for(char32_t c = getNext(&_text); c; c = getNext(&_text))
 		{
 			if(c == '\n')
@@ -199,6 +203,7 @@ namespace ca { namespace cc {
 				out.max.y += BASE_SIZE;
 				cursor.x = out.min.x;
 				lastC = m_chars.end();
+				firstInLine = true;
 			} else {
 				auto charEntry = m_chars.find(c);
 				if(charEntry != m_chars.end())
@@ -212,10 +217,15 @@ namespace ca { namespace cc {
 						if(it != lastC->second.kerning.end() && it->character == p.character)
 							cursor.x += it->kern / 64.0f;
 					}
+					if(firstInLine)
+						cursor.x -= charEntry->second.baseX;
+					if(_roundToPixel)
+						cursor.x = roundf((cursor.x + charEntry->second.baseX) * scale) / scale - charEntry->second.baseX;
 					out.max.x = max(out.max.x, cursor.x + charEntry->second.texSize.x);
 					cursor.x += charEntry->second.advance / 64.0f;
 				}
 				lastC = charEntry;
+				firstInLine = false;
 			}
 		}
 
