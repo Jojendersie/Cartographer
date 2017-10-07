@@ -12,6 +12,7 @@ namespace ca { namespace gui {
 		/// A string with all character strokes since last state actualization.
 		/// The string should represent the input order.
 		/// The characters should respect the current keyboard layout and modifier keys.
+		/// The encoding must be UTF8.
 		std::string characterInput;
 
 		/// Flags of hardware key states.
@@ -155,12 +156,24 @@ namespace ca { namespace gui {
 
 		/// State of all physical keys.
 		KeyState keys[232];
+		/// There was any UP or DOWN event in the current frame?
+		bool anyKeyChanged;
 
 		/// Reset/change states
 		void clear();
 
-		/// Returns true if the of the key is DOWN or PRESSED
+		/// Returns true if the of the key is DOWN (actively changed to down this frame).
 		bool isKeyDown(Key _key) const;
+
+		/// Returns true if the of the key is DOWN or PRESSED
+		bool isKeyPressed(Key _key) const;
+
+		/// Check if any (left or right) controll button is down.
+		bool isControlPressed() const;
+		/// Check if any (left or right) shift button is down.
+		bool isShiftPressed() const;
+		/// Check if any (left or right) alt button is down.
+		bool isAltPressed() const;
 	};
 
 }} // namespace ca::gui

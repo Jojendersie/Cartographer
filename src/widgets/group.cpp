@@ -94,7 +94,7 @@ namespace ca { namespace gui {
 					return true;
 				}
 			}
-		}
+		} else eiAssert(false, "Unexpected focus situation!");
 		return false;
 	}
 

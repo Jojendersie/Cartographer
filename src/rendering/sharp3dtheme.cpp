@@ -115,7 +115,7 @@ namespace ca { namespace gui {
 		return GUIManager::renderBackend().getTextBB(_position, _text,
 			m_properties.textSize * _relativeScale,
 			_alignX, _alignY,
-			0.0f );
+			0.0f, true );
 	}
 
 	void Sharp3DTheme::drawImage(const RefFrame& _rect, uint64 _texHandle, float _opacity, bool _tiling)

@@ -56,6 +56,11 @@ namespace ca { namespace gui {
 		///		no other component will be checked afterwards.
 		virtual bool processInput(const struct MouseState& _mouseState);
 
+		/// Process Keyboard input if desired.
+		/// \return True if this component absorbed the input. If any compontent returns true
+		///		no other component will be checked afterwards.
+		virtual bool processInput(const struct KeyboardState& _mouseState) { return false; }
+
 		/// Can this element currently receive input (enabled)?
 		bool isEnabled() const { return m_enabled; }
 		void enable() { m_enabled = true; }

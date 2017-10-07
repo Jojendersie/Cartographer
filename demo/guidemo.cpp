@@ -3,9 +3,11 @@
 #include <ca/paper.hpp>
 #include "../dependencies/stb_image.h" // Implementation included in Charcoal
 #include <GLFW/glfw3.h>
-#include "stdwindow.hpp"
 #include <memory>
 #include <iostream>
+#include <codecvt>
+
+#include "stdwindow.hpp"
 
 using namespace ei;
 using namespace ca::gui;
@@ -13,6 +15,7 @@ using namespace ca::gui;
 static ThemePtr g_flatTheme;
 static ThemePtr g_3dTheme;
 static MouseState g_mouseState;
+static KeyboardState g_keyboardState;
 static GLFWcursor* g_cursors[10];
 
 static void cursorPosFunc(GLFWwindow*, double _x, double _y)
@@ -40,6 +43,74 @@ static void scrollFunc(GLFWwindow*, double _x, double _y)
 	g_mouseState.deltaScroll.y = (float)_y;
 }
 
+static void keyFunc(GLFWwindow*, int _key, int _scancode, int _action, int _mods)
+{
+	// TODO: make this part of the lib as convert function? Con: glfw is not a dependency.
+	// The gui does not know of such things. But, some eventual useless converter functions are not that bad.
+	static uint8 GLFW_TO_CAGUI_KEYMAP[349] = {
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		44, 0, 0, 0, 0, 0, 0, 52,
+		0, 0, 0, 0, 54, 45, 55, 56,
+		30, 31, 32, 33, 34, 35, 36, 37,
+		38, 39, 0, 51, 0, 46, 0, 0,
+		0, 4, 5, 6, 7, 8, 9, 10,
+		11, 12, 13, 14, 15, 16, 17, 18,
+		19, 20, 21, 22, 23, 24, 25, 26,
+		27, 28, 29, 47, 49, 48, 0, 0,
+		53, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 50, 100, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		41, 40, 43, 42, 73, 76, 79, 80,
+		81, 82, 75, 78, 74, 77, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		57, 71, 83, 70, 72, 0, 0, 0,
+		0, 0, 58, 59, 60, 61, 62, 63,
+		64, 65, 66, 67, 68, 69, 104, 105,
+		106, 107, 108, 109, 110, 111, 112, 113,
+		114, 115, 0, 0, 0, 0, 0, 0, 98,
+		89, 90, 91, 92, 93, 94, 95, 96,
+		97, 99, 84, 85, 86, 87, 88, 103,
+		0, 0, 0, 225, 224, 226, 227, 229,
+		228, 230, 231, 101
+	};
+	if(_action == GLFW_PRESS) {
+		g_keyboardState.keys[GLFW_TO_CAGUI_KEYMAP[_key]] = ca::gui::KeyboardState::DOWN;
+		g_keyboardState.anyKeyChanged = true;
+	} else if(_action == GLFW_RELEASE) {
+		g_keyboardState.keys[GLFW_TO_CAGUI_KEYMAP[_key]] = ca::gui::KeyboardState::UP;
+		g_keyboardState.anyKeyChanged = true;
+	} else if(_action == GLFW_REPEAT) {
+		g_keyboardState.keys[GLFW_TO_CAGUI_KEYMAP[_key]] = ca::gui::KeyboardState::DOWN;
+		g_keyboardState.anyKeyChanged = true;
+	}
+}
+
+void charFunc(GLFWwindow*, unsigned int _char)
+{
+	std::wstring_convert<std::codecvt_utf8<int32_t>,int32_t> convert;
+	g_keyboardState.characterInput += convert.to_bytes(_char);
+}
+
 
 GLFWcursor* loadAsCursor(const char* _imgFile, int _hotX, int _hotY)
 {
@@ -61,6 +132,8 @@ void setupInput(GLFWwindow* _window)
 	glfwSetCursorPosCallback(_window, cursorPosFunc);
 	glfwSetMouseButtonCallback(_window, mouseButtonFunc);
 	glfwSetScrollCallback(_window, scrollFunc);
+	glfwSetKeyCallback(_window, keyFunc);
+	glfwSetCharCallback(_window, charFunc);
 
 	g_cursors[(int)CursorType::ARROW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 	if(g_cursors[(int)CursorType::ARROW]) ca::pa::logPedantic("Loaded cursor 'GLFW_ARROW_CURSOR'.");
@@ -379,6 +452,30 @@ void createGUI(GLFWwindow* _window)
 	l1->setText("Info popup.", 2.0f);
 	l1->setBackgroundOpacity(1.0f);
 	f5->setInfoPopup(l1);
+
+	// A frame with edits
+	FramePtr f6(new Frame);
+	f6->setMoveable(true);
+	f6->setResizeable(true);
+	f6->setExtent(f5->getPosition() + Coord2(f5->getSize().x + 10.0f, 0.0f), f5->getSize());
+	f6->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
+	BorderAnchorProvider* anchorsf6 = static_cast<BorderAnchorProvider*>(f6->getAnchorProvider());
+	GUIManager::add(f6);
+
+	EditPtr e0( new Edit );
+	e0->setExtent(f6->getPosition() + Coord2(5.0f), Coord2(f6->getSize().x - 10.0f, 20.0f));
+	e0->setText("Type text here");
+	e0->autoAnchor(anchorsf6);
+	e0->setAnchorModes(Anchorable::PREFER_RESIZE);
+	f6->add(e0);
+
+	EditPtr e1( new Edit );
+	e1->setExtent(f6->getPosition() + Coord2(5.0f, 30.0f), Coord2(f6->getSize().x - 10.0f, 20.0f));
+	//e1->setDescriptorText("Type text here"); // TODO
+	e1->autoAnchor(anchorsf6);
+	e1->setMargin(2.0f); // TODO
+	e1->setAnchorModes(Anchorable::PREFER_RESIZE);
+	f6->add(e1);
 }
 
 void runMainLoop(GLFWwindow* _window)
@@ -389,11 +486,13 @@ void runMainLoop(GLFWwindow* _window)
 		float deltaTime = (float)clock.deltaTime();
 
 		g_mouseState.clear();
+		g_keyboardState.clear();
 		glfwPollEvents();
 		double x, y;
 		glfwGetCursorPos(_window, &x, &y);
 		//g_mouseState.position = Coord2((float)x, GUIManager::getHeight() - (float)y);
 		ca::gui::GUIManager::processInput(g_mouseState);
+		ca::gui::GUIManager::processInput(g_keyboardState);
 		glfwSetCursor(_window, g_cursors[(int)GUIManager::getCursorType()]);
 
 		ca::cc::glCall(glClearColor, 0.01f, 0.01f, 0.01f, 1.0f);

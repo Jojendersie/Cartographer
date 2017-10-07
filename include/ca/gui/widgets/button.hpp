@@ -41,7 +41,7 @@ namespace ca { namespace gui {
 		/// Set a custom look instead of the theme's background rendering.
 		/// \param [in] _textureFile Name of an image file.
 		/// \param [in] _hoverTextureFile A second texture if the mouse is over the button. Can be nullptr.
-		/// \param [in] _hoverTextureFile A third texture if a mouse button is down the button. Can be nullptr.
+		/// \param [in] _downTextureFile A third texture if a mouse button is down the button. Can be nullptr.
 		/// \param [in] _smooth Interpolate linearly during texture sampling or use nearest point.
 		void setBackgroundTexture(const char* _textureFile, const char* _hoverTextureFile, const char* _downTextureFile, bool _smooth = true);
 

@@ -29,7 +29,6 @@ namespace ca { namespace gui {
 
 		g_manager->m_keyboardFocus = nullptr;
 		g_manager->m_mouseFocus = nullptr;
-		g_manager->m_stickyKeyboardFocus = false;
 		g_manager->m_stickyMouseFocus = false;
 		g_manager->m_lastMouseMoveTime = 0.0f;
 		logInfo("[ca::gui] Initialized GUIManager.");
@@ -197,6 +196,14 @@ namespace ca { namespace gui {
 		}
 
 		g_manager->m_keyboardState = _keyboardState;
+
+		// If the focussed element is invisible release its focus.
+		if(g_manager->m_keyboardFocus && !g_manager->m_keyboardFocus->isVisible())
+			g_manager->m_keyboardFocus = nullptr;
+		if(g_manager->m_keyboardFocus)
+		{
+			return g_manager->m_keyboardFocus->processInput(_keyboardState);
+		}
 		return false;
 	}
 
@@ -237,9 +244,7 @@ namespace ca { namespace gui {
 
 	Widget * GUIManager::getStickyKeyboardFocussed()
 	{
-		if(g_manager->m_stickyKeyboardFocus)
-			return g_manager->m_keyboardFocus;
-		return nullptr;
+		return g_manager->m_keyboardFocus;
 	}
 
 	Widget* GUIManager::getMouseFocussed()
@@ -254,10 +259,9 @@ namespace ca { namespace gui {
 		return nullptr;
 	}
 
-	void GUIManager::setKeyboardFocus(Widget* _widget, bool _sticky)
+	void GUIManager::setKeyboardFocus(Widget* _widget)
 	{
 		g_manager->m_keyboardFocus = _widget;
-		g_manager->m_stickyKeyboardFocus = _sticky;
 	}
 
 	void GUIManager::setMouseFocus(Widget* _widget, bool _sticky)

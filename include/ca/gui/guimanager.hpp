@@ -77,7 +77,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		static Widget* getStickyMouseFocussed();
 
 		/// Set an element as the focussed one and release the last one.
-		static void setKeyboardFocus(Widget* _widget, bool _sticky = false);
+		static void setKeyboardFocus(Widget* _widget);
 		static void setMouseFocus(Widget* _widget, bool _sticky = false);
 
 		/// What cursor should actually be used?
@@ -117,7 +117,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 
 		Widget* m_keyboardFocus;		///< The element with the keyboard-focus or nullptr
 		Widget* m_mouseFocus;			///< The element with the mouse-focus or nullptr
-		bool m_stickyKeyboardFocus;		///< The focus guarantees exclusive input handling by the element. The element must release this active.
+		//bool m_stickyKeyboardFocus;		///< The focus guarantees exclusive input handling by the element. The element must release this active.
 		bool m_stickyMouseFocus;		///< The focus guarantees exclusive input handling by the element.
 		float m_lastMouseMoveTime;		///< Point in time where the mouse was moved the last.
 
