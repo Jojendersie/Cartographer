@@ -30,15 +30,15 @@ namespace ca { namespace gui {
 		}
 
 		// Text
+		GUIManager::pushClipRegion(RefFrame(m_refFrame.left() + m_margin, m_refFrame.right() - m_margin, m_refFrame.bottom() + m_margin, m_refFrame.top() - m_margin));
 		GUIManager::theme().drawText(m_textPosition, m_text.c_str(), m_relativeTextSize, isEditing, m_textColor);
 
 		// Cursor
 		if(isEditing)
 		{
-			GUIManager::pushClipRegion(RefFrame(m_refFrame.left() + m_margin, m_refFrame.right() - m_margin, m_refFrame.bottom() + m_margin, m_refFrame.top() - m_margin));
 			GUIManager::theme().drawText(m_cursorDrawPosition, "|", m_relativeTextSize, isEditing, m_textColor);
-			GUIManager::popClipRegion();
 		}
+		GUIManager::popClipRegion();
 	}
 
 	bool Edit::processInput(const MouseState & _mouseState)
@@ -56,6 +56,7 @@ namespace ca { namespace gui {
 		return Widget::processInput(_mouseState);
 	}
 
+	// TODO: move to helper header
 	const char* CONTROL_STOP_CHARACTERS = " \t\n\r,.;:+-*/\\|^&~\"'()[]{}!?<>";
 
 	static uint findPrevControlStop(const std::string & _str, uint _off)
@@ -74,14 +75,19 @@ namespace ca { namespace gui {
 
 	static bool utf8IsStartByte(char _c)
 	{
-		return ((_c & 0x80) == 0) || ((_c & 0xc0) == 0xc0);
+		//return ((_c & 0x80) == 0) || ((_c & 0xc0) == 0xc0);
+		return (_c & 0xc0) != 0x80;
+	}
+	static bool utf8IsIntermediateBye(char _c)
+	{
+		return (_c & 0xc0) == 0x80;
 	}
 
 	static uint utf8Next(const char* _text, uint _pos)
 	{
 		if(_text[_pos] == 0) return _pos;
 		++_pos;
-		while(!utf8IsStartByte(_text[_pos])) ++_pos;
+		while(utf8IsIntermediateBye(_text[_pos])) ++_pos;
 		return _pos;
 	}
 
@@ -89,7 +95,7 @@ namespace ca { namespace gui {
 	{
 		if(_pos == 0) return 0;
 		--_pos;
-		while(!utf8IsStartByte(_text[_pos]) && _pos > 0) --_pos;
+		while(utf8IsIntermediateBye(_text[_pos]) && _pos > 0) --_pos;
 		return _pos;
 	}
 
@@ -194,8 +200,8 @@ namespace ca { namespace gui {
 			center -= textSize * 0.5f;
 			switch(m_textAlignment)
 			{
-			case SIDE::LEFT: textPos = Coord2(m_refFrame.left() + m_margin, center.y); break;
-			case SIDE::RIGHT: textPos = Coord2(m_refFrame.right() - textSize.x - m_margin, center.y); break;
+			case SIDE::LEFT: textPos = Coord2(m_refFrame.left() + m_margin + 1.0f, center.y); break;
+			case SIDE::RIGHT: textPos = Coord2(m_refFrame.right() - textSize.x - m_margin - 1.0f, center.y); break;
 			case SIDE::BOTTOM: textPos = Coord2(center.x, m_refFrame.bottom() + m_margin); break;
 			case SIDE::TOP: textPos = Coord2(center.x, m_refFrame.top() - textSize.y - m_margin); break;
 			case SIDE::CENTER: textPos = center; break;
@@ -204,7 +210,6 @@ namespace ca { namespace gui {
 
 		// Compute a local and then the global cursor position.
 		Vec2 curPos = textSizeBeforeCursor;
-		curPos.x -= max(1.0f, cursorSize.x * 0.5f);
 		curPos += textPos;
 		float offset = 0.0f;
 		// Make sure the cursor is visible
@@ -215,6 +220,7 @@ namespace ca { namespace gui {
 			if(curPos.x > m_refFrame.right() - m_margin - cursorSize.x)
 				offset = m_refFrame.right() - m_margin - cursorSize.x - curPos.x;
 		}
+		curPos.x -= max(1.0f, cursorSize.x * 0.5f);
 		m_cursorDrawPosition = curPos + Vec2(offset, 0.0f);
 		m_textPosition = textPos + Vec2(offset, 0.0f);
 	}
