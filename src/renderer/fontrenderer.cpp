@@ -76,25 +76,6 @@ namespace ca { namespace cc {
 
 	void FontRenderer::draw(const ei::Vec3& _position, const char* _text, float _size, const ei::Vec4& _color, float _rotation, float _alignX, float _alignY, bool _roundToPixel)
 	{
-		// TEST-CODE
-		// create test vertices which cover the whole texture
-		/*CharacterVertex v;
-		v.position = Vec3(0.0f, 0.0f, 0.1f);
-		v.rotation = 0.0f;
-		v.size = Vec2((float)m_texture->getWidth(), (float)m_texture->getHeight());
-		v.texCoords = Vec<uint16, 4>(0, 0, 65535, 65535);
-		m_instances.push_back(v);
-		for(int i=1; i<4; ++i)
-		{
-			v.position.x += v.size.x;
-			v.position.y += v.size.y;
-			v.size /= 2.0f;
-			m_instances.push_back(v);
-		}*/
-
-		// Convert pixel size into a scale factor
-		float scale = _size / BASE_SIZE;
-
 		// Compress color to vertex format
 		ei::Vec<uint8, 4> color;
 		color.r = (uint8)clamp(_color.a*_color.r*255.0f, 0.0f, 255.0f);
@@ -102,74 +83,31 @@ namespace ca { namespace cc {
 		color.b = (uint8)clamp(_color.a*_color.b*255.0f, 0.0f, 255.0f);
 		color.a = (uint8)clamp(_color.a*255.0f, 0.0f, 255.0f);
 
-		// Create a basis based on the rotation
-		float sinAlpha = sin(_rotation), cosAlpha = cos(_rotation);
-		Vec3 adX( cosAlpha * scale, sinAlpha * scale, 0.0f);
-		Vec3 adY(-sinAlpha * scale, cosAlpha * scale, 0.0f);
-		Vec3 position = _position;
-		if(_roundToPixel)
-			position.y = roundf(position.y - m_baseLineOffset * scale) + m_baseLineOffset * scale;
+		Mat2x2 rotateAndScale = ei::rotation(_rotation) * ei::scaling<float, 2>(_size / BASE_SIZE);
 
 		size_t firstNewVertex = m_instances.size();
-		// Create a cursor in text-space (without rotation and scale)
-		Vec3 cursor(0.0f);
-		// Avoid the offset for the first character
-		bool firstInLine = true;
-		Vec3 maxCursor = cursor;
-		auto lastC = m_chars.end();
-		for(char32_t c = getNext(&_text); c; c = getNext(&_text))
-		{
-			if(c == '\n')
-			{
-				maxCursor.y += BASE_SIZE;
-				cursor.x = 0.0f;
-				cursor.y -= BASE_SIZE;
-				lastC = m_chars.end();
-				firstInLine = true;
-			} else {
-				auto charEntry = m_chars.find(c);
-				if(charEntry != m_chars.end())
-				{
-					// Add kerning
-					if(lastC != m_chars.end())
-					{
-						CharacterDef::KerningPair p; p.character = charEntry->first;
-						int s = lastC->second.kerning.size();
-						auto it = std::lower_bound(lastC->second.kerning.begin(), lastC->second.kerning.end(), p);
-						if(it != lastC->second.kerning.end() && it->character == p.character)
-							cursor.x += it->kern / 64.0f;
-					}
-					if(firstInLine)
-						cursor.x -= charEntry->second.baseX;
-					// Create sprite instance
-					CharacterVertex v;
-					if(_roundToPixel)
-						cursor.x = roundf((cursor.x + charEntry->second.baseX) * scale) / scale - charEntry->second.baseX;
-					v.position = position + (cursor.x + charEntry->second.baseX) * adX + (cursor.y + charEntry->second.baseY) * adY;
-					v.rotation = -_rotation;
-					v.size.x = toHalf(charEntry->second.texSize.x * scale);
-					v.size.y = toHalf(charEntry->second.texSize.y * scale);
-					v.color = color;
-					v.texCoords = charEntry->second.texCoords;
-					m_instances.push_back(v);
-					maxCursor.x = max(maxCursor.x, cursor.x + charEntry->second.texSize.x);
-					cursor.x += charEntry->second.advance / 64.0f;
-				}
-				lastC = charEntry;
-				firstInLine = false;
-			}
-		}
+		Vec2 maxCursor = renderingKernel(_position, _text, _size, rotateAndScale, _roundToPixel,
+			[this, _rotation, color](const ei::Vec3 & _charPosition, char32_t _char, CharacterDef & _charMetric, float _scale) {
+			// Create sprite instance
+			CharacterVertex v;
+			v.position = _charPosition;
+			v.rotation = -_rotation;
+			v.size.x = toHalf(_charMetric.texSize.x * _scale);
+			v.size.y = toHalf(_charMetric.texSize.y * _scale);
+			v.color = color;
+			v.texCoords = _charMetric.texCoords;
+			m_instances.push_back(v);
+		});
 
 		// Compute a vector to move the whole text to its alignment
-		Vec3 align = (maxCursor.x * _alignX) * adX
-					+ (-maxCursor.y * (1-_alignY) + BASE_SIZE * _alignY) * adY;
+		Vec2 align = rotateAndScale * Vec2(maxCursor.x * _alignX, (maxCursor.y + BASE_SIZE) * _alignY - maxCursor.y);
 		// Move all new characters to the reference point
 		for(size_t i = firstNewVertex; i < m_instances.size(); ++i)
 		{
 			if(_roundToPixel)
 				m_instances[i].position = Vec3(floor(m_instances[i].position.x - align.x), m_instances[i].position.y - align.y, m_instances[i].position.z);
 			else
-				m_instances[i].position -= align;
+				m_instances[i].position -= Vec3(align, 0.0f);
 		}
 
 		m_dirty = true;
@@ -177,68 +115,32 @@ namespace ca { namespace cc {
 
 	Rect2D FontRenderer::getBoundingBox(const Vec3& _position, const char* _text, float _size, float _rotation, float _alignX, float _alignY, bool _roundToPixel)
 	{
-		Rect2D out;
+		Mat2x2 rotateAndScale = ei::rotation(_rotation) * ei::scaling<float, 2>(_size / BASE_SIZE);
 
 		// Convert pixel size into a scale factor
 		float scale = _size / BASE_SIZE;
+		Vec2 maxCursor = renderingKernel(_position, _text, _size, rotateAndScale, _roundToPixel,
+			[](const ei::Vec3 & _charPosition, char32_t _char, CharacterDef & _charMetric, float _scale) {
+		});
 
-		// Create a basis based on the rotation
-		float sinAlpha = sin(_rotation), cosAlpha = cos(_rotation);
-		Vec2 adX( cosAlpha * scale, sinAlpha * scale);
-		Vec2 adY(-sinAlpha * scale, cosAlpha * scale);
-		Vec3 position = _position;
-		if(_roundToPixel)
-			position.y = roundf(position.y - m_baseLineOffset * scale) + m_baseLineOffset * scale;
-
-		// Create a cursor in text-space (without rotation and scale)
-		Vec2 cursor(0.0f);
-		out.min = Vec2(0.0f);
-		out.max = Vec2(0.0f, (float)BASE_SIZE);
-		auto lastC = m_chars.end();
-		bool firstInLine = true;
-		for(char32_t c = getNext(&_text); c; c = getNext(&_text))
-		{
-			if(c == '\n')
-			{
-				out.max.y += BASE_SIZE;
-				cursor.x = out.min.x;
-				lastC = m_chars.end();
-				firstInLine = true;
-			} else {
-				auto charEntry = m_chars.find(c);
-				if(charEntry != m_chars.end())
-				{
-					// Add kerning
-					if(lastC != m_chars.end())
-					{
-						CharacterDef::KerningPair p; p.character = charEntry->first;
-						int s = lastC->second.kerning.size();
-						auto it = std::lower_bound(lastC->second.kerning.begin(), lastC->second.kerning.end(), p);
-						if(it != lastC->second.kerning.end() && it->character == p.character)
-							cursor.x += it->kern / 64.0f;
-					}
-					if(firstInLine)
-						cursor.x -= charEntry->second.baseX;
-					if(_roundToPixel)
-						cursor.x = roundf((cursor.x + charEntry->second.baseX) * scale) / scale - charEntry->second.baseX;
-					out.max.x = max(out.max.x, cursor.x + charEntry->second.texSize.x);
-					cursor.x += charEntry->second.advance / 64.0f;
-				}
-				lastC = charEntry;
-				firstInLine = false;
-			}
-		}
+		Rect2D out( Vec2(0.0f), maxCursor );
+		out.max.y += float(BASE_SIZE);
 
 		// Compute a vector to move the whole text to its alignment
 		Vec2 align( (out.max.x - out.min.x) * _alignX,
-					 out.max.y * _alignY );
+					 out.max.y * _alignY - maxCursor.y );
 		out.min -= align;
 		out.max -= align;
 		// Transform to world space
-		out.min = out.min.x * adX + out.min.y * adY + Vec2(_position);
-		out.max = out.max.x * adX + out.max.y * adY + Vec2(_position);
+		out.min = rotateAndScale * out.min + Vec2(_position);
+		out.max = rotateAndScale * out.max + Vec2(_position);
 
 		return out;
+	}
+
+	uint FontRenderer::findPosition(const ei::Vec2 & _position, const char * _text, float _size, float _rotation, float _alignX, float _alignY, bool _roundToPixel)
+	{
+		return uint();
 	}
 
 	void FontRenderer::clearText()
@@ -631,6 +533,60 @@ namespace ca { namespace cc {
 			*_textit = ptr + 1;
 		}
 		return c;
+	}
+
+	ei::Vec2 FontRenderer::renderingKernel(const ei::Vec3 & _position, const char * _text, float _size, const ei::Mat2x2& _transformation, bool _roundToPixel, PlaceCharacterFunc _place)
+	{
+		// Convert pixel size into a scale factor
+		float scale = _size / BASE_SIZE;
+
+		Vec3 position = _position;
+		if(_roundToPixel)
+			position.y = roundf(position.y - m_baseLineOffset * scale) + m_baseLineOffset * scale;
+
+		// Create a cursor in text-space (without rotation and scale)
+		Vec2 cursor(0.0f);
+		// Avoid the offset for the first character
+		bool firstInLine = true;
+		Vec2 maxCursor( cursor );
+		auto lastC = m_chars.end();
+		for(char32_t c = getNext(&_text); c; c = getNext(&_text))
+		{
+			if(c == '\n')
+			{
+				maxCursor.y += BASE_SIZE;
+				cursor.x = 0.0f;
+				cursor.y -= BASE_SIZE;
+				lastC = m_chars.end();
+				firstInLine = true;
+			} else {
+				auto charEntry = m_chars.find(c);
+				if(charEntry != m_chars.end())
+				{
+					// Add kerning
+					if(lastC != m_chars.end())
+					{
+						CharacterDef::KerningPair p; p.character = charEntry->first;
+						int s = lastC->second.kerning.size();
+						auto it = std::lower_bound(lastC->second.kerning.begin(), lastC->second.kerning.end(), p);
+						if(it != lastC->second.kerning.end() && it->character == p.character)
+							cursor.x += it->kern / 64.0f;
+					}
+					if(firstInLine)
+						cursor.x -= charEntry->second.baseX;
+					if(_roundToPixel)
+						cursor.x = roundf((cursor.x + charEntry->second.baseX) * scale) / scale - charEntry->second.baseX;
+					Vec2 charPos = _transformation * (cursor + Vec2(charEntry->second.baseX, charEntry->second.baseY));
+					_place(position + Vec3(charPos, 0.0f), c, charEntry->second, scale);
+					maxCursor.x = max(maxCursor.x, cursor.x + charEntry->second.texSize.x);
+					cursor.x += charEntry->second.advance / 64.0f;
+				}
+				lastC = charEntry;
+				firstInLine = false;
+			}
+		}
+
+		return maxCursor;
 	}
 
 }} // namespace ca::cc
