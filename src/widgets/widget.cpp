@@ -177,4 +177,10 @@ namespace ca { namespace gui {
 			m_anchorProvider->recomputeAnchors( m_refFrame );
 	}
 
+	void Widget::onKeyboardFocus(bool _gotFocus)
+	{
+		if(m_onKeyboardFocus)
+			m_onKeyboardFocus(this, _gotFocus);
+	}
+
 }} // namespace ca::gui

@@ -261,7 +261,11 @@ namespace ca { namespace gui {
 
 	void GUIManager::setKeyboardFocus(Widget* _widget)
 	{
+		if(g_manager->m_keyboardFocus)
+			g_manager->m_keyboardFocus->onKeyboardFocus(false);
 		g_manager->m_keyboardFocus = _widget;
+		if(_widget)
+			_widget->onKeyboardFocus(true);
 	}
 
 	void GUIManager::setMouseFocus(Widget* _widget, bool _sticky)

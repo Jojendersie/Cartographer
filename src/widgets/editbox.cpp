@@ -244,4 +244,11 @@ namespace ca { namespace gui {
 		recomputeTextPlacement(true);
 	}
 
+	void Edit::onKeyboardFocus(bool _gotFocus)
+	{
+		Widget::onKeyboardFocus(_gotFocus);
+		if(!_gotFocus)
+			recomputeTextPlacement(true);
+	}
+
 }} // namespace ca::gui

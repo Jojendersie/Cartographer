@@ -114,6 +114,10 @@ namespace ca { namespace gui {
 		/// Add or remove keyboard-focus property (this element can be focused by the toggle-focus-key).
 		void setKeyboardFocusable(bool _enable) { m_keyboardFocusable = _enable; }
 
+		/// Callback which is triggered if the element receives or looses the keyboard focus
+		typedef std::function<void(Widget* _this, bool _gotKeyboardFocus)> OnKeyboardFocus;
+		void setOnKeyboardFocusFunc(OnKeyboardFocus _callback) { m_onKeyboardFocus = _callback; }
+
 		/// Realign component to its anchors. If there is no anchor-component do nothing.
 		virtual void refitToAnchors();
 
@@ -147,11 +151,14 @@ namespace ca { namespace gui {
 
 		Widget* m_parent;
 		friend class Group; // Parent must be set from someone
+		friend class GUIManager; // To trigger events
 
 		/// Optional method to react on resize events. This is necessary to reset provided anchors.
 		virtual void onExtentChanged(bool _positionChanged, bool _sizeChanged);
 		OnVisibilityChanged onVisibilityChanged;
 		OnPopup onPopup;
+		virtual void onKeyboardFocus(bool _gotFocus);
+		OnKeyboardFocus m_onKeyboardFocus;
 	};
 
 }} // namespace ca::gui

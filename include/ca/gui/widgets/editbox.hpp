@@ -29,7 +29,7 @@ namespace ca { namespace gui {
 
 		/// Set on which side including the center the text should be aligned.
 		/// \details The default alignment is LEFT.
-		void setAlignment(SIDE::Val _position) { m_textAlignment = _position; }
+		void setAlignment(SIDE::Val _position) { m_textAlignment = _position; recomputeTextPlacement(true); }
 		SIDE::Val getAlignment() const { return m_textAlignment; }
 
 		/// Set a custom look instead of the theme's background rendering.
@@ -55,6 +55,7 @@ namespace ca { namespace gui {
 		// TODO: call on movement and resize?
 		void recomputeTextPlacement(bool _fullRefresh);
 		virtual void onExtentChanged(bool _positionChanged, bool _sizeChanged) override;
+		virtual void onKeyboardFocus(bool _gotFocus) override;
 	};
 
 	typedef pa::RefPtr<Edit> EditPtr;

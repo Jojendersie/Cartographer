@@ -466,7 +466,7 @@ void createGUI(GLFWwindow* _window)
 	e0->setExtent(f6->getPosition() + Coord2(5.0f), Coord2(f6->getSize().x - 10.0f, 20.0f));
 	e0->setText("Type text here");
 	e0->autoAnchor(anchorsf6);
-	e0->setAnchorModes(Anchorable::PREFER_RESIZE);
+	e0->setAnchorModes(Anchorable::PREFER_RESIZE, Anchorable::NO_RESIZE);
 	f6->add(e0);
 
 	EditPtr e1( new Edit );
@@ -474,8 +474,17 @@ void createGUI(GLFWwindow* _window)
 	e1->setDescriptorText("Type text here");
 	e1->autoAnchor(anchorsf6);
 	e1->setMargin(2.0f);
-	e1->setAnchorModes(Anchorable::PREFER_RESIZE);
+	e1->setAnchorModes(Anchorable::PREFER_RESIZE, Anchorable::NO_RESIZE);
 	f6->add(e1);
+
+	EditPtr e2( new Edit );
+	e2->setExtent(f6->getPosition() + Coord2(5.0f, 55.0f), Coord2(f6->getSize().x - 10.0f, 20.0f));
+	e2->setAlignment(SIDE::CENTER);
+	e2->setDescriptorText("centered text");
+	e2->autoAnchor(anchorsf6);
+	e2->setMargin(2.0f);
+	e2->setAnchorModes(Anchorable::PREFER_RESIZE, Anchorable::NO_RESIZE);
+	f6->add(e2);
 }
 
 void runMainLoop(GLFWwindow* _window)
