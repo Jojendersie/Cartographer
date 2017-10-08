@@ -100,8 +100,8 @@ namespace ca { namespace gui {
 
 	void Sharp3DTheme::drawText(const Coord2& _position, const char * _text, float _relativeScale, bool _mouseOver, ei::Vec4 _color, float _alignX, float _alignY)
 	{
-		if(_color.r < 0.0f)
-			_color = _mouseOver ? m_properties.hoverTextColor : m_properties.textColor;
+		for(int i = 0; i < 4; ++i) if(_color[i] < 0.0f)
+			_color[i] = _mouseOver ? m_properties.hoverTextColor[i] : m_properties.textColor[i];
 		GUIManager::renderBackend().drawText(_position, _text,
 					m_properties.textSize * _relativeScale,
 					_color,

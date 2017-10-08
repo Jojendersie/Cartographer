@@ -29,6 +29,9 @@ namespace ca { namespace gui {
 		virtual void drawSliderBar(const class RefFrame& _rect, float _relativeValue) = 0;
 		/// Draw a string
 		/// \param [in] _relativeScale A number to scale the text relative to the global font size.
+		/// \param [in] _color A custom color. If values are negative the theme colors are used instead.
+		///		It is possible to define color channels partially. E.e. it is possible to set alpha
+		///		while using the theme RGB color.
 		virtual void drawText(const Coord2& _position, const char* _text, float _relativeScale, bool _mouseOver, ei::Vec4 _color = ei::Vec4(-1.0f), float _alignX = 0.0f, float _alignY = 0.0f) = 0;
 		/// Get the width and the height of a string
 		/// \param [in] _relativeScale A number to scale the text relative to the global font size.

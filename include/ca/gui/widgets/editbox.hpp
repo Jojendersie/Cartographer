@@ -22,7 +22,10 @@ namespace ca { namespace gui {
 		/// Set the text (utf8 w/o BOM)
 		/// \param [in] _text New text for the checkbox (utf8 w/o BOM). The text is copied internally.
 		void setText(const char* _text);
-		const char* getText() { return m_text.c_str(); }
+		const char* getText() const { return m_text.c_str(); }
+
+		void setDescriptorText(const char* _text);
+		const char* getDescriptorText() const { return m_descriptorText.c_str(); }
 
 		/// Set on which side including the center the text should be aligned.
 		/// \details The default alignment is LEFT.
@@ -36,10 +39,11 @@ namespace ca { namespace gui {
 		void setBackgroundTexture(const char* _textureFile, const char* _focusTextureFile, bool _smooth = true);
 
 		/// Set a distance between reference frame border and the text.
-		void setMargin(Coord _margin) { m_margin = _margin; }
+		void setMargin(Coord _margin) { m_margin = _margin; recomputeTextPlacement(true); }
 		float getMargin() const { return m_margin; }
 	private:
 		std::string m_text;				///< One line of text
+		std::string m_descriptorText;	///< A text which is shown if m_text is empty
 		SIDE::Val m_textAlignment;
 		ei::Vec2 m_textPosition;
 		ei::Vec2 m_cursorDrawPosition;

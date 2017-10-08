@@ -471,9 +471,9 @@ void createGUI(GLFWwindow* _window)
 
 	EditPtr e1( new Edit );
 	e1->setExtent(f6->getPosition() + Coord2(5.0f, 30.0f), Coord2(f6->getSize().x - 10.0f, 20.0f));
-	//e1->setDescriptorText("Type text here"); // TODO
+	e1->setDescriptorText("Type text here");
 	e1->autoAnchor(anchorsf6);
-	e1->setMargin(2.0f); // TODO
+	e1->setMargin(2.0f);
 	e1->setAnchorModes(Anchorable::PREFER_RESIZE);
 	f6->add(e1);
 }

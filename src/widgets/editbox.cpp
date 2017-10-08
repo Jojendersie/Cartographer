@@ -31,7 +31,10 @@ namespace ca { namespace gui {
 
 		// Text
 		GUIManager::pushClipRegion(RefFrame(m_refFrame.left() + m_margin, m_refFrame.right() - m_margin, m_refFrame.bottom() + m_margin, m_refFrame.top() - m_margin));
-		GUIManager::theme().drawText(m_textPosition, m_text.c_str(), m_relativeTextSize, isEditing, m_textColor);
+		if(m_text.empty())
+			GUIManager::theme().drawText(m_textPosition, m_descriptorText.c_str(), m_relativeTextSize, false, Vec4(Vec3(m_textColor), 0.5f));
+		else
+			GUIManager::theme().drawText(m_textPosition, m_text.c_str(), m_relativeTextSize, isEditing, m_textColor);
 
 		// Cursor
 		if(isEditing)
@@ -178,6 +181,13 @@ namespace ca { namespace gui {
 		recomputeTextPlacement(true);
 	}
 
+	void Edit::setDescriptorText(const char * _text)
+	{
+		m_descriptorText = _text;
+		if(m_text.empty())
+			recomputeTextPlacement(true);
+	}
+
 	void Edit::setBackgroundTexture(const char * _textureFile, const char * _focusTextureFile, bool _smooth)
 	{
 		m_backgroundTexture = GUIManager::renderBackend().getTexture(_textureFile, _smooth);
@@ -191,6 +201,9 @@ namespace ca { namespace gui {
 		Vec2 textSizeAfterCursor = GUIManager::theme().getTextBB(Coord2(0.0f), m_text.c_str() + m_cursorPosition, m_relativeTextSize).max;
 		Vec2 textSizeBeforeCursor = textSize - textSizeAfterCursor;
 		Vec2 cursorSize = GUIManager::theme().getTextBB(Coord2(0.0f), "|", m_relativeTextSize).max;
+		// Overwrite text size for placement of teh descriptor text.
+		if(m_text.empty() && !m_descriptorText.empty())
+			textSize = GUIManager::theme().getTextBB(Coord2(0.0f), m_descriptorText.c_str(), m_relativeTextSize).max;
 
 		// Compute an initial text position (may change due to cursor).
 		Coord2 textPos = m_textPosition;
