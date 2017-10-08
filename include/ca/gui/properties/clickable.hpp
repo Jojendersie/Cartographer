@@ -43,6 +43,7 @@ namespace ca { namespace gui {
 		bool m_buttonDownReceived[8];	// Detect for each button, if it was pressed on this element (for CLICK events)
 		float m_lastClick[8];			// Time stamp for the last click to detect DBL_CLICK events
 		bool m_clickingEnabled;
+		bool m_hasDoubleClickFunc;		// As long as there is no double click function count each click to trigger all the callbacks.
 	};
 
 }} // namespace ca::gui

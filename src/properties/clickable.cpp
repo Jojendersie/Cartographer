@@ -8,7 +8,8 @@
 namespace ca { namespace gui {
 
 	Clickable::Clickable(Widget* _thisWidget) :
-		m_clickingEnabled(true)
+		m_clickingEnabled(true),
+		m_hasDoubleClickFunc(false)
 	{
 		for(int b = 0; b < 8; ++b)
 		{
@@ -47,7 +48,7 @@ namespace ca { namespace gui {
 					if(m_buttonDownReceived[b])
 					{
 						float currentTime = clock() / float(CLOCKS_PER_SEC);
-						if(currentTime - m_lastClick[b] <= 0.5f)// TODO: threshold
+						if(m_hasDoubleClickFunc && (currentTime - m_lastClick[b] <= 0.5f))// TODO: threshold
 						{
 							m_lastClick[b] = -10000.0f;
 							for(size_t i = 0; i < m_changeFuncs.size(); ++i)
@@ -89,6 +90,8 @@ namespace ca { namespace gui {
 	{
 		m_changeFuncs.push_back(move(_callback));
 		m_statesMasks.push_back(_stateMask);
+		if(_stateMask & MouseState::DBL_CLICKED)
+			m_hasDoubleClickFunc = true;
 	}
 
 
