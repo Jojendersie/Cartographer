@@ -58,8 +58,8 @@ namespace ca { namespace cc {
 		/// Simulate a text rendering and get the bounding box of the resulting drawn text.
 		ei::Rect2D getBoundingBox(const ei::Vec3& _position, const char* _text, float _size, float _rotation = 0.0f, float _alignX = 0.0f, float _alignY = 0.0f, bool _roundToPixel = false);
 
-		/// Find the text position which is closest to a real position.
-		uint findPosition(const ei::Vec2& _position, const char* _text, float _size, float _rotation = 0.0f, float _alignX = 0.0f, float _alignY = 0.0f, bool _roundToPixel = false);
+		/// Find the text position (character index) which is closest to a real position.
+		uint findPosition(const ei::Vec2& _findPosition, const ei::Vec2& _textPosition, const char* _text, float _size, float _rotation = 0.0f, float _alignX = 0.0f, float _alignY = 0.0f, bool _roundToPixel = false);
 
 		/// Remove all previously drawn texts
 		void clearText();
@@ -124,7 +124,7 @@ namespace ca { namespace cc {
 		char32_t getNext(const char** _textit);
 
 		/// Iterate over the characters an place them.
-		typedef std::function<void (const ei::Vec3 & _charPosition, char32_t _char, CharacterDef & _charMetric, float _scale)> PlaceCharacterFunc;
+		typedef std::function<void (const ei::Vec3 & _charPosition, char32_t _char, const CharacterDef & _charMetric, float _scale)> PlaceCharacterFunc;
 		/// \return The maximal cursor position (z as in input).
 		ei::Vec2 renderingKernel(const ei::Vec3& _position, const char* _text, float _size, const ei::Mat2x2& _transformation, bool _roundToPixel,
 			PlaceCharacterFunc _place);

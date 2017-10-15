@@ -87,7 +87,7 @@ namespace ca { namespace cc {
 
 		size_t firstNewVertex = m_instances.size();
 		Vec2 maxCursor = renderingKernel(_position, _text, _size, rotateAndScale, _roundToPixel,
-			[this, _rotation, color](const ei::Vec3 & _charPosition, char32_t _char, CharacterDef & _charMetric, float _scale) {
+			[this, _rotation, color](const ei::Vec3 & _charPosition, char32_t _char, const CharacterDef & _charMetric, float _scale) {
 			// Create sprite instance
 			CharacterVertex v;
 			v.position = _charPosition;
@@ -119,12 +119,17 @@ namespace ca { namespace cc {
 
 		// Convert pixel size into a scale factor
 		float scale = _size / BASE_SIZE;
+		const CharacterDef * lastCharMetric = nullptr;
 		Vec2 maxCursor = renderingKernel(_position, _text, _size, rotateAndScale, _roundToPixel,
-			[](const ei::Vec3 & _charPosition, char32_t _char, CharacterDef & _charMetric, float _scale) {
+			[&](const ei::Vec3 & _charPosition, char32_t _char, const CharacterDef & _charMetric, float _scale) {
+			lastCharMetric = &_charMetric;
 		});
 
+		// Add line height and transform the last cursor position into an after char position.
 		Rect2D out( Vec2(0.0f), maxCursor );
 		out.max.y += float(BASE_SIZE);
+		if(lastCharMetric)
+			out.max.x += lastCharMetric->texSize.x - lastCharMetric->advance/64.0f;
 
 		// Compute a vector to move the whole text to its alignment
 		Vec2 align( (out.max.x - out.min.x) * _alignX,
@@ -138,9 +143,43 @@ namespace ca { namespace cc {
 		return out;
 	}
 
-	uint FontRenderer::findPosition(const ei::Vec2 & _position, const char * _text, float _size, float _rotation, float _alignX, float _alignY, bool _roundToPixel)
+	uint FontRenderer::findPosition(const ei::Vec2 & _findPosition, const Vec2 & _textPosition, const char * _text, float _size, float _rotation, float _alignX, float _alignY, bool _roundToPixel)
 	{
-		return uint();
+		// First tranform the real position into a local position. This requires the
+		// knowledge of the maxCursor.
+		Mat2x2 rotateAndScale = ei::rotation(_rotation) * ei::scaling<float, 2>(_size / BASE_SIZE);
+		const CharacterDef * lastCharMetric = nullptr;
+		Vec2 maxCursor = renderingKernel(Vec3(_textPosition, 0.0f), _text, _size, rotateAndScale, _roundToPixel,
+			[&](const ei::Vec3 & _charPosition, char32_t _char, const CharacterDef & _charMetric, float _scale) {
+			lastCharMetric = &_charMetric;
+		});
+		// Add alignment (which requires the maxCursor).
+		Vec2 alignedCursor = _findPosition + rotateAndScale * Vec2(maxCursor.x * _alignX,
+			(maxCursor.y + BASE_SIZE) * _alignY - maxCursor.y);
+
+		// TODO: multiline correct?
+		alignedCursor.y -= (m_baseLineOffset + BASE_SIZE) * _size / BASE_SIZE;
+		// The base offset of characters leads to fail detections at the end of the string.
+		// To fix this repeat the last characters baseX, as if there is another one following.
+		if(lastCharMetric)
+			maxCursor.x += lastCharMetric->baseX;
+
+		// Second run over the text to find the closest position.
+		uint charCount = 0;
+		float minDist = lensq(rotateAndScale * maxCursor + _textPosition - alignedCursor);
+		uint optPos = strlen(_text);
+		renderingKernel(Vec3(_textPosition, 0.0f), _text, _size, rotateAndScale, _roundToPixel,
+			[&](const ei::Vec3 & _charPosition, char32_t _char, const CharacterDef & _charMetric, float _scale) {
+			float d = lensq(Vec2(_charPosition) - alignedCursor);
+			if(d < minDist)
+			{
+				minDist = d;
+				optPos = charCount;
+			}
+			charCount++;
+		});
+
+		return optPos;
 	}
 
 	void FontRenderer::clearText()
@@ -578,8 +617,9 @@ namespace ca { namespace cc {
 						cursor.x = roundf((cursor.x + charEntry->second.baseX) * scale) / scale - charEntry->second.baseX;
 					Vec2 charPos = _transformation * (cursor + Vec2(charEntry->second.baseX, charEntry->second.baseY));
 					_place(position + Vec3(charPos, 0.0f), c, charEntry->second, scale);
-					maxCursor.x = max(maxCursor.x, cursor.x + charEntry->second.texSize.x);
+					//maxCursor.x = max(maxCursor.x, cursor.x + charEntry->second.texSize.x);
 					cursor.x += charEntry->second.advance / 64.0f;
+					maxCursor.x = max(maxCursor.x, cursor.x);
 				}
 				lastC = charEntry;
 				firstInLine = false;
