@@ -118,6 +118,12 @@ namespace ca { namespace gui {
 			0.0f, true );
 	}
 
+	uint Sharp3DTheme::getTextCharacterPosition(const ei::Vec2 & _findPosition, const ei::Vec2 & _textPosition, const char * _text, float _relativeScale, float _alignX, float _alignY)
+	{
+		return GUIManager::renderBackend().getTextCharacterPosition(_findPosition, _textPosition, _text,
+			m_properties.textSize * _relativeScale, _alignX, _alignY, 0.0f, true);
+	}
+
 	void Sharp3DTheme::drawImage(const RefFrame& _rect, uint64 _texHandle, float _opacity, bool _tiling)
 	{
 		if(_opacity > 0.0f)

@@ -50,8 +50,8 @@ namespace ca { namespace gui {
 			&& (_mouseState.buttons[0] == MouseState::DOWN
 				|| _mouseState.buttons[0] == MouseState::PRESSED))
 		{
-			// TODO: Search for the closest position between two characters.
-			m_cursorPosition = 0;
+			// Search for the closest position between two characters.
+			m_cursorPosition = GUIManager::theme().getTextCharacterPosition(_mouseState.position, m_textPosition, m_text.c_str(), m_relativeTextSize);
 			recomputeTextPlacement(!GUIManager::hasKeyboardFocus(this));
 			GUIManager::setKeyboardFocus(this);
 		}
@@ -233,7 +233,8 @@ namespace ca { namespace gui {
 			if(curPos.x > m_refFrame.right() - m_margin - cursorSize.x)
 				offset = m_refFrame.right() - m_margin - cursorSize.x - curPos.x;
 		}
-		curPos.x -= max(1.0f, cursorSize.x * 0.5f);
+		//curPos.x -= max(1.0f, cursorSize.x * 0.5f);
+		curPos.x -= cursorSize.x * 0.5f;
 		m_cursorDrawPosition = curPos + Vec2(offset, 0.0f);
 		m_textPosition = textPos + Vec2(offset, 0.0f);
 	}
