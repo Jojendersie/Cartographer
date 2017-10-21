@@ -115,6 +115,7 @@ namespace ca { namespace gui {
 				+ _keyboardState.characterInput
 				+ m_text.substr(m_cursorPosition);
 			m_cursorPosition += _keyboardState.characterInput.length();
+			if(m_onTextChange) m_onTextChange(this, m_text);
 			recomputeTextPlacement(false);
 			return true;
 		}
@@ -148,6 +149,7 @@ namespace ca { namespace gui {
 			else num = m_cursorPosition - utf8Prev(m_text.c_str(), m_cursorPosition);
 			m_cursorPosition -= num;
 			m_text.erase(m_cursorPosition, num);
+			if(m_onTextChange) m_onTextChange(this, m_text);
 		}
 		if(_keyboardState.isKeyDown(KeyboardState::Key::DELETE)
 			|| _keyboardState.isKeyDown(KeyboardState::Key::NUMPAD_DELETE))
@@ -158,6 +160,7 @@ namespace ca { namespace gui {
 			else
 				num = utf8Next(m_text.c_str(), m_cursorPosition) - m_cursorPosition;
 			m_text.erase(m_cursorPosition, num);
+			if(m_onTextChange) m_onTextChange(this, m_text);
 			// Does not change the cursor -> not handled automatically.
 			recomputeTextPlacement(false);
 			return true;
@@ -178,6 +181,7 @@ namespace ca { namespace gui {
 	{
 		m_text = _text;
 		m_cursorPosition = 0;
+		if(m_onTextChange) m_onTextChange(this, m_text);
 		recomputeTextPlacement(true);
 	}
 

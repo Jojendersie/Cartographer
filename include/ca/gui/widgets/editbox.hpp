@@ -41,6 +41,11 @@ namespace ca { namespace gui {
 		/// Set a distance between reference frame border and the text.
 		void setMargin(Coord _margin) { m_margin = _margin; recomputeTextPlacement(true); }
 		float getMargin() const { return m_margin; }
+
+		/// Callback for insertion and deletion of of the text. Allows write access to the new text
+		/// which can be used for custom filtering.
+		typedef std::function<void(class Widget* _this, std::string &)> OnTextChange;
+		void setOnTextChangeFunc(OnTextChange _func) { m_onTextChange = std::move(_func); }
 	private:
 		std::string m_text;				///< One line of text
 		std::string m_descriptorText;	///< A text which is shown if m_text is empty
@@ -51,6 +56,7 @@ namespace ca { namespace gui {
 		uint64 m_focusTexture;
 		Coord m_margin;
 		int m_cursorPosition;			///< Index where new characters are inserted (0 is in front of all others)
+		OnTextChange m_onTextChange;
 
 		// TODO: call on movement and resize?
 		void recomputeTextPlacement(bool _fullRefresh);
