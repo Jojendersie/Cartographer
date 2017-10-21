@@ -99,6 +99,11 @@ namespace ca { namespace gui {
 	bool Widget::processInput(const struct MouseState& _mouseState)
 	{
 		bool cursorOnWidget = getRegion()->isMouseOver(_mouseState.position);
+
+		// Any click on a different widget removes the keyboard focus.
+		if(cursorOnWidget && _mouseState.anyButtonDown && GUIManager::getKeyboardFocussed() != this)
+			GUIManager::setKeyboardFocus(nullptr);
+
 		if(m_activeComponent)
 		{
 			bool ensureNextInput = false;
