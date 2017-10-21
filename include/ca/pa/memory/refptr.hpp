@@ -76,12 +76,12 @@ namespace ca { namespace pa {
 		}
 
 		// Access
-		T& operator * ()				{ return *m_ptr; }
-		const T& operator * () const	{ return *m_ptr; }
-		T* operator -> ()				{ return m_ptr; }
-		const T* operator -> () const	{ return m_ptr; }
-		T* get()						{ return m_ptr; }
-		const T* get() const			{ return m_ptr; }
+		T& operator * ()			{ return *m_ptr; }
+		T& operator * () const		{ return *m_ptr; }
+		T* operator -> ()			{ return m_ptr; }
+		T* operator -> () const		{ return m_ptr; }
+		T* get()					{ return m_ptr; }
+		T* get() const				{ return m_ptr; }
 
 		// Check
 		explicit operator bool () const					{ return m_ptr != nullptr; }
