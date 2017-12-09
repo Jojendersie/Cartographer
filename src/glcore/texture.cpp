@@ -12,14 +12,72 @@ namespace ca { namespace cc {
 	static GLenum NUM_COMPS_TO_INTERNAL_FORMAT[] = {GL_R8, GL_RG8, GL_RGB8, GL_RGBA8};
 	static GLenum NUM_COMPS_TO_INTERNAL_FORMAT_SRGB[] = {GL_SRGB8, GL_SRGB8_ALPHA8};
 
-	Texture2D::Texture2D(int _width, int _height, int _numComponents, const Sampler& _sampler) :
+	static GLenum formatToDataFormat(TexFormat _format)
+	{
+		switch(_format)
+		{
+		case TexFormat::D32F:
+		case TexFormat::D32:
+		case TexFormat::D24S8:
+		case TexFormat::D32FS8:
+			return 0;
+		case TexFormat::RGBA32F:
+		case TexFormat::RGBA32I:
+		case TexFormat::RGBA32U:
+		case TexFormat::RGBA16F:
+		case TexFormat::RGBA16I:
+		case TexFormat::RGBA16U:
+		case TexFormat::RGBA8:
+		case TexFormat::RGBA8U:
+		case TexFormat::RGBA8I:
+		case TexFormat::C_BC5_sRGBA:
+		case TexFormat::C_BC5_RGBA:
+			return GL_RGBA;
+		case TexFormat::RGB8:
+		case TexFormat::RGB8U:
+		case TexFormat::RGB8I:
+		case TexFormat::R11G11B10F:
+		case TexFormat::RGB9E5:
+		case TexFormat::C_BPTC_RGB:
+		case TexFormat::C_BPTC_sRGB:
+			return GL_RGB;
+		case TexFormat::RG32F:
+		case TexFormat::RG32I:
+		case TexFormat::RG32U:
+		case TexFormat::RG16I:
+		case TexFormat::RG16F:
+		case TexFormat::RG16U:
+		case TexFormat::RG8:
+		case TexFormat::RG8U:
+		case TexFormat::C_RGTC2_RGU:
+		case TexFormat::C_RGTC2_RGI:
+			return GL_RG;
+		case TexFormat::R32F:
+		case TexFormat::R32I:
+		case TexFormat::R32U:
+		case TexFormat::R16F:
+		case TexFormat::R16I:
+		case TexFormat::R16U:
+		case TexFormat::R8:
+		case TexFormat::R8U:
+		case TexFormat::R8I:
+			return GL_RED;
+		}
+		return 0;
+	}
+
+	Texture2D::Texture2D(int _width, int _height, TexFormat _format, const Sampler& _sampler) :
 		m_width(_width),
 		m_height(_height),
-		m_numComponents(_numComponents),
+		m_format(_format),
 		m_sampler(&_sampler)
 	{
 		// Create openGL - resource
 		glGenTextures(1, &m_textureID);
+		glCall(glBindTexture, GL_TEXTURE_2D, m_textureID);
+		int numLevels = int(floor(log2(ei::max(_width, _height)))) + 1;
+		//glTextureStorage2D(m_textureID, 1, GLenum(_format), _width, _height);
+		glCall(glTexStorage2D, GL_TEXTURE_2D, numLevels, GLenum(_format), _width, _height);
 
 		pa::logInfo("[ca::cc] Created raw texture ", m_textureID, " .");
 	}
@@ -27,12 +85,12 @@ namespace ca { namespace cc {
 	Texture2D::Texture2D(const char* _textureFileName, const Sampler& _sampler, bool _srgb) :
 		m_width(0),
 		m_height(0),
-		m_numComponents(0),
 		m_sampler(&_sampler),
 		m_bindlessHandle(0)
 	{
 		// Load from file
-		stbi_uc* textureData = stbi_load(_textureFileName, &m_width, &m_height, &m_numComponents, 0);
+		int numComponents = 0;
+		stbi_uc* textureData = stbi_load(_textureFileName, &m_width, &m_height, &numComponents, 0);
 		if(!textureData)
 		{
 			pa::logError("[ca::cc] Could not load texture '", _textureFileName, "'.");
@@ -40,7 +98,7 @@ namespace ca { namespace cc {
 		}
 
 		// Force black alpha
-		if(m_numComponents == 4)
+		if(numComponents == 4)
 		{
 			for(int i = 0; i < m_width * m_height * 4; i += 4)
 			{
@@ -56,10 +114,8 @@ namespace ca { namespace cc {
 		// Create openGL - resource
 		glGenTextures(1, &m_textureID);
 		glCall(glBindTexture, GL_TEXTURE_2D, m_textureID);
-		if(_srgb && m_numComponents >= 3)
-			glCall(glTexImage2D, GL_TEXTURE_2D, 0, NUM_COMPS_TO_INTERNAL_FORMAT_SRGB[m_numComponents-3], m_width, m_height, 0, NUM_COMPS_TO_PIXEL_FORMAT[m_numComponents-1], GL_UNSIGNED_BYTE, textureData);
-		else
-			glCall(glTexImage2D, GL_TEXTURE_2D, 0, NUM_COMPS_TO_INTERNAL_FORMAT[m_numComponents-1], m_width, m_height, 0, NUM_COMPS_TO_PIXEL_FORMAT[m_numComponents-1], GL_UNSIGNED_BYTE, textureData);
+		m_format = TexFormat((_srgb && numComponents >= 3) ? NUM_COMPS_TO_INTERNAL_FORMAT_SRGB[numComponents-3] : NUM_COMPS_TO_INTERNAL_FORMAT[numComponents-1]);
+		glCall(glTexImage2D, GL_TEXTURE_2D, 0, uint(m_format), m_width, m_height, 0, NUM_COMPS_TO_PIXEL_FORMAT[numComponents-1], GL_UNSIGNED_BYTE, textureData);
 		glCall(glGenerateMipmap, GL_TEXTURE_2D);
 
 		stbi_image_free(textureData);
@@ -73,8 +129,9 @@ namespace ca { namespace cc {
 
 	Texture2D::~Texture2D()
 	{
-		glMakeTextureHandleNonResidentARB(m_bindlessHandle);
-		glDeleteTextures(1, &m_textureID);
+		if(m_bindlessHandle) glCall(glMakeTextureHandleNonResidentARB, m_bindlessHandle);
+		glCall(glBindTexture, GL_TEXTURE_2D, 0);
+		glCall(glDeleteTextures, 1, &m_textureID);
 		pa::logInfo("[ca::cc] Deleted texture ", m_textureID, " .");
 	}
 
@@ -92,7 +149,12 @@ namespace ca { namespace cc {
 
 	Texture2D* Texture2D::create(int _width, int _height, int _numComponents, const Sampler& _sampler)
 	{
-		return new Texture2D(_width, _height, _numComponents, _sampler);
+		return new Texture2D(_width, _height, TexFormat(NUM_COMPS_TO_INTERNAL_FORMAT[_numComponents - 1]), _sampler);
+	}
+
+	Texture2D * Texture2D::create(int _width, int _height, TexFormat _format, const Sampler & _sampler)
+	{
+		return new Texture2D(_width, _height, _format, _sampler);
 	}
 
 	void Texture2D::fillMipMap(int _level, const byte* _data, bool _srgb)
@@ -101,10 +163,7 @@ namespace ca { namespace cc {
 		int divider = 1 << _level;
 		int levelWidth = ei::max(1, m_width / divider);
 		int levelHeight = ei::max(1, m_height / divider);
-		if(_srgb && m_numComponents >= 3)
-			glCall(glTexImage2D, GL_TEXTURE_2D, _level, NUM_COMPS_TO_INTERNAL_FORMAT_SRGB[m_numComponents-3], levelWidth, levelHeight, 0, NUM_COMPS_TO_PIXEL_FORMAT[m_numComponents-1], GL_UNSIGNED_BYTE, _data);
-		else
-			glCall(glTexImage2D, GL_TEXTURE_2D, _level, NUM_COMPS_TO_INTERNAL_FORMAT[m_numComponents-1], levelWidth, levelHeight, 0, NUM_COMPS_TO_PIXEL_FORMAT[m_numComponents-1], GL_UNSIGNED_BYTE, _data);
+		glCall(glTexSubImage2D, GL_TEXTURE_2D, _level, 0, 0, levelWidth, levelHeight, formatToDataFormat(m_format), GL_UNSIGNED_BYTE, _data);
 	}
 
 	Texture2D::Handle Texture2D::finalize(bool _createMipMaps, bool _makeResident)

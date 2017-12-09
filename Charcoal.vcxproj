@@ -90,6 +90,7 @@
     <ClInclude Include="include\ca\cc\core\scopedptr.hpp" />
     <ClInclude Include="include\ca\cc\glcore\buffer.hpp" />
     <ClInclude Include="include\ca\cc\glcore\device.hpp" />
+    <ClInclude Include="include\ca\cc\glcore\framebuffer.hpp" />
     <ClInclude Include="include\ca\cc\glcore\geometrybuffer.hpp" />
     <ClInclude Include="include\ca\cc\glcore\opengl.hpp" />
     <ClInclude Include="include\ca\cc\glcore\sampler.hpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="dependencies\freetype\src\winfnt.c" />
     <ClCompile Include="src\glcore\buffer.cpp" />
     <ClCompile Include="src\glcore\device.cpp" />
+    <ClCompile Include="src\glcore\framebuffer.cpp" />
     <ClCompile Include="src\glcore\geometrybuffer.cpp" />
     <ClCompile Include="src\glcore\opengl.cpp" />
     <ClCompile Include="src\glcore\sampler.cpp" />

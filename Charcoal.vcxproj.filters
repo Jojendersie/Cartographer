@@ -67,6 +67,9 @@
     <ClInclude Include="include\ca\cc\glcore\buffer.hpp">
       <Filter>glcore</Filter>
     </ClInclude>
+    <ClInclude Include="include\ca\cc\glcore\framebuffer.hpp">
+      <Filter>glcore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\freetype\src\type1cid.c">
@@ -232,6 +235,9 @@
       <Filter>renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\glcore\buffer.cpp">
+      <Filter>glcore</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glcore\framebuffer.cpp">
       <Filter>glcore</Filter>
     </ClCompile>
   </ItemGroup>
