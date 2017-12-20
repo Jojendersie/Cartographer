@@ -36,23 +36,37 @@ namespace ca { namespace cc {
 		return * this;
 	}
 
+	static GLint s_mainViewPortSize[4];
+	static uint s_boundFBO;
+
 	void FrameBuffer::bind()
 	{
+		if(s_boundFBO == 0)
+			glGetIntegerv(GL_VIEWPORT, s_mainViewPortSize);
+		s_boundFBO = m_fboID;
 		glCall(glBindFramebuffer, GL_FRAMEBUFFER, m_fboID);
+		glViewport(0, 0, m_resolution.x, m_resolution.y);
 	}
 
 	void FrameBuffer::unbind()
 	{
-		glCall(glBindFramebuffer, GL_FRAMEBUFFER, 0);
+		if(s_boundFBO != 0)
+		{
+			glCall(glBindFramebuffer, GL_FRAMEBUFFER, 0);
+			glViewport(0, 0, s_mainViewPortSize[2], s_mainViewPortSize[3]);
+			s_boundFBO = 0;
+		}
 	}
 
-	void FrameBuffer::attachDepth(Texture & _texture, int _mipLevel)
+	void FrameBuffer::attachDepth(Texture2D & _texture, int _mipLevel)
 	{
 		glCall(glNamedFramebufferTexture, m_fboID, GL_DEPTH_ATTACHMENT, _texture.getID(), _mipLevel);
 		m_depthTexture = _texture.getID();
+		m_resolution.x = _texture.getWidth();
+		m_resolution.y = _texture.getHeight();
 	}
 
-	void FrameBuffer::attach(int _colorAttachmentIdx, Texture & _texture, int _mipLevel)
+	void FrameBuffer::attach(int _colorAttachmentIdx, Texture2D & _texture, int _mipLevel)
 	{
 		glCall(glNamedFramebufferTexture, m_fboID, GL_COLOR_ATTACHMENT0 + _colorAttachmentIdx,
 			_texture.getID(), _mipLevel);
@@ -60,6 +74,8 @@ namespace ca { namespace cc {
 		m_maxUsedIndex = ei::max(m_maxUsedIndex, _colorAttachmentIdx);
 		glNamedFramebufferDrawBuffers(m_fboID, m_maxUsedIndex + 1, m_drawBuffers);
 		m_colorTextures[_colorAttachmentIdx] = _texture.getID();
+		m_resolution.x = _texture.getWidth();
+		m_resolution.y = _texture.getHeight();
 	}
 
 	void FrameBuffer::show(uint _attachment)
@@ -98,7 +114,7 @@ namespace ca { namespace cc {
 		s_shader.use();
 		Device::setZFunc(cc::ComparisonFunc::ALWAYS);
 		Device::setZWrite(false);
-		Device::setCullMode(CullMode::NONE);
+		//Device::setCullMode(CullMode::NONE);
 		glCall(glDrawArrays, GL_TRIANGLE_STRIP, 0, 3);
 	}
 
