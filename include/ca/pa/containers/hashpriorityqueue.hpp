@@ -244,7 +244,7 @@ namespace ca { namespace pa {
 
 		ConstHandle find(const DataT& _data) const
 		{
-			return const_cast<HashPriorityQueue*>(this)->find(_value);
+			return const_cast<HashPriorityQueue*>(this)->find(_data);
 		}
 
 		/// If the priority of one or multiple elements where changed using [] access

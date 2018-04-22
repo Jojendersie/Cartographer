@@ -1,5 +1,9 @@
 #include "ca/pa/highresclock.hpp"
 
+#if defined(_WIN32) || defined(WIN32)
+#include <windows.h>
+#endif
+
 namespace ca { namespace pa {
 
 HRClock::HRClock() : m_timeStamp(now())
@@ -15,8 +19,6 @@ double HRClock::deltaTime()
 
 // ********** Platform dependent code *************
 #if defined(_WIN32) || defined(WIN32)
-
-#include <windows.h>
 
 const double QUERY_FREQUENCY = []() -> double
 {

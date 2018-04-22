@@ -30,7 +30,7 @@ namespace ca { namespace pa {
 		RefPtr() : m_ptr(nullptr)							{}
 		explicit RefPtr(T* _object) : m_ptr(_object)		{ if(m_ptr) m_ptr->m_refCounter++; }
 		// Allow casting nullptr to RefPtr implicitly
-		RefPtr(nullptr_t) : m_ptr(nullptr)					{}
+		RefPtr(std::nullptr_t) : m_ptr(nullptr)					{}
 
 		template<typename T2, class = typename std::enable_if<std::is_convertible<T2*,T*>::value || std::is_base_of<T2,T>::value, void>::type>
 		RefPtr(const RefPtr<T2>& _other)
