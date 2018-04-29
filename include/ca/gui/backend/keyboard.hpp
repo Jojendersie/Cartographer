@@ -174,6 +174,11 @@ namespace ca { namespace gui {
 		bool isShiftPressed() const;
 		/// Check if any (left or right) alt button is down.
 		bool isAltPressed() const;
+
+
+		// *** Optional Helper functions ***
+		KeyboardState::Key mapGLFWToCaGUIKey(int _glfwKey);
+		void updateFromGLFWInput(int _glfwKey, int _glfwAction);
 	};
 
 }} // namespace ca::gui

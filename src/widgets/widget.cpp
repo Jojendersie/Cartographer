@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ca/gui/widgets/widget.hpp"
 #include "ca/gui/guimanager.hpp"
 #include <ca/pa/log.hpp>
@@ -10,11 +8,12 @@ namespace ca { namespace gui {
 
 	Widget::Widget() : 
 		Anchorable(&m_refFrame),
-		m_anchorProvider(nullptr),
-		m_activeComponent(nullptr),
 		m_enabled(true),
 		m_keyboardFocusable(false),
 		m_visible(true),
+		m_region(nullptr),
+		m_anchorProvider(nullptr),
+		m_activeComponent(nullptr),
 		m_parent(nullptr)
 	{
 	}

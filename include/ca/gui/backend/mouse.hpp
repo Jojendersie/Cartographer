@@ -55,6 +55,9 @@ namespace ca { namespace gui {
 
 		/// Reset/change states
 		void clear();
+
+		// *** Optional Helper functions ***
+		void updateFromGLFWInput(int _glfwButton, int _glfwAction);
 	private:
 		Coord2 lastPosition;
 	};

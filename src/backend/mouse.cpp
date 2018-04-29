@@ -21,4 +21,18 @@ namespace ca { namespace gui {
 		deltaScroll = ei::Vec2(0.0f);
 	}
 
+	void MouseState::updateFromGLFWInput(int _glfwButton, int _glfwAction)
+	{
+		if(_glfwButton < 8)
+		{
+			if(_glfwAction == 1) { // GLFW_PRESS
+				buttons[_glfwButton] = MouseState::DOWN;
+				anyButtonDown = true;
+			} else if(_glfwAction == 0) { // GLFW_RELEASE
+				buttons[_glfwButton] = MouseState::UP;
+				anyButtonUp = true;
+			}
+		}
+	}
+
 }} // namespace ca::gui
