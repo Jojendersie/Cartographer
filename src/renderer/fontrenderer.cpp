@@ -31,7 +31,8 @@ namespace ca { namespace cc {
 		else createFont(_fontFile);
 	}*/
 
-	FontRenderer::FontRenderer()
+	FontRenderer::FontRenderer() :
+		m_texture(nullptr)
 	{
 		glCall(glGenVertexArrays, 1, &m_vao);
 		glCall(glBindVertexArray, m_vao);
