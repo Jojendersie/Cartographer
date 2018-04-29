@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ca/gui/properties/regionshapes.hpp"
 
 using namespace ei;

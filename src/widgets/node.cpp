@@ -97,8 +97,8 @@ namespace ca { namespace gui {
 
 	NodeHandle::NodeHandle(bool _register) :
 		Clickable(this),
-		m_angle(0.0f),
-		m_color(1.0f)
+		m_color(1.0f),
+		m_angle(0.0f)
 	{
 		Widget::setAnchorModes(Anchorable::Mode::NO_RESIZE);
 		Widget::setRegion(std::make_unique<EllipseRegion>(&m_refFrame));
@@ -151,9 +151,9 @@ namespace ca { namespace gui {
 
 	NodeConnector::NodeConnector() :
 		Clickable(this),
-		m_isMouseOver(false),
+		m_stiffness(1.0f/3.0f),
 		m_tmpHandleState(HandleState::ATTACHED),
-		m_stiffness(1.0f/3.0f)
+		m_isMouseOver(false)
 	{
 		m_region = this;
 		setAnchorable(false);
@@ -302,10 +302,10 @@ namespace ca { namespace gui {
 
 	WidgetConnector::WidgetConnector() :
 		Clickable(this),
-		m_isMouseOver(false),
-		m_stiffness(1.0f/3.0f),
 		m_sourceColor(1.0f),
-		m_destColor(1.0f)
+		m_destColor(1.0f),
+		m_stiffness(1.0f/3.0f),
+		m_isMouseOver(false)
 	{
 		m_region = this;
 		setAnchorable(false);

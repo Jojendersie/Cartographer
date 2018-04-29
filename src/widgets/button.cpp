@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ca/gui/widgets/button.hpp"
 #include "ca/gui/guimanager.hpp"
 #include "ca/gui/rendering/theme.hpp"

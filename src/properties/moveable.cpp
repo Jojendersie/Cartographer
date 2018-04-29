@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ca/gui/properties/refframe.hpp"
 #include "ca/gui/properties/anchorable.hpp"
 #include "ca/gui/properties/moveable.hpp"

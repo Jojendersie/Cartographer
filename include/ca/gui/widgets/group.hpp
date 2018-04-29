@@ -18,8 +18,8 @@ namespace ca { namespace gui {
 		template<typename GroupT, typename DataT>
 		class IteratorT
 		{
-			uint m_idx;
 			GroupT* m_group;
+			uint m_idx;
 			IteratorT(GroupT* _group, uint _idx) : m_group(_group), m_idx(_idx) {}
 			friend GroupT;
 		public:

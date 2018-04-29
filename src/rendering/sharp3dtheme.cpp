@@ -1,5 +1,3 @@
-#pragma once
-
 #include <ca/pa/log.hpp>
 #include "ca/gui/rendering/sharp3dtheme.hpp"
 #include "ca/gui/backend/renderbackend.hpp"

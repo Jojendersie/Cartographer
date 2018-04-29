@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ca/gui/properties/clickable.hpp"
 #include "ca/gui/widgets/widget.hpp"
 #include "ca/gui/guimanager.hpp"

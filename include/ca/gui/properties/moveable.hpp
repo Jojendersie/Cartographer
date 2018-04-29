@@ -40,9 +40,9 @@ namespace ca { namespace gui {
 		bool isMovingEnabled() const { return m_movingEnabled; }
 		void setMoveable(bool _enable) { m_movingEnabled = _enable; }
 	private:
+		bool m_movingEnabled;
 		bool m_moving;	/// Currently actively moving
 		bool m_useRestriction;
-		bool m_movingEnabled;
 
 		RestrictionFunction m_snapFunction;
 		Coord2 m_floatingPosition;	/// Current continous position - may differ from the widged position if snapping is active.

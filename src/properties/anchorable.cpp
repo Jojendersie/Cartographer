@@ -1,5 +1,3 @@
-#pragma once
-
 #include <ca/pa/log.hpp>
 #include "ca/gui/properties/anchorable.hpp"
 #include "ca/gui/properties/anchorprovider.hpp"
@@ -7,10 +5,10 @@
 namespace ca { namespace gui {
 
 	Anchorable::Anchorable(RefFrame* _selfFrame) :
-		m_anchoringEnabled(true),
 		m_selfFrame(_selfFrame),
 		m_horizontalMode(NO_RESIZE),
-		m_verticalMode(NO_RESIZE)
+		m_verticalMode(NO_RESIZE),
+		m_anchoringEnabled(true)
 	{
 	}
 

@@ -5,7 +5,7 @@ namespace ca { namespace gui {
 
 	KeyboardState::KeyboardState()
 	{
-		memset(keys, 232, 0);
+		memset(keys, 0, 232 * sizeof(ca::gui::KeyboardState::KeyState));
 	}
 
 	void KeyboardState::clear()

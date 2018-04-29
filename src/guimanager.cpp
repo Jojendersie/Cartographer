@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ca/gui.hpp"
 #include "ca/gui/backend/renderbackend.hpp"
 #include <ca/pa/log.hpp>

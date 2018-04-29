@@ -1,8 +1,7 @@
-#pragma once
-
 #include "ca/gui/rendering/flattheme.hpp"
 #include "ca/gui/backend/renderbackend.hpp"
 #include "ca/gui/guimanager.hpp"
+#include <ca/pa/log.hpp>
 
 using namespace ei;
 
@@ -105,6 +104,8 @@ namespace ca { namespace gui {
 		Vec2 center((_rect.left() + _rect.right()) * 0.5f, (_rect.bottom() + _rect.top()) * 0.5f);
 		switch(_pointTo)
 		{
+		case SIDE::CENTER:
+			pa::logError("[ca::gui::FlatTheme::drawArrowButton] SIDE::CENTER not allowed as pointing direction.");
 		case SIDE::LEFT:
 			triangle.v0 = Vec2(center.x - sizeh, center.y);
 			triangle.v1 = Vec2(center.x + sizeh, center.y - sizeh);
