@@ -145,7 +145,7 @@ namespace ca { namespace cc {
 				access |= GL_MAP_PERSISTENT_BIT | GL_MAP_FLUSH_EXPLICIT_BIT;
 		}
 		if(_access & MappingFlags::INVALIDATE)
-			access |= (_size==m_size) ? GL_MAP_INVALIDATE_BUFFER_BIT : GL_MAP_INVALIDATE_RANGE_BIT;
+			access |= (_size==GLsizei(m_size)) ? GL_MAP_INVALIDATE_BUFFER_BIT : GL_MAP_INVALIDATE_RANGE_BIT;
 
 		m_mappedOffset = _offset;
 		m_mappedSize = _size;

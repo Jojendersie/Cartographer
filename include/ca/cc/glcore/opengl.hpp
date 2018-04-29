@@ -1,7 +1,11 @@
 #pragma once
 
 #include <ca/pa/log.hpp>
+#if defined(CA_USE_GLAD)
+#include <glad/glad.h>
+#else
 #include <gl/glew.h>
+#endif
 #include <type_traits>
 #include <string>
 
@@ -37,7 +41,11 @@ namespace ca { namespace cc {
 		GLError(_functionName);
 #endif
 	}
-	
+
+#if defined(__GNUC__) || defined(__MINGW32__)
+#define glCall(_function, ...) _glCall(#_function, _function, ##__VA_ARGS__)
+#else
 #define glCall(_function, ...) _glCall(#_function, _function, __VA_ARGS__)
+#endif
 
 }} // namespace ca::cc

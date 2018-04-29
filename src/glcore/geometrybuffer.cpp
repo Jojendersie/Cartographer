@@ -31,14 +31,14 @@ namespace ca { namespace cc {
 		int _indexed,
 		unsigned _initialSize
 	) :
+		m_vboInstances(0),
 		m_glType(_type),
 		m_capacity(_initialSize),
 		m_indexCapacity(_indexed ? _initialSize : 0),
 		m_instanceCapacity(0),
-		m_vboInstances(0),
 		m_vertexSize(0),
-		m_indexSize(_indexed),
 		m_instanceVertexSize(0),
+		m_indexSize(_indexed),
 		m_vertexCount(0),
 		m_indexCount(0),
 		m_instanceCount(0)

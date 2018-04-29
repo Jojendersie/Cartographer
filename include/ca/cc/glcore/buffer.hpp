@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ei/elementarytypes.hpp>
-#include <gl/glew.h>
+#include "ca/cc/glcore/opengl.hpp"
 
 namespace ca { namespace cc {
 

@@ -4,7 +4,7 @@
 #include <memory.h>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "dependencies/stb_image.h"
+#include "../dependencies/stb_image.h"
 
 namespace ca { namespace cc {
 
@@ -49,6 +49,7 @@ namespace ca { namespace cc {
 		case TexFormat::RG16U:
 		case TexFormat::RG8:
 		case TexFormat::RG8U:
+		case TexFormat::RG8I:
 		case TexFormat::C_RGTC2_RGU:
 		case TexFormat::C_RGTC2_RGI:
 			return GL_RG;

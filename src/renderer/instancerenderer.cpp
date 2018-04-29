@@ -10,8 +10,8 @@ namespace ca { namespace cc {
 	using namespace pa;
 
 InstanceRenderer::InstanceRenderer(GLPrimitiveType _type, const VertexAttribute* _attributes, int _numAttributes) :
-	m_startNewPrimitive(0),
-	m_geometryType(_type)
+	m_geometryType(_type),
+	m_startNewPrimitive(0)
 {
 	if(_type == GLPrimitiveType::POINTS)
 		m_glType = GLPrimitiveType::POINTS;

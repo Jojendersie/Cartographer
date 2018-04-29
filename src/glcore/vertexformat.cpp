@@ -34,6 +34,7 @@ int attributeSize(const VertexAttribute& _attr)
 		case PrimitiveFormat::UINT32: return 4 * _attr.numComponents; break;
 		case PrimitiveFormat::INTR10G10B10A2: return 4; break;
 		case PrimitiveFormat::UINTR10G10B10A2: return 4; break;
+		case PrimitiveFormat::HALF: return 2 * _attr.numComponents; break;
 	}
 	return -1;
 }

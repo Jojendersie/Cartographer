@@ -115,10 +115,9 @@ namespace ca { namespace cc {
 
 	Rect2D FontRenderer::getBoundingBox(const Vec3& _position, const char* _text, float _size, float _rotation, float _alignX, float _alignY, bool _roundToPixel)
 	{
+		// Convert pixel size into a scale factor and apply rotation
 		Mat2x2 rotateAndScale = ei::rotation(_rotation) * ei::scaling<float, 2>(_size / BASE_SIZE);
 
-		// Convert pixel size into a scale factor
-		float scale = _size / BASE_SIZE;
 		const CharacterDef * lastCharMetric = nullptr;
 		Vec2 maxCursor = renderingKernel(_position, _text, _size, rotateAndScale, _roundToPixel,
 			[&](const ei::Vec3 & _charPosition, char32_t _char, const CharacterDef & _charMetric, float _scale) {
@@ -606,7 +605,7 @@ namespace ca { namespace cc {
 					if(lastC != m_chars.end())
 					{
 						CharacterDef::KerningPair p; p.character = charEntry->first;
-						int s = lastC->second.kerning.size();
+						//int s = lastC->second.kerning.size();
 						auto it = std::lower_bound(lastC->second.kerning.begin(), lastC->second.kerning.end(), p);
 						if(it != lastC->second.kerning.end() && it->character == p.character)
 							cursor.x += it->kern / 64.0f;
