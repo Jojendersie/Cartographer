@@ -3,6 +3,7 @@
 #include <cinttypes>
 #include <type_traits>
 #include <cstring>
+#include <functional>
 
 namespace ca { namespace pa {
 
@@ -146,7 +147,7 @@ public:
 				swap(_key, m_keys[idx].key);
 				swap(d, m_keys[idx].dist);
 				swap(_data, m_data[idx]);
-				if(insertIdx == ~0) insertIdx = idx;
+				if(insertIdx == ~0u) insertIdx = idx;
 			}
 			++d;
 		//	idx = (idx + 1) % m_capacity;
@@ -156,7 +157,7 @@ public:
 		m_keys[idx].dist = d;
 		new (&m_data[idx])(T)(move(_data));
 		++m_size;
-		if(insertIdx == ~0) insertIdx = idx;
+		if(insertIdx == ~0u) insertIdx = idx;
 		return Handle(this, insertIdx);
 	}
 
@@ -363,7 +364,7 @@ private:
 				swap(_key, m_keys[idx].key);
 				swap(d, m_keys[idx].dist);
 				swap(_data, m_data[idx]);
-				if(insertIdx == ~0) insertIdx = idx;
+				if(insertIdx == ~0u) insertIdx = idx;
 			}
 			++d;
 			//	idx = (idx + 1) % m_capacity;
@@ -373,7 +374,7 @@ private:
 		m_keys[idx].dist = d;
 		new (&m_data[idx])(T)(move(_data));
 		++m_size;
-		if(insertIdx == ~0) insertIdx = idx;
+		if(insertIdx == ~0u) insertIdx = idx;
 		return insertIdx;
 	}
 };
