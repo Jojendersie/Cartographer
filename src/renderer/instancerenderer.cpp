@@ -295,7 +295,7 @@ void InstanceRenderer::draw() const
 				unsigned(m_glType),
 				it.indexCount,
 				GL_UNSIGNED_INT,
-				(void*)(it.indexOffset),
+				(void*)(uintptr_t)(it.indexOffset),
 				it.numInstances,
 				instanceOffset);
 			instanceOffset += it.numInstances;

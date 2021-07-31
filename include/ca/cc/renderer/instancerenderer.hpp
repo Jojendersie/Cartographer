@@ -3,6 +3,7 @@
 #include "ca/cc/glcore/vertexformat.hpp"
 
 #include <ei/vector.hpp>
+#include <ei/quaternion.hpp>
 #include <vector>
 
 namespace ca { namespace cc {

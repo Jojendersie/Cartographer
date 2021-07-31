@@ -12,14 +12,14 @@ static void enableAttribute(unsigned _index, const ca::cc::VertexAttribute& _att
 			GLenum(_attribute.type),
 			GLboolean(_attribute.normalize),
 			_vertexSize,
-			(GLvoid*)(_offset));
+			(GLvoid*)(uintptr_t)(_offset));
 	else
 		ca::cc::glCall(glVertexAttribIPointer,
 			_index,
 			_attribute.numComponents,
 			GLenum(_attribute.type),
 			_vertexSize,
-			(GLvoid*)(_offset));
+			(GLvoid*)(uintptr_t)(_offset));
 }
 
 namespace ca { namespace cc {
