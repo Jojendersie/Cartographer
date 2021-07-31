@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ca/gui/widgets/group.hpp"
 #include "ca/gui/backend/mouse.hpp"
 #include "ca/gui/backend/renderbackend.hpp"

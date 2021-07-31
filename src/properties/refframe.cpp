@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ca/gui/properties/refframe.hpp"
 
 namespace ca { namespace gui {

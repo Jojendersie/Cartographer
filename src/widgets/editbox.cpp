@@ -76,11 +76,11 @@ namespace ca { namespace gui {
 		return pos == std::string::npos ? _str.length() : pos;
 	}
 
-	static bool utf8IsStartByte(char _c)
-	{
-		//return ((_c & 0x80) == 0) || ((_c & 0xc0) == 0xc0);
-		return (_c & 0xc0) != 0x80;
-	}
+	//static bool utf8IsStartByte(char _c)
+	//{
+	//	//return ((_c & 0x80) == 0) || ((_c & 0xc0) == 0xc0);
+	//	return (_c & 0xc0) != 0x80;
+	//}
 	static bool utf8IsIntermediateBye(char _c)
 	{
 		return (_c & 0xc0) == 0x80;
@@ -122,16 +122,18 @@ namespace ca { namespace gui {
 
 		// Try to change cursor position. Move entire words if CONTROL is pressed
 		int oldCursor = m_cursorPosition;
-		if(_keyboardState.isKeyDown(KeyboardState::Key::ARROW_LEFT))
+		if(_keyboardState.isKeyDown(KeyboardState::Key::ARROW_LEFT)) {
 			if(_keyboardState.isControlPressed())
 				m_cursorPosition = findPrevControlStop(m_text, m_cursorPosition);
 			else
 				m_cursorPosition = utf8Prev( m_text.c_str(), m_cursorPosition );
-		if(_keyboardState.isKeyDown(KeyboardState::Key::ARROW_RIGHT))
+		}
+		if(_keyboardState.isKeyDown(KeyboardState::Key::ARROW_RIGHT)) {
 			if(_keyboardState.isControlPressed())
 				m_cursorPosition = findNextControlStop(m_text, m_cursorPosition);
 			else
 				m_cursorPosition = utf8Next( m_text.c_str(), m_cursorPosition );
+		}
 		if(_keyboardState.isKeyDown(KeyboardState::Key::END)
 			|| (_keyboardState.isKeyDown(KeyboardState::Key::NUMPAD_1) ))//&& _keyboardState.isNumLock()))
 			m_cursorPosition = m_text.length();
