@@ -54,7 +54,7 @@ namespace ca { namespace cc {
 		void attach(const Shader* _shader);
 		
 		/// Use this program now, links if necessary.
-		void use();
+		void use() const;
 		
 		/// Build program from the attached files.
 		void link();

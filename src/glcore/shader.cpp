@@ -88,7 +88,7 @@ namespace ca { namespace cc {
 		} else logError("Already 5 shaders bound. This is the maximum: Vertex + Hull + Domain + Geometry + Fragment.");
 	}
 		
-	void Program::use()
+	void Program::use() const
 	{
 		if(!m_programID)
 			logError("Trying to use an uninitialized program!");
