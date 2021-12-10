@@ -58,6 +58,15 @@ namespace ca { namespace gui {
 
 		// *** Optional Helper functions ***
 		void updateFromGLFWInput(int _glfwButton, int _glfwAction);
+
+		// Default initilization
+		MouseState()
+		{
+			for(int i = 0; i < 8; ++i) buttons[i] = RELEASED;
+			anyButtonUp = anyButtonDown = anyButtonPressed = false;
+			deltaScroll = ei::Vec2{0.0f};
+			lastPosition = position = Coord2{0.0f};
+		}
 	private:
 		Coord2 lastPosition;
 	};
