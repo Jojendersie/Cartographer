@@ -50,11 +50,18 @@ namespace ca { namespace cc {
 
 		//void setInstance()
 
+		/// Clear all mesh definitions. It is not possible to remove a single mesh.
+		/// Does not clear instance data.
+		void clearGeometry();
+
 		/// Clear all existing instances (recommended for fully dynamic buffers)
 		void clearInstances();
 		
 		/// Single instanced draw call for all instances.
 		void draw() const;
+
+		uint32 getNumVertices(int _meshID) const;
+		uint32 getNumIndices(int _meshID) const;
 
 	private:
 		struct MeshDefinition
@@ -88,8 +95,6 @@ namespace ca { namespace cc {
 		// This renderer does need types without stripe-mode to be able to separate geometry.
 		GLPrimitiveType m_geometryType;	///< Type for geometry generation.
 		GLPrimitiveType m_glType;	///< OpenGL primitive type.
-		unsigned m_numIndices;	
-		unsigned m_numVertices;
 		std::vector<AttributeDefinition> m_attributes;
 		std::vector<MeshDefinition> m_meshes;
 		std::vector<MeshInstance> m_instances;

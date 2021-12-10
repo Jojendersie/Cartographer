@@ -263,6 +263,14 @@ void InstanceRenderer::newInstance(int _meshID, const ei::Vec3& _position, const
 	m_dirty = true;
 }
 
+void InstanceRenderer::clearGeometry()
+{
+	m_meshes.clear();
+	m_vertexData.clear();
+	m_indexData.clear();
+	m_dirty = true;
+}
+
 void InstanceRenderer::clearInstances()
 {
 	for(int i = 0; i < (int)m_meshes.size(); ++i)
@@ -301,6 +309,16 @@ void InstanceRenderer::draw() const
 			instanceOffset += it.numInstances;
 		}
 	}
+}
+
+uint32 InstanceRenderer::getNumVertices(int _meshID) const
+{
+	return m_meshes[_meshID].vertexCount;
+}
+
+uint32 InstanceRenderer::getNumIndices(int _meshID) const
+{
+	return m_meshes[_meshID].indexCount;
 }
 
 }} // namespace ca::cc
