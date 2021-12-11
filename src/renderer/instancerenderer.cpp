@@ -186,7 +186,9 @@ void InstanceRenderer::put(int _attrIndex, const uint32 _value)
 void InstanceRenderer::emit()
 {
 	m_vertexData.insert(m_vertexData.end(), m_currentVertex.begin(), m_currentVertex.end());
+	++m_meshes.back().vertexCount;
 	unsigned index = m_vertexData.size() / m_vertexSize - 1;
+	unsigned idx_size = m_indexData.size();
 	// If primitive finished add the indices
 	if(m_geometryType == GLPrimitiveType::LINES)
 	{
@@ -212,11 +214,13 @@ void InstanceRenderer::emit()
 		} else ++m_startNewPrimitive;
 		m_indexData.push_back(index);
 	}
+	m_meshes.back().indexCount += m_indexData.size() - idx_size;
 }
 
 void InstanceRenderer::emitVertex()
 {
 	m_vertexData.insert(m_vertexData.end(), m_currentVertex.begin(), m_currentVertex.end());
+	++m_meshes.back().vertexCount;
 }
 
 void InstanceRenderer::endPrimitive()
@@ -226,8 +230,8 @@ void InstanceRenderer::endPrimitive()
 
 void InstanceRenderer::endDef()
 {
-	m_meshes.back().vertexCount = (m_vertexData.size() - m_meshes.back().vertexOffset) / m_vertexSize;
-	m_meshes.back().indexCount = m_indexData.size() - (m_meshes.back().indexOffset / 4);
+	//m_meshes.back().vertexCount = (m_vertexData.size() - m_meshes.back().vertexOffset) / m_vertexSize;
+	//m_meshes.back().indexCount = m_indexData.size() - (m_meshes.back().indexOffset / 4);
 
 	// TODO: remove redundant vertices
 	// TODO: improve cache order
@@ -246,6 +250,7 @@ void InstanceRenderer::defTriangle(uint32 _a, uint32 _b, uint32 _c)
 	m_indexData.push_back(_a + baseVertex);
 	m_indexData.push_back(_b + baseVertex);
 	m_indexData.push_back(_c + baseVertex);
+	m_meshes.back().indexCount += 3;
 }
 
 void InstanceRenderer::newInstance(int _meshID, const ei::Vec3& _position, const ei::Quaternion& _rotation)
