@@ -1,4 +1,5 @@
 #include <ca/charcoal.hpp>
+#include <ca/gui.hpp>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <string>
@@ -27,6 +28,7 @@ static void resizeCallback(GLFWwindow* _window, int _width, int _height)
 	s_windowWidth = _width;
 	s_windowHeight = _height;
 	glCall(glViewport, 0, 0, _width, _height);
+	gui::GUIManager::onResize(_width, _height);
 }
 
 GLFWwindow* setupStdWindow(const char* _titel, bool _vsync)

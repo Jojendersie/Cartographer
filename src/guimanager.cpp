@@ -42,6 +42,7 @@ namespace ca { namespace gui {
 
 	void GUIManager::onResize(int _width, int _height)
 	{
+		g_manager->m_topFrame->setExtent(ei::Vec2(0.0f), ei::Vec2((float)_width, (float)_height));
 	}
 
 	void GUIManager::add(WidgetPtr _widget, unsigned _innerLayer)
