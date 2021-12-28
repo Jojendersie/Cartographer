@@ -187,8 +187,8 @@ void InstanceRenderer::emit()
 {
 	m_vertexData.insert(m_vertexData.end(), m_currentVertex.begin(), m_currentVertex.end());
 	++m_meshes.back().vertexCount;
-	unsigned index = m_vertexData.size() / m_vertexSize - 1;
-	unsigned idx_size = m_indexData.size();
+	uint index = uint(m_vertexData.size() / m_vertexSize - 1);
+	uint idx_size = (uint)m_indexData.size();
 	// If primitive finished add the indices
 	if(m_geometryType == GLPrimitiveType::LINES)
 	{
@@ -214,7 +214,7 @@ void InstanceRenderer::emit()
 		} else ++m_startNewPrimitive;
 		m_indexData.push_back(index);
 	}
-	m_meshes.back().indexCount += m_indexData.size() - idx_size;
+	m_meshes.back().indexCount += (uint)(m_indexData.size() - idx_size);
 }
 
 void InstanceRenderer::emitVertex()

@@ -1,6 +1,8 @@
 Debug/
 Release/
 lib/
+build/
+.vs/
 
 *.suo
 *.opensdf

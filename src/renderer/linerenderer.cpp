@@ -55,8 +55,8 @@ namespace ca { namespace cc {
 	{
 		if(m_dirty)
 		{
-			m_GPUBuffer.setData(m_lineData.data(), m_lineData.size() * sizeof(LineVertex));
-			m_GPUBuffer.setIndexData(m_lineIndices.data(), m_lineIndices.size() * sizeof(uint32));
+			m_GPUBuffer.setData(m_lineData.data(), uint(m_lineData.size() * sizeof(LineVertex)));
+			m_GPUBuffer.setIndexData(m_lineIndices.data(), uint(m_lineIndices.size() * sizeof(uint32)));
 			m_dirty = false;
 		}
 

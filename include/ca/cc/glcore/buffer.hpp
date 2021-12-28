@@ -160,7 +160,7 @@ namespace ca { namespace cc {
 		// ASYNCHRONOUS is set.
 		void receive();
 
-		GLuint numElements() const { return m_size / m_elementSize; }
+		GLuint numElements() const { return static_cast<GLuint>(m_size / m_elementSize); }
 
 		GLuint glID() { return m_id; }
 	private:

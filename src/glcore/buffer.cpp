@@ -117,7 +117,7 @@ namespace ca { namespace cc {
 		}
 
 		if(_size == -1)
-			_size = m_size - (GLsizei)_offset;
+			_size = (GLsizei)(m_size - _offset);
 
 		// Bind to arbitrary buffer point to call the storage command
 		glBindBuffer(static_cast<GLenum>(m_type), m_id);
@@ -134,7 +134,7 @@ namespace ca { namespace cc {
 	void* Buffer::map(MappingFlags _access, GLintptr _offset, GLsizei _size)
 	{
 		if(_size == -1)
-			_size = m_size - (GLsizei)_offset;
+			_size = (GLsizei)(m_size - _offset);
 
 		GLbitfield access = _access & (GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
 		if(_access & MappingFlags::PERSISTENT)

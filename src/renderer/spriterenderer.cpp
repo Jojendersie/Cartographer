@@ -104,12 +104,12 @@ void SpriteRenderer::draw() const
 	if(m_dirty)
 	{
 		glCall(glBindBuffer, GL_ARRAY_BUFFER, m_vbo);
-		glCall(glBufferData, GL_ARRAY_BUFFER, m_instances.size() * sizeof(SpriteInstance), m_instances.data(), GL_DYNAMIC_DRAW);
+		glCall(glBufferData, GL_ARRAY_BUFFER, (GLsizei)(m_instances.size() * sizeof(SpriteInstance)), m_instances.data(), GL_DYNAMIC_DRAW);
 		m_dirty = false;
 	}
 
 	glCall(glBindVertexArray, m_vao);
-	glCall(glDrawArrays, GL_POINTS, 0, m_instances.size());
+	glCall(glDrawArrays, GL_POINTS, 0, (GLsizei)m_instances.size());
 	//glCall(glDrawArraysInstanced, GL_POINTS, 0, 1,
 }
 

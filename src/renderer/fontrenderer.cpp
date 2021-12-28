@@ -167,7 +167,7 @@ namespace ca { namespace cc {
 		// Second run over the text to find the closest position.
 		uint charCount = 0;
 		float minDist = lensq(rotateAndScale * maxCursor + _textPosition - alignedCursor);
-		uint optPos = strlen(_text);
+		uint optPos = (uint)strlen(_text);
 		renderingKernel(Vec3(_textPosition, 0.0f), _text, _size, rotateAndScale, _roundToPixel,
 			[&](const ei::Vec3 & _charPosition, char32_t _char, const CharacterDef & _charMetric, float _scale) {
 			float d = lensq(Vec2(_charPosition) - alignedCursor);
@@ -203,7 +203,7 @@ namespace ca { namespace cc {
 		// Draw
 		m_texture->bind(0);
 		glCall(glBindVertexArray, m_vao);
-		glCall(glDrawArrays, GL_POINTS, 0, m_instances.size());
+		glCall(glDrawArrays, GL_POINTS, 0, (GLsizei)m_instances.size());
 	}
 
 	void FontRenderer::createFont(const char* _fontFile, const char* _characters)
@@ -323,7 +323,7 @@ namespace ca { namespace cc {
 		int mipLevel = 0;
 		while(w > 1 || h > 1)
 		{
-			glGetTextureImage(m_texture->getID(), mipLevel++, GL_RED, GL_UNSIGNED_BYTE, buffer.size(), buffer.data());
+			glGetTextureImage(m_texture->getID(), mipLevel++, GL_RED, GL_UNSIGNED_BYTE, (GLsizei)buffer.size(), buffer.data());
 			fwrite(buffer.data(), 1, w * h, file);
 			w = max(1u, w/2);
 			h = max(1u, h/2);
