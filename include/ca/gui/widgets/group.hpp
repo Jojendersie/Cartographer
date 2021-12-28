@@ -75,8 +75,8 @@ namespace ca { namespace gui {
 		ConstIterator begin() const { return ConstIterator(this, 0); }
 
 		/// Return the invalid handle for range based for loops
-		Iterator end() { return Iterator(this, m_children.size()); }
-		ConstIterator end() const { return ConstIterator(this, m_children.size()); }
+		Iterator end() { return Iterator(this, (uint)m_children.size()); }
+		ConstIterator end() const { return ConstIterator(this, (uint)m_children.size()); }
 	protected:
 		struct WEntry {
 			WidgetPtr widget;

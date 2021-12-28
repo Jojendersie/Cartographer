@@ -65,15 +65,15 @@ namespace ca { namespace gui {
 	static uint findPrevControlStop(const std::string & _str, uint _off)
 	{
 		if(_off <= 1) return 0;
-		uint pos = _str.find_last_of( CONTROL_STOP_CHARACTERS, _off - 1 );
+		uint pos = (uint)_str.find_last_of( CONTROL_STOP_CHARACTERS, _off - 1 );
 		return pos == std::string::npos ? 0 : pos;
 	}
 
 	static uint findNextControlStop(const std::string & _str, uint _off)
 	{
-		if(_off+1 >= _str.length()) return _str.length();
-		uint pos = _str.find_first_of( CONTROL_STOP_CHARACTERS, _off + 1 );
-		return pos == std::string::npos ? _str.length() : pos;
+		if(_off+1 >= _str.length()) return (uint)_str.length();
+		uint pos = (uint)_str.find_first_of( CONTROL_STOP_CHARACTERS, _off + 1 );
+		return pos == std::string::npos ? (uint)_str.length() : pos;
 	}
 
 	//static bool utf8IsStartByte(char _c)
@@ -114,7 +114,7 @@ namespace ca { namespace gui {
 			m_text = m_text.substr(0, m_cursorPosition)
 				+ _keyboardState.characterInput
 				+ m_text.substr(m_cursorPosition);
-			m_cursorPosition += _keyboardState.characterInput.length();
+			m_cursorPosition += (int)_keyboardState.characterInput.length();
 			if(m_onTextChange) m_onTextChange(this, m_text);
 			recomputeTextPlacement(false);
 			return true;
@@ -136,7 +136,7 @@ namespace ca { namespace gui {
 		}
 		if(_keyboardState.isKeyDown(KeyboardState::Key::END)
 			|| (_keyboardState.isKeyDown(KeyboardState::Key::NUMPAD_1) ))//&& _keyboardState.isNumLock()))
-			m_cursorPosition = m_text.length();
+			m_cursorPosition = (int)m_text.length();
 		if(_keyboardState.isKeyDown(KeyboardState::Key::HOME)
 			|| (_keyboardState.isKeyDown(KeyboardState::Key::NUMPAD_7) ))//&& _keyboardState.isNumLock()))
 			m_cursorPosition = 0;

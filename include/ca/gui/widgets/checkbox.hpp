@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "widget.hpp"
 
 namespace ca { namespace gui {

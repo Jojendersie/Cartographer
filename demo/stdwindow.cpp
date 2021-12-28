@@ -1,5 +1,4 @@
 #include <ca/charcoal.hpp>
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <string>
@@ -74,9 +73,10 @@ GLFWwindow* setupStdWindow(const char* _titel, bool _vsync)
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(_vsync ? 1 : 0); // VSync
 
-	glewExperimental = GL_TRUE;
-	glewInit();
-	glGetError();
+	if (!gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress) ) {
+		ca::pa::logError("gladLoadGLLoader failed to initialized GL-methods!");
+		return window;
+	} else ca::pa::logInfo("Initialized OpenGL functions with GLAD.");
 
 	glEnable(GL_FRAMEBUFFER_SRGB);
 
