@@ -108,6 +108,9 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		///		All popups are tracked on a stack. Only the topmost one is hidden in one
 		///		step. This allows chains of info popups.
 		static void showPopup(WidgetPtr& _popup, const Widget* _originator);
+
+		/// Get the anchor component of the window sized top level component
+		static const IAnchorProvider* getAnchorProvider();
 	private:
 		std::shared_ptr<class IRenderBackend> m_renderer;
 		std::shared_ptr<class ITheme> m_theme;

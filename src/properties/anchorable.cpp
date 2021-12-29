@@ -27,6 +27,7 @@ namespace ca { namespace gui {
 			pa::logWarning("[ca::gui] No anchor provider given in autoAnchor().");
 			return;
 		}
+		setAnchorable(true);
 		setAnchor(SIDE::LEFT,   _anchorProvider->findClosestAnchor(m_selfFrame->left(), IAnchorProvider::SearchDirection::LEFT));
 		setAnchor(SIDE::RIGHT,  _anchorProvider->findClosestAnchor(m_selfFrame->right(), IAnchorProvider::SearchDirection::RIGHT));
 		setAnchor(SIDE::BOTTOM, _anchorProvider->findClosestAnchor(m_selfFrame->bottom(), IAnchorProvider::SearchDirection::DOWN));
