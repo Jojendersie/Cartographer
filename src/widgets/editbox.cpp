@@ -10,6 +10,8 @@ namespace ca { namespace gui {
 	Edit::Edit() :
 		m_textAlignment(SIDE::LEFT),
 		m_textPosition(0.0f),
+		m_backgroundTexture(0),
+		m_focusTexture(0),
 		m_cursorPosition(0)
 	{
 	}
@@ -111,11 +113,12 @@ namespace ca { namespace gui {
 		// Add new text at the cursor position
 		if(!_keyboardState.characterInput.empty())
 		{
+			int oldLen = (int)m_text.length();
 			m_text = m_text.substr(0, m_cursorPosition)
 				+ _keyboardState.characterInput
 				+ m_text.substr(m_cursorPosition);
-			m_cursorPosition += (int)_keyboardState.characterInput.length();
 			if(m_onTextChange) m_onTextChange(this, m_text);
+			m_cursorPosition += (int)m_text.length() - oldLen;
 			recomputeTextPlacement(false);
 			return true;
 		}
