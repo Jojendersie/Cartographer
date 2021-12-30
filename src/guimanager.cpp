@@ -32,6 +32,7 @@ namespace ca { namespace gui {
 		g_manager->m_stickyMouseFocus = false;
 		g_manager->m_lastMouseMoveTime = 0.0f;
 		g_manager->m_popupTime = 0.33f;
+		g_manager->m_cursorType = CursorType::ARROW;
 		logInfo("[ca::gui] Initialized GUIManager.");
 	}
 
