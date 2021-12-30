@@ -200,7 +200,7 @@ namespace ca { namespace gui {
 		else
 			p2 = p3 + m_destNode->getConnectorDirection() * distance;
 
-		Coord2 boundingRect[2];
+		Coord2 boundingRect[2] = {Coord2(min(p0, p3)), Coord2(max(p0, p3))};
 		Vec3 wayPoints[CONNECTOR_NUM_POINTS];
 		for(int i = 0; i < CONNECTOR_NUM_POINTS; ++i)
 		{
