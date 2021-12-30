@@ -153,7 +153,7 @@ namespace ca { namespace gui {
 		float m_destAngle;
 		float m_stiffness;
 
-		std::vector<ei::Vec3> m_curve;
+		std::vector<ei::Vec2> m_curve;
 
 		/// Implementation of IRegion::isMouseOver.
 		bool isMouseOver(const Coord2& _mousePos) const override;

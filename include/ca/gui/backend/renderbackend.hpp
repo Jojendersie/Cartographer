@@ -60,7 +60,7 @@ namespace ca { namespace gui {
 		/// \param [in] _colorX Color of the vertex with index X.
 		virtual void drawTriangle(const ei::Triangle2D& _triangle, const ei::Vec4& _color0, const ei::Vec4& _color1, const ei::Vec4& _color2) = 0;
 		/// Draw a polygon with a color gradient from the first to the last vertex.
-		virtual void drawLine(const ei::Vec3* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB) = 0;
+		virtual void drawLine(const ei::Vec2* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB) = 0;
 
 		/// Load or find a loaded texture.
 		/// \param [in] _smooth Use linear interpolation for the texture magnificiton/minification.

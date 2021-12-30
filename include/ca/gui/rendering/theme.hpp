@@ -48,7 +48,7 @@ namespace ca { namespace gui {
 		/// Draw a small handle for node based editors
 		virtual void drawNodeHandle(const Coord2& _position, float _radius, const ei::Vec3& _color) = 0;
 		/// General purpose line drawing used for splines and borders
-		virtual void drawLine(const ei::Vec3* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB) = 0;
+		virtual void drawLine(const ei::Vec2* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB) = 0;
 		// more are following...
 
 	protected:

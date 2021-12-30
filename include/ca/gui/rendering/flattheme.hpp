@@ -35,7 +35,7 @@ namespace ca { namespace gui {
 		virtual void drawArrowButton(const class RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver) override;
 		virtual float getTextSize() const override { return m_properties.textSize; }
 		virtual void drawNodeHandle(const Coord2& _position, float _radius, const ei::Vec3& _color) override;
-		virtual void drawLine(const ei::Vec3* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB) override;
+		virtual void drawLine(const ei::Vec2* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB) override;
 	protected:
 		FlatProperties m_properties;
 	};

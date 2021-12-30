@@ -519,11 +519,11 @@ namespace ca { namespace gui {
 		return ei::IVec2(m_spriteSizes[size_t(_handle)]);
 	}
 
-	void CharcoalBackend::drawLine(const ei::Vec3* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB)
+	void CharcoalBackend::drawLine(const ei::Vec2* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB)
 	{
 		m_lineRenderer->beginLine();
 		for(int i = 0; i < _numPositions; ++i)
-			m_lineRenderer->putVertex(_positions[i], lerp(_colorA, _colorB, i / (_numPositions - 1.0f)));
+			m_lineRenderer->putVertex(Vec3{_positions[i], 0.0f}, lerp(_colorA, _colorB, i / (_numPositions - 1.0f)));
 		m_lineRenderer->endLine();
 	}
 

@@ -149,6 +149,22 @@ namespace ca { namespace gui {
 
 
 
+	static void createBezierSpline(const Coord2& p0, const Coord2& p1, const Coord2& p2, const Coord2& p3, const const int num_points, Coord2* points, Coord2& bbmin, Coord2& bbmax)
+	{
+		bbmin = min(p0, p3);
+		bbmax = max(p0, p3);
+		for(int i = 0; i < num_points; ++i)
+		{
+			// TODO: adaptive step length to increase sample density in heigh
+			// curvature areas
+			float t = i / (num_points - 1.0f);
+			float ti = 1.0f - t;
+			points[i] = ti*ti*ti * p0 + 3.0f*ti*ti*t * p1 + 3.0f*ti*t*t * p2 + t*t*t * p3;
+			bbmin = min(bbmin, points[i]);
+			bbmax = max(bbmax, points[i]);
+		}
+	}
+
 	NodeConnector::NodeConnector() :
 		Clickable(this),
 		m_stiffness(1.0f/3.0f),
@@ -200,28 +216,19 @@ namespace ca { namespace gui {
 		else
 			p2 = p3 + m_destNode->getConnectorDirection() * distance;
 
-		Coord2 boundingRect[2] = {Coord2(min(p0, p3)), Coord2(max(p0, p3))};
-		Vec3 wayPoints[CONNECTOR_NUM_POINTS];
-		for(int i = 0; i < CONNECTOR_NUM_POINTS; ++i)
-		{
-			// TODO: adaptive step length to increase sample density in heigh
-			// curvature areas
-			float t = i / (CONNECTOR_NUM_POINTS - 1.0f);
-			float ti = 1.0f - t;
-			wayPoints[i] = Vec3( ti*ti*ti * p0 + 3.0f*ti*ti*t * p1 + 3.0f*ti*t*t * p2 + t*t*t * p3, 0.0f);
-			boundingRect[0] = min(boundingRect[0], Coord2(wayPoints[i]));
-			boundingRect[1] = max(boundingRect[1], Coord2(wayPoints[i]));
-		}
+		Coord2 wayPoints[CONNECTOR_NUM_POINTS];
+		Coord2 bbmin, bbmax;
+		createBezierSpline(p0, p1, p2, p3, CONNECTOR_NUM_POINTS, wayPoints, bbmin, bbmax);
 		bool mouseOver = isMouseOver(GUIManager::getMouseState().position);
 		Vec4 sourceColor = ei::Vec4(m_sourceNode->color() * (mouseOver ? 2.0f : 1.0f), 1.0f);
 		Vec4 destColor = ei::Vec4(m_destNode->color() * (mouseOver ? 2.0f : 1.0f), 1.0f);
 		GUIManager::theme().drawLine(wayPoints, CONNECTOR_NUM_POINTS, sourceColor, destColor);
 
 		NodeConnector* t = const_cast<NodeConnector*>(this);
-		t->m_refFrame.sides[SIDE::LEFT] = boundingRect[0].x - 3.0f;
-		t->m_refFrame.sides[SIDE::BOTTOM] = boundingRect[0].y - 3.0f;
-		t->m_refFrame.sides[SIDE::RIGHT] = boundingRect[1].x + 3.0f;
-		t->m_refFrame.sides[SIDE::TOP] = boundingRect[1].y + 3.0f;
+		t->m_refFrame.sides[SIDE::LEFT] = bbmin.x - 3.0f;
+		t->m_refFrame.sides[SIDE::BOTTOM] = bbmin.y - 3.0f;
+		t->m_refFrame.sides[SIDE::RIGHT] = bbmax.x + 3.0f;
+		t->m_refFrame.sides[SIDE::TOP] = bbmax.y + 3.0f;
 	}
 
 	bool NodeConnector::isMouseOver(const Coord2& _mousePos) const
@@ -355,26 +362,17 @@ namespace ca { namespace gui {
 		findWidgetBorder(region, p3, bdir * (sum(m_destNode->getSize()) / 4.0f));
 
 		// Create the Bezier spline
-		Coord2 boundingRect[2] = {Coord2(min(p0, p3)), Coord2(max(p0, p3))};
 		float nodeDistance = len(p0 - p3) * m_stiffness;
 		Vec2 p1 = p0 + adir * nodeDistance;
 		Vec2 p2 = p3 + bdir * nodeDistance;
-		m_curve.clear();
-		for(int i = 0; i < CONNECTOR_NUM_POINTS; ++i)
-		{
-			// TODO: adaptive step length to increase sample density in heigh
-			// curvature areas
-			float t = i / (CONNECTOR_NUM_POINTS - 1.0f);
-			float ti = 1.0f - t;
-			m_curve.push_back(Vec3( ti*ti*ti * p0 + 3.0f*ti*ti*t * p1 + 3.0f*ti*t*t * p2 + t*t*t * p3, 0.0f));
-			boundingRect[0] = min(boundingRect[0], Coord2(m_curve[i]));
-			boundingRect[1] = max(boundingRect[1], Coord2(m_curve[i]));
-		}
+		m_curve.resize(CONNECTOR_NUM_POINTS);
+		Coord2 bbmin, bbmax;
+		createBezierSpline(p0, p1, p2, p3, CONNECTOR_NUM_POINTS, m_curve.data(), bbmin, bbmax);
 
-		m_refFrame.sides[SIDE::LEFT] = boundingRect[0].x - 3.0f;
-		m_refFrame.sides[SIDE::BOTTOM] = boundingRect[0].y - 3.0f;
-		m_refFrame.sides[SIDE::RIGHT] = boundingRect[1].x + 3.0f;
-		m_refFrame.sides[SIDE::TOP] = boundingRect[1].y + 3.0f;
+		m_refFrame.sides[SIDE::LEFT] = bbmin.x - 3.0f;
+		m_refFrame.sides[SIDE::BOTTOM] = bbmin.y - 3.0f;
+		m_refFrame.sides[SIDE::RIGHT] = bbmax.x + 3.0f;
+		m_refFrame.sides[SIDE::TOP] = bbmax.y + 3.0f;
 	}
 
 	bool WidgetConnector::isMouseOver(const Coord2 & _mousePos) const

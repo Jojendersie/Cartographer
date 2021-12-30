@@ -166,7 +166,7 @@ namespace ca { namespace gui {
 		// TODO: draw a border
 	}
 
-	void Sharp3DTheme::drawLine(const ei::Vec3* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB)
+	void Sharp3DTheme::drawLine(const ei::Vec2* _positions, int _numPositions, const ei::Vec4& _colorA, const ei::Vec4& _colorB)
 	{
 		GUIManager::renderBackend().drawLine(_positions, _numPositions, _colorA, _colorB);
 	}
