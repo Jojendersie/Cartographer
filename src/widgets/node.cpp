@@ -149,7 +149,7 @@ namespace ca { namespace gui {
 
 
 
-	static void createBezierSpline(const Coord2& p0, const Coord2& p1, const Coord2& p2, const Coord2& p3, const const int num_points, Coord2* points, Coord2& bbmin, Coord2& bbmax)
+	static void createBezierSpline(const Coord2& p0, const Coord2& p1, const Coord2& p2, const Coord2& p3, const int num_points, Coord2* points, Coord2& bbmin, Coord2& bbmax)
 	{
 		bbmin = min(p0, p3);
 		bbmax = max(p0, p3);
@@ -311,6 +311,8 @@ namespace ca { namespace gui {
 		Clickable(this),
 		m_sourceColor(1.0f),
 		m_destColor(1.0f),
+		m_sourceAngle(0.0f),
+		m_destAngle(0.0f),
 		m_stiffness(1.0f/3.0f),
 		m_isMouseOver(false)
 	{
@@ -320,7 +322,7 @@ namespace ca { namespace gui {
 
 	void WidgetConnector::draw() const
 	{
-		GUIManager::theme().drawLine(m_curve.data(), m_curve.size(), Vec4(m_sourceColor, 1.0f), Vec4(m_destColor, 1.0f));
+		GUIManager::theme().drawLine(m_curve.data(), (int)m_curve.size(), Vec4(m_sourceColor, 1.0f), Vec4(m_destColor, 1.0f));
 	}
 
 	static void findWidgetBorder(const IRegion* _region, Vec2& _pos, const Vec2& _dir)

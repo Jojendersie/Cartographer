@@ -82,14 +82,20 @@ namespace ca { namespace gui {
 			for(int i = (int)m_children.size()-1; i >= 0; --i)
 			{
 				WidgetPtr& e = m_children[i].widget;
-				if(e->isEnabled() && e->isVisible()
-					&& e->getRefFrame().isMouseOver(GUIManager::getMouseState().position)
-					&& e->processInput(_mouseState))
+				if(e->isVisible())
 				{
-					// If a group took the input change the order
-					if(dynamic_cast<Group*>(e.get()) && _mouseState.anyButtonDown)
-						moveToFront(i);
-					return true;
+					const bool mouseOnWidget = e->getRefFrame().isMouseOver(GUIManager::getMouseState().position);
+					if(mouseOnWidget)
+						GUIManager::setMouseOver(e.get());
+					if(e->isEnabled()
+						&& mouseOnWidget
+						&& e->processInput(_mouseState))
+					{
+						// If a group took the input change the order
+						if(dynamic_cast<Group*>(e.get()) && _mouseState.anyButtonDown)
+							moveToFront(i);
+						return true;
+					}
 				}
 			}
 		} else eiAssert(false, "Unexpected focus situation!");

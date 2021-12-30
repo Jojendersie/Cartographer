@@ -124,7 +124,7 @@ namespace ca { namespace gui {
 
 		if(GUIManager::getStickyMouseFocussed() == this)
 			return true;
-		if(getRegion()->isMouseOver(_mouseState.position)) {
+		if(cursorOnWidget) {
 			GUIManager::setMouseFocus(this);
 			return true;
 		// The current element has the focus but now reason to keep it.

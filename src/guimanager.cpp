@@ -28,8 +28,10 @@ namespace ca { namespace gui {
 
 		g_manager->m_keyboardFocus = nullptr;
 		g_manager->m_mouseFocus = nullptr;
+		g_manager->m_mouseOver = nullptr;
 		g_manager->m_stickyMouseFocus = false;
 		g_manager->m_lastMouseMoveTime = 0.0f;
+		g_manager->m_popupTime = 0.33f;
 		logInfo("[ca::gui] Initialized GUIManager.");
 	}
 
@@ -157,12 +159,12 @@ namespace ca { namespace gui {
 		} else {
 			// Check if the current widget in focus has a popup and if enough
 			// time passed to show it.
-			if( now - g_manager->m_lastMouseMoveTime > 0.33f
-				&& g_manager->m_mouseFocus
-				&& g_manager->m_mouseFocus->getRefFrame().isMouseOver(_mouseState.position)
-				&& g_manager->m_mouseFocus->getInfoPopup()
+			if( now - g_manager->m_lastMouseMoveTime > g_manager->m_popupTime
+				&& g_manager->m_mouseOver
+				//&& g_manager->m_mouseOver->getRefFrame().isMouseOver(_mouseState.position)
+				&& g_manager->m_mouseOver->getInfoPopup()
 			)
-				showPopup(g_manager->m_mouseFocus->getInfoPopup(), g_manager->m_mouseFocus);
+				showPopup(g_manager->m_mouseOver->getInfoPopup(), g_manager->m_mouseOver);
 		}
 
 		g_manager->m_mouseState = _mouseState;
@@ -276,6 +278,11 @@ namespace ca { namespace gui {
 		g_manager->m_stickyMouseFocus = _sticky;
 	}
 
+	void GUIManager::setMouseOver(Widget* _widget)
+	{
+		g_manager->m_mouseOver = _widget;
+	}
+
 	CursorType GUIManager::getCursorType()
 	{
 		return g_manager->m_cursorType;
@@ -333,6 +340,15 @@ namespace ca { namespace gui {
 		g_manager->m_cursorToPopupDistance = max(0.0f, distance(
 			g_manager->m_mouseState.position,
 			_popup->getRefFrame().rect));
+	}
+
+	void GUIManager::setPopupTime(float _showAfter)
+	{
+		if(_showAfter <= 0.0f) {
+			pa::logWarning("Popup time must be a positive number, but is ", _showAfter);
+			return;
+		}
+		g_manager->m_popupTime = _showAfter;
 	}
 
 	const IAnchorProvider* GUIManager::getAnchorProvider()

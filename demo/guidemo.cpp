@@ -452,6 +452,7 @@ void createGUI(GLFWwindow* _window)
 	l1->setText("Info popup.", 2.0f);
 	l1->setBackgroundOpacity(1.0f);
 	f5->setInfoPopup(l1);
+	l0->setInfoPopup(l1);
 
 	// A frame with edits
 	FramePtr f6(new Frame);

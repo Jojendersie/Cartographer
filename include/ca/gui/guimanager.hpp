@@ -79,6 +79,11 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		/// Set an element as the focussed one and release the last one.
 		static void setKeyboardFocus(Widget* _widget);
 		static void setMouseFocus(Widget* _widget, bool _sticky = false);
+		/// Overwrite the component with the one that has the mouse on it.
+		/// \details While processing the input this gets constantly overwritten.
+		///		The last compontent to write this must be the one deepest in the
+		///		hierarchy.
+		static void setMouseOver(Widget* _widget);
 
 		/// What cursor should actually be used?
 		static CursorType getCursorType();
@@ -109,6 +114,9 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		///		step. This allows chains of info popups.
 		static void showPopup(WidgetPtr& _popup, const Widget* _originator);
 
+		/// Set the time in seconds before a popup is shown
+		static void setPopupTime(float _showAfter);
+
 		/// Get the anchor component of the window sized top level component
 		static const IAnchorProvider* getAnchorProvider();
 	private:
@@ -117,9 +125,11 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		std::shared_ptr<class Group> m_topFrame;
 		std::vector<WidgetPtr> m_popupStack;
 		float m_cursorToPopupDistance;
+		float m_popupTime;				///< Seconds when to show a popup
 
 		Widget* m_keyboardFocus;		///< The element with the keyboard-focus or nullptr
 		Widget* m_mouseFocus;			///< The element with the mouse-focus or nullptr
+		Widget* m_mouseOver;			///< The element over which the mouse currently sits (can be a disabled element)
 		//bool m_stickyKeyboardFocus;		///< The focus guarantees exclusive input handling by the element. The element must release this active.
 		bool m_stickyMouseFocus;		///< The focus guarantees exclusive input handling by the element.
 		float m_lastMouseMoveTime;		///< Point in time where the mouse was moved the last.
