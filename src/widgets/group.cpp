@@ -92,7 +92,8 @@ namespace ca { namespace gui {
 						&& e->processInput(_mouseState))
 					{
 						// If a group took the input change the order
-						if(dynamic_cast<Group*>(e.get()) && _mouseState.anyButtonDown)
+						const bool isGroup = dynamic_cast<Group*>(e.get()) != nullptr;
+						if(isGroup && _mouseState.anyButtonDown)
 							moveToFront(i);
 						return true;
 					}

@@ -139,18 +139,20 @@ namespace ca { namespace gui {
 
 		refitAllToAnchors();
 
-		const bool mouse_state_changed = _mouseState.position != g_manager->m_mouseState.position
+		const bool mouseStateChanged = _mouseState.position != g_manager->m_mouseState.position
 			|| _mouseState.deltaScroll != g_manager->m_mouseState.deltaScroll
 			|| _mouseState.anyButtonDown || _mouseState.anyButtonPressed || _mouseState.anyButtonUp;
 
 		// Very early out: nothing to do and popup already visible
-		if(!mouse_state_changed && (!g_manager->m_popupStack.empty() && g_manager->m_popupStack.back()->isVisible())) return false;
+		if(!mouseStateChanged && (!g_manager->m_popupStack.empty() && g_manager->m_popupStack.back()->isVisible())) return false;
 
 		// Show and hide popups
 		float now = clock() / float(CLOCKS_PER_SEC);
-		if(mouse_state_changed)
+		if(mouseStateChanged)
 		{
 			g_manager->m_lastMouseMoveTime = now;
+			if(g_manager->m_mouseOver && !g_manager->m_mouseOver->getRefFrame().isMouseOver(_mouseState.position))
+				g_manager->m_mouseOver = nullptr;
 			// Hide if this mouse move is farther away then the last.
 			if(!g_manager->m_popupStack.empty())
 			{
@@ -174,7 +176,7 @@ namespace ca { namespace gui {
 		}
 
 		// Early out: nothing to do
-		if(!mouse_state_changed) return false;
+		if(!mouseStateChanged) return false;
 
 		g_manager->m_mouseState = _mouseState;
 		g_manager->m_cursorType = CursorType::ARROW;
