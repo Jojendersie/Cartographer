@@ -58,7 +58,8 @@ namespace ca { namespace gui {
 			relativeVal *= m_range;
 			// Round to step size
 			relativeVal = round(relativeVal / m_stepSize) * m_stepSize;
-			m_value = m_min + relativeVal;
+			const double newVal = m_min + relativeVal;
+			setValue(newVal);
 
 			// Keep sticky focus until mouse is released (above)
 			GUIManager::setMouseFocus(this, true);
@@ -79,11 +80,36 @@ namespace ca { namespace gui {
 		m_min = _min;
 		m_range = _max - _min;
 		m_stepSize = _stepSize;
+		m_value = ei::clamp(m_value, (double)_min, (double)_max);
 	}
 
 	void Slider::setValueTextPosition(float _where)
 	{
 		m_labelPos = _where;
+	}
+
+	void Slider::setValue(int _value)
+	{
+		setValue(static_cast<double>(_value));
+	}
+
+	void Slider::setValue(float _value)
+	{
+		setValue(static_cast<double>(_value));
+	}
+
+	void Slider::setOnChange(OnChange _callback)
+	{
+		m_onChange = _callback;
+	}
+
+	void Slider::setValue(double _value)
+	{
+		_value = ei::clamp(_value, m_min, m_min+m_range);
+		if(_value != m_value) {
+			m_value = _value;
+			if(m_onChange) m_onChange(this, _value);
+		}
 	}
 
 }} // namespace ca::gui
