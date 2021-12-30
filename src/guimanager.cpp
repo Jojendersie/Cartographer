@@ -139,10 +139,16 @@ namespace ca { namespace gui {
 
 		refitAllToAnchors();
 
+		const bool mouse_state_changed = _mouseState.position != g_manager->m_mouseState.position
+			|| _mouseState.deltaScroll != g_manager->m_mouseState.deltaScroll
+			|| _mouseState.anyButtonDown || _mouseState.anyButtonPressed || _mouseState.anyButtonUp;
+
+		// Very early out: nothing to do and popup already visible
+		if(!mouse_state_changed && (!g_manager->m_popupStack.empty() && g_manager->m_popupStack.back()->isVisible())) return false;
+
 		// Show and hide popups
 		float now = clock() / float(CLOCKS_PER_SEC);
-		if(_mouseState.position != g_manager->m_mouseState.position
-			|| _mouseState.anyButtonDown || _mouseState.anyButtonPressed)
+		if(mouse_state_changed)
 		{
 			g_manager->m_lastMouseMoveTime = now;
 			// Hide if this mouse move is farther away then the last.
@@ -166,6 +172,9 @@ namespace ca { namespace gui {
 			)
 				showPopup(g_manager->m_mouseOver->getInfoPopup(), g_manager->m_mouseOver);
 		}
+
+		// Early out: nothing to do
+		if(!mouse_state_changed) return false;
 
 		g_manager->m_mouseState = _mouseState;
 		g_manager->m_cursorType = CursorType::ARROW;
