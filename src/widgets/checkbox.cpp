@@ -15,7 +15,7 @@ namespace ca { namespace gui {
 		m_checkmarkTexture[0] = m_checkmarkTexture[1] = 0;
 		addOnButtonChangeFunc(
 			[](Widget* _thisBtn, const Coord2&, int, MouseState::ButtonState){
-				static_cast<CheckBox*>(_thisBtn)->m_checked = !static_cast<CheckBox*>(_thisBtn)->m_checked;
+				static_cast<CheckBox*>(_thisBtn)->setChecked(!static_cast<CheckBox*>(_thisBtn)->m_checked);
 			},
 			MouseState::ButtonState(MouseState::CLICKED | MouseState::DBL_CLICKED));
 	}
@@ -58,6 +58,20 @@ namespace ca { namespace gui {
 	void CheckBox::setBackgroundTexture(const char * _textureFile, bool _smooth)
 	{
 		m_backgroundTexture = GUIManager::renderBackend().getTexture(_textureFile, _smooth);
+	}
+
+	void CheckBox::setChecked(bool _value)
+	{
+		if(m_checked != _value)
+		{
+			m_checked = _value;
+			if(m_onChange) m_onChange(this, _value);
+		}
+	}
+
+	void CheckBox::setOnChange(OnChange _callback)
+	{
+		m_onChange = _callback;
 	}
 
 }} // namespace ca::gui
