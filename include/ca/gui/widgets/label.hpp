@@ -40,12 +40,13 @@ namespace ca { namespace gui {
 		/// down scaled).
 		/// On down scaling the margin is scaled too.
 		/// The margin is set automatically if setText with  a fitSize is used.
-		void setMargin(Coord _margin) { m_margin = _margin; }
-		float getMargin() const { return m_margin; }
+		void setMargin(Coord _margin) { m_margin = ei::Vec2(_margin); }
+		void setMargin(Coord2 _margin) { m_margin = _margin; }
+		ei::Vec2 getMargin() const { return m_margin; }
 	private:
 		std::string m_text;				///< Descriptive text
 		ei::Vec2 m_textSize;
-		float m_margin;					///< Distance of the text to the sides
+		ei::Vec2 m_margin;				///< Horizontal and vertical distance of the text to the sides
 		SIDE::Val m_textPosition;
 		ei::Vec4 m_backgroundColor;
 	};
