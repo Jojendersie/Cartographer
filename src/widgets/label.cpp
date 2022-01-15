@@ -43,7 +43,8 @@ namespace ca { namespace gui {
 	void Label::setText(const char* _text, float _fitSize)
 	{
 		m_text = _text;
-		m_textSize = GUIManager::theme().getTextBB(Coord2(0.0f), _text, 1.0f).max;
+		ei::Rect2D textDim = GUIManager::theme().getTextBB(Coord2(0.0f), _text, 1.0f);
+		m_textSize = textDim.max - textDim.min;
 		// Automatically change the label size
 		if(_fitSize >= 0.0f) {
 			m_refFrame.rect.max = m_refFrame.rect.min + m_textSize + _fitSize;
