@@ -26,7 +26,7 @@ namespace ca { namespace gui {
 		if(m_backgroundTexture)
 			GUIManager::theme().drawImage(m_refFrame, m_backgroundTexture);
 		else
-			GUIManager::theme().drawButton(m_refFrame, false, false);
+			GUIManager::theme().drawButton(m_refFrame, false, false, true);
 
 		// Determine vertical center for text and box
 		float padding = GUIManager::theme().getTextSize() * 0.25f;

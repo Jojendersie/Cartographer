@@ -21,7 +21,9 @@ namespace ca { namespace gui {
 		///		theme colors are used.
 		virtual void drawBackgroundArea(const class RefFrame& _rect, float _opacity = 1.0f, const ei::Vec3& _individualColor = ei::Vec3(-1.0f)) = 0;
 		/// Draw the background for buttons
-		virtual void drawButton(const class RefFrame& _rect, bool _mouseOver, bool _mouseDown) = 0;
+		/// \param [in] _horizontal Draw in normal (horizontal mode). If false rotates the
+		///		shading (if there is any) by 90°.
+		virtual void drawButton(const class RefFrame& _rect, bool _mouseOver, bool _mouseDown, bool _horizontal) = 0;
 		/// Draw the box with the check mark
 		virtual void drawCheckbox(const class RefFrame& _rect, bool _checked, bool _mouseOver) = 0;
 		/// Draw the bar and the value mark of a slider

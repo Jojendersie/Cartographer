@@ -48,12 +48,19 @@ namespace ca { namespace gui {
 		}
 	}
 
-	void Sharp3DTheme::drawButton(const RefFrame& _rect, bool _mouseOver, bool _mouseDown)
+	void Sharp3DTheme::drawButton(const RefFrame& _rect, bool _mouseOver, bool _mouseDown, bool _horizontal)
 	{
 		Vec4 color = _mouseOver ? m_properties.basicHoverColor : m_properties.basicColor;
 		RefFrame rect(_rect.left() + m_properties.borderWidth, _rect.right() - m_properties.borderWidth, _rect.bottom() + m_properties.borderWidth, _rect.top() - m_properties.borderWidth);
-		Vec2 gfrom = Vec2(0.0f, _mouseDown ? 1.0f : 0.0f);
-		Vec2 gto = Vec2(0.0f, _mouseDown ? 0.0f : 1.0f);
+		Vec2 gfrom, gto;
+		if(_horizontal)
+		{
+			gfrom = Vec2(0.0f, _mouseDown ? 1.0f : 0.0f);
+			gto   = Vec2(0.0f, _mouseDown ? 0.0f : 1.0f);
+		} else {
+			gfrom = Vec2(_mouseDown ? 0.0f : 1.0f, 0.0f);
+			gto   = Vec2(_mouseDown ? 1.0f : 0.0f, 0.0f);
+		}
 		drawBorderRect(_rect, rect, color, scaleColor(color, 4.0f));
 
 		GUIManager::renderBackend().drawRect(rect, gfrom, gto,

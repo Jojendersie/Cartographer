@@ -123,7 +123,7 @@ namespace ca { namespace gui {
 			else
 				GUIManager::theme().drawImage(m_refFrame, m_backgroundTexture);
 		} else
-			GUIManager::theme().drawButton(m_refFrame, mouseOver, isAnyButtonDown());
+			GUIManager::theme().drawButton(m_refFrame, mouseOver, isAnyButtonDown(), true);
 
 		// Icon
 		if(m_iconTexture)

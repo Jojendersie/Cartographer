@@ -498,7 +498,7 @@ void createGUI(GLFWwindow* _window)
 
 	l0 = LabelPtr(new Label);
 	//l0->setExtent(f7->getPosition() + 2.0f, f7->getSize() - Coord2(4.0f, 4.0f));
-	l0->setText("A long text with multiple lines that is here to stay.\n\nIt talks about cookies.\nBut only seldomly.\nSugar!\nChocolate!\nFor the spoon!", 2.0f);
+	l0->setText("A long text with multiple lines that is here to stay.\nCompletely boring stuff.\n\nIt talks about cookies.\nBut only seldomly.\nWhere is my personal cookie?\nChocolate!\n\nFor the spoon!", 2.0f);
 	l0->setPosition(f7->getPosition() + coord::pixel(2,14));
 
 	ScrollBarPtr sbh(new ScrollBar);
@@ -519,8 +519,15 @@ void createGUI(GLFWwindow* _window)
 	l0->setAnchor(SIDE::LEFT, sbh->getAnchor());
 	l0->setAnchor(SIDE::BOTTOM, sbv->getAnchor());
 	l0->setAnchorModes(Anchorable::PREFER_MOVE);
-	f7->add(l0, 0u);
-	//sbv->setScrollOffset(10000.0f); // Just skip to the top
+	sbv->setScrollOffset(10000.0f); // Just skip to the top
+
+	FramePtr f7s(new Frame);
+	f7s->setExtent(f7->getPosition() + Coord2(2.0f, 14.0f), f7->getSize() - 16.0f);
+	f7s->autoAnchor(anchorsf7);
+	f7s->setAnchorModes(Anchorable::PREFER_RESIZE);
+	f7s->add(l0);
+	f7s->setBackgroundOpacity(0.0f);
+	f7->add(f7s, 0u);
 }
 
 void runMainLoop(GLFWwindow* _window)

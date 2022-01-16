@@ -45,7 +45,7 @@ namespace ca { namespace gui {
 			subFrame.rect.min.y = m_refFrame.bottom() + relStart * h;
 			subFrame.rect.max.y = subFrame.rect.min.y + ei::max(3.0f, relSize * h);
 		}
-		GUIManager::theme().drawButton(subFrame, (relSize < 1.0f) && isMouseOver(), false);
+		GUIManager::theme().drawButton(subFrame, (relSize < 1.0f) && (isMouseOver() || m_movingPos >= 0.0f), false, m_horizontal);
 	}
 
 	bool ScrollBar::processInput(Widget & _thisWidget, const MouseState & _mouseState, bool _cursorOnWidget, bool & _ensureNextInput)
