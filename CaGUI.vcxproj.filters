@@ -113,6 +113,9 @@
     <ClInclude Include="include\ca\gui\widgets\progressbar.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
+    <ClInclude Include="include\ca\gui\widgets\scrollbar.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\widgets\frame.cpp">
@@ -201,6 +204,9 @@
       <Filter>properties</Filter>
     </ClCompile>
     <ClCompile Include="src\widgets\progressbar.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\widgets\scrollbar.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>

@@ -127,7 +127,7 @@ namespace ca { namespace gui {
 		if(cursorOnWidget) {
 			GUIManager::setMouseFocus(this);
 			return true;
-		// The current element has the focus but now reason to keep it.
+		// The current element has the focus but no reason to keep it.
 		} else if(GUIManager::hasMouseFocus(this))
 			GUIManager::setMouseFocus(nullptr);
 		return false;

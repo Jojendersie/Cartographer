@@ -486,6 +486,41 @@ void createGUI(GLFWwindow* _window)
 	e2->setMargin(2.0f);
 	e2->setAnchorModes(Anchorable::PREFER_RESIZE, Anchorable::NO_RESIZE);
 	f6->add(e2);
+
+	// A frame with scrollbars
+	FramePtr f7(new Frame);
+	f7->setMoveable(true);
+	f7->setResizeable(true);
+	f7->setExtent(f6->getPosition() + Coord2(0.0f, f6->getSize().y + 10.0f), f6->getSize());
+	f7->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
+	BorderAnchorProvider* anchorsf7 = static_cast<BorderAnchorProvider*>(f7->getAnchorProvider());
+	GUIManager::add(f7);
+
+	l0 = LabelPtr(new Label);
+	//l0->setExtent(f7->getPosition() + 2.0f, f7->getSize() - Coord2(4.0f, 4.0f));
+	l0->setText("A long text with multiple lines that is here to stay.\n\nIt talks about cookies.\nBut only seldomly.\nSugar!\nChocolate!\nFor the spoon!", 2.0f);
+	l0->setPosition(f7->getPosition() + coord::pixel(2,14));
+
+	ScrollBarPtr sbh(new ScrollBar);
+	sbh->setExtent(f7->getPosition(), Coord2(f7->getSize().x-12.0f, 12.0f));
+	sbh->setHorizontalMode(true);
+	sbh->setViewArea(f7, 12.0f + 2.0f);
+	sbh->setContent(l0);
+	sbh->autoAnchor(anchorsf7); sbh->setAnchor(SIDE::TOP, nullptr);
+	f7->add(sbh, 1u);
+
+	ScrollBarPtr sbv(new ScrollBar);
+	sbv->setExtent(f7->getPosition() + Coord2(f7->getSize().x - 12.0f, 12.0f), Coord2(12.0f, f7->getSize().y - 12.0f));
+	sbv->setViewArea(f7, 12.0f + 2.0f);
+	sbv->setContent(l0);
+	sbv->autoAnchor(anchorsf7); sbv->setAnchor(SIDE::LEFT, nullptr);
+	f7->add(sbv, 1u);
+
+	l0->setAnchor(SIDE::LEFT, sbh->getAnchor());
+	l0->setAnchor(SIDE::BOTTOM, sbv->getAnchor());
+	l0->setAnchorModes(Anchorable::PREFER_MOVE);
+	f7->add(l0, 0u);
+	//sbv->setScrollOffset(10000.0f); // Just skip to the top
 }
 
 void runMainLoop(GLFWwindow* _window)
