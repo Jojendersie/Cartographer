@@ -30,6 +30,7 @@ namespace ca { namespace gui {
 		g_manager->m_mouseFocus = nullptr;
 		g_manager->m_mouseOver = nullptr;
 		g_manager->m_stickyMouseFocus = false;
+		g_manager->m_keepSticky = false;
 		g_manager->m_lastMouseMoveTime = 0.0f;
 		g_manager->m_popupTime = 0.33f;
 		g_manager->m_cursorType = CursorType::ARROW;
@@ -184,22 +185,25 @@ namespace ca { namespace gui {
 
 		// Reset sticky-state. The component must actively regain this.
 		// Otherwise some component may keep the state forever.
-		bool wasStickyMouseFocus = g_manager->m_stickyMouseFocus;
-		g_manager->m_stickyMouseFocus = false;
+		g_manager->m_keepSticky = false;
+
 		// If the focussed element is invisible release its focus.
 		if(g_manager->m_mouseFocus && !g_manager->m_mouseFocus->isVisible())
 			g_manager->m_mouseFocus = nullptr;
 
-		if(wasStickyMouseFocus && g_manager->m_mouseFocus)
+		bool ret;
+		if(g_manager->m_stickyMouseFocus && g_manager->m_mouseFocus)
 		{
-			bool ret = g_manager->m_mouseFocus->processInput( _mouseState );
-			return ret;
+			ret = g_manager->m_mouseFocus->processInput( _mouseState );
 		} else {
 			// First process popups (they overlay the rest)
 			for(auto& it : g_manager->m_popupStack)
 				if(it->processInput( _mouseState )) return true;
-			return g_manager->m_topFrame->processInput( _mouseState );
+			ret = g_manager->m_topFrame->processInput( _mouseState );
 		}
+		if(!g_manager->m_keepSticky)
+			g_manager->m_stickyMouseFocus = false;
+		return ret;
 	}
 
 	bool GUIManager::processInput(const KeyboardState & _keyboardState)
@@ -288,6 +292,7 @@ namespace ca { namespace gui {
 	{
 		g_manager->m_mouseFocus = _widget;
 		g_manager->m_stickyMouseFocus = _sticky;
+		g_manager->m_keepSticky = _sticky;
 	}
 
 	void GUIManager::setMouseOver(Widget* _widget)

@@ -132,6 +132,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		Widget* m_mouseOver;			///< The element over which the mouse currently sits (can be a disabled element)
 		//bool m_stickyKeyboardFocus;		///< The focus guarantees exclusive input handling by the element. The element must release this active.
 		bool m_stickyMouseFocus;		///< The focus guarantees exclusive input handling by the element.
+		bool m_keepSticky;				///< In each processing, the compontent must actively request to keep its sticky state.
 		float m_lastMouseMoveTime;		///< Point in time where the mouse was moved the last.
 
 		std::stack<ei::IVec4, std::vector<ei::IVec4>> m_clipRegionStack;

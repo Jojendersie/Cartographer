@@ -75,7 +75,9 @@ namespace ca { namespace gui {
 		// Component disabled?
 		if(!isEnabled() || !isVisible()) return false;
 		// Exclusive input? If so don't check children.
-		if(GUIManager::getStickyMouseFocussed() != this) // TODO why is this processInput ever called, iff only the sticking element receives anything? Is it necessary for the Widget::processInput below?
+		// Can happen for frames (derived from Group) which are moved or resized
+		// for example.
+		if(GUIManager::getStickyMouseFocussed() != this)
 		{
 			// Forward to sub-elements. Use inverse order such that the visibly top
 			// most component receives the input first.
@@ -99,7 +101,7 @@ namespace ca { namespace gui {
 					}
 				}
 			}
-		} else eiAssert(false, "Unexpected focus situation!");
+		}
 		return false;
 	}
 
