@@ -55,10 +55,9 @@ namespace ca { namespace gui {
 		} else if(m_isMoving) {
 			double relativeVal = (GUIManager::getMouseState().position.x - m_refFrame.left()) / (m_refFrame.width()-2.0f);
 			relativeVal = ei::clamp(relativeVal, 0.0, 1.0);
-			relativeVal *= m_range;
+			double newVal = m_min + relativeVal * m_range;
 			// Round to step size
-			relativeVal = round(relativeVal / m_stepSize) * m_stepSize;
-			const double newVal = m_min + relativeVal;
+			newVal = round(newVal / m_stepSize) * m_stepSize;
 			setValue(newVal);
 
 			// Keep sticky focus until mouse is released (above)
