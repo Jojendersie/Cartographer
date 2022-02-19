@@ -7,11 +7,11 @@ namespace ca { namespace gui {
 
 	ScrollBar::ScrollBar() :
 		m_horizontal(false),
-		m_movingPos{-1.0f},
 		m_totalSize{100.0f},
 		m_availableSize{10.0f},
 		m_intervalStart{0.0f},
-		m_margin{0.0f}
+		m_margin{0.0f},
+		m_movingPos{-1.0f}
 	{
 		setAnchorProvider(std::make_unique<SingleAnchorProvider>(this));
 		setHorizontalAnchorMode(Anchorable::NO_RESIZE);

@@ -111,6 +111,14 @@ namespace ca { namespace gui {
 		}
 	}
 
+
+	void Button::onExtentChanged(bool _positionChanged, bool _sizeChanged)
+	{
+		Widget::onExtentChanged(_positionChanged, _sizeChanged);
+		recomputeIconNTextPositions();
+	}
+
+
 	void Button::draw() const
 	{
 		// Background

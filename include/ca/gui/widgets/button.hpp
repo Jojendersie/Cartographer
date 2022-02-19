@@ -65,7 +65,7 @@ namespace ca { namespace gui {
 
 		// Computes text and icon positions
 		void recomputeIconNTextPositions();
-		virtual void onExtentChanged(bool, bool) override { recomputeIconNTextPositions(); }
+		virtual void onExtentChanged(bool _positionChanged, bool _sizeChanged) override;
 		virtual void onTextScaleChanged() override { recomputeIconNTextPositions(); };
 		bool isIconPlacementAbsolute() const { return m_iconPlacement == SIDE::CENTER; }
 		RefFrame computeIconRect() const;
