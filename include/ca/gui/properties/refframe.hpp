@@ -33,6 +33,14 @@ namespace ca { namespace gui {
 			TOP = 3,
 			CENTER = 4,
 		};
+
+		static constexpr char const * STR_NAMES[] = {
+			"LEFT",
+			"RIGHT",
+			"BOTTOM",
+			"TOP",
+			"CENTER"
+		};
 	};
 
 	/// Basic rectangular area which is used as reference from all widgets.

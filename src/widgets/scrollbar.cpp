@@ -2,6 +2,7 @@
 #include "ca/gui/guimanager.hpp"
 #include "ca/gui/rendering/theme.hpp"
 #include "ca/gui/backend/renderbackend.hpp"
+#include <ca/pa/log.hpp>
 
 namespace ca { namespace gui {
 
@@ -10,6 +11,7 @@ namespace ca { namespace gui {
 		m_totalSize{100.0f},
 		m_availableSize{10.0f},
 		m_intervalStart{0.0f},
+		m_rangeOffset{0.0f},
 		m_margin{0.0f},
 		m_movingPos{-1.0f}
 	{
@@ -109,11 +111,21 @@ namespace ca { namespace gui {
 		checkInterval();
 	}
 
-	void ScrollBar::setTotalSize(const float _totalSize)
+	void ScrollBar::setContentSize(const float _contentSize, SIDE::Val _side)
 	{
+		if(m_horizontal && (_side != SIDE::LEFT && _side != SIDE::RIGHT))
+			ca::pa::logWarning("[ca::gui::ScrollBar] Scroll bar is in horizontal mode, but change is said to be on side ", SIDE::STR_NAMES[(int)_side]);
+		if(!m_horizontal && (_side != SIDE::BOTTOM && _side != SIDE::TOP))
+			ca::pa::logWarning("[ca::gui::ScrollBar] Scroll bar is in vertical mode, but change is said to be on side ", SIDE::STR_NAMES[(int)_side]);
+		if(_side == SIDE::LEFT || _side == SIDE::BOTTOM)
+		{
+			const float delta = ei::max(0.0f, m_totalSize - m_availableSize) - ei::max(0.0f, _contentSize - m_availableSize);
+			m_rangeOffset -= delta;
+			//m_intervalStart += delta;
+		}
 		m_contentWidget = nullptr;
-		m_totalSize = _totalSize;
-		checkInterval();
+		m_totalSize = _contentSize;
+		checkInterval(true);
 	}
 
 	void ScrollBar::setViewArea(WidgetPtr _presentationWidget, const float _margin)
@@ -164,11 +176,11 @@ namespace ca { namespace gui {
 		return m_totalSize;
 	}
 
-	void ScrollBar::checkInterval()
+	void ScrollBar::checkInterval(const bool _forceAnchorReset)
 	{
 		const float old = m_intervalStart;
 		m_intervalStart = ei::clamp(m_intervalStart, 0.0f, ei::max(0.0f, m_totalSize - m_availableSize));
-		if(old != m_intervalStart)
+		if(_forceAnchorReset || old != m_intervalStart)
 			m_anchorProvider->recomputeAnchors(m_refFrame);
 	}
 
@@ -199,9 +211,9 @@ namespace ca { namespace gui {
 	{
 		const float old = m_anchor->position;
 		if(m_parent->isHorizontal())
-			m_anchor->position = _selfFrame.left() - m_parent->m_intervalStart;
+			m_anchor->position = _selfFrame.left() - m_parent->m_intervalStart + m_parent->m_rangeOffset;
 		else
-			m_anchor->position = _selfFrame.bottom() - m_parent->m_intervalStart;
+			m_anchor->position = _selfFrame.bottom() - m_parent->m_intervalStart + m_parent->m_rangeOffset;
 		if(old != m_anchor->position)
 			m_someChanged = true;
 	}

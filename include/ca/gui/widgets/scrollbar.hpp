@@ -26,11 +26,16 @@ namespace ca { namespace gui {
 		bool isHorizontal() const { return m_horizontal; }
 
 		/// Set arbitrary size limits. The available size corresponds to the visible
-		/// area. The total size is that of the content.
-		/// Alternatively to setting constants, it is possible to assign reference
+		/// area. Alternatively to setting constants, it is possible to assign reference
 		/// widgets for both sizes (eg. a frame and a group/single content element)
 		void setAvailableSize(const float _availableSize);
-		void setTotalSize(const float _totalSize);
+		/// Set the size of the scrollable content. If a content widget was attached
+		/// it will be removed.
+		/// \param [in] _side Info on which side of the interval, the size change
+		///		happened. In horizontal mode only LEFT/RIGHT are valid and in vertical
+		///		mode BOTTOM/TOP. This is used to recompute the proper scroll section
+		///		position.
+		void setContentSize(const float _contentSize, SIDE::Val _side);
 
 		/// Set a widget that is used to infer the available area.
 		/// _margin: The margin reduces the absolute size of the available
@@ -47,8 +52,8 @@ namespace ca { namespace gui {
 		void setScrollOffset(const float _amount);
 		float getScrollOffset() const { return m_intervalStart; }
 
-		/// Helper method that returns the anchor from the contained single point
-		/// anchor provider.
+		/// Returns the anchor from the contained single point anchor provider.
+		/// This anchor has to be used for things that should move on scrolling.
 		AnchorPtr getAnchor() const;
 
 		/// Get the available size either from the presentation widget or from
@@ -63,10 +68,11 @@ namespace ca { namespace gui {
 		float m_totalSize;		//< Size of the area that is scrolled
 		float m_availableSize;	//< Size of the view that contains the scrolled content
 		float m_intervalStart;	//< Position of scrolling.
+		float m_rangeOffset;	//< Can move intervalStart into the negative range if things are added left/bottom
 		float m_margin;			//< Positive distances to all sides.
 		float m_movingPos;		//< Relative position within the content section bar that is moved. (Or -1 if not moving)
 
-		void checkInterval();
+		void checkInterval(const bool _forceAnchorReset = false);
 		void refitToAnchors() override;
 
 		/// An anchor provider that is a single point in a single dimension
