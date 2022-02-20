@@ -33,9 +33,14 @@ namespace ca { namespace gui {
 		void setBackgroundOpacity(float _opacity);
 		float getBackgroundOpacity() const { return m_opacity; }
 
+		// A passive frame lets inputs to widgets below the frame through. It behaves similar to
+		// a disabled frame, except that widgets inside the frame receive their inputs as usual.
+		void setPassive(bool _passive) { m_passive = _passive; }
+		bool isPassive() const { return m_passive; }
 	private:
 		float m_opacity;
 		bool m_tiling;
+		bool m_passive;
 		uint64 m_texture;
 	};
 

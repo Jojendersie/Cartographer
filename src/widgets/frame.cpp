@@ -10,6 +10,7 @@ namespace ca { namespace gui {
 		Resizeable(this),
 		Moveable(this),
 		m_opacity(1.0f),
+		m_passive(false),
 		m_texture(0)
 	{
 		setMoveable(false);
@@ -50,6 +51,7 @@ namespace ca { namespace gui {
 		// Input was not consumed by an element.
 		// If there are properties try them. Since move and resize require input handling outside
 		// the reference frame this is not inside the isMouseOver-block.
+		if(m_passive) return false;
 		return Widget::processInput(_mouseState);
 	}
 
