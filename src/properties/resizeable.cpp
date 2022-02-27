@@ -41,7 +41,11 @@ namespace ca { namespace gui {
 				}
 				GUIManager::setMouseFocus(&_thisWidget, true);
 				_ensureNextInput = true;
-			} else m_active = false;
+			} else {
+				m_active = false;
+				if(m_onResizeEnded)
+					m_onResizeEnded(&_thisWidget);
+			}
 			return true;
 		} else {
 			// Is the cursor within range?

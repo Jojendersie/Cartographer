@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include "ca/gui/backend/mouse.hpp"
 
 namespace ca { namespace gui {
@@ -20,7 +21,13 @@ namespace ca { namespace gui {
 
 		bool isResizeingEnabled() const { return m_resizingEnabled; }
 		void setResizeable(bool _enable) { m_resizingEnabled = _enable; }
+
+		/// Register a callback function that is called when a resize is finished.
+		/// Also see onExtentChanged for a continuous callback.
+		typedef std::function<void(class Widget* _this)> OnResizeEnded;
+		void setOnResizeEndedFunc(OnResizeEnded _callback) { m_onResizeEnded = _callback; }
 	private:
+		OnResizeEnded m_onResizeEnded;
 		bool m_resizingEnabled;
 		bool m_active;			/// Currently actively resizing
 		bool m_resizing[4];		/// Flag for each resizing direction L,R,B,T
