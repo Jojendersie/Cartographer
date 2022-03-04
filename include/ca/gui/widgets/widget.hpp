@@ -38,6 +38,7 @@ namespace ca { namespace gui {
 
 		/// Set both: position and size (resets anchoring)
 		void setExtent(const Coord2& _position, const Coord2& _size);
+		void setExtent(const RefFrame & _frame);
 
 		/// Change the size of one or multiple sides and reset anchoring if necessary.
 		/// \details Calls onExtentChanged if something changed.

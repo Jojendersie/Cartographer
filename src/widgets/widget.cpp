@@ -82,6 +82,19 @@ namespace ca { namespace gui {
 		}
 	}
 
+	void Widget::setExtent(const RefFrame & _frame)
+	{
+		const bool posChanged = m_refFrame.sides[SIDE::LEFT] != _frame.sides[SIDE::LEFT]
+							 || m_refFrame.sides[SIDE::BOTTOM] != _frame.sides[SIDE::BOTTOM];
+		const bool sizeChanged = m_refFrame.sides[SIDE::RIGHT] != _frame.sides[SIDE::RIGHT]
+							 || m_refFrame.sides[SIDE::TOP] != _frame.sides[SIDE::TOP];
+		if(posChanged || sizeChanged)
+		{
+			m_refFrame = _frame;
+			onExtentChanged(posChanged, sizeChanged);
+		}
+	}
+
 	void Widget::resize(float _deltaLeft, float _deltaRight, float _deltaBottom, float _deltaTop)
 	{
 		RefFrame oldFrame = m_refFrame;
