@@ -2,7 +2,7 @@
 
 #include "widgets/widget.hpp"
 #include "backend/keyboard.hpp"
-#include <stack>
+#include "popupmanager.hpp"
 
 namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++17
 
@@ -108,14 +108,8 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		///		frame buffer.
 		static int getHeight();
 
-		/// Unhides and positionates a widget and starts tracking its visibility state.
-		/// \details The popup is hidden if the mouse distance to the widget increases.
-		///		All popups are tracked on a stack. Only the topmost one is hidden in one
-		///		step. This allows chains of info popups.
-		static void showPopup(WidgetPtr& _popup, const Widget* _originator);
-
-		/// Set the time in seconds before a popup is shown
-		static void setPopupTime(float _showAfter);
+		/// Get teh area of the entire UI.
+		static const RefFrame& getRefFrame();
 
 		/// Get the anchor component of the window sized top level component
 		static const IAnchorProvider* getAnchorProvider();
@@ -123,9 +117,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		std::shared_ptr<class IRenderBackend> m_renderer;
 		std::shared_ptr<class ITheme> m_theme;
 		std::shared_ptr<class Group> m_topFrame;
-		std::vector<WidgetPtr> m_popupStack;
-		float m_cursorToPopupDistance;
-		float m_popupTime;				///< Seconds when to show a popup
+		PopupManager m_popups;
 
 		Widget* m_keyboardFocus;		///< The element with the keyboard-focus or nullptr
 		Widget* m_mouseFocus;			///< The element with the mouse-focus or nullptr
