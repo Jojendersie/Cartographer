@@ -27,7 +27,7 @@ namespace ca { namespace gui {
 
 	void Group::add(WidgetPtr _widget, unsigned _innerLayer)
 	{
-		_widget->m_parent = this;
+		_widget->setParent(this);
 		m_children.push_back({std::move(_widget), _innerLayer});
 		// Move to the front of the vector as long as there are elements
 		// with a larger layer (-> insertion sort).

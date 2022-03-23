@@ -5,7 +5,7 @@
 namespace ca { namespace gui {
 
 	/// Horizontal and vertical mode scrollbar that provides scrolling within a frame
-	/// by providing an anchor.
+	/// by providing an anchor. The default mode is vertical.
 	class ScrollBar : public Widget, public IMouseProcessAble
 	{
 	public:

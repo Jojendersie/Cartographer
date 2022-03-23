@@ -96,6 +96,7 @@ namespace ca { namespace gui {
 
 		const Widget* parent() const { return m_parent; }
 		Widget* parent() { return m_parent; }
+		void setParent(Widget* ptr) { m_parent = ptr; }
 
 		/// Let this widget create anchors for others
 		void setAnchorProvider(std::unique_ptr<IAnchorProvider> _anchorProvider);
@@ -151,7 +152,6 @@ namespace ca { namespace gui {
 		WidgetPtr m_infoPopup;
 
 		Widget* m_parent;
-		friend class Group; // Parent must be set from someone
 		friend class GUIManager; // To trigger events
 
 		/// Optional method to react on resize events. This is necessary to reset provided anchors.
