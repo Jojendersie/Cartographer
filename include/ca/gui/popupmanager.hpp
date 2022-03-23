@@ -46,6 +46,9 @@ namespace ca { namespace gui {
 			bool _receiveInputs = false,
 			float _closeThreshold = 20.0f);
 
+		/// Manually close a popup.
+		void closePopup(Widget * _popup);
+
 		/// Input handling (handled by GUIManager)
 		bool processInput(const struct MouseState& _mouseState);
 		//bool processInput(const struct KeyboardState& _keyboardState);

@@ -75,6 +75,20 @@ namespace ca { namespace gui {
 	}
 
 
+	void PopupManager::closePopup(Widget * _popup)
+	{
+		for(auto it = m_popupStack.begin(); it != m_popupStack.end(); ++it)
+		{
+			if(it->widget == _popup)
+			{
+				m_popupStack.erase(it);
+				break;
+			}
+		}
+		_popup->hide();
+	}
+
+
 	bool PopupManager::processInput(const struct MouseState& _mouseState)
 	{
 		// Check for exit conditions until something blocks or stack is empty
@@ -88,6 +102,7 @@ namespace ca { namespace gui {
 				if(dist > m_popupStack.back().condThreshold)
 				{
 					stackChanged = true;
+					m_popupStack.back().widget->hide();
 					m_popupStack.pop_back();
 					continue;
 				}
@@ -99,6 +114,7 @@ namespace ca { namespace gui {
 				if(_mouseState.anyButtonDown)
 				{
 					stackChanged = true;
+					m_popupStack.back().widget->hide();
 					m_popupStack.pop_back();
 					continue;
 				}

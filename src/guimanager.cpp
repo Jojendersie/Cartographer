@@ -325,6 +325,11 @@ namespace ca { namespace gui {
 		return g_manager->m_topFrame->getRefFrame();
 	}
 
+	PopupManager& GUIManager::popups()
+	{
+		return g_manager->m_popups;
+	}
+
 	const IAnchorProvider* GUIManager::getAnchorProvider()
 	{
 		return g_manager->m_topFrame->getAnchorProvider();

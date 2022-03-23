@@ -108,8 +108,10 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		///		frame buffer.
 		static int getHeight();
 
-		/// Get teh area of the entire UI.
+		/// Get the area of the entire UI.
 		static const RefFrame& getRefFrame();
+
+		static PopupManager& popups();
 
 		/// Get the anchor component of the window sized top level component
 		static const IAnchorProvider* getAnchorProvider();
