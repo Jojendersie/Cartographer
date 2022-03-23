@@ -5,7 +5,7 @@
 #include "gui/widgets/checkbox.hpp"
 #include "gui/widgets/colorpicker.hpp"
 #include "gui/widgets/directionpicker.hpp"
-#include "gui/widgets/dropdownbox.hpp"
+#include "gui/widgets/dropdownmenu.hpp"
 #include "gui/widgets/editbox.hpp"
 #include "gui/widgets/frame.hpp"
 #include "gui/widgets/label.hpp"

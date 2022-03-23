@@ -86,7 +86,7 @@
     <ClInclude Include="include\ca\gui\widgets\directionpicker.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="include\ca\gui\widgets\dropdownbox.hpp">
+    <ClInclude Include="include\ca\gui\widgets\dropdownmenu.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
     <ClInclude Include="include\ca\gui\widgets\editbox.hpp">
@@ -116,6 +116,7 @@
     <ClInclude Include="include\ca\gui\widgets\scrollbar.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
+    <ClInclude Include="include\ca\gui\popupmanager.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\widgets\frame.cpp">
@@ -142,7 +143,7 @@
     <ClCompile Include="src\widgets\directionpicker.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
-    <ClCompile Include="src\widgets\dropdownbox.cpp">
+    <ClCompile Include="src\widgets\dropdownmenu.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="src\widgets\editbox.cpp">
@@ -209,5 +210,6 @@
     <ClCompile Include="src\widgets\scrollbar.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
+    <ClCompile Include="src\popupmanager.cpp" />
   </ItemGroup>
 </Project>

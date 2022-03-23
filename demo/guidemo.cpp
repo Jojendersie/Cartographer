@@ -487,6 +487,7 @@ void createGUI(GLFWwindow* _window)
 	e2->setAnchorModes(Anchorable::PREFER_RESIZE, Anchorable::NO_RESIZE);
 	f6->add(e2);
 
+	// *********************************************
 	// A frame with scrollbars
 	FramePtr f7(new Frame);
 	f7->setMoveable(true);
@@ -521,6 +522,7 @@ void createGUI(GLFWwindow* _window)
 	l0->setAnchorModes(Anchorable::PREFER_MOVE);
 	sbv->setScrollOffset(10000.0f); // Just skip to the top
 
+	// A frame for clipping
 	FramePtr f7s(new Frame);
 	f7s->setExtent(f7->getPosition() + Coord2(2.0f, 14.0f), f7->getSize() - 16.0f);
 	f7s->autoAnchor(anchorsf7);
@@ -528,6 +530,24 @@ void createGUI(GLFWwindow* _window)
 	f7s->add(l0);
 	f7s->setBackgroundOpacity(0.0f);
 	f7->add(f7s, 0u);
+
+	// *********************************************
+	// Frame with drop down menus
+	FramePtr f8(new Frame);
+	f8->setMoveable(true);
+	f8->setResizeable(true);
+	f8->setExtent(f7->getPosition() + Coord2(0.0f, f7->getSize().y + 10.0f), f7->getSize());
+	f8->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
+	BorderAnchorProvider* anchorsf8 = static_cast<BorderAnchorProvider*>(f8->getAnchorProvider());
+	GUIManager::add(f8);
+
+	DropDownMenuPtr dm0(new DropDownMenu);
+	dm0->setExtent(f8->getPosition() + coord::pixel(2, 24), Coord2(f8->getSize().x - 4, 20));
+	dm0->autoAnchor(anchorsf8);
+	f8->add(dm0);
+	dm0->addItem("Alpha");
+	dm0->addItem("Beta");
+	dm0->addItem("Gamma");
 }
 
 void runMainLoop(GLFWwindow* _window)

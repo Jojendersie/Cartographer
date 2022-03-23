@@ -137,6 +137,32 @@ namespace ca { namespace gui {
 
 	void Sharp3DTheme::drawArrowButton(const RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver)
 	{
+		Triangle2D tri;
+		switch(_pointTo) {
+		default:
+		case SIDE::LEFT:
+			tri.v0 = Vec2 {_rect.right(), _rect.bottom()};
+			tri.v1 = Vec2 {_rect.right(), _rect.top()};
+			tri.v2 = Vec2 {_rect.left(), _rect.verticalCenter()};
+			break;
+		case SIDE::BOTTOM:
+			tri.v0 = Vec2 {_rect.right(), _rect.top()};
+			tri.v1 = Vec2 {_rect.left(), _rect.top()};
+			tri.v2 = Vec2 {_rect.horizontalCenter(), _rect.bottom()};
+			break;
+		case SIDE::RIGHT:
+			tri.v0 = Vec2 {_rect.left(), _rect.top()};
+			tri.v1 = Vec2 {_rect.left(), _rect.bottom()};
+			tri.v2 = Vec2 {_rect.right(), _rect.verticalCenter()};
+			break;
+		case SIDE::TOP:
+			tri.v0 = Vec2 {_rect.left(), _rect.bottom()};
+			tri.v1 = Vec2 {_rect.right(), _rect.bottom()};
+			tri.v2 = Vec2 {_rect.horizontalCenter(), _rect.top()};
+			break;
+		}
+		const Vec4& color = _mouseOver ? m_properties.hoverTextColor : m_properties.textColor;
+		GUIManager::renderBackend().drawTriangle(tri, color, color, color);
 	}
 
 	void Sharp3DTheme::drawBorderRect(const RefFrame& _outer, const RefFrame& _inner, const ei::Vec4& _colorA, const ei::Vec4& _colorB)

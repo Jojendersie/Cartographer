@@ -158,6 +158,7 @@
     <ClInclude Include="include\ca\gui\backend\mouse.hpp" />
     <ClInclude Include="include\ca\gui\backend\renderbackend.hpp" />
     <ClInclude Include="include\ca\gui\guimanager.hpp" />
+    <ClInclude Include="include\ca\gui\popupmanager.hpp" />
     <ClInclude Include="include\ca\gui\properties\anchorable.hpp" />
     <ClInclude Include="include\ca\gui\properties\anchorprovider.hpp" />
     <ClInclude Include="include\ca\gui\properties\clickable.hpp" />
@@ -174,7 +175,7 @@
     <ClInclude Include="include\ca\gui\widgets\checkbox.hpp" />
     <ClInclude Include="include\ca\gui\widgets\colorpicker.hpp" />
     <ClInclude Include="include\ca\gui\widgets\directionpicker.hpp" />
-    <ClInclude Include="include\ca\gui\widgets\dropdownbox.hpp" />
+    <ClInclude Include="include\ca\gui\widgets\dropdownmenu.hpp" />
     <ClInclude Include="include\ca\gui\widgets\editbox.hpp" />
     <ClInclude Include="include\ca\gui\widgets\frame.hpp" />
     <ClInclude Include="include\ca\gui\widgets\group.hpp" />
@@ -193,6 +194,7 @@
     <ClCompile Include="src\backend\keyboard.cpp" />
     <ClCompile Include="src\backend\mouse.cpp" />
     <ClCompile Include="src\guimanager.cpp" />
+    <ClCompile Include="src\popupmanager.cpp" />
     <ClCompile Include="src\properties\anchorable.cpp" />
     <ClCompile Include="src\properties\anchorprovider.cpp" />
     <ClCompile Include="src\properties\clickable.cpp" />
@@ -207,7 +209,7 @@
     <ClCompile Include="src\widgets\checkbox.cpp" />
     <ClCompile Include="src\widgets\colorpicker.cpp" />
     <ClCompile Include="src\widgets\directionpicker.cpp" />
-    <ClCompile Include="src\widgets\dropdownbox.cpp" />
+    <ClCompile Include="src\widgets\dropdownmenu.cpp" />
     <ClCompile Include="src\widgets\editbox.cpp" />
     <ClCompile Include="src\widgets\frame.cpp" />
     <ClCompile Include="src\widgets\group.cpp" />
