@@ -124,6 +124,10 @@ namespace ca { namespace gui {
 		// Forward inputs to popups if they need them
 		for(auto& it : m_popupStack) // TODO: check order: must be top to bottom!
 		{
+			const bool mouseOver = it.widget->getRefFrame().isMouseOver(_mouseState.position);
+			if(mouseOver)
+				GUIManager::setMouseOver(it.widget.get());
+			//	TODO: remove all the other m_lastClick.... things (Clickable, DropDown, ...)
 			if(it.receiveInput)
 			{
 				if(it.widget->processInput( _mouseState ))
@@ -131,7 +135,7 @@ namespace ca { namespace gui {
 			} else {
 				// If the topmost element is below the cursor, nothing behind it may receive
 				// the input.
-				if(it.widget->getRefFrame().isMouseOver(_mouseState.position))
+				if(mouseOver)
 					return false;
 			}
 		}

@@ -173,6 +173,9 @@ namespace ca { namespace gui {
 		g_manager->m_mouseState = _mouseState;
 		g_manager->m_cursorType = CursorType::ARROW;
 
+		// Check for click and dbl-click events.
+		g_manager->m_clickHandler.handleUpEvents(g_manager->m_mouseState);
+
 		// Reset sticky-state. The component must actively regain this.
 		// Otherwise some component may keep the state forever.
 		g_manager->m_keepSticky = false;
@@ -184,15 +187,21 @@ namespace ca { namespace gui {
 		bool ret;
 		if(g_manager->m_stickyMouseFocus && g_manager->m_mouseFocus)
 		{
-			ret = g_manager->m_mouseFocus->processInput( _mouseState );
+			ret = g_manager->m_mouseFocus->processInput( g_manager->m_mouseState );
 		} else {
 			// First process popups (they overlay the rest)
-			if(g_manager->m_popups.processInput( _mouseState ))
-				return true;
-			ret = g_manager->m_topFrame->processInput( _mouseState );
+			if(g_manager->m_popups.processInput( g_manager->m_mouseState ))
+				ret = true;
+			else
+				ret = g_manager->m_topFrame->processInput( g_manager->m_mouseState );
 		}
 		if(!g_manager->m_keepSticky)
 			g_manager->m_stickyMouseFocus = false;
+
+		// Handle button down events for click detection (must be after processing
+		// to have the correct m_mouseOver element).
+		g_manager->m_clickHandler.handleDownEvents(g_manager->m_mouseState, g_manager->m_mouseOver);
+
 		return ret;
 	}
 

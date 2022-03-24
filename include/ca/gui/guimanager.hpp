@@ -2,6 +2,7 @@
 
 #include "widgets/widget.hpp"
 #include "backend/keyboard.hpp"
+#include "misc/clickhandler.hpp"
 #include "popupmanager.hpp"
 
 namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++17
@@ -120,6 +121,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		std::shared_ptr<class ITheme> m_theme;
 		std::shared_ptr<class Group> m_topFrame;
 		PopupManager m_popups;
+		ClickHandler m_clickHandler;
 
 		Widget* m_keyboardFocus;		///< The element with the keyboard-focus or nullptr
 		Widget* m_mouseFocus;			///< The element with the mouse-focus or nullptr

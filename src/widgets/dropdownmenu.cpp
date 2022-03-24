@@ -21,13 +21,11 @@ namespace ca { namespace gui {
 		Coord m_itemHeight;						//< The height of each row.
 		Coord2 m_maxIconSize;					//< Size of the icon texture with the largest width
 		int m_hoverItem;						//< The item with the mouse cursor or negative
-		bool m_btnDownReceived;					//< Mouse was pressed on this button to detect clicks == up+down. TODO: generalize in GUI::Manager by remembering down/up componets and compare? Currently stored per clickable!
 
 		DropDownListIntenral() :
 			m_itemHeight { 20.0f },
 			m_maxIconSize { 0.0f, 1.0f },
-			m_hoverItem { -1 },
-			m_btnDownReceived { false }
+			m_hoverItem { -1 }
 		{
 			setVisible(false);
 		}
@@ -50,16 +48,10 @@ namespace ca { namespace gui {
 			if(m_hoverItem >= (int)m_items.size())
 				m_hoverItem = -1;
 
-			if(_mouseState.buttons[0] == MouseState::DOWN)
-				m_btnDownReceived = true;
-			if(_mouseState.buttons[0] == MouseState::UP && m_btnDownReceived)
+			if(_mouseState.btnClicked(0))
 			{
 				static_cast<DropDownMenu*>(m_parent)->setSelected(m_hoverItem);
 				GUIManager::popups().closePopup(this);
-			} else {
-				// Clear button state if released somewhere else
-				if(!_mouseState.buttons[0] || _mouseState.buttons[0] & MouseState::UP)
-					m_btnDownReceived = false;
 			}
 			return true;
 		}
@@ -159,7 +151,6 @@ namespace ca { namespace gui {
 	DropDownMenu::DropDownMenu() :
 		m_maxNumShown { 100 },
 		m_selected { -1 },
-		m_btnDownReceived { false },
 		m_itemTextMargin { 2.0f }
 	{
 		m_list = new DropDownListIntenral;
@@ -339,9 +330,7 @@ namespace ca { namespace gui {
 
 	bool DropDownMenu::processInput(const struct MouseState & _mouseState)
 	{
-		if(_mouseState.buttons[0] == MouseState::DOWN)
-			m_btnDownReceived = true;
-		if(_mouseState.buttons[0] == MouseState::UP && m_btnDownReceived)
+		if(_mouseState.btnClicked(0))
 		{
 			if(m_list->isVisible())
 				GUIManager::popups().closePopup(m_list.get());

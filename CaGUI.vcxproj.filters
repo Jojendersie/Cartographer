@@ -13,6 +13,9 @@
     <Filter Include="backend">
       <UniqueIdentifier>{cbffbc80-ce64-4792-b6e2-9682887e844a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="misc">
+      <UniqueIdentifier>{d4b4b794-66a1-44b7-b7f1-1c1eb86d1df2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ca\gui.hpp" />
@@ -117,6 +120,9 @@
       <Filter>widgets</Filter>
     </ClInclude>
     <ClInclude Include="include\ca\gui\popupmanager.hpp" />
+    <ClInclude Include="include\ca\gui\misc\clickhandler.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\widgets\frame.cpp">
@@ -211,5 +217,8 @@
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="src\popupmanager.cpp" />
+    <ClCompile Include="src\misc\clickhandler.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

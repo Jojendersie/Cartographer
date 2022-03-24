@@ -78,7 +78,6 @@ namespace ca { namespace gui {
 		OnSelect m_onSelect;				//< Callback for changes.
 		int m_maxNumShown;					//< Number of shown items. If there are more, they need to be scrolled.
 		int m_selected;						//< The index of the selected item or -1.
-		bool m_btnDownReceived;				//< Mouse was pressed on this button to detect clicks == up+down. TODO: generalize in GUI::Manager by remembering down/up componets and compare? Currently stored per clickable!
 		Coord m_itemTextMargin;				//< Space from the left to the start of the text.
 
 	protected:

@@ -158,6 +158,7 @@
     <ClInclude Include="include\ca\gui\backend\mouse.hpp" />
     <ClInclude Include="include\ca\gui\backend\renderbackend.hpp" />
     <ClInclude Include="include\ca\gui\guimanager.hpp" />
+    <ClInclude Include="include\ca\gui\misc\clickhandler.hpp" />
     <ClInclude Include="include\ca\gui\popupmanager.hpp" />
     <ClInclude Include="include\ca\gui\properties\anchorable.hpp" />
     <ClInclude Include="include\ca\gui\properties\anchorprovider.hpp" />
@@ -194,6 +195,7 @@
     <ClCompile Include="src\backend\keyboard.cpp" />
     <ClCompile Include="src\backend\mouse.cpp" />
     <ClCompile Include="src\guimanager.cpp" />
+    <ClCompile Include="src\misc\clickhandler.cpp" />
     <ClCompile Include="src\popupmanager.cpp" />
     <ClCompile Include="src\properties\anchorable.cpp" />
     <ClCompile Include="src\properties\anchorprovider.cpp" />

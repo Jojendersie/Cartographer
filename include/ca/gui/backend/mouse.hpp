@@ -67,6 +67,13 @@ namespace ca { namespace gui {
 			deltaScroll = ei::Vec2{0.0f};
 			lastPosition = position = Coord2{0.0f};
 		}
+
+		bool btnReleased(int _btn) const { return buttons[_btn] == 0; }
+		bool btnDown(int _btn) const { return (buttons[_btn] & MouseState::DOWN) != 0; }
+		bool btnPressed(int _btn) const { return (buttons[_btn] & MouseState::PRESSED) != 0; }
+		bool btnUp(int _btn) const { return (buttons[_btn] & MouseState::UP) != 0; }
+		bool btnClicked(int _btn) const { return (buttons[_btn] & MouseState::CLICKED) != 0; }
+		bool btnDblClicked(int _btn) const { return (buttons[_btn] & MouseState::DBL_CLICKED) != 0; }
 	private:
 		Coord2 lastPosition;
 	};
