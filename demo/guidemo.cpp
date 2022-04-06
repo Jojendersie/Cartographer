@@ -188,28 +188,26 @@ void createGUI(GLFWwindow* _window)
 	f0->setMoveable(true);
 	f0->setResizeable(true);
 	f0->setExtent(Vec2(5.0f), Vec2(100.0f, 105.0f));
-	f0->setAnchorProvider( std::make_unique<GridAnchorProvider>(3, 5) );
 	f0group->add(f0);
 
 	for(int i = 0; i < 4; ++i)
 	{
 		ButtonPtr b0(new Button);
-		b0->setExtent(f0->getPosition() + Vec2(5.0f, 5.0f + i*25.0f), Vec2(90.0f, 20.0f));
+		b0->setExtent(f0->position() + Vec2(5.0f, 5.0f + i*25.0f), Vec2(90.0f, 20.0f));
 		std::string name = "Test " + std::to_string(i);
 		b0->setText(name.c_str());
 		b0->addOnButtonChangeFunc([i,name](Widget*, const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " clicked.\n"; }, MouseState::CLICKED);
 		b0->addOnButtonChangeFunc([i,name](Widget*, const Coord2&, int, MouseState::ButtonState){ std::cout << "Button " << name << " double clicked.\n"; }, MouseState::DBL_CLICKED);
-		b0->autoAnchor(f0->getAnchorProvider());
-		b0->setAnchorModes(Anchorable::PREFER_MOVE, Anchorable::PREFER_RESIZE);
+		b0->setAnchors(f0.get(), f0->left(), b0->bottom() - (i==0?5.0f:2.5f), f0->right(), b0->top() + (i==3?5.0f:2.5f));
 		f0->add(b0);
 	}
 	
 	// Add node handles for node-based-editing demo
 	NodeHandlePtr h00(new NodeHandle);
 	h00->setColor(Vec3(themeProps2.basicHoverColor));
-	Coord2 handleCenter(f0->getRefFrame().horizontalCenter(), f0->getRefFrame().top() + 2.0f);
+	Coord2 handleCenter(f0->horizontalCenter(), f0->top() + 2.0f);
 	h00->setExtent(handleCenter - 6.0f, Coord2(12.0f));
-	h00->autoAnchor(f0->getAnchorProvider());
+	h00->setAnchors(f0.get(), handleCenter.x, f0->top(), IGNORE_ANCHOR, IGNORE_ANCHOR);
 	h00->setRotation(PI / 2.0f);
 	f0group->add(h00, 1);
 
@@ -218,47 +216,45 @@ void createGUI(GLFWwindow* _window)
 	f1->setMoveable(true);
 	f1->setResizeable(true);
 	f1->setExtent(Vec2(5.0f, 120.0f), Vec2(100.0f, 230.0f));
-	f1->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
-	BorderAnchorProvider* anchorsf1 = static_cast<BorderAnchorProvider*>(f1->getAnchorProvider());
 	GUIManager::add(f1);
 
 	ButtonPtr b1(new Button);
-	b1->setExtent(f1->getPosition() + Vec2(5.0f, 5.0f), Vec2(90.0f, 40.0f));
+	b1->setExtent(f1->position() + Vec2(5.0f, 5.0f), Vec2(90.0f, 40.0f));
 	b1->setIconImg("textures/ca_icon32.png", false);
 	b1->setIconExtent(SIDE::LEFT, coord::pixel(32,32));
-	b1->autoAnchor(anchorsf1);
+	b1->setAnchors(f1.get(), f1->left(), f1->bottom(), f1->right(), b1->top()+2.5f);
 	f1->add(b1);
 
 	b1 = ButtonPtr(new Button);
-	b1->setExtent(f1->getPosition() + Vec2(5.0f, 50.0f), Vec2(90.0f, 40.0f));
+	b1->setExtent(f1->position() + Vec2(5.0f, 50.0f), Vec2(90.0f, 40.0f));
 	b1->setIconImg("textures/ca_icon32.png", false);
 	b1->setIconExtent(SIDE::LEFT, coord::pixel(20,20), 5.0f);
 	b1->setText("Icon Left");
-	b1->autoAnchor(anchorsf1);
+	b1->setAnchors(f1.get(), f1->left(), b1->bottom()-2.5f, f1->right(), b1->top()+2.5f);
 	f1->add(b1);
 
 	b1 = ButtonPtr(new Button);
-	b1->setExtent(f1->getPosition() + Vec2(5.0f, 95.0f), Vec2(90.0f, 40.0f));
+	b1->setExtent(f1->position() + Vec2(5.0f, 95.0f), Vec2(90.0f, 40.0f));
 	b1->setIconImg("textures/ca_icon32.png", false);
 	b1->setIconExtent(SIDE::RIGHT, coord::pixel(20,20), 2.0f);
 	b1->setText("Icon Right");
-	b1->autoAnchor(anchorsf1);
+	b1->setAnchors(f1.get(), f1->left(), b1->bottom()-2.5f, f1->right(), b1->top()+2.5f);
 	f1->add(b1);
 
 	b1 = ButtonPtr(new Button);
-	b1->setExtent(f1->getPosition() + Vec2(5.0f, 140.0f), Vec2(90.0f, 40.0f));
+	b1->setExtent(f1->position() + Vec2(5.0f, 140.0f), Vec2(90.0f, 40.0f));
 	b1->setIconImg("textures/ca_icon32.png", false);
 	b1->setIconExtent(SIDE::BOTTOM, coord::pixel(20,20), 2.0f);
 	b1->setText("Icon Bottom");
-	b1->autoAnchor(anchorsf1);
+	b1->setAnchors(f1.get(), f1->left(), b1->bottom()-2.5f, f1->right(), b1->top()+2.5f);
 	f1->add(b1);
 
 	b1 = ButtonPtr(new Button);
-	b1->setExtent(f1->getPosition() + Vec2(5.0f, 185.0f), Vec2(90.0f, 40.0f));
+	b1->setExtent(f1->position() + Vec2(5.0f, 185.0f), Vec2(90.0f, 40.0f));
 	b1->setIconImg("textures/ca_icon32.png", false);
 	b1->setIconExtent(SIDE::TOP, coord::pixel(20,20), 2.0f);
 	b1->setText("Icon Top");
-	b1->autoAnchor(anchorsf1);
+	b1->setAnchors(f1.get(), f1->left(), b1->bottom()-2.5f, f1->right(), b1->top()+2.5f);
 	f1->add(b1);
 
 	// Third frame with checkboxes and sliders
@@ -266,26 +262,22 @@ void createGUI(GLFWwindow* _window)
 	f2->setMoveable(true);
 	f2->setResizeable(true);
 	f2->setExtent(Vec2(5.0f, 360.0f), Vec2(100.0f, 255.0f));
-	f2->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
-	BorderAnchorProvider* anchorsf2 = static_cast<BorderAnchorProvider*>(f2->getAnchorProvider());
 	GUIManager::add(f2);
 
 	for(int i = 0; i < 5; ++i)
 	{
 		CheckBoxPtr c0(new CheckBox);
-		c0->setExtent(f2->getPosition() + Coord2(5.0f, 5.0f + i * 25.0f), Coord2(90.0f, 20.0f));
+		c0->setExtent(f2->position() + Coord2(5.0f, 5.0f + i * 25.0f), Coord2(90.0f, 20.0f));
 		if(i < 4) c0->setText("Cookie?");
-		c0->autoAnchor(anchorsf2);
-		c0->setAnchorModes(Anchorable::PREFER_MOVE);
+		c0->setAnchors(f2.get(), f2->left(), c0->bottom()-2.5f, f2->right(), c0->top()+2.5f);
 		f2->add(c0);
 	}
 
 	for(int i = 0; i < 5; ++i)
 	{
 		SliderPtr s0(new Slider);
-		s0->setExtent(f2->getPosition() + Coord2(5.0f, 130.0f + i * 25.0f), Coord2(90.0f, 20.0f));
-		s0->autoAnchor(anchorsf2);
-		s0->setAnchorModes(Anchorable::PREFER_MOVE);
+		s0->setExtent(f2->position() + Coord2(5.0f, 130.0f + i * 25.0f), Coord2(90.0f, 20.0f));
+		s0->setAnchors(f2.get(), f2->left(), s0->bottom()-2.5f, f2->right(), s0->top()+2.5f);
 		s0->setValueTextPosition(0.5f);
 		f2->add(s0);
 	}
@@ -297,79 +289,72 @@ void createGUI(GLFWwindow* _window)
 	f3->setMoveable(true);
 	f3->setResizeable(true);
 	f3->setExtent(Vec2(115.0f, 120.0f), Vec2(200.0f, 230.0f));
-	f3->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
-	BorderAnchorProvider* anchorsf3 = static_cast<BorderAnchorProvider*>(f3->getAnchorProvider());
 	f3group->add(f3);
 
 	// Add node handles
 	NodeHandlePtr h30(new NodeHandle);
 	h30->setColor(Vec3(themeProps2.basicHoverColor));
-	handleCenter = Coord2(f3->getRefFrame().horizontalCenter(), f3->getRefFrame().bottom() - 2.0f);
+	handleCenter = Coord2(f3->horizontalCenter(), f3->bottom() - 2.0f);
 	h30->setExtent(handleCenter - 6.0f, Coord2(12.0f));
-	h30->autoAnchor(f3->getAnchorProvider());
+	h30->setAnchors(f3.get(), handleCenter.x, f3->bottom(), IGNORE_ANCHOR, IGNORE_ANCHOR);
 	h30->setRotation(-PI / 2.0f);
 	f3group->add(h30, 1);
 	NodeHandlePtr h31(new NodeHandle);
 	h31->setColor(Vec3(0.0f, 0.5f, 0.0f));
-	handleCenter = Coord2(f3->getRefFrame().left() - 2.0f, f3->getRefFrame().verticalCenter());
+	handleCenter = Coord2(f3->left() - 2.0f, f3->verticalCenter());
 	h31->setExtent(handleCenter - 6.0f, Coord2(12.0f));
-	h31->autoAnchor(f3->getAnchorProvider());
+	h31->setAnchors(f3.get(), f3->left(), handleCenter.y, IGNORE_ANCHOR, IGNORE_ANCHOR);
 	h31->setRotation(-PI);
 	f3group->add(h31, 1);
 
 	LabelPtr l0(new Label);
-	l0->setExtent(f3->getPosition() + Coord2(0.0f, f3->getSize().y - 20.0f) + 2.0f, Coord2(f3->getSize().x, 16.0f));
+	l0->setExtent(f3->position() + Coord2(0.0f, f3->height() - 20.0f) + 2.0f, Coord2(f3->width(), 16.0f));
 	l0->setText(" Usually useless titelbar");
-	l0->setAnchor(SIDE::LEFT, anchorsf3->getAnchor(SIDE::LEFT));
-	l0->setAnchor(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
-	l0->setAnchor(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
-	l0->setHorizontalAnchorMode(Anchorable::PREFER_MOVE);
+	l0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::HORIZONTAL | ANCHOR::TOP);
 	f3->add(l0);
 
 	ButtonPtr b0(new Button);
-	b0->setExtent(f3->getPosition() + f3->getSize() - 20.0f, Coord2(16.0f));
+	b0->setExtent(f3->position() + f3->size() - 20.0f, Coord2(16.0f));
 	b0->setText(" X");//TODO: why is centering wrong here?
-	b0->setAnchor(SIDE::RIGHT, anchorsf3->getAnchor(SIDE::RIGHT));
-	b0->setAnchor(SIDE::TOP, anchorsf3->getAnchor(SIDE::TOP));
+	b0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::RIGHT | ANCHOR::TOP);
 	f3->add(b0);
 
 	l0 = LabelPtr(new Label);
-	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
+	l0->setExtent(f3->position() + 2.0f, f3->size() - Coord2(4.0f, 24.0f));
 	l0->setText("LEFT");
-	l0->autoAnchor(anchorsf3);
-	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
+	l0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::LEFT);
+	l0->setAnchors(f3.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::VERTICAL);
 	f3->add(l0);
 
 	l0 = LabelPtr(new Label);
-	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
+	l0->setExtent(f3->position() + 2.0f, f3->size() - Coord2(4.0f, 24.0f));
 	l0->setText("RIGHT");
 	l0->setAlignment(SIDE::RIGHT);
-	l0->autoAnchor(anchorsf3);
-	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
+	l0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::RIGHT);
+	l0->setAnchors(f3.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::VERTICAL);
 	f3->add(l0);
 
 	l0 = LabelPtr(new Label);
-	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
+	l0->setExtent(f3->position() + 2.0f, f3->size() - Coord2(4.0f, 24.0f));
 	l0->setText("BOTTOM");
 	l0->setAlignment(SIDE::BOTTOM);
-	l0->autoAnchor(anchorsf3);
-	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
+	l0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::BOTTOM);
+	l0->setAnchors(f3.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::HORIZONTAL);
 	f3->add(l0);
 
 	l0 = LabelPtr(new Label);
-	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
+	l0->setExtent(f3->position() + 2.0f, f3->size() - Coord2(4.0f, 24.0f));
 	l0->setText("TOP");
 	l0->setAlignment(SIDE::TOP);
-	l0->autoAnchor(anchorsf3);
-	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
+	l0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::TOP);
+	l0->setAnchors(f3.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::HORIZONTAL);
 	f3->add(l0);
 
 	l0 = LabelPtr(new Label);
-	l0->setExtent(f3->getPosition() + 2.0f, f3->getSize() - Coord2(4.0f, 24.0f));
+	l0->setExtent(f3->position() + 2.0f, f3->size() - Coord2(4.0f, 24.0f));
 	l0->setText("Reopen the window\nby clicking one of\nthe icon-buttons.");
 	l0->setAlignment(SIDE::CENTER);
-	l0->autoAnchor(anchorsf3);
-	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
+	l0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE);
 	f3->add(l0);
 
 	// Add some connectors between node handles
@@ -381,39 +366,37 @@ void createGUI(GLFWwindow* _window)
 	// Create a set of images with widget-connectors
 	FramePtr f4(new Frame);
 	f4->setMoveable(true);
-	f4->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
-	BorderAnchorProvider* anchorsf4 = static_cast<BorderAnchorProvider*>(f4->getAnchorProvider());
 	f4->setExtent(Vec2(115.0f, 360.0f), Vec2(200.0f, 255.0f));
 	GUIManager::add(f4);
 	ImagePtr i0(new Image);
-	i0->setExtent(f4->getPosition() + Vec2(20.0f, 10.0f), Vec2(32.0f));
+	i0->setExtent(f4->position() + Vec2(20.0f, 10.0f), Vec2(32.0f));
 	i0->setTexture("textures/ca_icon32.png");
-	i0->autoAnchor(anchorsf4);
-	i0->setRegion(std::make_unique<EllipseRegion>(&i0->getRefFrame()));
+	i0->setAnchors(f4.get(), AutoAnchorMode::SRC_CENTER);
+	i0->setRegion(std::make_unique<EllipseRegion>(i0.get()));
 	f4->add(i0);
 	ImagePtr i1(new Image);
-	i1->setExtent(f4->getPosition() + Vec2(10.0f, 70.0f), Vec2(32.0f));
+	i1->setExtent(f4->position() + Vec2(10.0f, 70.0f), Vec2(32.0f));
 	i1->setTexture("textures/ca_icon32.png");
-	i1->autoAnchor(anchorsf4);
-	i1->setRegion(std::make_unique<EllipseRegion>(&i1->getRefFrame()));
+	i1->setAnchors(f4.get(), AutoAnchorMode::SRC_CENTER);
+	i1->setRegion(std::make_unique<EllipseRegion>(i1.get()));
 	f4->add(i1);
 	ImagePtr i2(new Image);
-	i2->setExtent(f4->getPosition() + Vec2(100.0f, 100.0f), Vec2(32.0f));
+	i2->setExtent(f4->position() + Vec2(100.0f, 100.0f), Vec2(32.0f));
 	i2->setTexture("textures/ca_icon32.png");
-	i2->autoAnchor(anchorsf4);
-	i2->setRegion(std::make_unique<EllipseRegion>(&i2->getRefFrame()));
+	i2->setAnchors(f4.get(), AutoAnchorMode::SRC_CENTER);
+	i2->setRegion(std::make_unique<EllipseRegion>(i2.get()));
 	f4->add(i2);
 	ImagePtr i3(new Image);
-	i3->setExtent(f4->getPosition() + Vec2(20.0f, 140.0f), Vec2(32.0f));
+	i3->setExtent(f4->position() + Vec2(20.0f, 140.0f), Vec2(32.0f));
 	i3->setTexture("textures/ca_icon32.png");
-	i3->autoAnchor(anchorsf4);
-	i3->setRegion(std::make_unique<EllipseRegion>(&i3->getRefFrame()));
+	i3->setAnchors(f4.get(), AutoAnchorMode::SRC_CENTER);
+	i3->setRegion(std::make_unique<EllipseRegion>(i3.get()));
 	f4->add(i3);
 	ImagePtr i4(new Image);
-	i4->setExtent(f4->getPosition() + Vec2(140.0f, 190.0f), Vec2(32.0f));
+	i4->setExtent(f4->position() + Vec2(140.0f, 190.0f), Vec2(32.0f));
 	i4->setTexture("textures/ca_icon32.png");
-	i4->autoAnchor(anchorsf4);
-	i4->setRegion(std::make_unique<EllipseRegion>(&i4->getRefFrame()));
+	i4->setAnchors(f4.get(), AutoAnchorMode::SRC_CENTER);
+	i4->setRegion(std::make_unique<EllipseRegion>(i4.get()));
 	f4->add(i4);
 	WidgetConnectorPtr con0(new WidgetConnector);
 	con0->setSource(i0, 2.0f);
@@ -436,16 +419,14 @@ void createGUI(GLFWwindow* _window)
 	FramePtr f5(new Frame);
 	f5->setMoveable(true);
 	f5->setResizeable(true);
-	f5->setExtent(f0->getPosition() + Coord2(f0->getSize().x + 10.0f, 0.0f), Coord2(f4->getSize().x, f0->getSize().y));
-	f5->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
+	f5->setExtent(f0->position() + Coord2(f0->width() + 10.0f, 0.0f), Coord2(f4->width(), f0->height()));
 	GUIManager::add(f5);
 
 	l0 = LabelPtr(new Label);
-	l0->setExtent(f5->getPosition() + 2.0f, f5->getSize() - Coord2(4.0f, 4.0f));
+	l0->setExtent(f5->position() + 2.0f, f5->size() - Coord2(4.0f, 4.0f));
 	l0->setText("This area triggers a popup.");
 	l0->setAlignment(SIDE::CENTER);
-	l0->autoAnchor(f5->getAnchorProvider());
-	l0->setAnchorModes(Anchorable::PREFER_RESIZE);
+	l0->setAnchors(f5.get(), AutoAnchorMode::ABSOLUTE);
 	f5->add(l0);
 
 	LabelPtr l1(new Label);
@@ -458,33 +439,31 @@ void createGUI(GLFWwindow* _window)
 	FramePtr f6(new Frame);
 	f6->setMoveable(true);
 	f6->setResizeable(true);
-	f6->setExtent(f5->getPosition() + Coord2(f5->getSize().x + 10.0f, 0.0f), f5->getSize());
-	f6->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
-	BorderAnchorProvider* anchorsf6 = static_cast<BorderAnchorProvider*>(f6->getAnchorProvider());
+	f6->setExtent(f5->position() + Coord2(f5->width() + 10.0f, 0.0f), f5->size());
 	GUIManager::add(f6);
 
 	EditPtr e0( new Edit );
-	e0->setExtent(f6->getPosition() + Coord2(5.0f), Coord2(f6->getSize().x - 10.0f, 20.0f));
+	e0->setExtent(f6->position() + Coord2(5.0f), Coord2(f6->width() - 10.0f, 20.0f));
 	e0->setText("Type text here");
-	e0->autoAnchor(anchorsf6);
-	e0->setAnchorModes(Anchorable::PREFER_RESIZE, Anchorable::NO_RESIZE);
+	e0->setAnchors(f6.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::HORIZONTAL);
+	e0->setAnchors(f6.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::VERTICAL);
 	f6->add(e0);
 
 	EditPtr e1( new Edit );
-	e1->setExtent(f6->getPosition() + Coord2(5.0f, 30.0f), Coord2(f6->getSize().x - 10.0f, 20.0f));
+	e1->setExtent(f6->position() + Coord2(5.0f, 30.0f), Coord2(f6->width() - 10.0f, 20.0f));
 	e1->setDescriptorText("Type text here");
-	e1->autoAnchor(anchorsf6);
+	e1->setAnchors(f6.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::HORIZONTAL);
+	e1->setAnchors(f6.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::VERTICAL);
 	e1->setMargin(2.0f);
-	e1->setAnchorModes(Anchorable::PREFER_RESIZE, Anchorable::NO_RESIZE);
 	f6->add(e1);
 
 	EditPtr e2( new Edit );
-	e2->setExtent(f6->getPosition() + Coord2(5.0f, 55.0f), Coord2(f6->getSize().x - 10.0f, 20.0f));
+	e2->setExtent(f6->position() + Coord2(5.0f, 55.0f), Coord2(f6->width() - 10.0f, 20.0f));
 	e2->setAlignment(SIDE::CENTER);
 	e2->setDescriptorText("centered text");
-	e2->autoAnchor(anchorsf6);
+	e2->setAnchors(f6.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::HORIZONTAL);
+	e2->setAnchors(f6.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::VERTICAL);
 	e2->setMargin(2.0f);
-	e2->setAnchorModes(Anchorable::PREFER_RESIZE, Anchorable::NO_RESIZE);
 	f6->add(e2);
 
 	// *********************************************
@@ -492,41 +471,36 @@ void createGUI(GLFWwindow* _window)
 	FramePtr f7(new Frame);
 	f7->setMoveable(true);
 	f7->setResizeable(true);
-	f7->setExtent(f6->getPosition() + Coord2(0.0f, f6->getSize().y + 10.0f), f6->getSize());
-	f7->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
-	BorderAnchorProvider* anchorsf7 = static_cast<BorderAnchorProvider*>(f7->getAnchorProvider());
+	f7->setExtent(f6->position() + Coord2(0.0f, f6->height() + 10.0f), f6->size());
 	GUIManager::add(f7);
 
 	l0 = LabelPtr(new Label);
-	//l0->setExtent(f7->getPosition() + 2.0f, f7->getSize() - Coord2(4.0f, 4.0f));
 	l0->setText("A long text with multiple lines that is here to stay.\nCompletely boring stuff.\n\nIt talks about cookies.\nBut only seldomly.\nWhere is my personal cookie?\nChocolate!\n\nFor the spoon!", 2.0f);
-	l0->setPosition(f7->getPosition() + coord::pixel(2,14));
+	l0->setPosition(f7->position() + coord::pixel(2,14));
 
 	ScrollBarPtr sbh(new ScrollBar);
-	sbh->setExtent(f7->getPosition(), Coord2(f7->getSize().x-12.0f, 12.0f));
+	sbh->setExtent(f7->position(), Coord2(f7->width()-12.0f, 12.0f));
 	sbh->setHorizontalMode(true);
 	sbh->setViewArea(f7, 12.0f + 2.0f);
 	sbh->setContent(l0);
-	sbh->autoAnchor(anchorsf7); sbh->setAnchor(SIDE::TOP, nullptr);
+	sbh->setAnchors(f7.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::HORIZONTAL | ANCHOR::BOTTOM);
 	f7->add(sbh, 1u);
 
 	ScrollBarPtr sbv(new ScrollBar);
-	sbv->setExtent(f7->getPosition() + Coord2(f7->getSize().x - 12.0f, 12.0f), Coord2(12.0f, f7->getSize().y - 12.0f));
+	sbv->setExtent(f7->position() + Coord2(f7->width() - 12.0f, 12.0f), Coord2(12.0f, f7->height() - 12.0f));
 	sbv->setViewArea(f7, 12.0f + 2.0f);
 	sbv->setContent(l0);
-	sbv->autoAnchor(anchorsf7); sbv->setAnchor(SIDE::LEFT, nullptr);
+	sbv->setAnchors(f7.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::VERTICAL | ANCHOR::RIGHT);
 	f7->add(sbv, 1u);
 
-	l0->setAnchor(SIDE::LEFT, sbh->getAnchor());
-	l0->setAnchor(SIDE::BOTTOM, sbv->getAnchor());
-	l0->setAnchorModes(Anchorable::PREFER_MOVE);
+	l0->setAnchors(sbh->getAnchor(), AutoAnchorMode::ABSOLUTE, ANCHOR::LEFT);
+	l0->setAnchors(sbv->getAnchor(), AutoAnchorMode::ABSOLUTE, ANCHOR::BOTTOM);
 	sbv->setScrollOffset(10000.0f); // Just skip to the top
 
 	// A frame for clipping
 	FramePtr f7s(new Frame);
-	f7s->setExtent(f7->getPosition() + Coord2(2.0f, 14.0f), f7->getSize() - 16.0f);
-	f7s->autoAnchor(anchorsf7);
-	f7s->setAnchorModes(Anchorable::PREFER_RESIZE);
+	f7s->setExtent(f7->position() + Coord2(2.0f, 14.0f), f7->size() - 16.0f);
+	f7s->setAnchors(f7.get(), AutoAnchorMode::ABSOLUTE);
 	f7s->add(l0);
 	f7s->setBackgroundOpacity(0.0f);
 	f7->add(f7s, 0u);
@@ -536,14 +510,12 @@ void createGUI(GLFWwindow* _window)
 	FramePtr f8(new Frame);
 	f8->setMoveable(true);
 	f8->setResizeable(true);
-	f8->setExtent(f7->getPosition() + Coord2(0.0f, f7->getSize().y + 10.0f), f7->getSize());
-	f8->setAnchorProvider( std::make_unique<BorderAnchorProvider>() );
-	BorderAnchorProvider* anchorsf8 = static_cast<BorderAnchorProvider*>(f8->getAnchorProvider());
+	f8->setExtent(f7->position() + Coord2(0.0f, f7->height() + 10.0f), f7->size());
 	GUIManager::add(f8);
 
 	DropDownMenuPtr dm0(new DropDownMenu);
-	dm0->setExtent(f8->getPosition() + coord::pixel(2, 24), Coord2(f8->getSize().x - 4, 20));
-	dm0->autoAnchor(anchorsf8);
+	dm0->setExtent(f8->position() + coord::pixel(2, 24), Coord2(f8->width() - 4, 20));
+	dm0->setAnchors(f8.get(), AutoAnchorMode::SRC_CENTER);
 	f8->add(dm0);
 	dm0->addItem("Alpha");
 	dm0->addItem("Beta");

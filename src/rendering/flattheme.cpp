@@ -12,12 +12,12 @@ namespace ca { namespace gui {
 	{
 	}
 
-	void FlatTheme::drawTextArea(const class RefFrame& _rect)
+	void FlatTheme::drawTextArea(const Rect2D& _rect)
 	{
 		GUIManager::renderBackend().drawRect(_rect, m_properties.textBackColor);
 	}
 
-	void FlatTheme::drawBackgroundArea(const class RefFrame& _rect, float _opacity, const ei::Vec3& _individualColor)
+	void FlatTheme::drawBackgroundArea(const Rect2D& _rect, float _opacity, const ei::Vec3& _individualColor)
 	{
 		if(_opacity > 0.0f)
 		{
@@ -27,7 +27,7 @@ namespace ca { namespace gui {
 		}
 	}
 
-	void FlatTheme::drawButton(const RefFrame& _rect, bool _mouseOver, bool _mouseDown, bool _horizontal)
+	void FlatTheme::drawButton(const Rect2D& _rect, bool _mouseOver, bool _mouseDown, bool _horizontal)
 	{
 		if(_mouseOver)
 			GUIManager::renderBackend().drawRect(_rect, m_properties.hoverButtonColor);
@@ -35,29 +35,28 @@ namespace ca { namespace gui {
 			GUIManager::renderBackend().drawRect(_rect, m_properties.buttonColor);
 	}
 
-	void FlatTheme::drawCheckbox(const class RefFrame& _rect, bool _checked, bool _mouseOver)
+	void FlatTheme::drawCheckbox(const Rect2D& _rect, bool _checked, bool _mouseOver)
 	{
 		const Vec4& color = _mouseOver ? m_properties.hoverTextColor : m_properties.textColor;
 		// Draw three different sized rectangles (border, background and a smaller one for the
 		// checkmark).
 		GUIManager::renderBackend().drawRect(_rect, color);
-		RefFrame backRect(_rect.left() + 1, _rect.right() - 1, _rect.bottom() + 1, _rect.top() - 1);
+		Rect2D backRect(_rect.min + 1, _rect.max - 1);
 		GUIManager::renderBackend().drawRect(backRect, m_properties.textBackColor);
 		if(_checked)
 		{
-			RefFrame checkRect(_rect.left() + 3, _rect.right() - 3, _rect.bottom() + 3, _rect.top() - 3);
+			Rect2D checkRect(_rect.min + 3, _rect.max - 3);
 			GUIManager::renderBackend().drawRect(checkRect, color);
 		}
 	}
 
-	void FlatTheme::drawSliderBar(const class RefFrame& _rect, float _relativeValue)
+	void FlatTheme::drawSliderBar(const Rect2D& _rect, float _relativeValue)
 	{
-		RefFrame leftFrame;
-		leftFrame.sides[SIDE::LEFT] = _rect.left() + 1.0f;
-		leftFrame.sides[SIDE::RIGHT] = roundf(_rect.left() + 1.0f + (_rect.width() - 2.0f) * _relativeValue);
-		leftFrame.sides[SIDE::TOP] = _rect.top() - 1.0f;
-		leftFrame.sides[SIDE::BOTTOM] = _rect.bottom() + 1.0f;
-		if(leftFrame.left() != leftFrame.right())
+		Rect2D leftFrame;
+		leftFrame.min = _rect.min + 1.0f;
+		leftFrame.max.x = roundf(_rect.min.x + 1.0f + (_rect.max.x - _rect.min.x - 2.0f) * _relativeValue);
+		leftFrame.max.y = _rect.max.y - 1.0f;
+		if(leftFrame.min.x != leftFrame.max.x)
 			GUIManager::renderBackend().drawRect(leftFrame, m_properties.hoverButtonColor);
 	}
 
@@ -73,7 +72,7 @@ namespace ca { namespace gui {
 			);
 	}
 
-	ei::Rect2D FlatTheme::getTextBB(const Coord2& _position, const char* _text, float _relativeScale, float _alignX, float _alignY)
+	Rect2D FlatTheme::getTextBB(const Coord2& _position, const char* _text, float _relativeScale, float _alignX, float _alignY)
 	{
 		return GUIManager::renderBackend().getTextBB(_position, _text,
 			m_properties.textSize * _relativeScale,
@@ -88,20 +87,20 @@ namespace ca { namespace gui {
 			_alignX, _alignY, 0.0f);
 	}
 
-	void FlatTheme::drawImage(const RefFrame& _rect, uint64 _texHandle, float _opacity, bool _tiling)
+	void FlatTheme::drawImage(const Rect2D& _rect, uint64 _texHandle, float _opacity, bool _tiling)
 	{
 		if(_opacity > 0.0f)
 			GUIManager::renderBackend().drawTextureRect(_rect, _texHandle, _opacity, _tiling);
 	}
 
-	void FlatTheme::drawArrowButton(const class RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver)
+	void FlatTheme::drawArrowButton(const Rect2D& _rect, SIDE::Val _pointTo, bool _mouseOver)
 	{
 		GUIManager::renderBackend().drawRect(_rect, _mouseOver ? m_properties.hoverButtonColor : m_properties.buttonColor);
 		// Use the minimum possible size to create a triangle without stretch
-		float size = min(_rect.width(), _rect.height()) - 2.0f;
+		float size = min(_rect.max - _rect.min) - 2.0f;
 		float sizeh = size/2.0f;
 		Triangle2D triangle;
-		Vec2 center((_rect.left() + _rect.right()) * 0.5f, (_rect.bottom() + _rect.top()) * 0.5f);
+		const Vec2 center = (_rect.min + _rect.max) * 0.5f;
 		switch(_pointTo)
 		{
 		case SIDE::CENTER:

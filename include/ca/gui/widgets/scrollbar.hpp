@@ -52,16 +52,23 @@ namespace ca { namespace gui {
 		void setScrollOffset(const float _amount);
 		float getScrollOffset() const { return m_intervalStart; }
 
-		/// Returns the anchor from the contained single point anchor provider.
-		/// This anchor has to be used for things that should move on scrolling.
-		AnchorPtr getAnchor() const;
+		/// Returns a special anchor provider of a frame that moves around.
+		/// \details This anchor frame has to be used for things that should move
+		///		on scrolling.
+		///
+		///		It has a zero dimension in every dimension. Its position
+		///		changes between 0 and the scroll amount in the respective
+		///		dimension plus the scroll offset. The latter may reposition
+		///		the interval from [0,x] to any desired location.
+		const AnchorFrame* getAnchor() const	{ return &m_sliderAnchor; }
 
 		/// Get the available size either from the presentation widget or from
 		/// absolute setting (whatever is used).
 		float getAvailableSize() const;
-		float getTotalSize() const;
+		float getContentSize() const;
 
 	private:
+		mutable AnchorFrame m_sliderAnchor;		//< Special area that moves around on slide
 		WidgetPtr m_presentationWidget;
 		WidgetPtr m_contentWidget;
 		bool m_horizontal;		//< Horizontal or vertical mode?
@@ -73,26 +80,7 @@ namespace ca { namespace gui {
 		float m_movingPos;		//< Relative position within the content section bar that is moved. (Or -1 if not moving)
 
 		void checkInterval(const bool _forceAnchorReset = false);
-		void refitToAnchors() override;
-
-		/// An anchor provider that is a single point in a single dimension
-		class SingleAnchorProvider : public IAnchorProvider
-		{
-		public:
-			SingleAnchorProvider(ScrollBar* _parent);
-			~SingleAnchorProvider();
-
-			void recomputeAnchors(const class RefFrame& _selfFrame) override;
-			AnchorPtr findClosestAnchor(Coord _position, SearchDirection _direction) const override;
-
-		private:
-			std::shared_ptr<AnchorPoint> m_anchor;
-			ScrollBar* m_parent;
-		};
-
-		// Hide the method that could damage the setup (although sombody could still do that
-		// using the base class...
-		using Widget::setAnchorProvider;
+		void recomputeAnchorFrame();
 	};
 
 	typedef pa::RefPtr<ScrollBar> ScrollBarPtr;

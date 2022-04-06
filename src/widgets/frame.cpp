@@ -26,14 +26,14 @@ namespace ca { namespace gui {
 		if(m_visible)
 		{
 			// Set clipping region for this and all subelements
-			bool vis = GUIManager::pushClipRegion(m_refFrame);
+			bool vis = GUIManager::pushClipRegion(rectangle());
 			if(vis)
 			{
 				// Draw the frame background
 				if(m_texture)
-					GUIManager::theme().drawImage(m_refFrame, m_texture, m_opacity, m_tiling);
+					GUIManager::theme().drawImage(rectangle(), m_texture, m_opacity, m_tiling);
 				else
-					GUIManager::theme().drawBackgroundArea(m_refFrame, m_opacity);
+					GUIManager::theme().drawBackgroundArea(rectangle(), m_opacity);
 
 				// Draw all contained children of the group
 				Group::draw();

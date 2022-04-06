@@ -23,16 +23,16 @@ namespace ca { namespace gui {
 		if(isEditing)
 		{
 			if(m_focusTexture)
-				GUIManager::theme().drawImage(m_refFrame, m_focusTexture);
-			else GUIManager::theme().drawTextArea(m_refFrame);
+				GUIManager::theme().drawImage(rectangle(), m_focusTexture);
+			else GUIManager::theme().drawTextArea(rectangle());
 		} else {
 			if(m_backgroundTexture)
-				GUIManager::theme().drawImage(m_refFrame, m_backgroundTexture);
-			else GUIManager::theme().drawTextArea(m_refFrame);
+				GUIManager::theme().drawImage(rectangle(), m_backgroundTexture);
+			else GUIManager::theme().drawTextArea(rectangle());
 		}
 
 		// Text
-		GUIManager::pushClipRegion(RefFrame(m_refFrame.left() + m_margin, m_refFrame.right() - m_margin, m_refFrame.bottom() + m_margin, m_refFrame.top() - m_margin));
+		GUIManager::pushClipRegion(Rect2D{rectangle().min + m_margin, rectangle().max - m_margin});
 		if(m_text.empty())
 			GUIManager::theme().drawText(m_textPosition, m_descriptorText.c_str(), m_relativeTextSize, false, Vec4(Vec3(m_textColor), 0.5f));
 		else
@@ -218,14 +218,14 @@ namespace ca { namespace gui {
 		Coord2 textPos = m_textPosition;
 		if(_fullRefresh)
 		{
-			Coord2 center = m_refFrame.center();
+			Coord2 center = this->center();
 			center -= textSize * 0.5f;
 			switch(m_textAlignment)
 			{
-			case SIDE::LEFT: textPos = Coord2(m_refFrame.left() + m_margin + 1.0f, center.y); break;
-			case SIDE::RIGHT: textPos = Coord2(m_refFrame.right() - textSize.x - m_margin - 1.0f, center.y); break;
-			case SIDE::BOTTOM: textPos = Coord2(center.x, m_refFrame.bottom() + m_margin); break;
-			case SIDE::TOP: textPos = Coord2(center.x, m_refFrame.top() - textSize.y - m_margin); break;
+			case SIDE::LEFT: textPos = Coord2(left() + m_margin + 1.0f, center.y); break;
+			case SIDE::RIGHT: textPos = Coord2(right() - textSize.x - m_margin - 1.0f, center.y); break;
+			case SIDE::BOTTOM: textPos = Coord2(center.x, bottom() + m_margin); break;
+			case SIDE::TOP: textPos = Coord2(center.x, top() - textSize.y - m_margin); break;
 			case SIDE::CENTER: textPos = center; break;
 			}
 		}
@@ -237,10 +237,10 @@ namespace ca { namespace gui {
 		// Make sure the cursor is visible
 		if(GUIManager::hasKeyboardFocus(this))
 		{
-			if(curPos.x < m_refFrame.left() + m_margin)
-				offset = m_refFrame.left() + m_margin - curPos.x;
-			if(curPos.x > m_refFrame.right() - m_margin - cursorSize.x)
-				offset = m_refFrame.right() - m_margin - cursorSize.x - curPos.x;
+			if(curPos.x < left() + m_margin)
+				offset = left() + m_margin - curPos.x;
+			if(curPos.x > right() - m_margin - cursorSize.x)
+				offset = right() - m_margin - cursorSize.x - curPos.x;
 		}
 		//curPos.x -= max(1.0f, cursorSize.x * 0.5f);
 		curPos.x -= cursorSize.x * 0.5f;
@@ -248,9 +248,9 @@ namespace ca { namespace gui {
 		m_textPosition = textPos + Vec2(offset, 0.0f);
 	}
 
-	void Edit::onExtentChanged(bool _positionChanged, bool _sizeChanged)
+	void Edit::onExtentChanged(const CHANGE_FLAGS::Val _changes)
 	{
-		Widget::onExtentChanged(_positionChanged, _sizeChanged);
+		Widget::onExtentChanged(_changes);
 		recomputeTextPlacement(true);
 	}
 

@@ -57,18 +57,18 @@ namespace ca { namespace gui {
 		float _closeThreshold)
 	{
 		// Try to place the popup at the bottom right of the given position.
-		_position.y -= _popup->getSize().y;
+		_position.y -= _popup->size().y;
 		// If there is not enough place to the right side move to the left.
 		float maxW = float(GUIManager::getWidth());
 		if(_popup->parent())
-			maxW = _popup->parent()->getRefFrame().right();
-		_position.x += min(0.0f, maxW - (_position.x + _popup->getSize().x));
+			maxW = _popup->parent()->right();
+		_position.x += min(0.0f, maxW - (_position.x + _popup->size().x));
 		// If it does not fit verticaly toggle it upward.
 		float minH = 0.0f;
 		if(_popup->parent())
-			minH = _popup->parent()->getRefFrame().bottom();
-		if(_position.y - _popup->getSize().y < minH)
-			_position.y += _popup->getSize().y + 14.0f;
+			minH = _popup->parent()->bottom();
+		if(_position.y - _popup->size().y < minH)
+			_position.y += _popup->size().y + 14.0f;
 
 		_popup->setPosition(_position);
 		showPopup(_popup, _originator, _closeOn, _receiveInputs, _closeThreshold);
@@ -96,7 +96,7 @@ namespace ca { namespace gui {
 		while(!m_popupStack.empty() && stackChanged)
 		{
 			stackChanged = false;
-			const float dist = max(0.0f, distance(_mouseState.position, m_popupStack.back().widget->getRefFrame().rect));
+			const float dist = max(0.0f, distance(_mouseState.position, m_popupStack.back().widget->rectangle()));
 			if(m_popupStack.back().cond == PopupClosingCondition::MOUSE_DISTANCE)
 			{
 				if(dist > m_popupStack.back().condThreshold)
@@ -124,7 +124,7 @@ namespace ca { namespace gui {
 		// Forward inputs to popups if they need them
 		for(auto& it : m_popupStack) // TODO: check order: must be top to bottom!
 		{
-			const bool mouseOver = it.widget->getRefFrame().isMouseOver(_mouseState.position);
+			const bool mouseOver = it.widget->isMouseOver(_mouseState.position);
 			if(mouseOver)
 				GUIManager::setMouseOver(it.widget.get());
 			//	TODO: remove all the other m_lastClick.... things (Clickable, DropDown, ...)

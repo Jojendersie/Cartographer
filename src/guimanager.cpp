@@ -22,7 +22,6 @@ namespace ca { namespace gui {
 		// Use an internal light-weight frame as container
 		g_manager->m_topFrame = std::make_shared<Group>();
 		g_manager->m_topFrame->setExtent(ei::Vec2(0.0f), ei::Vec2((float)_width, (float)_height));
-		g_manager->m_topFrame->setAnchorProvider(std::make_unique<BorderAnchorProvider>());
 		// Push some (infinite) initial top-level clip region
 		g_manager->m_clipRegionStack.push(ei::IVec4(0, 0x7fffffff, 0, 0x7fffffff));
 
@@ -88,7 +87,6 @@ namespace ca { namespace gui {
 	{
 		if(!g_manager)
 			return logError("Uninitialized GUIManager! Cannot draw a GUI!");
-		refitAllToAnchors();
 		g_manager->m_renderer->beginDraw();
 		g_manager->m_topFrame->draw();
 		// Draw info popups on top of everything else.
@@ -97,15 +95,15 @@ namespace ca { namespace gui {
 		// TODO: Assert g_manager->m_clipRegionStack.size() == 1
 	}
 
-	bool GUIManager::pushClipRegion(const RefFrame& _rect)
+	bool GUIManager::pushClipRegion(const ei::Rect2D& _rect)
 	{
 		auto& top = g_manager->m_clipRegionStack.top();
 		// Convert Coord to pixels and compute a minimum between the current top and the new rect.
 		ei::IVec4 area;
-		area.x = ei::max(ei::round(_rect.left()), top.x);
-		area.y = ei::min(ei::round(_rect.right()), top.y);
-		area.z = ei::max(ei::round(_rect.bottom()), top.z);
-		area.w = ei::min(ei::round(_rect.top()), top.w);
+		area.x = ei::max(ei::round(_rect.min.x), top.x);
+		area.y = ei::min(ei::round(_rect.max.x), top.y);
+		area.z = ei::max(ei::round(_rect.min.y), top.z);
+		area.w = ei::min(ei::round(_rect.max.y), top.w);
 		g_manager->m_clipRegionStack.push(area);
 		bool nonEmpty = ei::max(0, area.y - area.x) * ei::max(0, area.w - area.z) > 0;
 		if(nonEmpty)
@@ -137,8 +135,6 @@ namespace ca { namespace gui {
 			return false;
 		}
 
-		refitAllToAnchors();
-
 		const bool mouseStateChanged = _mouseState.position != g_manager->m_mouseState.position
 			|| _mouseState.deltaScroll != g_manager->m_mouseState.deltaScroll
 			|| _mouseState.anyButtonDown || _mouseState.anyButtonPressed || _mouseState.anyButtonUp;
@@ -151,7 +147,7 @@ namespace ca { namespace gui {
 		if(mouseStateChanged)
 		{
 			g_manager->m_lastMouseMoveTime = now;
-			if(g_manager->m_mouseOver && !g_manager->m_mouseOver->getRefFrame().isMouseOver(_mouseState.position))
+			if(g_manager->m_mouseOver && !g_manager->m_mouseOver->isMouseOver(_mouseState.position))
 				g_manager->m_mouseOver = nullptr;
 		} else {
 			// Check if the current widget in focus has a popup and if enough
@@ -321,53 +317,23 @@ namespace ca { namespace gui {
 
 	int GUIManager::getWidth()
 	{
-		return (int)g_manager->m_topFrame->getSize().x;
+		return (int)g_manager->m_topFrame->width();
 	}
 
 	int GUIManager::getHeight()
 	{
-		return (int)g_manager->m_topFrame->getSize().y;
+		return (int)g_manager->m_topFrame->height();
 	}
 
-	const RefFrame& GUIManager::getRefFrame()
-	{
-		return g_manager->m_topFrame->getRefFrame();
-	}
 
 	PopupManager& GUIManager::popups()
 	{
 		return g_manager->m_popups;
 	}
 
-	const IAnchorProvider* GUIManager::getAnchorProvider()
+	const AnchorFrame* GUIManager::getAnchorFrame()
 	{
-		return g_manager->m_topFrame->getAnchorProvider();
-	}
-
-	void GUIManager::refitAllToAnchors()
-	{
-		static int s_numRunningRefits = 0;
-		static int s_currentRefit = 0;
-		if(IAnchorProvider::someAnchorChanged())
-		{
-			++s_numRunningRefits;
-			while(++s_currentRefit <= s_numRunningRefits)
-			{
-				IAnchorProvider::resetChangedStatus();
-				// Recursively call for all components
-				g_manager->m_topFrame->refitToAnchors();
-				// Also refit popups (if visible). They are not necessarily part of the hierarchy.
-				// WHY retif at all, Popups should not be anchored?
-				//for(auto& it : g_manager->m_popupStack)
-				//	it->refitToAnchors();
-
-				// Changing components might have changed anchor points again
-				if(IAnchorProvider::someAnchorChanged() && s_numRunningRefits < 3)
-					++s_numRunningRefits;
-			}
-			s_numRunningRefits = 0;
-			s_currentRefit = 0;
-		}
+		return static_cast<const AnchorFrame*>(g_manager->m_topFrame.get());
 	}
 
 }} // namespace ca::gui

@@ -49,16 +49,16 @@ namespace ca { namespace gui {
 			return true;
 		} else {
 			// Is the cursor within range?
-			if(_mouseState.position.x >= _thisWidget.getRefFrame().left()-2.0f
-				&& _mouseState.position.x <= _thisWidget.getRefFrame().right()+2.0f
-				&& _mouseState.position.y >= _thisWidget.getRefFrame().bottom()-2.0f
-				&& _mouseState.position.y <= _thisWidget.getRefFrame().top()+2.0f)
+			if(_mouseState.position.x >= _thisWidget.left()-2.0f
+				&& _mouseState.position.x <= _thisWidget.right()+2.0f
+				&& _mouseState.position.y >= _thisWidget.bottom()-2.0f
+				&& _mouseState.position.y <= _thisWidget.top()+2.0f)
 			{
 				// Is the mouse cursor within a margin around the reference frame?
-				m_resizing[SIDE::LEFT] = abs(_thisWidget.getRefFrame().left() - _mouseState.position.x) <= 2.0f;
-				m_resizing[SIDE::RIGHT] = abs(_thisWidget.getRefFrame().right() - _mouseState.position.x) <= 2.0f;
-				m_resizing[SIDE::BOTTOM] = abs(_thisWidget.getRefFrame().bottom() - _mouseState.position.y) <= 2.0f;
-				m_resizing[SIDE::TOP] = abs(_thisWidget.getRefFrame().top() - _mouseState.position.y) <= 2.0f;
+				m_resizing[SIDE::LEFT] = abs(_thisWidget.left() - _mouseState.position.x) <= 2.0f;
+				m_resizing[SIDE::RIGHT] = abs(_thisWidget.right() - _mouseState.position.x) <= 2.0f;
+				m_resizing[SIDE::BOTTOM] = abs(_thisWidget.bottom() - _mouseState.position.y) <= 2.0f;
+				m_resizing[SIDE::TOP] = abs(_thisWidget.top() - _mouseState.position.y) <= 2.0f;
 				bool anyFlag = (m_resizing[0] || m_resizing[1] || m_resizing[2] || m_resizing[3]);
 
 				// Set a cursor if in margin

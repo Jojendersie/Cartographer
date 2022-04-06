@@ -19,7 +19,7 @@ namespace ca { namespace gui {
 		// Check for click and dbl-click events.
 		if(_mouseState.anyButtonUp)
 		{
-			if( m_mouseDown && m_mouseDown->getRefFrame().isMouseOver(_mouseState.position) )
+			if( m_mouseDown && m_mouseDown->isMouseOver(_mouseState.position) )
 			{
 				float now = clock() / float(CLOCKS_PER_SEC);
 				for(int b = 0; b < 8; ++b)

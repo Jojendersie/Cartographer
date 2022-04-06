@@ -21,34 +21,34 @@ namespace ca { namespace gui {
 	void ProgressBar::draw() const
 	{
 		if(m_backgroundTexture)
-			GUIManager::theme().drawImage(m_refFrame, m_backgroundTexture);
+			GUIManager::theme().drawImage(rectangle(), m_backgroundTexture);
 		if(m_foregroundTexture)
 		{
 			// Compute the progress rectangle.
-			RefFrame rect = m_refFrame;
+			ei::Rect2D rect = rectangle();
 			if(m_vertical)
 			{
-				float maxPercentHeight = m_refFrame.height() - m_marginBottom - m_marginTop;
-				rect.sides[SIDE::TOP] = m_refFrame.bottom() + m_marginBottom + maxPercentHeight * m_progress;
+				float maxPercentHeight = height() - m_marginBottom - m_marginTop;
+				rect.max.y = bottom() + m_marginBottom + maxPercentHeight * m_progress;
 			} else {
-				float maxPercentWidth = m_refFrame.width() - m_marginLeft - m_marginRight;
-				rect.sides[SIDE::RIGHT] = m_refFrame.left() + m_marginLeft + maxPercentWidth * m_progress;
+				float maxPercentWidth = width() - m_marginLeft - m_marginRight;
+				rect.max.x = left() + m_marginLeft + maxPercentWidth * m_progress;
 			}
 			// Draw the foreground clipped
 			GUIManager::pushClipRegion(rect);
-			GUIManager::theme().drawImage(m_refFrame, m_foregroundTexture);
+			GUIManager::theme().drawImage(rectangle(), m_foregroundTexture);
 			GUIManager::popClipRegion();
 		}
 
 		if(!m_text.empty())
 		{
 			float downScale = ei::min(1.0f, ei::min(
-				m_refFrame.width() / (m_textSize.x * m_relativeTextSize),
-				m_refFrame.height() / (m_textSize.y * m_relativeTextSize)
+				width() / (m_textSize.x * m_relativeTextSize),
+				height() / (m_textSize.y * m_relativeTextSize)
 			));
 			downScale *= m_relativeTextSize;
 
-			Coord2 center = m_refFrame.center();
+			Coord2 center = this->center();
 			center -= m_textSize * 0.5f * downScale;
 			GUIManager::theme().drawText(center, m_text.c_str(), downScale, false, m_textColor);
 		}

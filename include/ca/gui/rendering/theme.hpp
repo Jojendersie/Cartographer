@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ca/gui/properties/coordinate.hpp"
-#include "ca/gui/properties/refframe.hpp"
+#include "ca/gui/properties/refframe.hpp" // for SIDE
 #include <ei/2dtypes.hpp>
 #include <memory>
 
@@ -15,20 +15,20 @@ namespace ca { namespace gui {
 	{
 	public:
 		/// Draw a background for text
-		virtual void drawTextArea(const class RefFrame& _rect) = 0;
+		virtual void drawTextArea(const ei::Rect2D& _rect) = 0;
 		/// Draw a background for frames, labels, ...
 		/// \param [in] _individualColor Use an individual color. If negative (default) the
 		///		theme colors are used.
-		virtual void drawBackgroundArea(const class RefFrame& _rect, float _opacity = 1.0f, const ei::Vec3& _individualColor = ei::Vec3(-1.0f)) = 0;
+		virtual void drawBackgroundArea(const ei::Rect2D& _rect, float _opacity = 1.0f, const ei::Vec3& _individualColor = ei::Vec3(-1.0f)) = 0;
 		/// Draw the background for buttons
 		/// \param [in] _horizontal Draw in normal (horizontal mode). If false rotates the
 		///		shading (if there is any) by 90°.
-		virtual void drawButton(const class RefFrame& _rect, bool _mouseOver, bool _mouseDown, bool _horizontal) = 0;
+		virtual void drawButton(const ei::Rect2D& _rect, bool _mouseOver, bool _mouseDown, bool _horizontal) = 0;
 		/// Draw the box with the check mark
-		virtual void drawCheckbox(const class RefFrame& _rect, bool _checked, bool _mouseOver) = 0;
+		virtual void drawCheckbox(const ei::Rect2D& _rect, bool _checked, bool _mouseOver) = 0;
 		/// Draw the bar and the value mark of a slider
 		/// \param [in] _relativeValue Position of the mark in [0,1] coordinates relative to the _rect.
-		virtual void drawSliderBar(const class RefFrame& _rect, float _relativeValue) = 0;
+		virtual void drawSliderBar(const ei::Rect2D& _rect, float _relativeValue) = 0;
 		/// Draw a string
 		/// \param [in] _relativeScale A number to scale the text relative to the global font size.
 		/// \param [in] _color A custom color. If values are negative the theme colors are used instead.
@@ -41,9 +41,9 @@ namespace ca { namespace gui {
 		/// Get the character closest to the find position.
 		virtual uint getTextCharacterPosition(const ei::Vec2& _findPosition, const ei::Vec2& _textPosition, const char* _text, float _relativeScale, float _alignX = 0.0f, float _alignY = 0.0f) = 0;
 		/// Draw an image
-		virtual void drawImage(const class RefFrame& _rect, uint64 _texHandle, float _opacity = 1.0f, bool _tiling = false) = 0;
+		virtual void drawImage(const ei::Rect2D& _rect, uint64 _texHandle, float _opacity = 1.0f, bool _tiling = false) = 0;
 		/// Draw an arrow for sliders, scrollbars or drop down menus
-		virtual void drawArrowButton(const class RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver) = 0;
+		virtual void drawArrowButton(const ei::Rect2D& _rect, SIDE::Val _pointTo, bool _mouseOver) = 0;
 		/// Query the global basis font size. Headers or similar can differ from that (element dependent).
 		/// \return Height in pixels.
 		virtual float getTextSize() const = 0;

@@ -2,7 +2,6 @@
 
 #include <memory>
 #include "ca/gui/properties/anchorable.hpp"
-#include "ca/gui/properties/anchorprovider.hpp"
 #include "ca/gui/properties/clickable.hpp"
 #include "ca/gui/properties/moveable.hpp"
 #include "ca/gui/properties/refframe.hpp"
@@ -18,7 +17,7 @@ namespace ca { namespace gui {
 	/// Base class with mandatory attributes for all widgets.
 	/// \details A widget only contains the state. State handling in general is up to the derived
 	///		elements.
-	class Widget: public pa::ReferenceCountable, public Anchorable
+	class Widget: public pa::ReferenceCountable, public AnchorFrame, public Anchorable
 	{
 	public:
 		Widget();
@@ -26,11 +25,9 @@ namespace ca { namespace gui {
 
 		/// Set the button width and heigh (resets anchoring)
 		void setSize(const Coord2& _size);
-		Coord2 getSize() const;
 
 		/// Set the position of the lower left corner (resets anchoring)
 		void setPosition(const Coord2& _position);
-		Coord2 getPosition() const;
 
 		/// Move the component and reset anchoring if necessary. Also causes OnExtentChanged() if
 		/// _deltaPosition is unequal zero.
@@ -43,9 +40,6 @@ namespace ca { namespace gui {
 		/// Change the size of one or multiple sides and reset anchoring if necessary.
 		/// \details Calls onExtentChanged if something changed.
 		void resize(float _deltaLeft, float _deltaRight, float _deltaBottom, float _deltaTop);
-
-		/// Get the bounding box of the component
-		const RefFrame& getRefFrame() const { return m_refFrame; }
 
 		/// Draw the element now
 		virtual void draw() const = 0;
@@ -89,7 +83,7 @@ namespace ca { namespace gui {
 
 		/// True if the mouse is on the interaction region and the element is focused by
 		/// the GUIManager. I.e. there is no other element in front of this one.
-		bool isMouseOver() const;
+		//bool isMouseOver() const;
 
 		/// Can this element get the focus?
 		bool isKeyboardFocusable() const { return m_keyboardFocusable; }
@@ -97,11 +91,6 @@ namespace ca { namespace gui {
 		const Widget* parent() const { return m_parent; }
 		Widget* parent() { return m_parent; }
 		void setParent(Widget* ptr) { m_parent = ptr; }
-
-		/// Let this widget create anchors for others
-		void setAnchorProvider(std::unique_ptr<IAnchorProvider> _anchorProvider);
-		/// Get the anchor component (can be nullptr)
-		IAnchorProvider* getAnchorProvider() const	{ return m_anchorProvider.get(); }
 
 		/// Every component has an interactio region. If not explicitly set this is the reference frame.
 		virtual const IRegion* getRegion() const;
@@ -120,9 +109,6 @@ namespace ca { namespace gui {
 		typedef std::function<void(Widget* _this, bool _gotKeyboardFocus)> OnKeyboardFocus;
 		void setOnKeyboardFocusFunc(OnKeyboardFocus _callback) { m_onKeyboardFocus = _callback; }
 
-		/// Realign component to its anchors. If there is no anchor-component do nothing.
-		virtual void refitToAnchors();
-
 		/// Set another widget as the info popup. Info popups are opened and closed
 		/// by the GUIManager automatically.
 		/// \details The component will be hidden after the call (invariant of popups).
@@ -137,15 +123,15 @@ namespace ca { namespace gui {
 		/// \details This is meant to be used in the constructor of IMouseProcessAble components.
 		void registerMouseInputComponent(IMouseProcessAble* _component);
 	protected:
+		virtual void onExtentChanged(const CHANGE_FLAGS::Val _changes) override;
+
 		bool m_enabled;					///< The element can currently receive input (not disabled).
 		bool m_keyboardFocusable;		///< Can this object have the focus?
 		bool m_visible;					///< Draw the element if visible and mask input otherwise.
 
-		RefFrame m_refFrame;
 		// List of optional components (can be nullptr)
 		IRegion* m_region;				///< Special interaction region.
 		std::unique_ptr<IRegion> m_regionDeallocator;
-		std::unique_ptr<IAnchorProvider> m_anchorProvider;
 		std::vector<IMouseProcessAble*> m_mouseInputSubcomponents;	///< A list of behavior components to handle mouse inputs. The order is determined by inheritance order.
 		IMouseProcessAble* m_activeComponent;	///< Some components want to have exclusive mouse input once they started. If this is != nullptr it will be executed as the first one.
 
@@ -154,8 +140,7 @@ namespace ca { namespace gui {
 		Widget* m_parent;
 		friend class GUIManager; // To trigger events
 
-		/// Optional method to react on resize events. This is necessary to reset provided anchors.
-		virtual void onExtentChanged(bool _positionChanged, bool _sizeChanged);
+		// TODO: add onExtentChanged callback (list) that can be set from the outside.
 		OnVisibilityChanged onVisibilityChanged;
 		OnPopup onPopup;
 		virtual void onKeyboardFocus(bool _gotFocus);

@@ -13,7 +13,7 @@ namespace ca { namespace gui {
 	void Image::draw() const
 	{
 		if(m_imageTexture)
-			GUIManager::theme().drawImage(m_refFrame, m_imageTexture);
+			GUIManager::theme().drawImage(rectangle(), m_imageTexture);
 	}
 
 	void Image::setTexture(const char* _textureFile, bool _smooth)

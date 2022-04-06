@@ -47,9 +47,6 @@
     <ClInclude Include="include\ca\gui\properties\anchorable.hpp">
       <Filter>properties</Filter>
     </ClInclude>
-    <ClInclude Include="include\ca\gui\properties\anchorprovider.hpp">
-      <Filter>properties</Filter>
-    </ClInclude>
     <ClInclude Include="include\ca\gui\rendering\sharp3dtheme.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
@@ -183,9 +180,6 @@
       <Filter>backend</Filter>
     </ClCompile>
     <ClCompile Include="src\guimanager.cpp" />
-    <ClCompile Include="src\properties\anchorprovider.cpp">
-      <Filter>properties</Filter>
-    </ClCompile>
     <ClCompile Include="src\backend\mouse.cpp">
       <Filter>backend</Filter>
     </ClCompile>

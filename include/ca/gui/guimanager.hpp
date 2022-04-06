@@ -49,7 +49,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		/// \details Clipping areas are handled on a stack. The current real region is the minimum
 		///		over all elements.
 		/// \return true if the new set region is non-empty (due to recursive restrictions).
-		static bool pushClipRegion(const RefFrame& _rect);
+		static bool pushClipRegion(const ei::Rect2D& _rect);
 		static void popClipRegion();
 		/// Check if a rectangle is entirely clipped by the current region
 		static bool isClipped(const RefFrame& _rect);
@@ -109,13 +109,10 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		///		frame buffer.
 		static int getHeight();
 
-		/// Get the area of the entire UI.
-		static const RefFrame& getRefFrame();
-
 		static PopupManager& popups();
 
 		/// Get the anchor component of the window sized top level component
-		static const IAnchorProvider* getAnchorProvider();
+		static const AnchorFrame* getAnchorFrame();
 	private:
 		std::shared_ptr<class IRenderBackend> m_renderer;
 		std::shared_ptr<class ITheme> m_theme;
@@ -135,11 +132,6 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		MouseState m_mouseState;		///< Buffer the last seen mouse state
 		KeyboardState m_keyboardState;
 		CursorType m_cursorType;		///< Current desired cursor shape
-
-		/// Globally check all elements for changes and cause a refitting of sizes and positions.
-		/// \details This method blocks recursive calls. I.e. if a resize causes another refit
-		///		this is logged and executed later until convergence or at most three times.
-		static void refitAllToAnchors();
 	};
 
 }} // namespace ca::gui

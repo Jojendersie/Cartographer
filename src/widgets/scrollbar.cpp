@@ -15,9 +15,6 @@ namespace ca { namespace gui {
 		m_margin{0.0f},
 		m_movingPos{-1.0f}
 	{
-		setAnchorProvider(std::make_unique<SingleAnchorProvider>(this));
-		setHorizontalAnchorMode(Anchorable::NO_RESIZE);
-		setVerticalAnchorMode(Anchorable::PREFER_RESIZE);
 		registerMouseInputComponent(this);
 	}
 
@@ -27,27 +24,37 @@ namespace ca { namespace gui {
 
 	void ScrollBar::draw() const
 	{
-		GUIManager::theme().drawBackgroundArea(m_refFrame);
+		// Any resizing of the reference widgets goes unnotized until we periodically check,
+		// which we do here.
+		if((m_presentationWidget && m_sliderAnchor.getGeomVersion() < m_presentationWidget->getGeomVersion())
+			|| (m_contentWidget && m_sliderAnchor.getGeomVersion() < m_contentWidget->getGeomVersion()))
+		{
+			// BAD CONST CAST! TODO: some message passing to know if the reference changed (instead periodical checks)
+			const_cast<ScrollBar*>(this)->m_availableSize = getAvailableSize();
+			const_cast<ScrollBar*>(this)->m_totalSize = getContentSize();
+		}
+
+		GUIManager::theme().drawBackgroundArea(rectangle());
 		// Compute percentage of available area to total area and create a smaller frame
 		// with the same relation to m_refFrame (in the selected dimension)
 		const float relSize = ei::min(1.0f, m_availableSize / m_totalSize);
 		const float relStart = m_intervalStart / m_totalSize;
-		RefFrame subFrame;
+		ei::Rect2D subFrame;
 		if(m_horizontal)
 		{
-			const float w = m_refFrame.width();
-			subFrame.rect.min.x = m_refFrame.left() + relStart * w;
-			subFrame.rect.max.x = subFrame.rect.min.x + ei::max(3.0f, relSize * w);
-			subFrame.rect.min.y = m_refFrame.bottom();
-			subFrame.rect.max.y = m_refFrame.top();
+			const float w = width();
+			subFrame.min.x = left() + relStart * w;
+			subFrame.max.x = subFrame.min.x + ei::max(3.0f, relSize * w);
+			subFrame.min.y = bottom();
+			subFrame.max.y = top();
 		} else {
-			const float h = m_refFrame.height();
-			subFrame.rect.min.x = m_refFrame.left();
-			subFrame.rect.max.x = m_refFrame.right();
-			subFrame.rect.min.y = m_refFrame.bottom() + relStart * h;
-			subFrame.rect.max.y = subFrame.rect.min.y + ei::max(3.0f, relSize * h);
+			const float h = height();
+			subFrame.min.x = left();
+			subFrame.max.x = right();
+			subFrame.min.y = bottom() + relStart * h;
+			subFrame.max.y = subFrame.min.y + ei::max(3.0f, relSize * h);
 		}
-		GUIManager::theme().drawButton(subFrame, (relSize < 1.0f) && (isMouseOver() || m_movingPos >= 0.0f), false, m_horizontal);
+		GUIManager::theme().drawButton(subFrame, (relSize < 1.0f) && (GUIManager::hasMouseFocus(this) || m_movingPos >= 0.0f), false, m_horizontal);
 	}
 
 	bool ScrollBar::processInput(Widget & _thisWidget, const MouseState & _mouseState, bool _cursorOnWidget, bool & _ensureNextInput)
@@ -66,8 +73,8 @@ namespace ca { namespace gui {
 		_ensureNextInput = true;
 
 		// Pick the right values of some reused quantities
-		const float widgetBegin = m_horizontal ? m_refFrame.left() : m_refFrame.bottom();
-		const float widgetSize = m_horizontal ? getRefFrame().width() : getRefFrame().height();
+		const float widgetBegin = m_horizontal ? left() : bottom();
+		const float widgetSize = m_horizontal ? width() : height();
 		const float mousePos = m_horizontal ? _mouseState.position.x : _mouseState.position.y;
 
 		// Compute world space parameters of the moveable interval
@@ -91,17 +98,15 @@ namespace ca { namespace gui {
 		const float old = m_intervalStart;
 		m_intervalStart = ei::clamp(scrollSpacePos, 0.0f, ei::max(0.0f, m_totalSize - m_availableSize));
 		if(old != m_intervalStart)
-			m_anchorProvider->recomputeAnchors(m_refFrame);
+			recomputeAnchorFrame();
 		return true;
 	}
 
 	void ScrollBar::setHorizontalMode(const bool _horizontal)
 	{
 		m_horizontal = _horizontal;
-		setHorizontalAnchorMode(_horizontal ? Anchorable::PREFER_RESIZE : Anchorable::NO_RESIZE);
-		setVerticalAnchorMode(_horizontal ? Anchorable::NO_RESIZE : Anchorable::PREFER_RESIZE);
 		m_intervalStart = ei::clamp(m_intervalStart, 0.0f, ei::max(0.0f, m_totalSize - m_availableSize));
-		m_anchorProvider->recomputeAnchors(m_refFrame);
+		recomputeAnchorFrame();
 	}
 
 	void ScrollBar::setAvailableSize(const float _availableSize)
@@ -139,7 +144,7 @@ namespace ca { namespace gui {
 	void ScrollBar::setContent(WidgetPtr _contentWidget)
 	{
 		m_contentWidget = std::move(_contentWidget);
-		m_totalSize = m_horizontal ? m_contentWidget->getSize().x : m_contentWidget->getSize().y;
+		m_totalSize = m_horizontal ? m_contentWidget->width() : m_contentWidget->height();
 		checkInterval();
 	}
 
@@ -149,29 +154,23 @@ namespace ca { namespace gui {
 		checkInterval();
 	}
 
-	AnchorPtr ScrollBar::getAnchor() const
-	{
-		return getAnchorProvider()->findClosestAnchor(0.0f, m_horizontal
-			? IAnchorProvider::SearchDirection::HORIZONTAL
-			: IAnchorProvider::SearchDirection::VERTICAL);
-	}
 
 	float ScrollBar::getAvailableSize() const
 	{
 		if(m_presentationWidget)
 		{
 			const float fullSize = m_horizontal ?
-				m_presentationWidget->getSize().x : m_presentationWidget->getSize().y;
+				m_presentationWidget->width() : m_presentationWidget->height();
 			return ei::max(0.0f, fullSize - m_margin);
 		}
 		return m_availableSize;
 	}
 
-	float ScrollBar::getTotalSize() const
+	float ScrollBar::getContentSize() const
 	{
 		if(m_contentWidget)
 		{
-			return m_horizontal ? m_contentWidget->getSize().x : m_contentWidget->getSize().y;
+			return m_horizontal ? m_contentWidget->width() : m_contentWidget->height();
 		}
 		return m_totalSize;
 	}
@@ -181,46 +180,18 @@ namespace ca { namespace gui {
 		const float old = m_intervalStart;
 		m_intervalStart = ei::clamp(m_intervalStart, 0.0f, ei::max(0.0f, m_totalSize - m_availableSize));
 		if(_forceAnchorReset || old != m_intervalStart)
-			m_anchorProvider->recomputeAnchors(m_refFrame);
-	}
-
-	void ScrollBar::refitToAnchors()
-	{
-		m_availableSize = getAvailableSize();
-		m_totalSize = getTotalSize();
-		checkInterval();
-		Widget::refitToAnchors();
+			recomputeAnchorFrame();
 	}
 
 
-
-	ScrollBar::SingleAnchorProvider::SingleAnchorProvider(ScrollBar* _parent) :
-		m_parent(_parent)
+	void ScrollBar::recomputeAnchorFrame()
 	{
-		m_anchor = std::make_shared<AnchorPoint>(this);
-		m_anchor->position = 0.0f;
-	}
-
-	ScrollBar::SingleAnchorProvider::~SingleAnchorProvider()
-	{
-		// Cause a future deletion of the anchor
-		m_anchor->host = nullptr;
-	}
-
-	void ScrollBar::SingleAnchorProvider::recomputeAnchors(const RefFrame& _selfFrame)
-	{
-		const float old = m_anchor->position;
-		if(m_parent->isHorizontal())
-			m_anchor->position = _selfFrame.left() - m_parent->m_intervalStart + m_parent->m_rangeOffset;
+		float s[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+		if(m_horizontal)
+			s[0] = s[2] = -m_intervalStart + m_rangeOffset;
 		else
-			m_anchor->position = _selfFrame.bottom() - m_parent->m_intervalStart + m_parent->m_rangeOffset;
-		if(old != m_anchor->position)
-			m_someChanged = true;
-	}
-
-	AnchorPtr ScrollBar::SingleAnchorProvider::findClosestAnchor(Coord _position, SearchDirection _direction) const
-	{
-		return m_anchor;
+			s[1] = s[3] = -m_intervalStart + m_rangeOffset;
+		m_sliderAnchor.setFrame(s[0], s[1], s[2], s[3]);
 	}
 
 }} // namespace ca::gui

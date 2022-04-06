@@ -42,7 +42,7 @@ namespace ca { namespace gui {
 		bool processInput(const struct MouseState & _mouseState) override
 		{
 			// Get distance to to the top of the widget to compute the index.
-			m_hoverItem = ei::floor((m_parent->getRefFrame().bottom() - _mouseState.position.y) / m_itemHeight);
+			m_hoverItem = ei::floor((m_parent->bottom() - _mouseState.position.y) / m_itemHeight);
 			// Floor made sure that the index is negative if the mouse is too far up.
 			// the opposide end is still open.
 			if(m_hoverItem >= (int)m_items.size())
@@ -79,16 +79,16 @@ namespace ca { namespace gui {
 			{
 				const float downScale = m_items[_idx].iconSize.y <= maxIconSize.y ? 1.0f : maxIconSize.y / m_items[_idx].iconSize.y;
 				const float vMargin = floor(m_items[_idx].iconSize.y < maxIconSize.y ? margin + 0.5f * (maxIconSize.y - m_items[_idx].iconSize.y) : margin);
-				RefFrame iconFrame;
-				iconFrame.sides[SIDE::LEFT] = getRefFrame().left() + margin;
-				iconFrame.sides[SIDE::RIGHT] = iconFrame.sides[SIDE::LEFT] + m_items[_idx].iconSize.x * downScale;
-				iconFrame.sides[SIDE::BOTTOM] = _baseLine + vMargin;
-				iconFrame.sides[SIDE::TOP] = iconFrame.sides[SIDE::BOTTOM] + ei::min(m_items[_idx].iconSize.y, maxIconSize.y);
+				ei::Rect2D iconFrame;
+				iconFrame.min.x = left() + margin;
+				iconFrame.max.x = iconFrame.min.x + m_items[_idx].iconSize.x * downScale;
+				iconFrame.min.y = _baseLine + vMargin;
+				iconFrame.max.y = iconFrame.min.y + ei::min(m_items[_idx].iconSize.y, maxIconSize.y);
 				GUIManager::theme().drawImage(iconFrame, m_items[_idx].iconTexture);
 			}
 
 			GUIManager::theme().drawText(
-					Coord2(getRefFrame().left() + margin * 2 + maxIconSize.x,
+					Coord2(left() + margin * 2 + maxIconSize.x,
 						_baseLine + margin),
 					m_items[_idx].text.c_str(),
 					1.0f,
@@ -100,26 +100,25 @@ namespace ca { namespace gui {
 		{
 			// The Widget spans over its parent for proper popup input handling.
 			// For drawing we need the frame below only.
-			RefFrame refFrame = getRefFrame();
-			refFrame.sides[SIDE::TOP] = m_parent->getRefFrame().bottom();
+			ei::Rect2D refFrame = rectangle();
+			refFrame.max.y = m_parent->bottom();
 
 			GUIManager::theme().drawBackgroundArea(refFrame);
 
 			if (m_hoverItem >= 0)
 			{
-				RefFrame hFrame {
-					refFrame.left(), refFrame.right(),
-					refFrame.top() - m_hoverItem * m_itemHeight - 1.0f,
-					refFrame.top() - (m_hoverItem+1) * m_itemHeight + 1.0f
+				ei::Rect2D hFrame {
+					{refFrame.min.x, refFrame.max.y - (m_hoverItem+1) * m_itemHeight + 1.0f},
+					{refFrame.max.x, refFrame.max.y - (m_hoverItem  ) * m_itemHeight - 1.0f}
 				};
 				GUIManager::theme().drawTextArea(hFrame);
 			}
 
 			const Coord2 maxIconSize = getMaxIconSize();
 			const Coord margin = static_cast<DropDownMenu*>(m_parent)->getItemTextMargin();
-			const Coord iconLeft = refFrame.left() + margin;
-			const Coord textLeft = refFrame.left() + margin * 2 + maxIconSize.x;
-			Coord yPos = refFrame.top() + margin;
+			const Coord iconLeft = refFrame.min.x + margin;
+			const Coord textLeft = refFrame.min.x + margin * 2 + maxIconSize.x;
+			Coord yPos = refFrame.max.y + margin;
 			for(int i = 0; i < m_items.size(); ++i)
 			{
 				yPos -= m_itemHeight;
@@ -128,11 +127,11 @@ namespace ca { namespace gui {
 				{
 					const float downScale = m_items[i].iconSize.y <= maxIconSize.y ? 1.0f : maxIconSize.y / m_items[i].iconSize.y;
 					const float vMargin = floor(m_items[i].iconSize.y < maxIconSize.y ? 0.5f * (maxIconSize.y - m_items[i].iconSize.y) : 0.0f);
-					RefFrame iconFrame;
-					iconFrame.sides[SIDE::LEFT] = iconLeft;
-					iconFrame.sides[SIDE::RIGHT] = iconLeft + m_items[i].iconSize.x * downScale;
-					iconFrame.sides[SIDE::BOTTOM] = yPos + vMargin;
-					iconFrame.sides[SIDE::TOP] = iconFrame.sides[SIDE::BOTTOM] + ei::min(m_items[i].iconSize.y, maxIconSize.y);
+					ei::Rect2D iconFrame;
+					iconFrame.min.x = iconLeft;
+					iconFrame.max.x = iconLeft + m_items[i].iconSize.x * downScale;
+					iconFrame.min.y = yPos + vMargin;
+					iconFrame.max.y = iconFrame.min.y + ei::min(m_items[i].iconSize.y, maxIconSize.y);
 					GUIManager::theme().drawImage(iconFrame, m_items[i].iconTexture);
 				}
 
@@ -168,7 +167,7 @@ namespace ca { namespace gui {
 			m_selected = 0;
 
 		// Cause a recomputation of the subwidget size
-		onExtentChanged(false, false);
+		onExtentChanged(0);
 
 		return idx;
 	}
@@ -192,7 +191,7 @@ namespace ca { namespace gui {
 			--m_selected;
 
 		// Cause a recomputation of the subwidget size
-		onExtentChanged(false, false);
+		onExtentChanged(0);
 	}
 
 
@@ -303,25 +302,23 @@ namespace ca { namespace gui {
 
 	void DropDownMenu::draw() const
 	{
-		GUIManager::theme().drawBackgroundArea(m_refFrame);
+		GUIManager::theme().drawBackgroundArea(rectangle());
 
 		// Draw the selected item at the top (always)
 		if (!m_list->m_items.empty())
 		{
 			// Draw item in place.
-			m_list->drawItemStandalone(m_selected, m_refFrame.bottom());
+			m_list->drawItemStandalone(m_selected, bottom());
 		}
 
 		// Draw a drop down button.
-		const float btnSize = this->getSize().y;
-		RefFrame btnFrame { getRefFrame().right() - btnSize, getRefFrame().right(), getRefFrame().bottom(), getRefFrame().top() };
-		const bool mouseOverBtn = btnFrame.isMouseOver(GUIManager::getMouseState().position);
+		const float btnSize = this->size().y;
+		ei::Rect2D btnFrame {{right() - btnSize, bottom()}, {right(), top()}};
+		const bool mouseOverBtn = isMouseOver(GUIManager::getMouseState().position);
 		GUIManager::theme().drawButton(btnFrame, mouseOverBtn, false, true);
 		const float arrowMargin = btnSize * 0.25f;
-		btnFrame.sides[0] += arrowMargin;
-		btnFrame.sides[1] += arrowMargin;
-		btnFrame.sides[2] -= arrowMargin;
-		btnFrame.sides[3] -= arrowMargin;
+		btnFrame.min += arrowMargin;
+		btnFrame.max -= arrowMargin;
 		GUIManager::theme().drawArrowButton(btnFrame,
 			m_list->isVisible() ? SIDE::BOTTOM : SIDE::LEFT,
 			mouseOverBtn);
@@ -349,14 +346,15 @@ namespace ca { namespace gui {
 	}
 
 
-	void DropDownMenu::onExtentChanged(bool _positionChanged, bool _sizeChanged)
+	void DropDownMenu::onExtentChanged(const CHANGE_FLAGS::Val _changes)
 	{
-		Widget::onExtentChanged(_positionChanged, _sizeChanged);
-		RefFrame listFrame;
-		listFrame.sides[SIDE::LEFT] = getRefFrame().left();
-		listFrame.sides[SIDE::RIGHT] = getRefFrame().right();
-		listFrame.sides[SIDE::BOTTOM] = getRefFrame().bottom() - m_list->m_itemHeight * m_list->m_items.size();
-		listFrame.sides[SIDE::TOP] = getRefFrame().top();
+		Widget::onExtentChanged(_changes);
+		RefFrame listFrame {
+			left(),
+			right(),
+			bottom() - m_list->m_itemHeight * m_list->m_items.size(),
+			top()
+		};
 		m_list->setExtent(listFrame);
 	}
 

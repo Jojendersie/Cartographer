@@ -78,7 +78,7 @@ namespace ca { namespace gui {
 			// the default nullptr.
 			for(size_t i = 0; i < s_nodes.size(); ++i)
 			{
-				float distSq = lensq(s_nodes[i]->getPosition() - _position);
+				float distSq = lensq(s_nodes[i]->position() - _position);
 				if(distSq <= minDistSq)
 				{
 					minDistSq = distSq;
@@ -100,8 +100,7 @@ namespace ca { namespace gui {
 		m_color(1.0f),
 		m_angle(0.0f)
 	{
-		Widget::setAnchorModes(Anchorable::Mode::NO_RESIZE);
-		Widget::setRegion(std::make_unique<EllipseRegion>(&m_refFrame));
+		Widget::setRegion(std::make_unique<EllipseRegion>(this));
 
 		if(_register)
 			NodeList::addNode(this);
@@ -117,24 +116,10 @@ namespace ca { namespace gui {
 		bool mouseOver = GUIManager::hasMouseFocus(this)
 			&& getRegion()->isMouseOver(GUIManager::getMouseState().position);
 		GUIManager::theme().drawNodeHandle(
-			0.5f * Coord2(m_refFrame.left() + m_refFrame.right(), m_refFrame.bottom() + m_refFrame.top()),
-			0.5f * m_refFrame.width(),
+			center(),
+			0.5f * width(),
 			mouseOver ? 2.0f * m_color : m_color);
 		//GUIManager::theme().drawCheckbox(m_refFrame, true, true);
-	}
-
-	/*void NodeHandle::setAnchoring(AnchorPtr _anchor)
-	{
-		Widget::setAnchoring(SIDE::BOTTOM, _anchor);
-		Widget::setAnchoring(SIDE::LEFT, _anchor);
-	}*/
-
-	void NodeHandle::autoAnchor(const class IAnchorProvider* _anchorProvider)
-	{
-		Widget::setAnchor(SIDE::LEFT, _anchorProvider->findClosestAnchor(m_refFrame.horizontalCenter(), IAnchorProvider::SearchDirection::LEFT));
-		Widget::setAnchor(SIDE::RIGHT, _anchorProvider->findClosestAnchor(m_refFrame.horizontalCenter(), IAnchorProvider::SearchDirection::RIGHT));
-		Widget::setAnchor(SIDE::BOTTOM, _anchorProvider->findClosestAnchor(m_refFrame.verticalCenter(), IAnchorProvider::SearchDirection::DOWN));
-		Widget::setAnchor(SIDE::TOP, _anchorProvider->findClosestAnchor(m_refFrame.verticalCenter(), IAnchorProvider::SearchDirection::UP));
 	}
 
 	ei::Vec2 NodeHandle::getConnectorDirection() const
@@ -186,19 +171,19 @@ namespace ca { namespace gui {
 		Vec2 p0, p1, p2, p3;
 		// As support vectors take the direction given by the node handles
 		// with a lenght of 1/3 from the distance between the two nodes.
-		bool mouseFarAwayFromSrc = lensq(m_sourceNode->getRefFrame().center() - s_tmpMouseNode->getPosition()) > NodeList::s_snapRadiusSq;
-		bool mouseFarAwayFromDst = lensq(m_destNode->getRefFrame().center() - s_tmpMouseNode->getPosition()) > NodeList::s_snapRadiusSq;
+		bool mouseFarAwayFromSrc = lensq(m_sourceNode->center() - s_tmpMouseNode->position()) > NodeList::s_snapRadiusSq;
+		bool mouseFarAwayFromDst = lensq(m_destNode->center() - s_tmpMouseNode->position()) > NodeList::s_snapRadiusSq;
 		if(m_tmpHandleState == HandleState::TMP_SRC && mouseFarAwayFromSrc)
-			p0 = s_tmpMouseNode->getPosition();
+			p0 = s_tmpMouseNode->position();
 		else {
-			p0 = m_sourceNode->getRefFrame().center();
-			p0 += m_sourceNode->getConnectorDirection() * m_sourceNode->getRefFrame().size() / 2.0f;
+			p0 = m_sourceNode->center();
+			p0 += m_sourceNode->getConnectorDirection() * m_sourceNode->size() / 2.0f;
 		}
 		if(m_tmpHandleState == HandleState::TMP_DST && mouseFarAwayFromDst)
-			p3 = s_tmpMouseNode->getPosition();
+			p3 = s_tmpMouseNode->position();
 		else {
-			p3 = m_destNode->getRefFrame().center();
-			p3 += m_destNode->getConnectorDirection() * m_destNode->getRefFrame().size() / 2.0f;
+			p3 = m_destNode->center();
+			p3 += m_destNode->getConnectorDirection() * m_destNode->size() / 2.0f;
 		}
 		float distance = len(p0 - p3) * m_stiffness;
 		if((m_tmpHandleState == HandleState::TMP_SRC && mouseFarAwayFromSrc)
@@ -225,24 +210,21 @@ namespace ca { namespace gui {
 		GUIManager::theme().drawLine(wayPoints, CONNECTOR_NUM_POINTS, sourceColor, destColor);
 
 		NodeConnector* t = const_cast<NodeConnector*>(this);
-		t->m_refFrame.sides[SIDE::LEFT] = bbmin.x - 3.0f;
-		t->m_refFrame.sides[SIDE::BOTTOM] = bbmin.y - 3.0f;
-		t->m_refFrame.sides[SIDE::RIGHT] = bbmax.x + 3.0f;
-		t->m_refFrame.sides[SIDE::TOP] = bbmax.y + 3.0f;
+		t->silentSetFrame(bbmin.x - 3.0f, bbmin.y - 3.0f, bbmax.x + 3.0f, bbmax.y + 3.0f);
 	}
 
 	bool NodeConnector::isMouseOver(const Coord2& _mousePos) const
 	{
 		m_isMouseOver = false;
-		if(!m_refFrame.isMouseOver(_mousePos))
+		if(!RefFrame::isMouseOver(_mousePos))
 			return false;
 
 		// Move along the spline and check if any segment is closer than 3.0 pixels
 		// to the mouse position.
-		Vec2 p0 = m_sourceNode->getRefFrame().center();
-		p0 += m_sourceNode->getConnectorDirection() * m_sourceNode->getRefFrame().size() / 2.0f;
-		Vec2 p3 = m_destNode->getRefFrame().center();
-		p3 += m_destNode->getConnectorDirection() * m_destNode->getRefFrame().size() / 2.0f;
+		Vec2 p0 = m_sourceNode->center();
+		p0 += m_sourceNode->getConnectorDirection() * m_sourceNode->size() / 2.0f;
+		Vec2 p3 = m_destNode->center();
+		p3 += m_destNode->getConnectorDirection() * m_destNode->size() / 2.0f;
 		float nodeDistance = len(p0 - p3) * m_stiffness;
 		Vec2 p1 = p0 + m_sourceNode->getConnectorDirection() * nodeDistance;
 		Vec2 p2 = p3 + m_destNode->getConnectorDirection() * nodeDistance;
@@ -265,13 +247,13 @@ namespace ca { namespace gui {
 		return false;
 	}
 
-	void NodeConnector::refitToAnchors()
+	/*void NodeConnector::refitToAnchors()
 	{
 		m_refFrame.sides[SIDE::LEFT] = min(m_sourceNode->getPosition().x, m_destNode->getPosition().x);
 		m_refFrame.sides[SIDE::BOTTOM] = min(m_sourceNode->getPosition().y, m_destNode->getPosition().y);
 		m_refFrame.sides[SIDE::RIGHT] = max(m_sourceNode->getPosition().x, m_destNode->getPosition().x);
 		m_refFrame.sides[SIDE::TOP] = max(m_sourceNode->getPosition().y, m_destNode->getPosition().y);
-	}
+	}*/
 
 	bool NodeConnector::processInput(const MouseState& _mouseState)
 	{
@@ -314,17 +296,54 @@ namespace ca { namespace gui {
 		m_sourceAngle(0.0f),
 		m_destAngle(0.0f),
 		m_stiffness(1.0f/3.0f),
+		m_changed(false),
 		m_isMouseOver(false)
 	{
 		m_region = this;
-		setAnchorable(false);
 	}
 
 	void WidgetConnector::draw() const
 	{
+		if(m_changed)
+			recomputeCurve();
 		GUIManager::theme().drawLine(m_curve.data(), (int)m_curve.size(), Vec4(m_sourceColor, 1.0f), Vec4(m_destColor, 1.0f));
 	}
 
+
+	void WidgetConnector::setSource(ConstWidgetPtr _node, float _angle)
+	{
+		m_sourceNode = _node;
+		m_sourceAngle = _angle;
+		recomputeSizeAndAnchors();
+	}
+	
+	
+	void WidgetConnector::setDest(ConstWidgetPtr _node, float _angle)
+	{
+		m_destNode = _node;
+		m_destAngle = _angle;
+		recomputeSizeAndAnchors();
+	}
+
+
+	void WidgetConnector::recomputeSizeAndAnchors()
+	{
+		if(m_destNode && m_sourceNode)
+		{
+			const Vec2 c0 = m_destNode->center();
+			const Vec2 c1 = m_sourceNode->center();
+			// We don't really care where we are anchored, we only need the resize events for recomputations.
+			setAnchors(m_destNode.get(), AutoAnchorMode::DST_CENTER,
+				  (c0.x <= c1.x ? ANCHOR::LEFT : ANCHOR::RIGHT)
+				| (c0.y <= c1.y ? ANCHOR::BOTTOM : ANCHOR::TOP) );
+			setAnchors(m_sourceNode.get(), AutoAnchorMode::DST_CENTER,
+				  (c0.x < c1.x ? ANCHOR::RIGHT : ANCHOR::LEFT)
+				| (c0.y < c1.y ? ANCHOR::TOP : ANCHOR::BOTTOM) );
+			setFrame(ei::min(c0.x, c1.x), ei::min(c0.y, c1.y), ei::max(c0.x, c1.x), ei::max(c0.y, c1.y));
+		}
+	}
+
+	
 	static void findWidgetBorder(const IRegion* _region, Vec2& _pos, const Vec2& _dir)
 	{
 		Vec2 tmp = _pos + _dir;
@@ -348,20 +367,18 @@ namespace ca { namespace gui {
 		}
 	}
 
-	void WidgetConnector::refitToAnchors()
+	void WidgetConnector::recomputeCurve() const
 	{
-		if(!m_sourceNode || !m_destNode) return;
-
-		Vec2 p0 = m_sourceNode->getRefFrame().center();
-		Vec2 p3 = m_destNode->getRefFrame().center();
+		Vec2 p0 = m_sourceNode->center();
+		Vec2 p3 = m_destNode->center();
 		Vec2 adir(cos(m_sourceAngle), sin(m_sourceAngle)); // TODO: scale with widget size
 		Vec2 bdir(cos(m_destAngle), sin(m_destAngle));
 
 		// Find the borders of the source/dest widget
 		const IRegion* region = m_sourceNode->getRegion();
-		findWidgetBorder(region, p0, adir * (sum(m_sourceNode->getSize()) / 4.0f));
+		findWidgetBorder(region, p0, adir * (sum(m_sourceNode->size()) / 4.0f));
 		region = m_destNode->getRegion();
-		findWidgetBorder(region, p3, bdir * (sum(m_destNode->getSize()) / 4.0f));
+		findWidgetBorder(region, p3, bdir * (sum(m_destNode->size()) / 4.0f));
 
 		// Create the Bezier spline
 		float nodeDistance = len(p0 - p3) * m_stiffness;
@@ -370,18 +387,17 @@ namespace ca { namespace gui {
 		m_curve.resize(CONNECTOR_NUM_POINTS);
 		Coord2 bbmin, bbmax;
 		createBezierSpline(p0, p1, p2, p3, CONNECTOR_NUM_POINTS, m_curve.data(), bbmin, bbmax);
+		m_changed = false;
 
-		m_refFrame.sides[SIDE::LEFT] = bbmin.x - 3.0f;
-		m_refFrame.sides[SIDE::BOTTOM] = bbmin.y - 3.0f;
-		m_refFrame.sides[SIDE::RIGHT] = bbmax.x + 3.0f;
-		m_refFrame.sides[SIDE::TOP] = bbmax.y + 3.0f;
+		const_cast<WidgetConnector*>(this)->silentSetFrame(bbmin.x - 3.0f, bbmin.y - 3.0f, bbmax.x + 3.0f, bbmax.y + 3.0f);
 	}
+
 
 	bool WidgetConnector::isMouseOver(const Coord2 & _mousePos) const
 	{
 		// Early exit if not on the frame
 		m_isMouseOver = false;
-		if(!m_refFrame.isMouseOver(_mousePos))
+		if(!RefFrame::isMouseOver(_mousePos))
 			return false;
 
 		for(uint i = 0; i < m_curve.size()-1; ++i)
@@ -396,6 +412,15 @@ namespace ca { namespace gui {
 			}
 		}
 		return false;
+	}
+
+
+
+	void WidgetConnector::onExtentChanged(const CHANGE_FLAGS::Val _changes)
+	{
+		Widget::onExtentChanged(_changes);
+		if(!m_sourceNode || !m_destNode) return;
+		m_changed = true;
 	}
 
 }} // namespace ca::gui

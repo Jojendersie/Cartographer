@@ -12,6 +12,13 @@ namespace ca { namespace gui {
 	{
 		return Vec4(_color.r * _factor, _color.g * _factor, _color.b * _factor, _color.a);
 	}
+
+	/// Helper to reduce the size of a rectangle without making min larger than max
+	Rect2D saveBorderShrink(const Rect2D& _rect, int _borderWidth)
+	{
+		Vec2 border = (Vec2)max(IVec2{0}, min(IVec2{_borderWidth}, floor(0.5f * (_rect.max - _rect.min))));
+		return Rect2D(_rect.min + border, _rect.max - border);
+	}
 	
 	Sharp3DTheme::Sharp3DTheme(const Sharp3DProperties& _desc) :
 		m_properties(_desc)
@@ -24,14 +31,14 @@ namespace ca { namespace gui {
 		pa::logInfo("[ca::gui] Destroyed Sharp 3D Theme.");
 	}
 
-	void Sharp3DTheme::drawTextArea(const RefFrame& _rect)
+	void Sharp3DTheme::drawTextArea(const ei::Rect2D& _rect)
 	{
-		RefFrame rect(_rect.left() + m_properties.borderWidth, _rect.right() - m_properties.borderWidth, _rect.bottom() + m_properties.borderWidth, _rect.top() - m_properties.borderWidth);
+		Rect2D rect = saveBorderShrink(_rect, m_properties.borderWidth);
 		drawBorderRect(_rect, rect, m_properties.basicColor, scaleColor(m_properties.basicColor, 4.0f));
 		GUIManager::renderBackend().drawRect(rect, m_properties.textBackColor);
 	}
 
-	void Sharp3DTheme::drawBackgroundArea(const RefFrame& _rect, float _opacity, const ei::Vec3& _individualColor)
+	void Sharp3DTheme::drawBackgroundArea(const ei::Rect2D& _rect, float _opacity, const ei::Vec3& _individualColor)
 	{
 		if(_opacity > 0.0f)
 		{
@@ -39,7 +46,7 @@ namespace ca { namespace gui {
 			color.a *= _opacity;
 			if(m_properties.borderWidth)
 			{
-				RefFrame rect(_rect.left() + m_properties.borderWidth, _rect.right() - m_properties.borderWidth, _rect.bottom() + m_properties.borderWidth, _rect.top() - m_properties.borderWidth);
+				Rect2D rect = saveBorderShrink(_rect, m_properties.borderWidth);
 				drawBorderRect(_rect, rect, color, scaleColor(color, 4.0f));
 
 				GUIManager::renderBackend().drawRect(rect, scaleColor(color, 0.5f));
@@ -48,10 +55,10 @@ namespace ca { namespace gui {
 		}
 	}
 
-	void Sharp3DTheme::drawButton(const RefFrame& _rect, bool _mouseOver, bool _mouseDown, bool _horizontal)
+	void Sharp3DTheme::drawButton(const ei::Rect2D& _rect, bool _mouseOver, bool _mouseDown, bool _horizontal)
 	{
 		Vec4 color = _mouseOver ? m_properties.basicHoverColor : m_properties.basicColor;
-		RefFrame rect(_rect.left() + m_properties.borderWidth, _rect.right() - m_properties.borderWidth, _rect.bottom() + m_properties.borderWidth, _rect.top() - m_properties.borderWidth);
+		Rect2D rect = saveBorderShrink(_rect, m_properties.borderWidth);
 		Vec2 gfrom, gto;
 		if(_horizontal)
 		{
@@ -68,30 +75,29 @@ namespace ca { namespace gui {
 			scaleColor(color, 2.0f));
 	}
 
-	void Sharp3DTheme::drawCheckbox(const RefFrame& _rect, bool _checked, bool _mouseOver)
+	void Sharp3DTheme::drawCheckbox(const Rect2D& _rect, bool _checked, bool _mouseOver)
 	{
 		const Vec4& color = _mouseOver ? m_properties.hoverTextColor : m_properties.textColor;
 		// Draw three different sized rectangles (border, background and a smaller one for the
 		// checkmark).
 		GUIManager::renderBackend().drawRect(_rect, Vec2(0.0f), Vec2(0.0f, 1.0f), scaleColor(color, 0.5f), scaleColor(color, 2.0f));
-		RefFrame backRect(_rect.left() + 1, _rect.right() - 1, _rect.bottom() + 1, _rect.top() - 1);
+		Rect2D backRect = saveBorderShrink(_rect, 1);
 		GUIManager::renderBackend().drawRect(backRect, m_properties.textBackColor);
 		if(_checked)
 		{
-			RefFrame checkRect(_rect.left() + 3, _rect.right() - 3, _rect.bottom() + 3, _rect.top() - 3);
+			Rect2D checkRect = saveBorderShrink(_rect, 3);
 			GUIManager::renderBackend().drawRect(checkRect, Vec2(0.0f), Vec2(0.0f, 1.0f), scaleColor(color, 0.5f), scaleColor(color, 2.0f));
 		}
 	}
 
-	void Sharp3DTheme::drawSliderBar(const class RefFrame& _rect, float _relativeValue)
+	void Sharp3DTheme::drawSliderBar(const Rect2D& _rect, float _relativeValue)
 	{
 		// Fill left side with a button like structure
-		RefFrame leftFrame;
-		leftFrame.sides[SIDE::LEFT] = _rect.left() + 1.0f;
-		leftFrame.sides[SIDE::RIGHT] = roundf(_rect.left() + 1.0f + (_rect.width() - 2.0f) * _relativeValue);
-		leftFrame.sides[SIDE::TOP] = _rect.top() - 1.0f;
-		leftFrame.sides[SIDE::BOTTOM] = _rect.bottom() + 1.0f;
-		if(leftFrame.left() != leftFrame.right())
+		Rect2D leftFrame;
+		leftFrame.min = _rect.min + 1.0f;
+		leftFrame.max.x = roundf(_rect.min.x + 1.0f + (_rect.max.x - _rect.min.x - 2.0f) * _relativeValue);
+		leftFrame.max.y = _rect.max.y - 1.0f;
+		if(leftFrame.min.x != leftFrame.max.x)
 		{
 			Vec2 gfrom = Vec2(0.0f, 1.0f);
 			Vec2 gto = Vec2(0.0f, 0.0f);
@@ -129,53 +135,53 @@ namespace ca { namespace gui {
 			m_properties.textSize * _relativeScale, _alignX, _alignY, 0.0f, true);
 	}
 
-	void Sharp3DTheme::drawImage(const RefFrame& _rect, uint64 _texHandle, float _opacity, bool _tiling)
+	void Sharp3DTheme::drawImage(const Rect2D& _rect, uint64 _texHandle, float _opacity, bool _tiling)
 	{
 		if(_opacity > 0.0f)
 			GUIManager::renderBackend().drawTextureRect(_rect, _texHandle, _opacity, _tiling);
 	}
 
-	void Sharp3DTheme::drawArrowButton(const RefFrame& _rect, SIDE::Val _pointTo, bool _mouseOver)
+	void Sharp3DTheme::drawArrowButton(const Rect2D& _rect, SIDE::Val _pointTo, bool _mouseOver)
 	{
 		Triangle2D tri;
 		switch(_pointTo) {
 		default:
 		case SIDE::LEFT:
-			tri.v0 = Vec2 {_rect.right(), _rect.bottom()};
-			tri.v1 = Vec2 {_rect.right(), _rect.top()};
-			tri.v2 = Vec2 {_rect.left(), _rect.verticalCenter()};
+			tri.v0 = Vec2 {_rect.max.x, _rect.min.y};
+			tri.v1 = Vec2 {_rect.max.x, _rect.max.y};
+			tri.v2 = Vec2 {_rect.min.x, (_rect.min.y + _rect.max.y) * 0.5f};
 			break;
 		case SIDE::BOTTOM:
-			tri.v0 = Vec2 {_rect.right(), _rect.top()};
-			tri.v1 = Vec2 {_rect.left(), _rect.top()};
-			tri.v2 = Vec2 {_rect.horizontalCenter(), _rect.bottom()};
+			tri.v0 = Vec2 {_rect.max.x, _rect.max.y};
+			tri.v1 = Vec2 {_rect.min.x, _rect.max.y};
+			tri.v2 = Vec2 {(_rect.min.x + _rect.max.x) * 0.5f, _rect.min.y};
 			break;
 		case SIDE::RIGHT:
-			tri.v0 = Vec2 {_rect.left(), _rect.top()};
-			tri.v1 = Vec2 {_rect.left(), _rect.bottom()};
-			tri.v2 = Vec2 {_rect.right(), _rect.verticalCenter()};
+			tri.v0 = Vec2 {_rect.min.x, _rect.max.y};
+			tri.v1 = Vec2 {_rect.min.x, _rect.min.y};
+			tri.v2 = Vec2 {_rect.max.x, (_rect.min.y + _rect.max.y) * 0.5f};
 			break;
 		case SIDE::TOP:
-			tri.v0 = Vec2 {_rect.left(), _rect.bottom()};
-			tri.v1 = Vec2 {_rect.right(), _rect.bottom()};
-			tri.v2 = Vec2 {_rect.horizontalCenter(), _rect.top()};
+			tri.v0 = Vec2 {_rect.min.x, _rect.min.y};
+			tri.v1 = Vec2 {_rect.max.x, _rect.min.y};
+			tri.v2 = Vec2 {(_rect.min.x + _rect.max.x) * 0.5f, _rect.max.y};
 			break;
 		}
 		const Vec4& color = _mouseOver ? m_properties.hoverTextColor : m_properties.textColor;
 		GUIManager::renderBackend().drawTriangle(tri, color, color, color);
 	}
 
-	void Sharp3DTheme::drawBorderRect(const RefFrame& _outer, const RefFrame& _inner, const ei::Vec4& _colorA, const ei::Vec4& _colorB)
+	void Sharp3DTheme::drawBorderRect(const Rect2D& _outer, const Rect2D& _inner, const ei::Vec4& _colorA, const ei::Vec4& _colorB)
 	{
 		// TODO: Find out what is faster 4 small rects or one large and much overdraw?
-		RefFrame borderRect;
-		borderRect = RefFrame(_outer.left(), _inner.left(), _outer.bottom(), _outer.top());
+		Rect2D borderRect;
+		borderRect = Rect2D(_outer.min, {_inner.min.x, _outer.max.y});
 		GUIManager::renderBackend().drawRect(borderRect, Vec2(0.0), Vec2(0.0, 1.0), _colorA, _colorB);
-		borderRect = RefFrame(_inner.right(), _outer.right(), _outer.bottom(), _outer.top());
+		borderRect = Rect2D({_inner.max.x,_outer.min.y}, _outer.max);
 		GUIManager::renderBackend().drawRect(borderRect, Vec2(0.0), Vec2(0.0, 1.0), _colorA, _colorB);
-		borderRect = RefFrame(_inner.left(), _inner.right(), _inner.top(), _outer.top());
+		borderRect = Rect2D({_inner.min.x, _inner.max.y}, {_inner.max.x, _outer.max.y});
 		GUIManager::renderBackend().drawRect(borderRect, _colorB);
-		borderRect = RefFrame(_inner.left(), _inner.right(), _outer.bottom(), _inner.bottom());
+		borderRect = Rect2D({_inner.min.x, _outer.min.y}, {_inner.max.x, _inner.min.y});
 		GUIManager::renderBackend().drawRect(borderRect, _colorA);
 		/*GUIManager::renderBackend().drawRect(_rect,// <- large one
 		Vec2(0.0f), Vec2(0.0f, 1.0f), scaleColor(m_properties.basicColor, 1.0f),

@@ -17,24 +17,24 @@ namespace ca { namespace gui {
 	void Label::draw() const
 	{
 		if(m_backgroundColor.a > 0.0f)
-			GUIManager::theme().drawBackgroundArea(m_refFrame, m_backgroundColor.a, ei::Vec3(m_backgroundColor));
+			GUIManager::theme().drawBackgroundArea(rectangle(), m_backgroundColor.a, ei::Vec3(m_backgroundColor));
 
 		float downScale = ei::min(1.0f, ei::min(
-			m_refFrame.width() / (m_textSize.x * m_relativeTextSize + 2.0f * m_margin.x),
-			m_refFrame.height() / (m_textSize.y * m_relativeTextSize + 2.0f * m_margin.y)
+			width() / (m_textSize.x * m_relativeTextSize + 2.0f * m_margin.x),
+			height() / (m_textSize.y * m_relativeTextSize + 2.0f * m_margin.y)
 			));
 		downScale *= m_relativeTextSize;
 		Coord2 margin = downScale * m_margin;
 
-		Coord2 center = m_refFrame.center();
+		Coord2 center = this->center();
 		center -= m_textSize * 0.5f * downScale;
 		Coord2 pos;
 		switch(m_textPosition)
 		{
-			case SIDE::LEFT: pos = Coord2(m_refFrame.left() + margin.x, center.y); break;
-			case SIDE::RIGHT: pos = Coord2(m_refFrame.right() - m_textSize.x*downScale - margin.x, center.y); break;
-			case SIDE::BOTTOM: pos = Coord2(center.x, m_refFrame.bottom() + margin.y); break;
-			case SIDE::TOP: pos = Coord2(center.x, m_refFrame.top() - m_textSize.y*downScale - margin.y); break;
+			case SIDE::LEFT: pos = Coord2(left() + margin.x, center.y); break;
+			case SIDE::RIGHT: pos = Coord2(right() - m_textSize.x*downScale - margin.x, center.y); break;
+			case SIDE::BOTTOM: pos = Coord2(center.x, bottom() + margin.y); break;
+			case SIDE::TOP: pos = Coord2(center.x, top() - m_textSize.y*downScale - margin.y); break;
 			case SIDE::CENTER: pos = center; break;
 		}
 		GUIManager::theme().drawText(pos, m_text.c_str(), downScale, false, m_textColor);
@@ -47,9 +47,10 @@ namespace ca { namespace gui {
 		m_textSize = textDim.max - textDim.min;
 		// Automatically change the label size
 		if(_fitSize >= 0.0f) {
-			m_refFrame.rect.max = m_refFrame.rect.min + m_textSize + _fitSize;
-			m_refFrame.rect.min -= _fitSize;
 			setMargin(_fitSize);
+			setFrame(left(), bottom(),
+				left() + m_textSize.x + _fitSize * 2.0f,
+				bottom() + m_textSize.y + _fitSize * 2.0f);
 		}
 	}
 

@@ -30,7 +30,7 @@ namespace ca { namespace gui {
 				if(m_useRestriction)
 					targetPosition = m_snapFunction(m_floatingPosition);
 				// Move the object
-				Coord2 deltaPos = targetPosition - _thisWidget.getPosition();
+				Coord2 deltaPos = targetPosition - _thisWidget.position();
 				_thisWidget.move(deltaPos);
 			} else m_moving = false;
 		} else {
@@ -39,7 +39,7 @@ namespace ca { namespace gui {
 				&& _cursorOnWidget;
 			// Get the current position as starting float-position
 			if(m_moving)
-				m_floatingPosition = _thisWidget.getPosition();
+				m_floatingPosition = _thisWidget.position();
 		}
 		if(m_moving)
 		{

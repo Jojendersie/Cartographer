@@ -23,8 +23,8 @@ namespace ca { namespace gui {
 	{
 		// Background
 		//GUIManager::theme().drawBackgroundArea(m_refFrame);
-		GUIManager::theme().drawTextArea(m_refFrame);
-		GUIManager::theme().drawSliderBar(m_refFrame, float((m_value - m_min) / m_range));
+		GUIManager::theme().drawTextArea(rectangle());
+		GUIManager::theme().drawSliderBar(rectangle(), float((m_value - m_min) / m_range));
 
 		// Draw value string
 		if(m_labelPos >= 0.0f && m_labelPos <= 1.0f)
@@ -32,8 +32,8 @@ namespace ca { namespace gui {
 			char valueString[32];
 			sprintf(valueString, "%g", m_value);
 			Coord2 textPos;
-			textPos.x = m_refFrame.left() + (m_refFrame.width() - 6.0f) * m_labelPos + 4.0f;
-			textPos.y = m_refFrame.bottom() + m_refFrame.height() * 0.5f;
+			textPos.x = left() + (width() - 6.0f) * m_labelPos + 4.0f;
+			textPos.y = bottom() + height() * 0.5f;
 			GUIManager::theme().drawText(textPos, valueString, 1.0f, false, ei::Vec4(-1.0f), m_labelPos, 0.5f);
 		}
 	}
@@ -43,7 +43,7 @@ namespace ca { namespace gui {
 		// While the left mouse button is down move the mark
 		if(_mouseState.buttons[0] == MouseState::DOWN)
 		{
-			if(m_refFrame.isMouseOver(_mouseState.position))
+			if(isMouseOver(_mouseState.position))
 			{
 				m_isMoving = true;
 				GUIManager::setMouseFocus(this, true);
@@ -53,7 +53,7 @@ namespace ca { namespace gui {
 		{
 			m_isMoving = false;
 		} else if(m_isMoving) {
-			double relativeVal = (GUIManager::getMouseState().position.x - m_refFrame.left()) / (m_refFrame.width()-2.0f);
+			double relativeVal = (GUIManager::getMouseState().position.x - left()) / (width()-2.0f);
 			relativeVal = ei::clamp(relativeVal, 0.0, 1.0);
 			double newVal = m_min + relativeVal * m_range;
 			// Round to step size

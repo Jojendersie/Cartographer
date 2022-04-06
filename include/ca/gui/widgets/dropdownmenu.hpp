@@ -81,7 +81,7 @@ namespace ca { namespace gui {
 		Coord m_itemTextMargin;				//< Space from the left to the start of the text.
 
 	protected:
-		virtual void onExtentChanged(bool _positionChanged, bool _sizeChanged) override;
+		virtual void onExtentChanged(const CHANGE_FLAGS::Val _changes) override;
 	};
 
 	typedef pa::RefPtr<DropDownMenu> DropDownMenuPtr;

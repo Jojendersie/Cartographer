@@ -58,34 +58,36 @@ namespace ca { namespace gui {
 
 	void AnnulusSegmentRegion::attach(RefFrame & _frame)
 	{
+		float newFrame[4];
 		// If the up-vector is inside the segment the maximum component is center+radius.
 		// The same goes for all other extremal vectors.
 		// If one of the vectors is not in the segment the maximum/minimum is determined
 		// by one of the boundary points.
 		if( isAngleInRange(PI/2.0f) )
-			_frame.sides[SIDE::TOP] = m_relativeCenter.y + m_outerRadius;
+			newFrame[SIDE::TOP] = m_relativeCenter.y + m_outerRadius;
 		else {
 			float t = max(sin(m_startAngle), sin(m_endAngle));
-			_frame.sides[SIDE::TOP] = m_relativeCenter.y + (t < 0.0f ? m_innerRadius * t : m_outerRadius * t);
+			newFrame[SIDE::TOP] = m_relativeCenter.y + (t < 0.0f ? m_innerRadius * t : m_outerRadius * t);
 		}
 		if( isAngleInRange(PI*1.5f) )
-			_frame.sides[SIDE::BOTTOM] = m_relativeCenter.y - m_outerRadius;
+			newFrame[SIDE::BOTTOM] = m_relativeCenter.y - m_outerRadius;
 		else {
 			float t = min(sin(m_startAngle), sin(m_endAngle));
-			_frame.sides[SIDE::BOTTOM] = m_relativeCenter.y + (t > 0.0f ? m_innerRadius * t : m_outerRadius * t);
+			newFrame[SIDE::BOTTOM] = m_relativeCenter.y + (t > 0.0f ? m_innerRadius * t : m_outerRadius * t);
 		}
 		if( isAngleInRange(0.0f) )
-			_frame.sides[SIDE::RIGHT] = m_relativeCenter.x + m_outerRadius;
+			newFrame[SIDE::RIGHT] = m_relativeCenter.x + m_outerRadius;
 		else {
 			float t = max(cos(m_startAngle), cos(m_endAngle));
-			_frame.sides[SIDE::RIGHT] = m_relativeCenter.x + (t < 0.0f ? m_innerRadius * t : m_outerRadius * t);
+			newFrame[SIDE::RIGHT] = m_relativeCenter.x + (t < 0.0f ? m_innerRadius * t : m_outerRadius * t);
 		}
 		if( isAngleInRange(PI) )
-			_frame.sides[SIDE::LEFT] = m_relativeCenter.x - m_outerRadius;
+			newFrame[SIDE::LEFT] = m_relativeCenter.x - m_outerRadius;
 		else {
 			float t = min(cos(m_startAngle), cos(m_endAngle));
-			_frame.sides[SIDE::LEFT] = m_relativeCenter.x + (t > 0.0f ? m_innerRadius * t : m_outerRadius * t);
+			newFrame[SIDE::LEFT] = m_relativeCenter.x + (t > 0.0f ? m_innerRadius * t : m_outerRadius * t);
 		}
+		_frame.setFrame(newFrame[SIDE::LEFT], newFrame[SIDE::BOTTOM], newFrame[SIDE::RIGHT], newFrame[SIDE::TOP]);
 
 		// Make the center position relative
 		m_selfFrame = &_frame;

@@ -161,7 +161,6 @@
     <ClInclude Include="include\ca\gui\misc\clickhandler.hpp" />
     <ClInclude Include="include\ca\gui\popupmanager.hpp" />
     <ClInclude Include="include\ca\gui\properties\anchorable.hpp" />
-    <ClInclude Include="include\ca\gui\properties\anchorprovider.hpp" />
     <ClInclude Include="include\ca\gui\properties\clickable.hpp" />
     <ClInclude Include="include\ca\gui\properties\coordinate.hpp" />
     <ClInclude Include="include\ca\gui\properties\moveable.hpp" />
@@ -198,7 +197,6 @@
     <ClCompile Include="src\misc\clickhandler.cpp" />
     <ClCompile Include="src\popupmanager.cpp" />
     <ClCompile Include="src\properties\anchorable.cpp" />
-    <ClCompile Include="src\properties\anchorprovider.cpp" />
     <ClCompile Include="src\properties\clickable.cpp" />
     <ClCompile Include="src\properties\coordinate.cpp" />
     <ClCompile Include="src\properties\moveable.cpp" />

@@ -43,29 +43,46 @@ namespace ca { namespace gui {
 		};
 	};
 
+	struct CHANGE_FLAGS
+	{
+		using Val = uint32;
+		static constexpr uint32 LEFT = 1 << SIDE::LEFT;
+		static constexpr uint32 RIGHT = 1 << SIDE::RIGHT;
+		static constexpr uint32 BOTTOM = 1 << SIDE::BOTTOM;
+		static constexpr uint32 TOP = 1 << SIDE::TOP;
+
+		//static constexpr uint32 RESIZED = 1 << (SIDE::TOP+1);
+		//static constexpr uint32 MOVED = LEFT | BOTTOM;
+	};
+
 	/// Basic rectangular area which is used as reference from all widgets.
 	class RefFrame: public IRegion
 	{
-	public:
-		RefFrame() {}
-		RefFrame(float _l, float _r, float _b, float _t);
-
 		union {
-			float sides[4];	/// An array of the four side coordinates sorted after SIDE
-			ei::Rect2D rect;
+			float m_sides[4];		///< An array of the four side coordinates sorted after SIDE
+			ei::Rect2D m_rect;
 		};
 
-		float left() const { return sides[SIDE::LEFT]; }
-		float right() const { return sides[SIDE::RIGHT]; }
-		float bottom() const { return sides[SIDE::BOTTOM]; }
-		float top() const { return sides[SIDE::TOP]; }
-		float width() const { return sides[SIDE::RIGHT] - sides[SIDE::LEFT]; }
-		float height() const { return sides[SIDE::TOP] - sides[SIDE::BOTTOM]; }
-		float horizontalCenter() const { return 0.5f * (sides[SIDE::RIGHT] + sides[SIDE::LEFT]); }
-		float verticalCenter() const { return 0.5f * (sides[SIDE::TOP] + sides[SIDE::BOTTOM]); }
+		static uint32 geomVersion;	///< A continiously increased number to manage the update process.
+		uint32 m_geomVersion = 0;	///< Current version used to manage updates (to avoid cyclic updates).
+
+	public:
+		RefFrame() : m_rect{ei::Vec2{0.0f}, ei::Vec2{1.0,1.0f}} {}
+		RefFrame(float _l, float _r, float _b, float _t);
+
+		float left() const { return m_sides[SIDE::LEFT]; }
+		float right() const { return m_sides[SIDE::RIGHT]; }
+		float bottom() const { return m_sides[SIDE::BOTTOM]; }
+		float top() const { return m_sides[SIDE::TOP]; }
+		float width() const { return m_sides[SIDE::RIGHT] - m_sides[SIDE::LEFT]; }
+		float height() const { return m_sides[SIDE::TOP] - m_sides[SIDE::BOTTOM]; }
+		float horizontalCenter() const { return 0.5f * (m_sides[SIDE::RIGHT] + m_sides[SIDE::LEFT]); }
+		float verticalCenter() const { return 0.5f * (m_sides[SIDE::TOP] + m_sides[SIDE::BOTTOM]); }
 		ei::Vec2 center() const { return ei::Vec2(horizontalCenter(), verticalCenter()); }
 		ei::Vec2 size() const { return ei::Vec2(width(), height()); }
 		ei::Vec2 position() const { return ei::Vec2(left(), bottom()); }
+		const ei::Rect2D& rectangle() const { return m_rect; }
+		const float side(const int _idx) const { return m_sides[_idx]; }
 
 		/// Check if the mouse cursor is on this reference frame.
 		/// \param [in] _mousePos Position of the cursor in screen space [0,1]^2.
@@ -73,6 +90,24 @@ namespace ca { namespace gui {
 
 		bool operator != (const RefFrame& _rhs) const;
 		bool operator == (const RefFrame& _rhs) const;
+
+		/// Set all the sizes of the references frame. Returns a bitmask to indicate changes.
+		virtual CHANGE_FLAGS::Val setFrame(const float _l, const float _b, const float _r, const float _t);
+
+		/// Return the increasing version number of global changes
+		static uint32 getGlobalGeomVersion() { return geomVersion; }
+		uint32 getGeomVersion() const { return m_geomVersion; }
+	protected:
+		/// Optional method to react to resizing or repositioning events
+		virtual void onExtentChanged(const CHANGE_FLAGS::Val _changes) {}
+
+		/// Overwrite the reference frame without triggering onResize or geometry version changes
+		void silentSetFrame(const float _l, const float _b, const float _r, const float _t);
+	private:
+		/// Overwrite the sizes and set a specific geometric version (instead creating a new one)
+		/// Only use this method to react to anchoring events!
+		void setFrame(const float _l, const float _b, const float _r, const float _t, const uint32 _geomVersion);
+		friend class Anchorable;
 	};
 
 }} // namespace ca::gui

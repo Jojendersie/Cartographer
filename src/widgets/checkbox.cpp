@@ -24,29 +24,29 @@ namespace ca { namespace gui {
 	{
 		// Background
 		if(m_backgroundTexture)
-			GUIManager::theme().drawImage(m_refFrame, m_backgroundTexture);
+			GUIManager::theme().drawImage(rectangle(), m_backgroundTexture);
 		else
-			GUIManager::theme().drawButton(m_refFrame, false, false, true);
+			GUIManager::theme().drawButton(rectangle(), false, false, true);
 
 		// Determine vertical center for text and box
 		float padding = GUIManager::theme().getTextSize() * 0.25f;
-		float downScale = ei::min(1.0f, ei::min(m_refFrame.height() / (GUIManager::theme().getTextSize() + 2.0f),
-			m_refFrame.width() / (m_textWidth + 6.0f + GUIManager::theme().getTextSize())));
+		float downScale = ei::min(1.0f, ei::min(height() / (GUIManager::theme().getTextSize() + 2.0f),
+			width() / (m_textWidth + 6.0f + GUIManager::theme().getTextSize())));
 		float size = (GUIManager::theme().getTextSize() - 2.0f) * downScale;
-		float vcenter = (m_refFrame.bottom() + m_refFrame.top() - size) * 0.5f;
+		float vcenter = (bottom() + top() - size) * 0.5f;
 
 		// "Icon"
 		bool mouseOver = GUIManager::hasMouseFocus(this);
 		// Create a rectangle with the same size as the global font size
-		RefFrame checkRect;
-		checkRect.sides[SIDE::LEFT] = floorf(padding + m_refFrame.left());
-		checkRect.sides[SIDE::RIGHT] = floorf(checkRect.sides[SIDE::LEFT] + size);
-		checkRect.sides[SIDE::BOTTOM] = floorf(vcenter);
-		checkRect.sides[SIDE::TOP] = floorf(checkRect.sides[SIDE::BOTTOM] + size);
+		ei::Rect2D checkRect;
+		checkRect.min.x = floorf(padding + left());
+		checkRect.max.x = floorf(checkRect.min.x + size);
+		checkRect.min.y = floorf(vcenter);
+		checkRect.max.y = floorf(checkRect.min.y + size);
 		GUIManager::theme().drawCheckbox(checkRect, m_checked, mouseOver);
 
 		// Text
-		GUIManager::theme().drawText(Coord2(checkRect.sides[SIDE::RIGHT] + padding, vcenter - 1.0f), m_text.c_str(), downScale, mouseOver);
+		GUIManager::theme().drawText(Coord2(checkRect.max.x + padding, vcenter - 1.0f), m_text.c_str(), downScale, mouseOver);
 	}
 
 	void CheckBox::setText(const char* _text)

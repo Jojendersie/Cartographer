@@ -1,6 +1,5 @@
 #ifdef CHARCOAL_BACKEND
 #include "ca/gui/backend/charcoal.hpp"
-#include "ca/gui/properties/refframe.hpp"
 #include "ca/gui/guimanager.hpp"
 #include <ca/cc/glcore/opengl.hpp>
 
@@ -445,9 +444,10 @@ namespace ca { namespace gui {
 		return m_fontRenderer->findPosition(_findPosition, _textPosition, _text, _size, _rotation, _alignX, _alignY, _roundToPixel);
 	}
 
-	void gui::CharcoalBackend::drawRect(const RefFrame& _rect, const Vec4& _color)
+	void gui::CharcoalBackend::drawRect(const ei::Rect2D& _rect, const Vec4& _color)
 	{
-		m_spriteRenderer->newInstance(0, Vec3(_rect.left(), _rect.bottom(), 0.0f), 0.0f, Vec2(_rect.width(), _rect.height()));
+		m_spriteRenderer->newInstance(0, Vec3(_rect.min.x, _rect.min.y, 0.0f), 0.0f,
+			_rect.max - _rect.min);
 
 		AdditionalVertexInfo info;
 		info.a = Vec2(0.0f);
@@ -459,9 +459,10 @@ namespace ca { namespace gui {
 		m_perInstanceData.push_back(info);
 	}
 
-	void gui::CharcoalBackend::drawRect(const RefFrame& _rect, const Vec2& _a, const Vec2& _b, const Vec4& _colorA, const Vec4& _colorB, GradientMode _mode)
+	void gui::CharcoalBackend::drawRect(const ei::Rect2D& _rect, const Vec2& _a, const Vec2& _b, const Vec4& _colorA, const Vec4& _colorB, GradientMode _mode)
 	{
-		m_spriteRenderer->newInstance(0, Vec3(_rect.left(), _rect.bottom(), 0.0f), 0.0f, Vec2(_rect.width(), _rect.height()));
+		m_spriteRenderer->newInstance(0, Vec3(_rect.min.x, _rect.min.y, 0.0f), 0.0f,
+			_rect.max - _rect.min);
 
 		AdditionalVertexInfo info;
 		info.a = saturate(_a);
@@ -473,10 +474,10 @@ namespace ca { namespace gui {
 		m_perInstanceData.push_back(info);
 	}
 
-	void gui::CharcoalBackend::drawTextureRect(const RefFrame& _rect, uint64 _texture, float _opacity, bool _tiling)
+	void gui::CharcoalBackend::drawTextureRect(const ei::Rect2D& _rect, uint64 _texture, float _opacity, bool _tiling)
 	{
 		//Vec2 spriteScale((_rect.width() - 1.0f) / m_spriteSizes[(int)_texture].x, (_rect.height() - 1.0f) / m_spriteSizes[(int)_texture].y);
-		Vec2 spriteScale(_rect.width() / m_spriteSizes[(int)_texture].x, _rect.height() / m_spriteSizes[(int)_texture].y);
+		const Vec2 spriteScale = (_rect.max - _rect.min) / m_spriteSizes[(int)_texture];
 
 		AdditionalVertexInfo info;
 		info.a = _tiling ? spriteScale : Vec2(1.0f);//Vec2((m_spriteSizes[(int)_texture] - 1.0f) / m_spriteSizes[(int)_texture]);
@@ -486,7 +487,7 @@ namespace ca { namespace gui {
 		info.colorC = Vec<uint8, 4>(0);
 		info.gradientType = 0;
 
-		m_spriteRenderer->newInstance((int)_texture, Vec3(_rect.left(), _rect.bottom(), 0.0f),
+		m_spriteRenderer->newInstance((int)_texture, Vec3(_rect.min.x, _rect.min.y, 0.0f),
 			0.0f, spriteScale);
 
 		m_perInstanceData.push_back(info);

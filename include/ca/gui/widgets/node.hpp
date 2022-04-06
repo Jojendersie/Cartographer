@@ -29,11 +29,6 @@ namespace ca { namespace gui {
 		void setColor(const ei::Vec3& _color) { m_color = _color; }
 		const ei::Vec3& color() const { return m_color; }
 
-		/// Attach entire element (moveable) to an anchor.
-		//void setAnchoring(AnchorPtr _anchor);
-		/// Modified automated anchoring, which attaches only two of four anchors
-		void autoAnchor(const class IAnchorProvider* _anchorProvider);
-
 		/// Get a direction vector in wich connectors should start
 		ei::Vec2 getConnectorDirection() const;
 
@@ -44,31 +39,18 @@ namespace ca { namespace gui {
 		std::vector<NodeConnectorPtr> m_edges;
 		ei::Vec3 m_color;
 		float m_angle;
-
-		// Delete some of the functions which do not make sense for point-like
-		// handles.
-		void setAnchoring(SIDE::Val _side, AnchorPtr _anchor) = delete;
-		void setHorizontalAnchorMode(Anchorable::Mode _mode) = delete;
-		void setVerticalAnchorMode(Anchorable::Mode _mode) = delete;
-		void setAnchorModes(Anchorable::Mode _mode) = delete;
-		void setAnchorModes(Anchorable::Mode _horizontalMode, Anchorable::Mode _verticalMode) = delete;
-		void setAnchorProvider(std::unique_ptr<IAnchorProvider> _anchorProvider) = delete;
-		IAnchorProvider* getAnchorProvider() const = delete;
 	};
 
 	typedef pa::RefPtr<NodeHandle> NodeHandlePtr;
 
 	/// Spline connector as edges of the node graph.
-	class NodeConnector : public Widget, public IRegion, public Clickable
+	class NodeConnector : public Widget, public Clickable
 	{
 	public:
 		NodeConnector();
 
 		/// Implement the draw method
 		void draw() const override;
-
-		/// Recompute the reference frame dependent on the two nodes
-		void refitToAnchors() override;
 
 		/// Tear off from a node if clicked an snap (back) if released.
 		bool processInput(const MouseState& _mouseState) override;
@@ -106,7 +88,7 @@ namespace ca { namespace gui {
 	/// Spline connector which can connect any Widget.
 	/// In contrast to the NodeConnector it does not allow interaction in form of snapping
 	/// and reassignment.
-	class WidgetConnector : public Widget, public IRegion, public Clickable
+	class WidgetConnector : public Widget, public Clickable
 	{
 	public:
 		WidgetConnector();
@@ -115,13 +97,10 @@ namespace ca { namespace gui {
 		/// The curve will visually start at the border of the widged region.
 		void draw() const override;
 
-		/// Recompute the reference frame dependent on the two nodes
-		void refitToAnchors() override;
-
 		/// \param [in] _angle Direction in radiant in which the edge will start.
 		///		0 is on the right side.
-		void setSource(ConstWidgetPtr _node, float _angle)	{ m_sourceNode = _node; m_sourceAngle = _angle; }
-		void setDest(ConstWidgetPtr _node, float _angle)	{ m_destNode = _node; m_destAngle = _angle; }
+		void setSource(ConstWidgetPtr _node, float _angle);
+		void setDest(ConstWidgetPtr _node, float _angle);
 
 		// TODO: call refitToAnchors after each set?
 		float getSourceAngle() const { return m_sourceAngle; }
@@ -153,10 +132,16 @@ namespace ca { namespace gui {
 		float m_destAngle;
 		float m_stiffness;
 
-		std::vector<ei::Vec2> m_curve;
+		mutable std::vector<ei::Vec2> m_curve;
+		mutable bool m_changed;
+
+		void recomputeSizeAndAnchors();
+		void recomputeCurve() const;
 
 		/// Implementation of IRegion::isMouseOver.
 		bool isMouseOver(const Coord2& _mousePos) const override;
+
+		void onExtentChanged(const CHANGE_FLAGS::Val _changes) override;
 
 		mutable bool m_isMouseOver;		///< Store the result of the last test
 	//	mutable float m_mouseT;			///< Store curve parameter 't' of last isMouseOver test. This is undefined if m_isMouseOver is false.

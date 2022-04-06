@@ -19,7 +19,7 @@ namespace ca { namespace gui {
 		{
 			for(const auto& i : m_children)
 			{
-				if( i.widget->isVisible() && !GUIManager::isClipped(i.widget->getRefFrame()) )
+				if( i.widget->isVisible() && !GUIManager::isClipped(*i.widget) )
 					i.widget->draw();
 			}
 		}
@@ -86,7 +86,7 @@ namespace ca { namespace gui {
 				WidgetPtr& e = m_children[i].widget;
 				if(e->isVisible())
 				{
-					const bool mouseOnWidget = e->getRefFrame().isMouseOver(GUIManager::getMouseState().position);
+					const bool mouseOnWidget = e->isMouseOver(GUIManager::getMouseState().position);
 					if(mouseOnWidget)
 						GUIManager::setMouseOver(e.get());
 					if(e->isEnabled()
@@ -105,12 +105,6 @@ namespace ca { namespace gui {
 		return false;
 	}
 
-	void Group::refitToAnchors()
-	{
-		Widget::refitToAnchors();
-		for(auto it = m_children.begin(); it != m_children.end(); ++it)
-			(*it).widget->refitToAnchors();
-	}
 
 	void Group::moveToFront(size_t _index)
 	{
