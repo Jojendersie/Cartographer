@@ -248,9 +248,9 @@ namespace ca { namespace gui {
 		m_textPosition = textPos + Vec2(offset, 0.0f);
 	}
 
-	void Edit::onExtentChanged(const CHANGE_FLAGS::Val _changes)
+	void Edit::onExtentChanged()
 	{
-		Widget::onExtentChanged(_changes);
+		Widget::onExtentChanged();
 		recomputeTextPlacement(true);
 	}
 

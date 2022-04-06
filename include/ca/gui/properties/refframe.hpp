@@ -43,17 +43,6 @@ namespace ca { namespace gui {
 		};
 	};
 
-	struct CHANGE_FLAGS
-	{
-		using Val = uint32;
-		static constexpr uint32 LEFT = 1 << SIDE::LEFT;
-		static constexpr uint32 RIGHT = 1 << SIDE::RIGHT;
-		static constexpr uint32 BOTTOM = 1 << SIDE::BOTTOM;
-		static constexpr uint32 TOP = 1 << SIDE::TOP;
-
-		//static constexpr uint32 RESIZED = 1 << (SIDE::TOP+1);
-		//static constexpr uint32 MOVED = LEFT | BOTTOM;
-	};
 
 	/// Basic rectangular area which is used as reference from all widgets.
 	class RefFrame: public IRegion
@@ -91,22 +80,18 @@ namespace ca { namespace gui {
 		bool operator != (const RefFrame& _rhs) const;
 		bool operator == (const RefFrame& _rhs) const;
 
-		/// Set all the sizes of the references frame. Returns a bitmask to indicate changes.
-		virtual CHANGE_FLAGS::Val setFrame(const float _l, const float _b, const float _r, const float _t);
+		/// Set all the sizes of the references frame. Returns a true to indicate changes.
+		virtual bool setFrame(const float _l, const float _b, const float _r, const float _t);
 
 		/// Return the increasing version number of global changes
 		static uint32 getGlobalGeomVersion() { return geomVersion; }
 		uint32 getGeomVersion() const { return m_geomVersion; }
-	protected:
-		/// Optional method to react to resizing or repositioning events
-		virtual void onExtentChanged(const CHANGE_FLAGS::Val _changes) {}
 
+		/// Optional method to react to resizing or repositioning events
+		virtual void onExtentChanged() {}
+	protected:
 		/// Overwrite the reference frame without triggering onResize or geometry version changes
 		void silentSetFrame(const float _l, const float _b, const float _r, const float _t);
-	private:
-		/// Overwrite the sizes and set a specific geometric version (instead creating a new one)
-		/// Only use this method to react to anchoring events!
-		void setFrame(const float _l, const float _b, const float _r, const float _t, const uint32 _geomVersion);
 		friend class Anchorable;
 	};
 

@@ -1,6 +1,5 @@
 #include <ca/pa/log.hpp>
 #include "ca/gui/properties/anchorable.hpp"
-#include "ca/gui/properties/anchorprovider.hpp"
 
 namespace ca { namespace gui {
 
@@ -53,13 +52,22 @@ namespace ca { namespace gui {
 	}
 
 
-	void AnchorFrame::onExtentChanged(const CHANGE_FLAGS::Val _changes)
+	void AnchorFrame::onExtentChanged()
 	{
-		if(_changes == 0) return;
+		// Do a level order update of all dependent content.
 		Anchor* next = m_anchorListStart.next;
 		while(next)
 		{
+			// This will silently update the size
 			next->self->refitToAnchors();
+			next = next->next;
+		}
+
+		// Now trigger the true updates including the recursion
+		next = m_anchorListStart.next;
+		while(next)
+		{
+			next->self->m_selfFrame->onExtentChanged();
 			next = next->next;
 		}
 	}
@@ -251,7 +259,8 @@ namespace ca { namespace gui {
 			}
 		}
 
-		m_selfFrame->setFrame(newFrame[0], newFrame[1], newFrame[2], newFrame[3], RefFrame::getGlobalGeomVersion());
+		m_selfFrame->silentSetFrame(newFrame[0], newFrame[1], newFrame[2], newFrame[3]);
+		m_selfFrame->m_geomVersion = RefFrame::getGlobalGeomVersion();
 	}
 
 	void Anchorable::setAnchorable(bool _enable)

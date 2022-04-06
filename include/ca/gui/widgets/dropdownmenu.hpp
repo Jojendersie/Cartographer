@@ -80,8 +80,9 @@ namespace ca { namespace gui {
 		int m_selected;						//< The index of the selected item or -1.
 		Coord m_itemTextMargin;				//< Space from the left to the start of the text.
 
+		void updateSubWidget();
 	protected:
-		virtual void onExtentChanged(const CHANGE_FLAGS::Val _changes) override;
+		virtual void onExtentChanged() override;
 	};
 
 	typedef pa::RefPtr<DropDownMenu> DropDownMenuPtr;

@@ -166,9 +166,7 @@ namespace ca { namespace gui {
 		if (m_selected == -1)
 			m_selected = 0;
 
-		// Cause a recomputation of the subwidget size
-		onExtentChanged(0);
-
+		updateSubWidget();
 		return idx;
 	}
 
@@ -190,8 +188,7 @@ namespace ca { namespace gui {
 		} else if (_idx < m_selected) // Index of the selected item changed, because it comes after the deleted one.
 			--m_selected;
 
-		// Cause a recomputation of the subwidget size
-		onExtentChanged(0);
+		updateSubWidget();
 	}
 
 
@@ -346,9 +343,8 @@ namespace ca { namespace gui {
 	}
 
 
-	void DropDownMenu::onExtentChanged(const CHANGE_FLAGS::Val _changes)
+	void DropDownMenu::updateSubWidget()
 	{
-		Widget::onExtentChanged(_changes);
 		RefFrame listFrame {
 			left(),
 			right(),
@@ -356,6 +352,13 @@ namespace ca { namespace gui {
 			top()
 		};
 		m_list->setExtent(listFrame);
+	}
+
+
+	void DropDownMenu::onExtentChanged()
+	{
+		Widget::onExtentChanged();
+		updateSubWidget();
 	}
 
 }} // namespace ca::gui

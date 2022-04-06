@@ -36,16 +36,14 @@ namespace ca { namespace gui {
 			&& m_sides[3] == _rhs.m_sides[3];
 	}
 
-	CHANGE_FLAGS::Val RefFrame::setFrame(const float _l, const float _b, const float _r, const float _t)
+	bool RefFrame::setFrame(const float _l, const float _b, const float _r, const float _t)
 	{
-				// Make sure the maximum coordinate never gets smaller than the minimum
+		// Make sure the maximum coordinate never gets smaller than the minimum
 		const float r = ei::max(_l+1,_r);
 		const float t = ei::max(_b+1,_t);
-		CHANGE_FLAGS::Val flags = ((m_sides[SIDE::LEFT] != _l) ? CHANGE_FLAGS::LEFT : 0)
-			| ((m_sides[SIDE::RIGHT] != _r) ? CHANGE_FLAGS::RIGHT : 0)
-			| ((m_sides[SIDE::BOTTOM] != r) ? CHANGE_FLAGS::BOTTOM : 0)
-			| ((m_sides[SIDE::TOP] != t) ? CHANGE_FLAGS::TOP : 0);
-		if( flags )
+		const bool change = (m_sides[SIDE::LEFT] != _l) || (m_sides[SIDE::RIGHT] != _r)
+			|| (m_sides[SIDE::BOTTOM] != r) || (m_sides[SIDE::TOP] != t);
+		if( change )
 		{
 			m_sides[SIDE::LEFT] = _l;
 			m_sides[SIDE::BOTTOM] = _b;
@@ -53,29 +51,9 @@ namespace ca { namespace gui {
 			m_sides[SIDE::TOP] = t;
 			++geomVersion;
 			m_geomVersion = geomVersion;
-			onExtentChanged(flags);
+			onExtentChanged();
 		}
-		return flags;
-	}
-
-	void RefFrame::setFrame(const float _l, const float _b, const float _r, const float _t, const uint32 _geomVersion)
-	{
-		// Make sure the maximum coordinate never gets smaller than the minimum
-		const float r = ei::max(_l+1,_r);
-		const float t = ei::max(_b+1,_t);
-		CHANGE_FLAGS::Val flags = ((left() != _l) ? CHANGE_FLAGS::LEFT : 0)
-			| ((right() != r) ? CHANGE_FLAGS::RIGHT : 0)
-			| ((bottom() != _b) ? CHANGE_FLAGS::BOTTOM : 0)
-			| ((top() != t) ? CHANGE_FLAGS::TOP : 0);
-		m_geomVersion = _geomVersion;
-		if( flags )
-		{
-			m_sides[SIDE::LEFT] = _l;
-			m_sides[SIDE::BOTTOM] = _b;
-			m_sides[SIDE::RIGHT] = r;
-			m_sides[SIDE::TOP] = t;
-			onExtentChanged(flags);
-		}
+		return change;
 	}
 
 

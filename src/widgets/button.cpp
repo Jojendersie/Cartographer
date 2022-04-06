@@ -111,9 +111,9 @@ namespace ca { namespace gui {
 	}
 
 
-	void Button::onExtentChanged(const CHANGE_FLAGS::Val _changes)
+	void Button::onExtentChanged()
 	{
-		Widget::onExtentChanged(_changes);
+		Widget::onExtentChanged();
 		recomputeIconNTextPositions();
 	}
 

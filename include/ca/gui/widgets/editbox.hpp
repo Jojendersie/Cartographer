@@ -61,7 +61,7 @@ namespace ca { namespace gui {
 
 		// TODO: call on movement and resize?
 		void recomputeTextPlacement(bool _fullRefresh);
-		virtual void onExtentChanged(const CHANGE_FLAGS::Val _changes) override;
+		virtual void onExtentChanged() override;
 		virtual void onKeyboardFocus(bool _gotFocus) override;
 	};
 

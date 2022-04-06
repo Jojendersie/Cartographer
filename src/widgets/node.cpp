@@ -247,14 +247,6 @@ namespace ca { namespace gui {
 		return false;
 	}
 
-	/*void NodeConnector::refitToAnchors()
-	{
-		m_refFrame.sides[SIDE::LEFT] = min(m_sourceNode->getPosition().x, m_destNode->getPosition().x);
-		m_refFrame.sides[SIDE::BOTTOM] = min(m_sourceNode->getPosition().y, m_destNode->getPosition().y);
-		m_refFrame.sides[SIDE::RIGHT] = max(m_sourceNode->getPosition().x, m_destNode->getPosition().x);
-		m_refFrame.sides[SIDE::TOP] = max(m_sourceNode->getPosition().y, m_destNode->getPosition().y);
-	}*/
-
 	bool NodeConnector::processInput(const MouseState& _mouseState)
 	{
 		if(m_isMouseOver && _mouseState.buttons[0] == MouseState::ButtonState::DOWN)
@@ -416,9 +408,9 @@ namespace ca { namespace gui {
 
 
 
-	void WidgetConnector::onExtentChanged(const CHANGE_FLAGS::Val _changes)
+	void WidgetConnector::onExtentChanged()
 	{
-		Widget::onExtentChanged(_changes);
+		Widget::onExtentChanged();
 		if(!m_sourceNode || !m_destNode) return;
 		m_changed = true;
 	}

@@ -102,11 +102,10 @@ namespace ca { namespace gui {
 		void setSource(ConstWidgetPtr _node, float _angle);
 		void setDest(ConstWidgetPtr _node, float _angle);
 
-		// TODO: call refitToAnchors after each set?
 		float getSourceAngle() const { return m_sourceAngle; }
-		void setSourceAngle(float _angle) { m_sourceAngle = _angle; }
+		void setSourceAngle(float _angle) { m_changed = m_sourceAngle != _angle;  m_sourceAngle = _angle; }
 		float getDestAngle() const { return m_destAngle; }
-		void setDestAngle(float _angle) { m_destAngle = _angle; }
+		void setDestAngle(float _angle) { m_changed = m_destAngle != _angle; m_destAngle = _angle; }
 
 		/// Sets the color for the entire edge.
 		/// It is also possible to use an gradient (setSourceColor, setDestColor).
@@ -141,7 +140,7 @@ namespace ca { namespace gui {
 		/// Implementation of IRegion::isMouseOver.
 		bool isMouseOver(const Coord2& _mousePos) const override;
 
-		void onExtentChanged(const CHANGE_FLAGS::Val _changes) override;
+		void onExtentChanged() override;
 
 		mutable bool m_isMouseOver;		///< Store the result of the last test
 	//	mutable float m_mouseT;			///< Store curve parameter 't' of last isMouseOver test. This is undefined if m_isMouseOver is false.

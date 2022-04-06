@@ -46,7 +46,7 @@ namespace ca { namespace gui {
 
 	protected:
 		/// React to the change by recursively updating all anchored components.
-		void onExtentChanged(const CHANGE_FLAGS::Val _changes) override;
+		void onExtentChanged() override;
 	private:
 		mutable Anchor m_anchorListStart;	///< Dummy anchor for memory management.
 	};
@@ -141,10 +141,6 @@ namespace ca { namespace gui {
 		/// Recompute relative positioning. E.g. if a component was moved manually.
 		void resetAnchors();
 
-		/// Resize/renew position the object dependent on the current anchor points
-		/// \return True if any property was changed by the refit method.
-		void refitToAnchors();
-
 		// TODO: enable/disable
 		bool isAnchoringEnabled() const { return m_anchoringEnabled; }
 		void setAnchorable(bool _enable);
@@ -153,5 +149,9 @@ namespace ca { namespace gui {
 		Anchor m_anchor[4];				///< The four reference points (l, r, t, b)
 		RefFrame* m_selfFrame; // TODO: implement propert copy/move or make sure they cant be used
 		bool m_anchoringEnabled;
+
+		/// Resize/renew position the object dependent on the current anchor points
+		void refitToAnchors();
+		friend class AnchorFrame;
 	};
 }} // namespace ca::gui
