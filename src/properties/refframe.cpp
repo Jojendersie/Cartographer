@@ -63,8 +63,8 @@ namespace ca { namespace gui {
 		// Make sure the maximum coordinate never gets smaller than the minimum
 		const float r = ei::max(_l+1,_r);
 		const float t = ei::max(_b+1,_t);
-		const bool change = (m_sides[SIDE::LEFT] != _l) || (m_sides[SIDE::RIGHT] != _r)
-			|| (m_sides[SIDE::BOTTOM] != r) || (m_sides[SIDE::TOP] != t);
+		const bool change = (m_sides[SIDE::LEFT] != _l) || (m_sides[SIDE::RIGHT] != r)
+			|| (m_sides[SIDE::BOTTOM] != _b) || (m_sides[SIDE::TOP] != t);
 		if( change )
 		{
 			m_sides[SIDE::LEFT] = _l;
@@ -167,7 +167,7 @@ namespace ca { namespace gui {
 				if(m_anchor[i].relativePosition == 0.0f || m_anchor[i].relativePosition == 1.0f)
 				{
 					// Interpret as absolute only positioning -> recompute offset
-					m_anchor[i].absoluteDistance = side(i) - m_anchor[i].getPosition(dim);
+					m_anchor[i].absoluteDistance = side(i) - m_anchor[i].reference()->getPosition(dim, m_anchor[i].relativePosition);
 				} else {
 					// Recompute relative placement (keep absolute one).
 					m_anchor[i].relativePosition = m_anchor[i].reference()->getRelativePosition(dim, side(i)-m_anchor[i].absoluteDistance);
