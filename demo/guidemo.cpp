@@ -493,8 +493,8 @@ void createGUI(GLFWwindow* _window)
 	sbv->setAnchors(f7.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::VERTICAL | ANCHOR::RIGHT);
 	f7->add(sbv, 1u);
 
-	l0->setAnchors(sbh->getAnchor(), AutoAnchorMode::ABSOLUTE, ANCHOR::LEFT);
-	l0->setAnchors(sbv->getAnchor(), AutoAnchorMode::ABSOLUTE, ANCHOR::BOTTOM);
+	l0->setAnchor(sbh->getAnchor(), SIDE::LEFT, l0->left());
+	l0->setAnchor(sbv->getAnchor(), SIDE::BOTTOM, l0->bottom());
 	sbv->setScrollOffset(10000.0f); // Just skip to the top
 
 	// A frame for clipping

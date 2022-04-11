@@ -7,6 +7,7 @@
 namespace ca { namespace gui {
 
 	ScrollBar::ScrollBar() :
+		m_sliderAnchor{this},
 		m_horizontal(false),
 		m_totalSize{100.0f},
 		m_availableSize{10.0f},
@@ -16,6 +17,7 @@ namespace ca { namespace gui {
 		m_movingPos{-1.0f}
 	{
 		registerMouseInputComponent(this);
+		linkAnchor(m_sliderAnchor.m_anchor);
 	}
 
 	ScrollBar::~ScrollBar()
@@ -26,12 +28,13 @@ namespace ca { namespace gui {
 	{
 		// Any resizing of the reference widgets goes unnotized until we periodically check,
 		// which we do here.
-		if((m_presentationWidget && m_sliderAnchor.getGeomVersion() < m_presentationWidget->getGeomVersion())
-			|| (m_contentWidget && m_sliderAnchor.getGeomVersion() < m_contentWidget->getGeomVersion()))
+		if((m_presentationWidget && (m_sliderAnchor.getGeomVersion() < m_presentationWidget->getGeomVersion()))
+			|| (m_contentWidget && (m_sliderAnchor.getGeomVersion() < m_contentWidget->getGeomVersion())))
 		{
 			// BAD CONST CAST! TODO: some message passing to know if the reference changed (instead periodical checks)
 			const_cast<ScrollBar*>(this)->m_availableSize = getAvailableSize();
 			const_cast<ScrollBar*>(this)->m_totalSize = getContentSize();
+			m_sliderAnchor.matchGeomVersion();
 		}
 
 		GUIManager::theme().drawBackgroundArea(rectangle());
@@ -111,7 +114,10 @@ namespace ca { namespace gui {
 
 	void ScrollBar::setAvailableSize(const float _availableSize)
 	{
-		m_presentationWidget = nullptr;
+		if(m_presentationWidget) {
+			m_presentationWidget = nullptr;
+			m_sliderAnchor.attach(this);
+		}
 		m_availableSize = _availableSize;
 		checkInterval();
 	}
@@ -136,6 +142,7 @@ namespace ca { namespace gui {
 	void ScrollBar::setViewArea(WidgetPtr _presentationWidget, const float _margin)
 	{
 		m_presentationWidget = std::move(_presentationWidget);
+		m_sliderAnchor.attach(m_presentationWidget.get());
 		m_margin = ei::max(0.0f, _margin);
 		m_availableSize = getAvailableSize();
 		checkInterval(true);
@@ -186,16 +193,63 @@ namespace ca { namespace gui {
 
 	void ScrollBar::recomputeAnchorFrame()
 	{
-		float s[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-		if(m_horizontal)
-		{
-			const float areaPos = m_presentationWidget ? m_presentationWidget->position().x : position().x;
-			s[0] = s[2] = areaPos - m_intervalStart + m_rangeOffset;
-		} else {
-			const float areaPos = m_presentationWidget ? m_presentationWidget->position().y : position().y;
-			s[1] = s[3] = areaPos - m_intervalStart + m_rangeOffset;
-		}
-		m_sliderAnchor.setFrame(s[0], s[1], s[2], s[3]);
+		m_sliderAnchor.setAnchor(m_rangeOffset - m_intervalStart);
+	}
+
+
+
+	ScrollBar::SliderAnchor::SliderAnchor(ScrollBar* _parent) :
+		m_parent{_parent},
+		m_anchor{this},
+		m_position{0.0f}
+	{
+		matchGeomVersion();
+	}
+
+	void ScrollBar::SliderAnchor::attach(const IAnchorProvider* _target)
+	{
+		const int dim = m_parent->isHorizontal() ? 0 : 1;
+		m_anchor.attach(
+			_target,
+			_target->getPosition(dim,0.0f), // Bottom or left
+			m_position, dim);
+	}
+
+	void ScrollBar::SliderAnchor::setAnchor(float _offset)
+	{
+		if(m_anchor.absoluteDistance == _offset)
+			return;
+		// Update and set a new geom version for this primary event
+		m_anchor.absoluteDistance = _offset;
+		m_position = m_anchor.getPosition(m_parent->isHorizontal() ? 0 : 1);
+		increaseGeomVersion();
+		IAnchorProvider::onExtentChanged(); // Then trigger updates of others
+	}
+
+	void ScrollBar::SliderAnchor::refitToAnchors()
+	{
+		if(!isAnchoringEnabled()) return;
+		// Check for update cycles.
+		if(getGeomVersion() == IAnchorable::getGlobalGeomVersion()) return;
+		if(!m_anchor.reference()) return;
+
+		m_position = m_anchor.getPosition(m_parent->isHorizontal() ? 0 : 1);
+		IAnchorable::refitToAnchors();
+	}
+
+	void ScrollBar::SliderAnchor::onExtentChanged()
+	{
+		IAnchorProvider::onExtentChanged();
+	}
+
+	Coord ScrollBar::SliderAnchor::getPosition(int _dimension, float _relativePos) const
+	{
+		return m_position;
+	}
+
+	float ScrollBar::SliderAnchor::getRelativePosition(int _dimension, Coord _position) const
+	{
+		return 0.0f; // Only absolute position meaningful
 	}
 
 }} // namespace ca::gui

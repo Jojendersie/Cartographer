@@ -55,7 +55,7 @@ namespace ca { namespace gui {
 		/// Returns a special anchor provider of a frame that moves around.
 		/// \details This anchor frame has to be used for things that should move
 		///		on scrolling.
-		const RefFrame* getAnchor() const	{ return &m_sliderAnchor; }
+		const IAnchorProvider* getAnchor() const	{ return &m_sliderAnchor; }
 
 		/// Get the available size either from the presentation widget or from
 		/// absolute setting (whatever is used).
@@ -63,16 +63,32 @@ namespace ca { namespace gui {
 		float getContentSize() const;
 
 	private:
-		mutable RefFrame m_sliderAnchor;		//< Special area that moves around on slide
+		class SliderAnchor : public IAnchorable, public IAnchorProvider
+		{
+		public:
+			ScrollBar* m_parent;	///< Link back to scrollbar to react to presentation widget changes.
+			float m_position;		///< Only used for one dimension
+			Anchor m_anchor;		///< The anchor to move m_position with some reference.
+
+			SliderAnchor(ScrollBar* _parent);
+			void attach(const IAnchorProvider* _target); ///< Absolute anchoring against a new reference
+			void setAnchor(float _offset);
+			void refitToAnchors() override;
+			void onExtentChanged() override;
+			Coord getPosition(int _dimension, float _relativePos) const override;
+			float getRelativePosition(int _dimension, Coord _position) const override;
+		};
+
+		mutable SliderAnchor m_sliderAnchor;		//< Special area that moves around on slide
 		WidgetPtr m_presentationWidget;
 		WidgetPtr m_contentWidget;
-		bool m_horizontal;		//< Horizontal or vertical mode?
-		float m_totalSize;		//< Size of the area that is scrolled
-		float m_availableSize;	//< Size of the view that contains the scrolled content
-		float m_intervalStart;	//< Position of scrolling.
-		float m_rangeOffset;	//< Can move intervalStart into the negative range if things are added left/bottom
-		float m_margin;			//< Positive distances to all sides.
-		float m_movingPos;		//< Relative position within the content section bar that is moved. (Or -1 if not moving)
+		bool m_horizontal;		///< Horizontal or vertical mode?
+		float m_totalSize;		///< Size of the area that is scrolled
+		float m_availableSize;	///< Size of the view that contains the scrolled content
+		float m_intervalStart;	///< Position of scrolling.
+		float m_rangeOffset;	///< Can move intervalStart into the negative range if things are added left/bottom
+		float m_margin;			///< Positive distances to all sides.
+		float m_movingPos;		///< Relative position within the content section bar that is moved. (Or -1 if not moving)
 
 		void checkInterval(const bool _forceAnchorReset = false);
 		void recomputeAnchorFrame();
