@@ -11,6 +11,7 @@ namespace ca { namespace gui {
 		m_sides[SIDE::RIGHT] = ei::max(_l+1, _r);
 		m_sides[SIDE::BOTTOM] = _b;
 		m_sides[SIDE::TOP] = ei::max(_b+1, _t);
+		matchGeomVersion();
 	}
 
 	bool RefFrame::isMouseOver(const Coord2& _mousePos) const
@@ -38,8 +39,7 @@ namespace ca { namespace gui {
 
 	void RefFrame::onExtentChanged()
 	{
-		IAnchorable::onExtentChanged(); // First set the new version of this object.
-		IAnchorProvider::onExtentChanged(); // Then trigger updates of others
+		IAnchorProvider::onExtentChanged(); // Trigger updates of others
 	}
 
 	bool RefFrame::operator != (const RefFrame& _rhs) const
@@ -71,6 +71,7 @@ namespace ca { namespace gui {
 			m_sides[SIDE::BOTTOM] = _b;
 			m_sides[SIDE::RIGHT] = r;
 			m_sides[SIDE::TOP] = t;
+			increaseGeomVersion();
 			onExtentChanged();
 		}
 		return change;
@@ -86,32 +87,30 @@ namespace ca { namespace gui {
 	}
 
 
+	void RefFrame::setAnchor(const IAnchorProvider* _target, SIDE::Val _which, Coord _targetPosition)
+	{
+		if(!_target)
+			m_anchor[_which].detach();
+		else {
+			const int dim = _which & 1;
+			m_anchor[_which].attach(_target, _targetPosition, side(_which), dim);
+		}
+	}
+
+
 	void RefFrame::setAnchors(const IAnchorProvider* _target, Coord _leftTarget, Coord _bottomTarget, Coord _rightTarget, Coord _topTarget)
 	{
-		// First detach from previous chain to keep lists of others cleen
+		// Now construct the new one
 		for(int i = 0; i < 4; ++i)
 		{
+			// Get the two horizontal or two vertical indices
+			const int dim = i & 1;
+			// Determine relative position of the target point towards the target frame
 			const float targetPoint = i == 0 ? _leftTarget : (i == 1 ? _bottomTarget : (i == 2 ? _rightTarget : _topTarget));
-			if(targetPoint != ANCHOR::IGNORE)
+			if(targetPoint == ANCHOR::CLEAR) {
 				m_anchor[i].detach();
-		}
-
-		// Now construct the new one
-		if(_target)
-		{
-			for(int i = 0; i < 4; ++i)
-			{
-				// Get the two horizontal or two vertical indices
-				const int dim = i & 1;
-				// Determine relative position of the target point towards the target frame
-				const float targetPoint = i == 0 ? _leftTarget : (i == 1 ? _bottomTarget : (i == 2 ? _rightTarget : _topTarget));
-				if(targetPoint != ANCHOR::IGNORE && targetPoint != ANCHOR::CLEAR)
-				{
-					m_anchor[i].relativePosition = _target->getRelativePosition(dim, targetPoint);
-					// Determine the absolute offset between current frame boundary and target point.
-					m_anchor[i].absoluteDistance = side(i) - targetPoint;
-					_target->linkAnchor(m_anchor[i]);
-				}
+			} else if(targetPoint != ANCHOR::IGNORE && _target) {
+				m_anchor[i].attach(_target, targetPoint, side(i), dim);
 			}
 		}
 	}
@@ -172,10 +171,10 @@ namespace ca { namespace gui {
 					// Recompute relative placement (keep absolute one).
 					m_anchor[i].relativePosition = m_anchor[i].reference()->getRelativePosition(dim, side(i)-m_anchor[i].absoluteDistance);
 				}
-				// Count anchors as up to date.
-				m_geomVersion = IAnchorable::getGlobalGeomVersion();
 			}
 		}
+		// Count anchors as up to date.
+		IAnchorable::resetAnchors();
 	}
 
 
@@ -221,7 +220,7 @@ namespace ca { namespace gui {
 		}
 
 		silentSetFrame(newFrame[0], newFrame[1], newFrame[2], newFrame[3]);
-		m_geomVersion = IAnchorable::getGlobalGeomVersion();
+		IAnchorable::refitToAnchors();
 	}
 
 }} // namespace ca::gui

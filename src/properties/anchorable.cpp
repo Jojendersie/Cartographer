@@ -19,6 +19,16 @@ namespace ca { namespace gui {
 		m_next = nullptr;
 	}
 
+	void Anchor::attach(const IAnchorProvider* _target, Coord _targetPosition, Coord _anchorPosition, int _dimension)
+	{
+		relativePosition = _target->getRelativePosition(_dimension, _targetPosition);
+		// Determine the absolute offset between current frame boundary and target point.
+		// We reconstruct the target point from above relative to avoid issues if
+		// the relative position does not reconstruct the initial position exactly.
+		absoluteDistance = _anchorPosition - _target->getPosition(_dimension, relativePosition);
+		_target->linkAnchor(*this);
+	}
+
 	float Anchor::getPosition(int _dimension) const
 	{
 		if(!reference()) return absoluteDistance;
@@ -45,6 +55,10 @@ namespace ca { namespace gui {
 
 	void IAnchorProvider::linkAnchor(Anchor& _anchor) const
 	{
+		if(_anchor.m_reference == this)
+			return;
+		if(_anchor.m_reference)
+			_anchor.detach();
 		_anchor.m_next = m_anchorListStart.m_next;
 		_anchor.m_prev = &m_anchorListStart;
 		_anchor.m_reference = this;
@@ -82,10 +96,14 @@ namespace ca { namespace gui {
 		m_anchoringEnabled = true;
 	}
 
-	void IAnchorable::onExtentChanged()
+	void IAnchorable::refitToAnchors()
 	{
-		++s_globalGeomVersion;
-		m_geomVersion = s_globalGeomVersion;
+		matchGeomVersion();
+	}
+
+	void IAnchorable::resetAnchors()
+	{
+		matchGeomVersion();
 	}
 
 	void IAnchorable::setAnchorable(bool _enable)

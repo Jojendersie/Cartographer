@@ -75,6 +75,16 @@ namespace ca { namespace gui {
 		/// Set all the sizes of the references frame. Returns a true to indicate changes.
 		virtual bool setFrame(const float _l, const float _b, const float _r, const float _t);
 
+		/// Set a single anchor, ignore the others.
+		/// \param [in] _which only LEFT, RIGHT, BOTTOM, TOP allowed.
+		/// \param [in] _targetPosition An absolute coordinate to which the respective
+		///		side should be anchored.
+		void setAnchor(
+			const IAnchorProvider* _target,
+			SIDE::Val _which,
+			Coord _targetPosition
+		);
+
 		/// Set all anchors at once.
 		/// \details For each of the four sides an absolute reference point within
 		///		the respective dimension can be specified. These references are

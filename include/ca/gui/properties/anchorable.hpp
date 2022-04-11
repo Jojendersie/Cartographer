@@ -31,6 +31,13 @@ namespace ca { namespace gui {
 		Anchor(IAnchorable* _self) : m_self(_self) {}
 		~Anchor();
 		void detach();								///< Memory management of the anchorpoint (detach if host is gone)
+		/// Link this anchor to a provider using an absolute reference position.
+		/// \details Automaticall calls the provider's link method and detaches from previous providers.
+		/// \param [in] _targetPosition Position on the target (or outside) that shall be kept in relative
+		///		sync with the _target.
+		/// \param [in] _anchorPosition The absolute position of the anchor (the difference to
+		///		the _targetPosition defines the absolute distance.
+		void attach(const IAnchorProvider* _target, Coord _targetPosition, Coord _anchorPosition, int _dimension);
 		float getPosition(int _dimension) const;	///< Compute the current position. Input: the dimension 0=horizontal, 1=vertical
 		/// Get the component to which this anchor belongs.
 		IAnchorable* self() { return m_self; }
@@ -70,6 +77,7 @@ namespace ca { namespace gui {
 	/// Anything that has to do with positions can trigger updates when it is changed.
 	class IPositionable
 	{
+	public:
 		virtual void onExtentChanged() = 0;
 	};
 
@@ -106,28 +114,28 @@ namespace ca { namespace gui {
 	class IAnchorable : public IPositionable
 	{
 		static uint32 s_globalGeomVersion;	///< A continiously increased number to manage the update process.
+		uint32 m_geomVersion = 0;			///< Current version used to manage updates (to avoid cyclic updates).
 
 		bool m_anchoringEnabled;			///< If disabled this will ignore notifications of anchor changes.
-
-	protected:
-		uint32 m_geomVersion = 0;			///< Current version used to manage updates (to avoid cyclic updates).
 
 	public:
 		IAnchorable();
 
-		/// Method to react to resizing or repositioning events.
-		void onExtentChanged() override;
-
 		/// Recompute own positioning, because one of the anchors has changed.
-		/// Must call onExtentChanged() internally (if something changed).
-		virtual void refitToAnchors() {}
+		/// \details matches current geometry version.
+		virtual void refitToAnchors();
 
 		/// Recompute the anchors without changing the own position.
-		virtual void resetAnchors() {}
+		/// \details matches current geometry version.
+		virtual void resetAnchors();
 
 		/// Return the version number of global changes
 		static uint32 getGlobalGeomVersion() { return s_globalGeomVersion; }
 		uint32 getGeomVersion() const { return m_geomVersion; }
+		/// Increase global version and assign to this object (use for primary updates).
+		void increaseGeomVersion() { m_geomVersion = ++s_globalGeomVersion; }
+		/// Set object version to the global one (used in reactions to refitting).
+		void matchGeomVersion() { m_geomVersion = s_globalGeomVersion; }
 
 		bool isAnchoringEnabled() const { return m_anchoringEnabled; }
 		void setAnchorable(bool _enable);
