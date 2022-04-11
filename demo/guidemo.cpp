@@ -207,7 +207,7 @@ void createGUI(GLFWwindow* _window)
 	h00->setColor(Vec3(themeProps2.basicHoverColor));
 	Coord2 handleCenter(f0->horizontalCenter(), f0->top() + 2.0f);
 	h00->setExtent(handleCenter - 6.0f, Coord2(12.0f));
-	h00->setAnchors(f0.get(), handleCenter.x, f0->top(), IGNORE_ANCHOR, IGNORE_ANCHOR);
+	h00->setAnchors(f0.get(), handleCenter.x, f0->top(), ANCHOR::IGNORE, ANCHOR::IGNORE);
 	h00->setRotation(PI / 2.0f);
 	f0group->add(h00, 1);
 
@@ -296,14 +296,14 @@ void createGUI(GLFWwindow* _window)
 	h30->setColor(Vec3(themeProps2.basicHoverColor));
 	handleCenter = Coord2(f3->horizontalCenter(), f3->bottom() - 2.0f);
 	h30->setExtent(handleCenter - 6.0f, Coord2(12.0f));
-	h30->setAnchors(f3.get(), handleCenter.x, f3->bottom(), IGNORE_ANCHOR, IGNORE_ANCHOR);
+	h30->setAnchors(f3.get(), handleCenter.x, f3->bottom(), ANCHOR::IGNORE, ANCHOR::IGNORE);
 	h30->setRotation(-PI / 2.0f);
 	f3group->add(h30, 1);
 	NodeHandlePtr h31(new NodeHandle);
 	h31->setColor(Vec3(0.0f, 0.5f, 0.0f));
 	handleCenter = Coord2(f3->left() - 2.0f, f3->verticalCenter());
 	h31->setExtent(handleCenter - 6.0f, Coord2(12.0f));
-	h31->setAnchors(f3.get(), f3->left(), handleCenter.y, IGNORE_ANCHOR, IGNORE_ANCHOR);
+	h31->setAnchors(f3.get(), f3->left(), handleCenter.y, ANCHOR::IGNORE, ANCHOR::IGNORE);
 	h31->setRotation(-PI);
 	f3group->add(h31, 1);
 
@@ -502,7 +502,6 @@ void createGUI(GLFWwindow* _window)
 	f7s->setExtent(f7->position() + Coord2(2.0f, 14.0f), f7->size() - 16.0f);
 	f7s->setAnchors(f7.get(), AutoAnchorMode::ABSOLUTE);
 	f7s->add(l0);
-	f7s->setBackgroundOpacity(0.0f);
 	f7->add(f7s, 0u);
 
 	// *********************************************

@@ -112,7 +112,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		static PopupManager& popups();
 
 		/// Get the anchor component of the window sized top level component
-		static const AnchorFrame* getAnchorFrame();
+		static const RefFrame* getAnchorFrame();
 	private:
 		std::shared_ptr<class IRenderBackend> m_renderer;
 		std::shared_ptr<class ITheme> m_theme;

@@ -55,12 +55,7 @@ namespace ca { namespace gui {
 		/// Returns a special anchor provider of a frame that moves around.
 		/// \details This anchor frame has to be used for things that should move
 		///		on scrolling.
-		///
-		///		It has a zero dimension in every dimension. Its position
-		///		changes between 0 and the scroll amount in the respective
-		///		dimension plus the scroll offset. The latter may reposition
-		///		the interval from [0,x] to any desired location.
-		const AnchorFrame* getAnchor() const	{ return &m_sliderAnchor; }
+		const RefFrame* getAnchor() const	{ return &m_sliderAnchor; }
 
 		/// Get the available size either from the presentation widget or from
 		/// absolute setting (whatever is used).
@@ -68,7 +63,7 @@ namespace ca { namespace gui {
 		float getContentSize() const;
 
 	private:
-		mutable AnchorFrame m_sliderAnchor;		//< Special area that moves around on slide
+		mutable RefFrame m_sliderAnchor;		//< Special area that moves around on slide
 		WidgetPtr m_presentationWidget;
 		WidgetPtr m_contentWidget;
 		bool m_horizontal;		//< Horizontal or vertical mode?

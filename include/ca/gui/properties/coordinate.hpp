@@ -33,4 +33,27 @@ namespace ca { namespace gui {
 		Coord pixel(int _pixels);
 
 	} // namespace coord
+
+	/// A general purpose enum to define positioning schemes
+	/// \details To access general dimensions (i.e. x and y) in vectors you can use SIDE/2 as
+	///		index.
+	struct SIDE
+	{
+		enum Val
+		{
+			LEFT = 0,
+			RIGHT = 2,
+			BOTTOM = 1,
+			TOP = 3,
+			CENTER = 4,
+		};
+
+		static constexpr char const * STR_NAMES[] = {
+			"LEFT",
+			"RIGHT",
+			"BOTTOM",
+			"TOP",
+			"CENTER"
+		};
+	};
 }} // namespace ca::gui

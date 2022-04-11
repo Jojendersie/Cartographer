@@ -331,9 +331,9 @@ namespace ca { namespace gui {
 		return g_manager->m_popups;
 	}
 
-	const AnchorFrame* GUIManager::getAnchorFrame()
+	const RefFrame* GUIManager::getAnchorFrame()
 	{
-		return static_cast<const AnchorFrame*>(g_manager->m_topFrame.get());
+		return static_cast<const RefFrame*>(g_manager->m_topFrame.get());
 	}
 
 }} // namespace ca::gui

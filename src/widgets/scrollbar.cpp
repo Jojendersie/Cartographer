@@ -138,7 +138,7 @@ namespace ca { namespace gui {
 		m_presentationWidget = std::move(_presentationWidget);
 		m_margin = ei::max(0.0f, _margin);
 		m_availableSize = getAvailableSize();
-		checkInterval();
+		checkInterval(true);
 	}
 
 	void ScrollBar::setContent(WidgetPtr _contentWidget)
@@ -188,9 +188,13 @@ namespace ca { namespace gui {
 	{
 		float s[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 		if(m_horizontal)
-			s[0] = s[2] = -m_intervalStart + m_rangeOffset;
-		else
-			s[1] = s[3] = -m_intervalStart + m_rangeOffset;
+		{
+			const float areaPos = m_presentationWidget ? m_presentationWidget->position().x : position().x;
+			s[0] = s[2] = areaPos - m_intervalStart + m_rangeOffset;
+		} else {
+			const float areaPos = m_presentationWidget ? m_presentationWidget->position().y : position().y;
+			s[1] = s[3] = areaPos - m_intervalStart + m_rangeOffset;
+		}
 		m_sliderAnchor.setFrame(s[0], s[1], s[2], s[3]);
 	}
 

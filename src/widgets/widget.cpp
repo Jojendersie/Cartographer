@@ -6,8 +6,7 @@ namespace ca { namespace gui {
 
 	using namespace pa;
 
-	Widget::Widget() : 
-		Anchorable(this),
+	Widget::Widget() :
 		m_enabled(true),
 		m_keyboardFocusable(false),
 		m_visible(true),
@@ -120,6 +119,12 @@ namespace ca { namespace gui {
 	}
 
 
+	void Widget::addOnExtentChangeFunc(OnExtendChanged _callback)
+	{
+		m_onExtentChangedFuncs.push_back(std::move(_callback));
+	}
+
+
 	const IRegion * Widget::getRegion() const
 	{
 		if(m_region)
@@ -145,7 +150,7 @@ namespace ca { namespace gui {
 		// Make sure the anchoring does not reset the object to its previous position.
 		if(isAnchoringEnabled())
 			resetAnchors();
-		AnchorFrame::onExtentChanged();
+		RefFrame::onExtentChanged();
 	}
 
 	void Widget::onKeyboardFocus(bool _gotFocus)

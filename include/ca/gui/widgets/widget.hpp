@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include "ca/gui/properties/anchorable.hpp"
 #include "ca/gui/properties/clickable.hpp"
 #include "ca/gui/properties/moveable.hpp"
 #include "ca/gui/properties/refframe.hpp"
@@ -17,7 +16,7 @@ namespace ca { namespace gui {
 	/// Base class with mandatory attributes for all widgets.
 	/// \details A widget only contains the state. State handling in general is up to the derived
 	///		elements.
-	class Widget: public pa::ReferenceCountable, public AnchorFrame, public Anchorable
+	class Widget: public pa::ReferenceCountable, public RefFrame
 	{
 	public:
 		Widget();
@@ -80,6 +79,9 @@ namespace ca { namespace gui {
 		typedef std::function<void(Widget* _this, const Widget* _originator)> OnPopup;
 		void setOnPopupFunc(OnPopup _callback) { onPopup = _callback; }
 		void showAsPopup(const Widget* _originator) { show(); if(onPopup) onPopup(this, _originator); }
+		/// Callback function to get notified if something changed the widget extent.
+		typedef std::function<void(Widget* _this)> OnExtendChanged;
+		void addOnExtentChangeFunc(OnExtendChanged _callback);
 
 		/// True if the mouse is on the interaction region and the element is focused by
 		/// the GUIManager. I.e. there is no other element in front of this one.
@@ -124,6 +126,7 @@ namespace ca { namespace gui {
 		void registerMouseInputComponent(IMouseProcessAble* _component);
 	protected:
 		virtual void onExtentChanged() override;
+		virtual void onKeyboardFocus(bool _gotFocus);
 
 		bool m_enabled;					///< The element can currently receive input (not disabled).
 		bool m_keyboardFocusable;		///< Can this object have the focus?
@@ -143,7 +146,7 @@ namespace ca { namespace gui {
 		// TODO: add onExtentChanged callback (list) that can be set from the outside.
 		OnVisibilityChanged onVisibilityChanged;
 		OnPopup onPopup;
-		virtual void onKeyboardFocus(bool _gotFocus);
+		std::vector<OnExtendChanged> m_onExtentChangedFuncs;
 		OnKeyboardFocus m_onKeyboardFocus;
 	};
 
