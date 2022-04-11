@@ -125,7 +125,6 @@ namespace ca { namespace gui {
 		/// \details This is meant to be used in the constructor of IMouseProcessAble components.
 		void registerMouseInputComponent(IMouseProcessAble* _component);
 	protected:
-		virtual void onExtentChanged() override;
 		virtual void onKeyboardFocus(bool _gotFocus);
 
 		bool m_enabled;					///< The element can currently receive input (not disabled).

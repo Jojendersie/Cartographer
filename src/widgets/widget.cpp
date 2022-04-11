@@ -145,13 +145,6 @@ namespace ca { namespace gui {
 		m_mouseInputSubcomponents.push_back(_component);
 	}
 
-	void Widget::onExtentChanged()
-	{
-		// Make sure the anchoring does not reset the object to its previous position.
-		if(isAnchoringEnabled())
-			resetAnchors();
-		RefFrame::onExtentChanged();
-	}
 
 	void Widget::onKeyboardFocus(bool _gotFocus)
 	{
