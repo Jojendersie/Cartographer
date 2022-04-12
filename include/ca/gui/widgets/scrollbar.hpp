@@ -15,6 +15,8 @@ namespace ca { namespace gui {
 		/// Implement the draw method
 		void draw() const override;
 
+		void onExtentChanged() override;
+
 		/// Process mouse input for drag & drop like movement of the slider.
 		/// \param [in] _mouseState State of the mouse buttons and position. Required to start/end
 		///		movements.
@@ -67,13 +69,11 @@ namespace ca { namespace gui {
 		{
 		public:
 			ScrollBar* m_parent;	///< Link back to scrollbar to react to presentation widget changes.
-			float m_position;		///< Only used for one dimension
 			Anchor m_anchor;		///< The anchor to move m_position with some reference.
 
 			SliderAnchor(ScrollBar* _parent);
 			void attach(const IAnchorProvider* _target); ///< Absolute anchoring against a new reference
 			void setAnchor(float _offset);
-			void refitToAnchors() override;
 			void onExtentChanged() override;
 			Coord getPosition(int _dimension, float _relativePos) const override;
 			float getRelativePosition(int _dimension, Coord _position) const override;
@@ -82,6 +82,8 @@ namespace ca { namespace gui {
 		mutable SliderAnchor m_sliderAnchor;		//< Special area that moves around on slide
 		WidgetPtr m_presentationWidget;
 		WidgetPtr m_contentWidget;
+		Anchor m_presentationAnchor;	///< Dummy to trigger onExtentChanged() events, if the presentation widget changed.
+		Anchor m_contentAnchor;			///< Dummy to trigger onExtentChanged() events, if the content widget changed.
 		bool m_horizontal;		///< Horizontal or vertical mode?
 		float m_totalSize;		///< Size of the area that is scrolled
 		float m_availableSize;	///< Size of the view that contains the scrolled content

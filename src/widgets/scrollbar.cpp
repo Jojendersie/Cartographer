@@ -8,6 +8,8 @@ namespace ca { namespace gui {
 
 	ScrollBar::ScrollBar() :
 		m_sliderAnchor{this},
+		m_presentationAnchor{this},
+		m_contentAnchor{this},
 		m_horizontal(false),
 		m_totalSize{100.0f},
 		m_availableSize{10.0f},
@@ -26,17 +28,6 @@ namespace ca { namespace gui {
 
 	void ScrollBar::draw() const
 	{
-		// Any resizing of the reference widgets goes unnotized until we periodically check,
-		// which we do here.
-		if((m_presentationWidget && (m_sliderAnchor.getGeomVersion() < m_presentationWidget->getGeomVersion()))
-			|| (m_contentWidget && (m_sliderAnchor.getGeomVersion() < m_contentWidget->getGeomVersion())))
-		{
-			// BAD CONST CAST! TODO: some message passing to know if the reference changed (instead periodical checks)
-			const_cast<ScrollBar*>(this)->m_availableSize = getAvailableSize();
-			const_cast<ScrollBar*>(this)->m_totalSize = getContentSize();
-			m_sliderAnchor.matchGeomVersion();
-		}
-
 		GUIManager::theme().drawBackgroundArea(rectangle());
 		// Compute percentage of available area to total area and create a smaller frame
 		// with the same relation to m_refFrame (in the selected dimension)
@@ -58,6 +49,16 @@ namespace ca { namespace gui {
 			subFrame.max.y = subFrame.min.y + ei::max(3.0f, relSize * h);
 		}
 		GUIManager::theme().drawButton(subFrame, (relSize < 1.0f) && (GUIManager::hasMouseFocus(this) || m_movingPos >= 0.0f), false, m_horizontal);
+	}
+
+	void ScrollBar::onExtentChanged()
+	{
+		// The resize of the slider is a likely point where reference widgets where
+		// changed as well. To make sure we don't miss events, we also have the notification anchors.
+		Widget::onExtentChanged();
+		m_availableSize = getAvailableSize();
+		m_totalSize = getContentSize();
+		checkInterval();
 	}
 
 	bool ScrollBar::processInput(Widget & _thisWidget, const MouseState & _mouseState, bool _cursorOnWidget, bool & _ensureNextInput)
@@ -117,6 +118,7 @@ namespace ca { namespace gui {
 		if(m_presentationWidget) {
 			m_presentationWidget = nullptr;
 			m_sliderAnchor.attach(this);
+			m_presentationAnchor.detach(); // No need for further notifications
 		}
 		m_availableSize = _availableSize;
 		checkInterval();
@@ -135,6 +137,7 @@ namespace ca { namespace gui {
 			//m_intervalStart += delta;
 		}
 		m_contentWidget = nullptr;
+		m_contentAnchor.detach();
 		m_totalSize = _contentSize;
 		checkInterval(true);
 	}
@@ -143,6 +146,7 @@ namespace ca { namespace gui {
 	{
 		m_presentationWidget = std::move(_presentationWidget);
 		m_sliderAnchor.attach(m_presentationWidget.get());
+		m_presentationAnchor.attach(m_presentationWidget.get(), 0.0f, 0.0f, 0);
 		m_margin = ei::max(0.0f, _margin);
 		m_availableSize = getAvailableSize();
 		checkInterval(true);
@@ -151,6 +155,7 @@ namespace ca { namespace gui {
 	void ScrollBar::setContent(WidgetPtr _contentWidget)
 	{
 		m_contentWidget = std::move(_contentWidget);
+		m_contentAnchor.attach(m_contentWidget.get(), 0.0f, 0.0f, 0);
 		m_totalSize = m_horizontal ? m_contentWidget->width() : m_contentWidget->height();
 		checkInterval();
 	}
@@ -200,8 +205,7 @@ namespace ca { namespace gui {
 
 	ScrollBar::SliderAnchor::SliderAnchor(ScrollBar* _parent) :
 		m_parent{_parent},
-		m_anchor{this},
-		m_position{0.0f}
+		m_anchor{this}
 	{
 		matchGeomVersion();
 	}
@@ -209,10 +213,11 @@ namespace ca { namespace gui {
 	void ScrollBar::SliderAnchor::attach(const IAnchorProvider* _target)
 	{
 		const int dim = m_parent->isHorizontal() ? 0 : 1;
+		const float targetPosition = _target->getPosition(dim,0.0f);
 		m_anchor.attach(
 			_target,
-			_target->getPosition(dim,0.0f), // Bottom or left
-			m_position, dim);
+			targetPosition, // Bottom or left
+			targetPosition+m_parent->getScrollOffset(), dim);
 	}
 
 	void ScrollBar::SliderAnchor::setAnchor(float _offset)
@@ -221,20 +226,8 @@ namespace ca { namespace gui {
 			return;
 		// Update and set a new geom version for this primary event
 		m_anchor.absoluteDistance = _offset;
-		m_position = m_anchor.getPosition(m_parent->isHorizontal() ? 0 : 1);
 		increaseGeomVersion();
 		IAnchorProvider::onExtentChanged(); // Then trigger updates of others
-	}
-
-	void ScrollBar::SliderAnchor::refitToAnchors()
-	{
-		if(!isAnchoringEnabled()) return;
-		// Check for update cycles.
-		if(getGeomVersion() == IAnchorable::getGlobalGeomVersion()) return;
-		if(!m_anchor.reference()) return;
-
-		m_position = m_anchor.getPosition(m_parent->isHorizontal() ? 0 : 1);
-		IAnchorable::refitToAnchors();
 	}
 
 	void ScrollBar::SliderAnchor::onExtentChanged()
@@ -244,7 +237,7 @@ namespace ca { namespace gui {
 
 	Coord ScrollBar::SliderAnchor::getPosition(int _dimension, float _relativePos) const
 	{
-		return m_position;
+		return m_anchor.getPosition(m_parent->isHorizontal() ? 0 : 1);
 	}
 
 	float ScrollBar::SliderAnchor::getRelativePosition(int _dimension, Coord _position) const
