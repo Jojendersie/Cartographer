@@ -119,7 +119,7 @@ namespace ca { namespace gui {
 			const Coord iconLeft = refFrame.min.x + margin;
 			const Coord textLeft = refFrame.min.x + margin * 2 + maxIconSize.x;
 			Coord yPos = refFrame.max.y + margin;
-			for(int i = 0; i < m_items.size(); ++i)
+			for(size_t i = 0; i < m_items.size(); ++i)
 			{
 				yPos -= m_itemHeight;
 
@@ -139,7 +139,7 @@ namespace ca { namespace gui {
 					Coord2(textLeft, yPos),
 					m_items[i].text.c_str(),
 					1.0f,
-					m_hoverItem == i
+					m_hoverItem == (int)i
 				);
 			}
 		}

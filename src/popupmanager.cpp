@@ -136,7 +136,7 @@ namespace ca { namespace gui {
 				// If the topmost element is below the cursor, nothing behind it may receive
 				// the input.
 				if(mouseOver)
-					return false;
+					return true;
 			}
 		}
 
