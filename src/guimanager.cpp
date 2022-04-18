@@ -295,6 +295,11 @@ namespace ca { namespace gui {
 		g_manager->m_mouseOver = _widget;
 	}
 
+	bool GUIManager::isMouseOver(Widget* _widget)
+	{
+		return g_manager->m_mouseOver == _widget;
+	}
+
 	CursorType GUIManager::getCursorType()
 	{
 		return g_manager->m_cursorType;

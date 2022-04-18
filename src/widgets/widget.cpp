@@ -88,6 +88,15 @@ namespace ca { namespace gui {
 		if(cursorOnWidget && _mouseState.anyButtonDown && GUIManager::getKeyboardFocussed() != this)
 			GUIManager::setKeyboardFocus(nullptr);
 
+		// Sticky focus remains untouched if enabled.
+		if(GUIManager::getStickyMouseFocussed() == nullptr) {
+			if(cursorOnWidget)
+				GUIManager::setMouseFocus(this);
+			// The current element has the focus but no reason to keep it.
+			else if(GUIManager::hasMouseFocus(this))
+				GUIManager::setMouseFocus(nullptr);
+		}
+
 		if(m_activeComponent)
 		{
 			bool ensureNextInput = false;
@@ -109,13 +118,7 @@ namespace ca { namespace gui {
 
 		if(GUIManager::getStickyMouseFocussed() == this)
 			return true;
-		if(cursorOnWidget) {
-			GUIManager::setMouseFocus(this);
-			return true;
-		// The current element has the focus but no reason to keep it.
-		} else if(GUIManager::hasMouseFocus(this))
-			GUIManager::setMouseFocus(nullptr);
-		return false;
+		return cursorOnWidget;
 	}
 
 
