@@ -21,6 +21,7 @@ namespace ca { namespace gui {
 		Coord m_itemHeight;						//< The height of each row.
 		Coord2 m_maxIconSize;					//< Size of the icon texture with the largest width
 		int m_hoverItem;						//< The item with the mouse cursor or negative
+		float m_hoverItemWidth;					//< Deduced from text size
 
 		DropDownListIntenral() :
 			m_itemHeight { 20.0f },
@@ -48,6 +49,12 @@ namespace ca { namespace gui {
 			if(m_hoverItem >= (int)m_items.size())
 				m_hoverItem = -1;
 
+			if(m_hoverItem >= 0)
+			{
+				ei::Rect2D textBB = GUIManager::theme().getTextBB(Coord2(0.0f), m_items[m_hoverItem].text.c_str(), 1.0f);
+				m_hoverItemWidth = ei::max(textBB.max.x - textBB.min.x + static_cast<DropDownMenu*>(m_parent)->getItemTextMargin() * 3, width());
+			}
+
 			if(_mouseState.btnClicked(0))
 			{
 				static_cast<DropDownMenu*>(m_parent)->setSelected(m_hoverItem);
@@ -70,8 +77,11 @@ namespace ca { namespace gui {
 			return Coord2{maxIconWidth, maxIconHeight};
 		}
 
-		void drawItemStandalone(int _idx, float _baseLine) const
+		void drawHeaderItem(int _idx, float _baseLine) const
 		{
+			ei::Rect2D refFrame = m_parent->rectangle();
+			refFrame.max.x -= m_parent->height();
+			GUIManager::pushClipRegion(refFrame);
 			const Coord2 maxIconSize = getMaxIconSize();
 			const Coord margin = static_cast<DropDownMenu*>(m_parent)->getItemTextMargin();
 
@@ -94,6 +104,7 @@ namespace ca { namespace gui {
 					1.0f,
 					false
 				);
+			GUIManager::popClipRegion();
 		}
 
 		void draw() const override
@@ -104,6 +115,7 @@ namespace ca { namespace gui {
 			refFrame.max.y = m_parent->bottom();
 
 			GUIManager::theme().drawBackgroundArea(refFrame);
+			GUIManager::pushClipRegion(refFrame);
 
 			if (m_hoverItem >= 0)
 			{
@@ -123,6 +135,9 @@ namespace ca { namespace gui {
 			{
 				yPos -= m_itemHeight;
 
+				if((int)i == m_hoverItem)
+					continue; // Will be drawn later unclipped
+
 				if (m_items[i].iconTexture != 0)
 				{
 					const float downScale = m_items[i].iconSize.y <= maxIconSize.y ? 1.0f : maxIconSize.y / m_items[i].iconSize.y;
@@ -138,8 +153,25 @@ namespace ca { namespace gui {
 				GUIManager::theme().drawText(
 					Coord2(textLeft, yPos),
 					m_items[i].text.c_str(),
-					1.0f,
-					m_hoverItem == (int)i
+					1.0f, false
+				);
+			}
+
+			GUIManager::popClipRegion();
+
+			// Draw the hover item unclipped.
+			if(m_hoverItem >= 0)
+			{
+				ei::Rect2D hFrame {
+					{refFrame.min.x, refFrame.max.y - (m_hoverItem+1) * m_itemHeight},
+					{refFrame.min.x+m_hoverItemWidth, refFrame.max.y - m_hoverItem * m_itemHeight}
+				};
+				GUIManager::theme().drawTextArea(hFrame);
+
+				GUIManager::theme().drawText(
+					Coord2(textLeft, hFrame.min.y + margin),
+					m_items[m_hoverItem].text.c_str(),
+					1.0f, true
 				);
 			}
 		}
@@ -308,11 +340,11 @@ namespace ca { namespace gui {
 		if (!m_list->m_items.empty())
 		{
 			// Draw item in place.
-			m_list->drawItemStandalone(m_selected, bottom());
+			m_list->drawHeaderItem(m_selected, bottom());
 		}
 
 		// Draw a drop down button.
-		const float btnSize = this->size().y;
+		const float btnSize = this->height();
 		ei::Rect2D btnFrame {{right() - btnSize, bottom()}, {right(), top()}};
 		const bool mouseOverBtn = isMouseOver(GUIManager::getMouseState().position);
 		GUIManager::theme().drawButton(btnFrame, mouseOverBtn, false, true);
