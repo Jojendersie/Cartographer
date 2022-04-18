@@ -71,6 +71,7 @@ namespace ca { namespace gui {
 			m_sides[SIDE::BOTTOM] = _b;
 			m_sides[SIDE::RIGHT] = r;
 			m_sides[SIDE::TOP] = t;
+			resetAnchors();
 			increaseGeomVersion();
 			onExtentChanged();
 		}
