@@ -135,9 +135,7 @@ namespace ca { namespace gui {
 			return false;
 		}
 
-		const bool mouseStateChanged = _mouseState.position != g_manager->m_mouseState.position
-			|| _mouseState.deltaScroll != g_manager->m_mouseState.deltaScroll
-			|| _mouseState.anyButtonDown || _mouseState.anyButtonPressed || _mouseState.anyButtonUp;
+		const bool mouseStateChanged = _mouseState != g_manager->m_mouseState;
 
 		// Very early out: nothing to do and popup already visible
 		//if(!mouseStateChanged && (!g_manager->m_popupStack.empty() && g_manager->m_popupStack.back()->isVisible())) return false;
@@ -260,7 +258,7 @@ namespace ca { namespace gui {
 		return g_manager->m_keyboardFocus;
 	}
 
-	Widget* GUIManager::getMouseFocussed()
+	Widget * GUIManager::getMouseFocussed()
 	{
 		return g_manager->m_mouseFocus;
 	}

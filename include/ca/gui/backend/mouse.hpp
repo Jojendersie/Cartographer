@@ -74,6 +74,20 @@ namespace ca { namespace gui {
 		bool btnUp(int _btn) const { return (buttons[_btn] & MouseState::UP) != 0; }
 		bool btnClicked(int _btn) const { return (buttons[_btn] & MouseState::CLICKED) != 0; }
 		bool btnDblClicked(int _btn) const { return (buttons[_btn] & MouseState::DBL_CLICKED) != 0; }
+
+		bool operator != (const MouseState& _other) const
+		{
+			return position != _other.position
+				|| deltaScroll != _other.deltaScroll
+				|| buttons[0] != _other.buttons[0]
+				|| buttons[1] != _other.buttons[1]
+				|| buttons[2] != _other.buttons[2]
+				|| buttons[3] != _other.buttons[3]
+				|| buttons[4] != _other.buttons[4]
+				|| buttons[5] != _other.buttons[5]
+				|| buttons[6] != _other.buttons[6]
+				|| buttons[7] != _other.buttons[7];
+		}
 	private:
 		Coord2 lastPosition;
 	};
