@@ -197,26 +197,23 @@ namespace ca { namespace gui {
 		{
 			SIDE::Val sa = SIDE::Val(i);
 			SIDE::Val sb = SIDE::Val(i + 2);
-			if(m_anchor[sa].reference() || m_anchor[sb].reference())
+			if(m_anchor[sa].reference() && m_anchor[sb].reference())
 			{
-				if(m_anchor[sa].reference() && m_anchor[sb].reference())
-				{
-					// Both borders are set so resize is necessary
-					newFrame[sa] = m_anchor[sa].getPosition(sa);
-					newFrame[sb] = m_anchor[sb].getPosition(sa);
-				} else if(m_anchor[sa].reference()) {
-					float delta = m_anchor[sa].getPosition(sa) - side(sa);
-					newFrame[sa] = side(sa) + delta;
-					newFrame[sb] = side(sb) + delta;
-				} else if(m_anchor[sb].reference()) {
-					float delta = m_anchor[sb].getPosition(sa) - side(sb);
-					newFrame[sa] = side(sa) + delta;
-					newFrame[sb] = side(sb) + delta;
-				} else {
-					// Keep old
-					newFrame[sa] = side(sa);
-					newFrame[sb] = side(sb);
-				}
+				// Both borders are set so resize is necessary
+				newFrame[sa] = m_anchor[sa].getPosition(sa);
+				newFrame[sb] = m_anchor[sb].getPosition(sa);
+			} else if(m_anchor[sa].reference()) {
+				float delta = m_anchor[sa].getPosition(sa) - side(sa);
+				newFrame[sa] = side(sa) + delta;
+				newFrame[sb] = side(sb) + delta;
+			} else if(m_anchor[sb].reference()) {
+				float delta = m_anchor[sb].getPosition(sa) - side(sb);
+				newFrame[sa] = side(sa) + delta;
+				newFrame[sb] = side(sb) + delta;
+			} else {
+				// Keep old
+				newFrame[sa] = side(sa);
+				newFrame[sb] = side(sb);
 			}
 		}
 
