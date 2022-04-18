@@ -6,7 +6,6 @@
 namespace ca { namespace gui {
 
 	Clickable::Clickable(Widget* _thisWidget) :
-		m_anyButtonDown(false),
 		m_clickingEnabled(true),
 		m_hasDoubleClickFunc(false)
 	{
@@ -23,8 +22,6 @@ namespace ca { namespace gui {
 		bool usedInput = false;
 		if(_cursorOnWidget)
 		{
-			m_anyButtonDown = (_mouseState.anyButtonDown || _mouseState.anyButtonPressed)
-				&& !_mouseState.anyButtonUp;
 			// Handle each button
 			for(int b = 0; b < 8; ++b)
 			{

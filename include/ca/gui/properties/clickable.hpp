@@ -32,15 +32,12 @@ namespace ca { namespace gui {
 		///		is called for all those states.
 		void addOnButtonChangeFunc(OnButtonChange _callback, MouseState::ButtonState _stateMask);
 
-		bool isAnyButtonDown() const { return m_anyButtonDown; }
-
 		/// Enable or disable clicking behavior only. Consider disabling the entire widget instead (performance).
 		void setClickable(bool _enable) { m_clickingEnabled = _enable; }
 		bool isClickingEnabled() const { return m_clickingEnabled; }
 	protected:
 		std::vector<OnButtonChange> m_changeFuncs;
 		std::vector<MouseState::ButtonState> m_statesMasks; // Call callbacks only for desired events
-		bool m_anyButtonDown;
 		bool m_clickingEnabled;
 		bool m_hasDoubleClickFunc;		// As long as there is no double click function count each click to trigger all the callbacks.
 	};

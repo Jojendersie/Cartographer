@@ -122,15 +122,16 @@ namespace ca { namespace gui {
 	{
 		// Background
 		bool mouseOver = GUIManager::hasMouseFocus(this);
+		bool mouseDown = mouseOver && GUIManager::getMouseState().anyButtonPressed;
 		if(m_backgroundTexture) {
-			if(isAnyButtonDown() && m_downTexture)
+			if(mouseDown && m_downTexture)
 				GUIManager::theme().drawImage(rectangle(), m_downTexture);
 			else if(mouseOver && m_hoverTexture)
 				GUIManager::theme().drawImage(rectangle(), m_hoverTexture);
 			else
 				GUIManager::theme().drawImage(rectangle(), m_backgroundTexture);
 		} else
-			GUIManager::theme().drawButton(rectangle(), mouseOver, isAnyButtonDown(), true);
+			GUIManager::theme().drawButton(rectangle(), mouseOver, mouseDown, true);
 
 		// Icon
 		if(m_iconTexture)
