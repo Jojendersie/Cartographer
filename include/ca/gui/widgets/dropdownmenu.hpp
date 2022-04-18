@@ -14,6 +14,7 @@ namespace ca { namespace gui {
 	{
 	public:
 		DropDownMenu();
+		~DropDownMenu();
 
 		void setMaxShownItems(int _num) { m_maxNumShown = _num; }
 		int getMaxShownItems() const { return m_maxNumShown; }

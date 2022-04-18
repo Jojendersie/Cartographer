@@ -156,6 +156,9 @@ namespace ca { namespace gui {
 		m_list->setParent(this);
 	}
 
+
+	DropDownMenu::~DropDownMenu() {}
+
 	
 	int DropDownMenu::addItem(const char* _text, const char* _textureFile, bool _smooth)
 	{
