@@ -82,18 +82,18 @@ namespace ca { namespace gui {
 			// most component receives the input first.
 			for(int i = (int)m_children.size()-1; i >= 0; --i)
 			{
-				WidgetPtr& e = m_children[i].widget;
+				Widget* e = m_children[i].widget.get();
 				if(e->isVisible())
 				{
 					const bool mouseOnWidget = e->isMouseOver(GUIManager::getMouseState().position);
 					if(mouseOnWidget)
-						GUIManager::setMouseOver(e.get());
+						GUIManager::setMouseOver(e);
 					if(e->isEnabled()
 						&& mouseOnWidget
 						&& e->processInput(_mouseState))
 					{
 						// If a group took the input change the order
-						const bool isGroup = dynamic_cast<Group*>(e.get()) != nullptr;
+						const bool isGroup = dynamic_cast<Group*>(e) != nullptr;
 						if(isGroup && _mouseState.anyButtonDown)
 							moveToFront(i);
 						return true;

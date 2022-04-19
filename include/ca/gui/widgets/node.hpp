@@ -21,6 +21,11 @@ namespace ca { namespace gui {
 		/// Implement the draw method
 		void draw() const override;
 
+		/// Create new connectors on button down
+		bool processInput(const struct MouseState& _mouseState) override;
+
+		void onExtentChanged() override;
+
 		/// The rotation determines the starting direction of all edges.
 		/// \param [in] _angle Angle in radiant where 0 is showing right.
 		void setRotation(float _angle) { m_angle = _angle; }
@@ -29,7 +34,7 @@ namespace ca { namespace gui {
 		void setColor(const ei::Vec3& _color) { m_color = _color; }
 		const ei::Vec3& color() const { return m_color; }
 
-		/// Get a direction vector in wich connectors should start
+		/// Get a direction vector in which connectors should start
 		ei::Vec2 getConnectorDirection() const;
 
 		/// Set the radius in which a connector can snap to the node.
@@ -39,6 +44,8 @@ namespace ca { namespace gui {
 		std::vector<NodeConnectorPtr> m_edges;
 		ei::Vec3 m_color;
 		float m_angle;
+
+		void removeEdge(const NodeConnector* e);
 	};
 
 	typedef pa::RefPtr<NodeHandle> NodeHandlePtr;
@@ -48,6 +55,7 @@ namespace ca { namespace gui {
 	{
 	public:
 		NodeConnector();
+		~NodeConnector();
 
 		/// Implement the draw method
 		void draw() const override;
@@ -55,8 +63,14 @@ namespace ca { namespace gui {
 		/// Tear off from a node if clicked an snap (back) if released.
 		bool processInput(const MouseState& _mouseState) override;
 
-		void setSource(NodeHandlePtr _node)		{m_sourceNode = _node;}
-		void setDest(NodeHandlePtr _node)		{m_destNode = _node;}
+		void onExtentChanged() override;
+
+		/// Attach one end of the connection to a node handle or detach via (nullptr).
+		void setSource(NodeHandlePtr _node);
+		void setDest(NodeHandlePtr _node);
+
+		/// Bring into a state where one of the two points follows the mouse
+		void setMouseAttached(const bool _atSrc);
 
 		virtual const IRegion* getRegion() const override { return this; }
 
@@ -69,6 +83,7 @@ namespace ca { namespace gui {
 		NodeHandlePtr m_sourceNode;
 		NodeHandlePtr m_destNode;
 		float m_stiffness;
+		std::vector<ei::Vec2> m_curve;
 
 		enum class HandleState
 		{
@@ -81,7 +96,9 @@ namespace ca { namespace gui {
 		/// Implementation of IRegion::isMouseOver.
 		bool isMouseOver(const Coord2& _mousePos) const override;
 
-		mutable bool m_isMouseOver;		///< Store the result of the last test
+		void removeThis();
+
+		mutable bool m_isMouseOver;		///< Store the result of the last test (because it is expensive)
 		mutable float m_mouseT;			///< Store curve parameter 't' of last isMouseOver test. This is undefined if m_isMouseOver is false.
 	};
 

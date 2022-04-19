@@ -1,4 +1,5 @@
 #include "ca/gui/widgets/node.hpp"
+#include "ca/gui/widgets/group.hpp"
 #include "ca/gui/guimanager.hpp"
 #include "ca/gui/rendering/theme.hpp"
 #include "ca/gui/backend/renderbackend.hpp"
@@ -122,6 +123,30 @@ namespace ca { namespace gui {
 		//GUIManager::theme().drawCheckbox(m_refFrame, true, true);
 	}
 
+	bool NodeHandle::processInput(const struct MouseState& _mouseState)
+	{
+		const bool cursorOnWidget = getRegion()->isMouseOver(_mouseState.position);
+		if(!cursorOnWidget) return false;
+
+		if(_mouseState.btnDown(0))
+		{
+			NodeConnectorPtr con ( new NodeConnector );
+			con->setSource(NodeHandlePtr{this});
+			con->setMouseAttached(false);
+			// The parent must be a group -> add new connector as sibling.
+			Group* p = dynamic_cast<Group*>(parent());
+			if(p)
+				p->add(con);
+		}
+		return true;
+	}
+
+	void NodeHandle::onExtentChanged()
+	{
+		for(auto& e : m_edges)
+			e->onExtentChanged();
+	}
+
 	ei::Vec2 NodeHandle::getConnectorDirection() const
 	{
 		return ei::Vec2(cos(m_angle), sin(m_angle));
@@ -130,6 +155,16 @@ namespace ca { namespace gui {
 	void NodeHandle::setConnectorSnapRadius(Coord _radius)
 	{
 		NodeList::s_snapRadiusSq = _radius * _radius;
+	}
+
+	void NodeHandle::removeEdge(const NodeConnector* e)
+	{
+		for(auto it = m_edges.begin(); it != m_edges.end(); ++it)
+		if(it->get() == e)
+		{
+			m_edges.erase(it);
+			return;
+		}
 	}
 
 
@@ -150,6 +185,7 @@ namespace ca { namespace gui {
 		}
 	}
 
+	const int CONNECTOR_NUM_POINTS = 48; // TODO: replace with distance (src <-> dst) dependent term
 	NodeConnector::NodeConnector() :
 		Clickable(this),
 		m_stiffness(1.0f/3.0f),
@@ -162,55 +198,24 @@ namespace ca { namespace gui {
 		// Make sure that the mouse node is always existing.
 		if(!s_tmpMouseNode)
 			s_tmpMouseNode = new NodeHandle(false);
+		m_curve.resize(CONNECTOR_NUM_POINTS);
 	}
 
-	const int CONNECTOR_NUM_POINTS = 32;
+	NodeConnector::~NodeConnector()
+	{
+	}
+
 	void NodeConnector::draw() const
 	{
-		// Control points of a cubic Bezier spline:
-		Vec2 p0, p1, p2, p3;
-		// As support vectors take the direction given by the node handles
-		// with a lenght of 1/3 from the distance between the two nodes.
-		bool mouseFarAwayFromSrc = lensq(m_sourceNode->center() - s_tmpMouseNode->position()) > NodeList::s_snapRadiusSq;
-		bool mouseFarAwayFromDst = lensq(m_destNode->center() - s_tmpMouseNode->position()) > NodeList::s_snapRadiusSq;
-		if(m_tmpHandleState == HandleState::TMP_SRC && mouseFarAwayFromSrc)
-			p0 = s_tmpMouseNode->position();
-		else {
-			p0 = m_sourceNode->center();
-			p0 += m_sourceNode->getConnectorDirection() * m_sourceNode->size() / 2.0f;
-		}
-		if(m_tmpHandleState == HandleState::TMP_DST && mouseFarAwayFromDst)
-			p3 = s_tmpMouseNode->position();
-		else {
-			p3 = m_destNode->center();
-			p3 += m_destNode->getConnectorDirection() * m_destNode->size() / 2.0f;
-		}
-		float distance = len(p0 - p3) * m_stiffness;
-		if((m_tmpHandleState == HandleState::TMP_SRC && mouseFarAwayFromSrc)
-			|| (m_tmpHandleState == HandleState::TMP_DST && mouseFarAwayFromDst))
-			distance /= 2.0f;
-		// Reuse the one existing control point from the non-temp node for the
-		// tmp connection direction. This way the temp node does not need an own
-		// direction and the curve is visually reduced to a quadratic spline.
-		if(m_tmpHandleState == HandleState::TMP_SRC && mouseFarAwayFromSrc)
-			p1 = p3 + m_destNode->getConnectorDirection() * distance;
-		else
-			p1 = p0 + m_sourceNode->getConnectorDirection() * distance;
-		if(m_tmpHandleState == HandleState::TMP_DST && mouseFarAwayFromDst)
-			p2 = p0 + m_sourceNode->getConnectorDirection() * distance;
-		else
-			p2 = p3 + m_destNode->getConnectorDirection() * distance;
-
-		Coord2 wayPoints[CONNECTOR_NUM_POINTS];
-		Coord2 bbmin, bbmax;
-		createBezierSpline(p0, p1, p2, p3, CONNECTOR_NUM_POINTS, wayPoints, bbmin, bbmax);
 		bool mouseOver = isMouseOver(GUIManager::getMouseState().position);
-		Vec4 sourceColor = ei::Vec4(m_sourceNode->color() * (mouseOver ? 2.0f : 1.0f), 1.0f);
-		Vec4 destColor = ei::Vec4(m_destNode->color() * (mouseOver ? 2.0f : 1.0f), 1.0f);
-		GUIManager::theme().drawLine(wayPoints, CONNECTOR_NUM_POINTS, sourceColor, destColor);
-
-		NodeConnector* t = const_cast<NodeConnector*>(this);
-		t->silentSetFrame(bbmin.x - 3.0f, bbmin.y - 3.0f, bbmax.x + 3.0f, bbmax.y + 3.0f);
+		Vec3 sourceColor = m_sourceNode ? m_sourceNode->color() : Vec3{0.5f};
+		Vec3 destColor = m_destNode ? m_destNode->color() : Vec3{0.5f};
+		if(mouseOver)
+		{
+			sourceColor *= 2.0f;
+			destColor *= 2.0f;
+		}
+		GUIManager::theme().drawLine(m_curve.data(), CONNECTOR_NUM_POINTS, Vec4{sourceColor,1.0f}, Vec4{destColor,1.0f});
 	}
 
 	bool NodeConnector::isMouseOver(const Coord2& _mousePos) const
@@ -221,25 +226,15 @@ namespace ca { namespace gui {
 
 		// Move along the spline and check if any segment is closer than 3.0 pixels
 		// to the mouse position.
-		Vec2 p0 = m_sourceNode->center();
-		p0 += m_sourceNode->getConnectorDirection() * m_sourceNode->size() / 2.0f;
-		Vec2 p3 = m_destNode->center();
-		p3 += m_destNode->getConnectorDirection() * m_destNode->size() / 2.0f;
-		float nodeDistance = len(p0 - p3) * m_stiffness;
-		Vec2 p1 = p0 + m_sourceNode->getConnectorDirection() * nodeDistance;
-		Vec2 p2 = p3 + m_destNode->getConnectorDirection() * nodeDistance;
-
 		Segment2D line;
-		line.a = p0;
+		line.a = m_curve[0];
 		for(int i = 1; i < CONNECTOR_NUM_POINTS; ++i)
 		{
-			float t = i / (CONNECTOR_NUM_POINTS - 1.0f);
-			float ti = 1.0f - t;
-			line.b = Vec2( ti*ti*ti * p0 + 3.0f*ti*ti*t * p1 + 3.0f*ti*t*t * p2 + t*t*t * p3);
+			line.b = m_curve[i];
 			// Test if the _mousePos is close to the line segment l0-l1
 			if(distanceSq(line, _mousePos) <= 9.0f) {
 				m_isMouseOver = true;
-				m_mouseT = t;
+				m_mouseT = i / (CONNECTOR_NUM_POINTS - 1.0f);
 				return true;
 			}
 			line.a = line.b;
@@ -247,9 +242,30 @@ namespace ca { namespace gui {
 		return false;
 	}
 
+	void NodeConnector::removeThis()
+	{
+		// Removing from all others can cause a deletion half way through this method.
+		WidgetPtr thisPinned{this};
+		Group* p = dynamic_cast<Group*>(parent());
+		if(p)
+			p->remove(thisPinned);
+		if(m_sourceNode)
+		{
+			m_sourceNode->removeEdge(this);
+			m_sourceNode = nullptr;
+		}
+		if(m_destNode)
+		{
+			m_destNode->removeEdge(this);
+			m_destNode = nullptr;
+		}
+	}
+
 	bool NodeConnector::processInput(const MouseState& _mouseState)
 	{
-		if(m_isMouseOver && _mouseState.buttons[0] == MouseState::ButtonState::DOWN)
+		const HandleState oldState = m_tmpHandleState;
+
+		if(m_isMouseOver && _mouseState.btnDown(0))
 		{
 			// Tear off now
 			if(m_mouseT < 0.5)
@@ -258,8 +274,15 @@ namespace ca { namespace gui {
 				m_tmpHandleState = HandleState::TMP_DST;
 		}
 
-		if(_mouseState.buttons[0] == MouseState::ButtonState::RELEASED)
+		if(_mouseState.btnReleased(0))
+		{
 			m_tmpHandleState = HandleState::ATTACHED;
+			if(!m_sourceNode || !m_destNode)
+			{
+				removeThis();
+				return true;
+			}
+		}
 
 		if(m_tmpHandleState != HandleState::ATTACHED)
 		{
@@ -268,17 +291,116 @@ namespace ca { namespace gui {
 			GUIManager::setMouseFocus(this, true);
 			// Look if there is a close node.
 			NodeHandle* handle = NodeList::findClosest(_mouseState.position);
-			if(handle)
-			{
-				if(m_tmpHandleState == HandleState::TMP_SRC)
-					m_sourceNode = handle;
-				else if(m_tmpHandleState == HandleState::TMP_DST)
-					m_destNode = handle;
-			}
+			if(m_tmpHandleState == HandleState::TMP_SRC)
+				setSource(NodeHandlePtr{handle});
+			else if(m_tmpHandleState == HandleState::TMP_DST)
+				setDest(NodeHandlePtr{handle});
 		}
+
+		if(oldState != m_tmpHandleState || _mouseState.deltaPos() != Vec2{0.0f})
+			onExtentChanged();
 
 		return m_tmpHandleState != HandleState::ATTACHED;
 	}
+
+
+	void NodeConnector::onExtentChanged()
+	{
+		const Vec2 srcPos = m_sourceNode ? m_sourceNode->center() : s_tmpMouseNode->position();
+		const Vec2 dstPos = m_destNode ? m_destNode->center() : s_tmpMouseNode->position();
+		const Vec2 srcDir = m_sourceNode ? m_sourceNode->getConnectorDirection() : Vec2{0.0f};
+		const Vec2 dstDir = m_destNode ? m_destNode->getConnectorDirection() : Vec2{0.0f};
+		// Control points of a cubic Bezier spline:
+		Vec2 p0, p1, p2, p3;
+		// As support vectors take the direction given by the node handles
+		// with a lenght of 1/3 from the distance between the two nodes.
+		bool mouseFarAwayFromSrc = m_sourceNode
+			? (lensq(srcPos - s_tmpMouseNode->position()) > NodeList::s_snapRadiusSq)
+			: true;
+		bool mouseFarAwayFromDst = m_destNode
+			? (lensq(dstPos - s_tmpMouseNode->position()) > NodeList::s_snapRadiusSq)
+			: true;
+		const bool srcUseMouse = !m_sourceNode || (m_tmpHandleState == HandleState::TMP_SRC && mouseFarAwayFromSrc);
+		const bool dstUseMouse = !m_destNode || (m_tmpHandleState == HandleState::TMP_DST && mouseFarAwayFromDst);
+		if(srcUseMouse)
+			p0 = s_tmpMouseNode->position();
+		else {
+			p0 = srcPos;
+			p0 += srcDir * m_sourceNode->size() / 2.0f;
+		}
+		if(dstUseMouse)
+			p3 = s_tmpMouseNode->position();
+		else {
+			p3 = dstPos;
+			p3 += dstDir * m_destNode->size() / 2.0f;
+		}
+		float distance = len(p0 - p3) * m_stiffness;
+		if(srcUseMouse || dstUseMouse)
+			distance /= 2.0f;
+		// Reuse the one existing control point from the non-temp node for the
+		// tmp connection direction. This way the temp node does not need an own
+		// direction and the curve is visually reduced to a quadratic spline.
+		if(srcUseMouse)
+			p1 = p3 + dstDir * distance;
+		else
+			p1 = p0 + srcDir * distance;
+		if(dstUseMouse)
+			p2 = p0 + srcDir * distance;
+		else
+			p2 = p3 + dstDir * distance;
+
+		m_curve.resize(CONNECTOR_NUM_POINTS);
+		Coord2 bbmin, bbmax;
+		createBezierSpline(p0, p1, p2, p3, CONNECTOR_NUM_POINTS, m_curve.data(), bbmin, bbmax);
+		silentSetFrame(bbmin.x - 3.0f, bbmin.y - 3.0f, bbmax.x + 3.0f, bbmax.y + 3.0f);
+
+		Widget::onExtentChanged();
+	}
+
+
+	void NodeConnector::setSource(NodeHandlePtr _node)
+	{
+		if(m_sourceNode != _node && m_destNode != _node)
+		{
+			if(m_sourceNode)
+				m_sourceNode->removeEdge(this);
+			m_sourceNode = _node;
+			if(m_sourceNode)
+				m_sourceNode->m_edges.push_back(NodeConnectorPtr{this});
+			onExtentChanged();
+		}
+	}
+	
+	void NodeConnector::setDest(NodeHandlePtr _node)
+	{
+		if(m_destNode != _node && m_sourceNode != _node)
+		{
+			if(m_destNode)
+				m_destNode->removeEdge(this);
+			m_destNode = _node;
+			if(m_destNode)
+				m_destNode->m_edges.push_back(NodeConnectorPtr{this});
+			onExtentChanged();
+		}
+	}
+
+
+	void NodeConnector::setMouseAttached(const bool _atSrc)
+	{
+		HandleState newState = _atSrc ? HandleState::TMP_SRC : HandleState::TMP_DST;
+		if(newState != m_tmpHandleState)
+		{
+			m_tmpHandleState = newState;
+			eiAssert(m_tmpHandleState == HandleState::TMP_SRC || m_tmpHandleState == HandleState::TMP_DST, "One of the two ends must be selected.");
+			s_tmpMouseNode->setPosition(GUIManager::getMouseState().position);
+			onExtentChanged();
+			// Get exclusive focus
+			GUIManager::setMouseFocus(this, true);
+		}
+	}
+
+
+
 
 
 	WidgetConnector::WidgetConnector() :
