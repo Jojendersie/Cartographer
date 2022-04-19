@@ -211,6 +211,20 @@ void priorityQueueBenchmark()
 
 
 
+class PrintObs : public Observer<void>
+{
+public:
+	int m_id;
+	PrintObs(int id) : m_id(id) {}
+	void notify(const void* ev) override
+	{
+		logInfo("Obs ", m_id, " notified.");
+	}
+};
+
+
+
+
 int main()
 {
 	// Output some log messages
@@ -222,6 +236,20 @@ int main()
 		logFatal("Badly wrong!");
 	} catch(...) {
 		std::cerr << "Fatal error caused exception.\n";
+	}
+
+
+	{
+		Observable<void> oba;
+		PrintObs o1(1);
+		oba.register_observer(o1);
+		PrintObs o2(2);
+		oba.register_observer(o2);
+		PrintObs o3(o1);
+		o3.m_id = 3;
+		oba.notify_observers(nullptr);
+		oba.unregister_observer(o2);
+		oba.notify_observers(nullptr);
 	}
 
 	// The valid output for the program is:

@@ -138,6 +138,7 @@
     <ClInclude Include="include\ca\pa\containers\hashpriorityqueue.hpp" />
     <ClInclude Include="include\ca\pa\containers\hashset.hpp" />
     <ClInclude Include="include\ca\pa\containers\priorityqueue.hpp" />
+    <ClInclude Include="include\ca\pa\event.hpp" />
     <ClInclude Include="include\ca\pa\highresclock.hpp" />
     <ClInclude Include="include\ca\pa\log.hpp" />
     <ClInclude Include="include\ca\pa\memory\refptr.hpp" />
