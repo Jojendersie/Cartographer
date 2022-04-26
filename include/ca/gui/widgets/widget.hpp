@@ -13,6 +13,14 @@ namespace ca { namespace gui {
 	typedef pa::RefPtr<Widget> WidgetPtr;
 	typedef pa::RefPtr<const Widget> ConstWidgetPtr;
 
+	/// A deletable object to attach extra information to widgets.
+	/// \details The lifetime of the meta data object is coupled to the widget.
+	class IMetaData
+	{
+	public:
+		virtual ~IMetaData() {}
+	};
+
 	/// Base class with mandatory attributes for all widgets.
 	/// \details A widget only contains the state. State handling in general is up to the derived
 	///		elements.
@@ -118,8 +126,13 @@ namespace ca { namespace gui {
 		WidgetPtr& getInfoPopup() { return m_infoPopup; }
 
 		/// A number which can be used by the user to attach some extra information.
-		/// If you encode a pointer make sure you handle the memory somewhere else.
-		uint64 metaData = 0;
+		uint64 metaTag = 0;
+		/// A customizable type to attach more complex meta data. Must be created with default new.
+		void setMetaData(std::unique_ptr<IMetaData> _data) { m_metaData = std::move(_data); }
+		template<class T>
+		T* metaData() { return reinterpret_cast<T*>(m_metaData.get()); }
+		template<class T>
+		const T* metaData() const { return reinterpret_cast<const T*>(m_metaData.get()); }
 
 		/// Enable calls to processInput of a subcomponent.
 		/// \details This is meant to be used in the constructor of IMouseProcessAble components.
@@ -141,6 +154,8 @@ namespace ca { namespace gui {
 
 		Widget* m_parent;
 		friend class GUIManager; // To trigger events
+
+		std::unique_ptr<IMetaData> m_metaData = nullptr;	///< A customizable type to attach more complex meta data. Must be created with default new.
 
 		// TODO: add onExtentChanged callback (list) that can be set from the outside.
 		OnVisibilityChanged onVisibilityChanged;
