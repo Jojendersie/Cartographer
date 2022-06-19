@@ -12,6 +12,9 @@ namespace ca { namespace gui {
 	public:
 		Label();
 
+		/// Shortcut constructor for new Label + set_text + setBackgroundOpacity
+		Label(const char* _text, float _fitSize, float _opacity);
+
 		/// Implement the draw method
 		void draw() const override;
 

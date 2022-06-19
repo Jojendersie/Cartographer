@@ -14,6 +14,13 @@ namespace ca { namespace gui {
 		setEnabled(false);
 	}
 
+	Label::Label(const char* _text, float _fitSize, float _opacity) :
+		Label()
+	{
+		setText(_text, _fitSize);
+		setBackgroundOpacity(_opacity);
+	}
+
 	void Label::draw() const
 	{
 		if(m_backgroundColor.a > 0.0f)
