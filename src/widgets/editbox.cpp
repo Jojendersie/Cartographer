@@ -2,6 +2,7 @@
 #include "ca/gui/guimanager.hpp"
 #include "ca/gui/rendering/theme.hpp"
 #include "ca/gui/backend/renderbackend.hpp"
+#include "ca/pa/string/utf8.hpp"
 
 using namespace ei;
 
@@ -78,32 +79,6 @@ namespace ca { namespace gui {
 		return pos == std::string::npos ? (uint)_str.length() : pos;
 	}
 
-	//static bool utf8IsStartByte(char _c)
-	//{
-	//	//return ((_c & 0x80) == 0) || ((_c & 0xc0) == 0xc0);
-	//	return (_c & 0xc0) != 0x80;
-	//}
-	static bool utf8IsIntermediateBye(char _c)
-	{
-		return (_c & 0xc0) == 0x80;
-	}
-
-	static uint utf8Next(const char* _text, uint _pos)
-	{
-		if(_text[_pos] == 0) return _pos;
-		++_pos;
-		while(utf8IsIntermediateBye(_text[_pos])) ++_pos;
-		return _pos;
-	}
-
-	static uint utf8Prev(const char* _text, uint _pos)
-	{
-		if(_pos == 0) return 0;
-		--_pos;
-		while(utf8IsIntermediateBye(_text[_pos]) && _pos > 0) --_pos;
-		return _pos;
-	}
-
 
 	bool Edit::processInput(const KeyboardState & _keyboardState)
 	{
@@ -111,14 +86,16 @@ namespace ca { namespace gui {
 		if(!_keyboardState.anyKeyChanged && _keyboardState.characterInput.empty()) return false;
 
 		// Add new text at the cursor position
-		if(!_keyboardState.characterInput.empty())
+		if(!_keyboardState.characterInput.empty() && isAllowedValue(_keyboardState.characterInput.c_str()))
 		{
-			int oldLen = (int)m_text.length();
-			m_text = m_text.substr(0, m_cursorPosition)
+			std::string newText = m_text.substr(0, m_cursorPosition)
 				+ _keyboardState.characterInput
 				+ m_text.substr(m_cursorPosition);
-			if(m_onTextChange) m_onTextChange(this, m_text);
-			m_cursorPosition += (int)m_text.length() - oldLen;
+			m_cursorPosition += _keyboardState.characterInput.length();
+			m_cursorPosition = repairText(newText);
+			if(m_onTextChange) m_onTextChange(this, newText);
+			m_text = newText;
+			m_cursorPosition = std::min((int)newText.length(), m_cursorPosition);
 			recomputeTextPlacement(false);
 			return true;
 		}
@@ -129,13 +106,13 @@ namespace ca { namespace gui {
 			if(_keyboardState.isControlPressed())
 				m_cursorPosition = findPrevControlStop(m_text, m_cursorPosition);
 			else
-				m_cursorPosition = utf8Prev( m_text.c_str(), m_cursorPosition );
+				m_cursorPosition = pa::utf8::prev( m_text.c_str(), m_cursorPosition );
 		}
 		if(_keyboardState.isKeyDown(KeyboardState::Key::ARROW_RIGHT)) {
 			if(_keyboardState.isControlPressed())
 				m_cursorPosition = findNextControlStop(m_text, m_cursorPosition);
 			else
-				m_cursorPosition = utf8Next( m_text.c_str(), m_cursorPosition );
+				m_cursorPosition = pa::utf8::next( m_text.c_str(), m_cursorPosition );
 		}
 		if(_keyboardState.isKeyDown(KeyboardState::Key::END)
 			|| (_keyboardState.isKeyDown(KeyboardState::Key::NUMPAD_1) ))//&& _keyboardState.isNumLock()))
@@ -151,7 +128,7 @@ namespace ca { namespace gui {
 			uint num = 0;
 			if(_keyboardState.isControlPressed())
 				num = m_cursorPosition - findPrevControlStop(m_text, m_cursorPosition);
-			else num = m_cursorPosition - utf8Prev(m_text.c_str(), m_cursorPosition);
+			else num = m_cursorPosition - pa::utf8::prev(m_text.c_str(), m_cursorPosition);
 			m_cursorPosition -= num;
 			m_text.erase(m_cursorPosition, num);
 			if(m_onTextChange) m_onTextChange(this, m_text);
@@ -163,7 +140,7 @@ namespace ca { namespace gui {
 			if(_keyboardState.isControlPressed())
 				num = findNextControlStop(m_text, m_cursorPosition) - m_cursorPosition;
 			else
-				num = utf8Next(m_text.c_str(), m_cursorPosition) - m_cursorPosition;
+				num = pa::utf8::next(m_text.c_str(), m_cursorPosition) - m_cursorPosition;
 			m_text.erase(m_cursorPosition, num);
 			if(m_onTextChange) m_onTextChange(this, m_text);
 			// Does not change the cursor -> not handled automatically.
@@ -186,6 +163,7 @@ namespace ca { namespace gui {
 	{
 		m_text = _text;
 		m_cursorPosition = 0;
+		repairText(m_text);
 		if(m_onTextChange) m_onTextChange(this, m_text);
 		recomputeTextPlacement(true);
 	}
@@ -246,6 +224,150 @@ namespace ca { namespace gui {
 		curPos.x -= cursorSize.x * 0.5f;
 		m_cursorDrawPosition = curPos + Vec2(offset, 0.0f);
 		m_textPosition = textPos + Vec2(offset, 0.0f);
+	}
+
+	bool Edit::isAllowedValue(const char* _newChar) const
+	{
+		switch (m_filter)
+		{
+			case TextFilterMode::NONE: return true;
+			case TextFilterMode::INTEGER_POS:
+				return pa::utf8::isDigit(_newChar);
+			case TextFilterMode::INTEGER:
+				return pa::utf8::isDigit(_newChar) || pa::utf8::isSign(_newChar);
+			case TextFilterMode::DECIMAL:
+				return pa::utf8::isDigit(_newChar) || pa::utf8::isSign(_newChar) || (*_newChar == '.');
+			case TextFilterMode::FLOAT:
+				return pa::utf8::isDigit(_newChar) || pa::utf8::isSign(_newChar) || (*_newChar == '.') || (*_newChar == 'e');
+		}
+		return false;
+	}
+
+	int Edit::repairText(std::string& _newText) const
+	{
+		int newCursor = 0;
+		switch (m_filter)
+		{
+			case TextFilterMode::NONE: break;
+			case TextFilterMode::INTEGER_POS: {
+				std::string filtered;
+				for(size_t i = 0; i < _newText.length() && ((int)filtered.length() < m_filterPrecision); ++i)
+				{
+					if(pa::utf8::isDigit(&_newText[i]))
+					{
+						// Lookahead 1 to check if the current character is a leading zero
+						if(filtered.empty() && (_newText[i] == '0') && (_newText[i+1] != '\0'))
+							continue;
+						filtered += _newText[i];
+						if((int)i < m_cursorPosition)
+							++newCursor;
+					}
+				}
+				_newText = filtered;
+			} break;
+			case TextFilterMode::INTEGER: {
+				std::string filtered;
+				int precision = 0;
+				for(size_t i = 0; i < _newText.length() && (precision < m_filterPrecision); ++i)
+				{
+					bool add = false;
+					if(pa::utf8::isDigit(&_newText[i]))
+					{
+						// Lookahead 1 to check if the current character is a leading zero
+						if(filtered.empty() && (_newText[i] == '0') && (_newText[i+1] != '\0'))
+							continue;
+						add = true;
+						++precision;
+					}
+					else if(pa::utf8::isSign(&_newText[i]) && (filtered.length() == 0))
+					{
+						add = true;
+					}
+
+					if(add)
+					{
+						filtered += _newText[i];
+						if((int)i < m_cursorPosition)
+							++newCursor;
+					}
+				}
+				_newText = filtered;
+			} break;
+			case TextFilterMode::DECIMAL: {
+				std::string filtered;
+				bool hasPoint = m_cursorPosition > 0 ? _newText[m_cursorPosition-1] == '.' : false; // If there are multiple points keep the one that just got inserted
+				int precision = 0;
+				for(size_t i = 0; i < _newText.length(); ++i)
+				{
+					bool add = false;
+					if(pa::utf8::isSign(&_newText[i]) && (filtered.length() == 0))
+					{
+						add = true;
+					}
+					else if(pa::utf8::isDigit(&_newText[i]) && (precision < m_filterPrecision))
+					{
+						// Lookahead 1 to check if the current character is a leading zero
+						if(filtered.empty() && (_newText[i] == '0') && (_newText[i+1] != '.') && (_newText[i+1] != '\0'))
+							continue;
+						add = true;
+						++precision;
+					}
+					else if(_newText[i] == '.' && (!hasPoint || (int)i == m_cursorPosition-1))
+					{
+						add = hasPoint = true;
+					}
+					// Fallthrough: Anything that wasn't added above will vanish
+					if(add)
+					{
+						filtered += _newText[i];
+						if((int)i < m_cursorPosition)
+							++newCursor;
+					}
+				}
+				_newText = filtered;
+			} break;
+			case TextFilterMode::FLOAT: {
+				std::string filtered;
+				int ePos = -1;
+				bool hasPoint = m_cursorPosition > 0 ? _newText[m_cursorPosition-1] == '.' : false; // If there are multiple points keep the one that just got inserted
+				int precision = 0;
+				for(size_t i = 0; i < _newText.length(); ++i)
+				{
+					bool add = false;
+					//if(pa::utf8::isSign(&_newText[i]) && ((filtered.length() == 0) || (ePos+1 == (int)filtered.length())))
+					if(pa::utf8::isSign(&_newText[i]) && (ePos+1 == (int)filtered.length())) // Equiv. to above due to initialization of ePos
+					{
+						add = true;
+					}
+					else if(_newText[i] == 'e' && (ePos == -1))
+					{
+						add = true;
+						ePos = (int)i;
+					}
+					else if(pa::utf8::isDigit(&_newText[i]) && (ePos != -1 || precision < m_filterPrecision))
+					{
+						// Lookahead 1 to check if the current character is a leading zero
+						if(filtered.empty() && (_newText[i] == '0') && (_newText[i+1] != '.') && (_newText[i+1] != '\0'))
+							continue;
+						add = true;
+						++precision;
+					}
+					else if(_newText[i] == '.' && (!hasPoint || (int)i == m_cursorPosition-1))
+					{
+						add = hasPoint = true;
+					}
+					// Fallthrough: Anything that wasn't added above will vanish
+					if(add)
+					{
+						filtered += _newText[i];
+						if((int)i < m_cursorPosition)
+							++newCursor;
+					}
+				}
+				_newText = filtered;
+			} break;
+		}
+		return newCursor;
 	}
 
 	void Edit::onExtentChanged()
