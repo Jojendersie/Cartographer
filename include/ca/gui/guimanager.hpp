@@ -87,6 +87,9 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		static void setMouseOver(Widget* _widget);
 		static bool isMouseOver(Widget* _widget);
 
+		/// Remove any reference to a widget from the current state.
+		static void defocus(const Widget* _widget);
+
 		/// What cursor should actually be used?
 		static CursorType getCursorType();
 

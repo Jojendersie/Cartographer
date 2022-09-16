@@ -298,6 +298,17 @@ namespace ca { namespace gui {
 		return g_manager->m_mouseOver == _widget;
 	}
 
+	void GUIManager::defocus(const Widget* _widget)
+	{
+		if(!g_manager) return;
+		if(g_manager->m_keyboardFocus == _widget)
+			g_manager->m_keyboardFocus = nullptr;
+		if(g_manager->m_mouseFocus == _widget)
+			g_manager->m_mouseFocus = nullptr;
+		if(g_manager->m_mouseOver == _widget)
+			g_manager->m_mouseOver = nullptr;
+	}
+
 	CursorType GUIManager::getCursorType()
 	{
 		return g_manager->m_cursorType;

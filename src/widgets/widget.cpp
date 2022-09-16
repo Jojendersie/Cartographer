@@ -18,10 +18,7 @@ namespace ca { namespace gui {
 
 	Widget::~Widget()
 	{
-		if(GUIManager::hasMouseFocus(this))
-			GUIManager::setMouseFocus(nullptr);
-		if(GUIManager::hasKeyboardFocus(this))
-			GUIManager::setKeyboardFocus(nullptr);
+		GUIManager::defocus(this);
 	}
 
 	void Widget::setSize(const Coord2& _size)

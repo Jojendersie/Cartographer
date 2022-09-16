@@ -47,6 +47,12 @@ namespace ca { namespace gui {
 
 	void Group::remove(WidgetPtr _widget)
 	{
+		for(auto it : m_nameMap)
+			if(it.data() == _widget)
+		{
+			m_nameMap.remove(it.key());
+			break;
+		}
 		// Search linearly in one of the lists.
 		for(auto it = m_children.begin(); it != m_children.end(); ++it)
 			if(it->widget == _widget)
@@ -80,7 +86,8 @@ namespace ca { namespace gui {
 		{
 			// Forward to sub-elements. Use inverse order such that the visibly top
 			// most component receives the input first.
-			for(int i = (int)m_children.size()-1; i >= 0; --i)
+			const int num_children = (int)m_children.size();
+			for(int i = num_children-1; i >= 0; --i)
 			{
 				Widget* e = m_children[i].widget.get();
 				if(e->isVisible())
@@ -92,12 +99,16 @@ namespace ca { namespace gui {
 						&& mouseOnWidget
 						&& e->processInput(_mouseState))
 					{
+						// If something got deleted/added stop further processing
+						if(num_children != (int)m_children.size()) return true;
 						// If a group took the input change the order
 						const bool isGroup = dynamic_cast<Group*>(e) != nullptr;
 						if(isGroup && _mouseState.anyButtonDown)
 							moveToFront(i);
 						return true;
 					}
+					// If something got deleted/added stop further processing
+					if(num_children != (int)m_children.size()) return true;
 				}
 			}
 		}
