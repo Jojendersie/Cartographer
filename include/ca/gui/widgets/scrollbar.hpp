@@ -50,9 +50,15 @@ namespace ca { namespace gui {
 		/// Set or get the offset, which is number in [0, totalSize-availableSize]
 		/// that can be used to move the content of totalSize extent such that
 		/// either the beginning or the end (or both) still fit into availableSize.
+		/// The offset is measured from the bottom, see setScrollOffsetTop() for
+		/// the reverse.
 		/// Note that the recommended usage is to use the provided anchors.
 		void setScrollOffset(const float _amount);
 		float getScrollOffset() const { return m_intervalStart; }
+
+		/// Like setScrollOffset() but measures distance beginning at top.
+		void setScrollOffsetTop(const float _amount);
+		float getScrollOffsetTop() const { return ei::max(0.0f, (m_totalSize - m_availableSize) - m_intervalStart); }
 
 		/// Returns a special anchor provider of a frame that moves around.
 		/// \details This anchor frame has to be used for things that should move

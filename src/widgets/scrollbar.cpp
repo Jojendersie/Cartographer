@@ -166,6 +166,11 @@ namespace ca { namespace gui {
 		checkInterval();
 	}
 
+	void ScrollBar::setScrollOffsetTop(const float _amount)
+	{
+		setScrollOffset((m_totalSize - m_availableSize) - _amount);
+	}
+
 
 	float ScrollBar::getAvailableSize() const
 	{
