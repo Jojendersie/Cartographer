@@ -119,9 +119,16 @@ namespace ca { namespace gui {
 	}
 
 
-	void Widget::addOnExtentChangeFunc(OnExtendChanged _callback)
+	void Widget::addOnExtentChangeFunc(IExtentChangedReceiver* _receiver)
 	{
-		m_onExtentChangedFuncs.push_back(std::move(_callback));
+		m_onExtentChangedFuncs.push_back(std::move(_receiver));
+	}
+
+
+	void Widget::removeOnExtentChangeFunc(IExtentChangedReceiver* _receiver)
+	{
+		std::remove_if(m_onExtentChangedFuncs.begin(), m_onExtentChangedFuncs.end(),
+			[_receiver](IExtentChangedReceiver* _elem){ return _elem == _receiver; });
 	}
 
 

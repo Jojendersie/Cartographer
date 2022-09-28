@@ -21,6 +21,19 @@ namespace ca { namespace gui {
 		virtual ~IMetaData() {}
 	};
 
+
+	/// Callback handler for OnExtentChanged.
+	class IExtentChangedReceiver
+	{
+	public:
+		virtual ~IExtentChangedReceiver() {}
+		/// If an object's extent changes it will call this function on all
+		/// registered receivers.
+		/// \param [in] _origin The object who's extent changed.
+		virtual void receiveExtentChange(const Widget* _origin) = 0;
+	};
+
+
 	/// Base class with mandatory attributes for all widgets.
 	/// \details A widget only contains the state. State handling in general is up to the derived
 	///		elements.
@@ -88,8 +101,8 @@ namespace ca { namespace gui {
 		void setOnPopupFunc(OnPopup _callback) { onPopup = _callback; }
 		void showAsPopup(const Widget* _originator) { show(); if(onPopup) onPopup(this, _originator); }
 		/// Callback function to get notified if something changed the widget extent.
-		typedef std::function<void(Widget* _this)> OnExtendChanged;
-		void addOnExtentChangeFunc(OnExtendChanged _callback);
+		void addOnExtentChangeFunc(IExtentChangedReceiver* _receiver);
+		void removeOnExtentChangeFunc(IExtentChangedReceiver* _receiver);
 
 		/// True if the mouse is on the interaction region and the element is focused by
 		/// the GUIManager. I.e. there is no other element in front of this one.
@@ -160,7 +173,7 @@ namespace ca { namespace gui {
 		// TODO: add onExtentChanged callback (list) that can be set from the outside.
 		OnVisibilityChanged onVisibilityChanged;
 		OnPopup onPopup;
-		std::vector<OnExtendChanged> m_onExtentChangedFuncs;
+		std::vector<IExtentChangedReceiver*> m_onExtentChangedFuncs;
 		OnKeyboardFocus m_onKeyboardFocus;
 	};
 
