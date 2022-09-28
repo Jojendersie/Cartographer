@@ -6,10 +6,25 @@
 
 namespace ca { namespace gui {
 
-	Group::Group()
+	Group::Group() :
+		m_autoResize(true)
 	{
-		// Just use extreme large coordinates to make the group always visible
-		setExtent(Coord2(0.0f), Coord2(5000.0f));
+	}
+
+	Group::Group(bool _autoResize) :
+		m_autoResize{_autoResize}
+	{
+	}
+
+	Group::~Group()
+	{
+		if(m_autoResize)
+		{
+			// Somewhat wasted, if the children go away with the group,
+			// so check the reference counter first.
+			for(auto& i : m_children) if (i.widget->getRefCount() > 1)
+				i.widget->removeOnExtentChangeFunc(this);
+		}
 	}
 
 	void Group::draw() const
@@ -27,7 +42,7 @@ namespace ca { namespace gui {
 	void Group::add(WidgetPtr _widget, unsigned _innerLayer)
 	{
 		_widget->setParent(this);
-		m_children.push_back({std::move(_widget), _innerLayer});
+		m_children.push_back({_widget, _innerLayer});
 		// Move to the front of the vector as long as there are elements
 		// with a larger layer (-> insertion sort).
 		auto currentIt = m_children.rbegin();
@@ -36,6 +51,12 @@ namespace ca { namespace gui {
 		{
 			std::iter_swap(currentIt, nextIt);
 			currentIt = nextIt++;
+		}
+
+		if(m_autoResize)
+		{
+			receiveExtentChange(_widget.get());
+			_widget->addOnExtentChangeFunc(this);
 		}
 	}
 
@@ -47,6 +68,9 @@ namespace ca { namespace gui {
 
 	void Group::remove(WidgetPtr _widget)
 	{
+		if(m_autoResize)
+			_widget->removeOnExtentChangeFunc(this);
+
 		for(auto it : m_nameMap)
 			if(it.data() == _widget)
 		{
@@ -127,6 +151,23 @@ namespace ca { namespace gui {
 			std::iter_swap(currentIt, nextIt);
 			currentIt = nextIt++;
 		}
+	}
+
+
+	void Group::receiveExtentChange(const Widget* _origin)
+	{
+		if(m_children.size() == 1)
+			silentSetFrame(_origin->left(), _origin->bottom(), _origin->right(), _origin->top());
+		else
+			silentSetFrame(ei::min(left(), _origin->left()),
+				ei::min(bottom(), _origin->bottom()),
+				ei::max(right(), _origin->right()),
+				ei::max(top(), _origin->top()));
+		// Here comes the expensive part -- make sure that no anchors move around.
+		// IDEA to get rid of this: have to reference frames -- one for the group size, the other to anchor the internal stuff.
+		resetAnchors();
+		for(auto& c : m_children)
+			c.widget->resetAnchors();
 	}
 
 }} // namespace ca::gui

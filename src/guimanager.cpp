@@ -20,7 +20,7 @@ namespace ca { namespace gui {
 		g_manager->m_renderer = _renderer;
 		g_manager->m_theme = _theme;
 		// Use an internal light-weight frame as container
-		g_manager->m_topFrame = std::make_shared<Group>();
+		g_manager->m_topFrame = std::make_shared<Group>(false);
 		g_manager->m_topFrame->setExtent(ei::Vec2(0.0f), ei::Vec2((float)_width, (float)_height));
 		// Push some (infinite) initial top-level clip region
 		g_manager->m_clipRegionStack.push(ei::IVec4(0, 0x7fffffff, 0, 0x7fffffff));

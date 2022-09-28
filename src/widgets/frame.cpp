@@ -13,6 +13,7 @@ namespace ca { namespace gui {
 		m_passive(false),
 		m_texture(0)
 	{
+		m_autoResize = false; // Overwrite group policy
 		setMoveable(false);
 		setResizeable(false);
 	}

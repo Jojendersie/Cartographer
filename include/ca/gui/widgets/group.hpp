@@ -9,11 +9,11 @@ namespace ca { namespace gui {
 	/// The group is the simplest form of an element container.
 	///
 	/// The group only forwards everything without thinking. It does not render itself,
-	/// makes no clipping and is never resized.
-	/// TODO: positioning might make sense.
+	/// makes no clipping and is resized to its content.
 	/// You can show/hide or enable/disable all contained elements by
 	///	show/hide/enable/disable all the group.
-	class Group : public Widget
+	class Group : public Widget,
+		public IExtentChangedReceiver // Resizes itself if subcomponents change
 	{
 		template<typename GroupT, typename DataT>
 		class IteratorT
@@ -38,6 +38,8 @@ namespace ca { namespace gui {
 		};
 	public:
 		Group();
+		Group(bool _autoResize);
+		~Group();
 
 		/// Implement the draw method
 		void draw() const override;
@@ -81,10 +83,13 @@ namespace ca { namespace gui {
 		};
 		std::vector<WEntry> m_children;			///< List of subelements. The list is sorted after layers and last focus time (last element inside a layer has the focus).
 		pa::HashMap<uint, WidgetPtr> m_nameMap;	///< A mapping to find elements with a constant integer or enum.
+		bool m_autoResize;						///< Adapt current size to contained elements
 
 	private:
 		/// Resort the children list to bring focused element to the front.
 		void moveToFront(size_t _index);
+
+		void receiveExtentChange(const Widget* _origin) override;
 	};
 
 	typedef pa::RefPtr<Group> GroupPtr;
