@@ -14,6 +14,7 @@ namespace ca { namespace pa {
 	{
 	public:
 		virtual ~ReferenceCountable() = default;
+		unsigned getRefCount() const { return m_refCounter; }
 
 	private:
 		// RefPtr should be the only class to manage the reference counter.
