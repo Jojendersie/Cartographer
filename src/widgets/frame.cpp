@@ -11,7 +11,8 @@ namespace ca { namespace gui {
 		Moveable(this),
 		m_opacity(1.0f),
 		m_passive(false),
-		m_texture(0)
+		m_texture(0),
+		m_color{-1.0f}
 	{
 		m_autoResize = false; // Overwrite group policy
 		setMoveable(false);
@@ -34,7 +35,7 @@ namespace ca { namespace gui {
 				if(m_texture)
 					GUIManager::theme().drawImage(rectangle(), m_texture, m_opacity, m_tiling);
 				else
-					GUIManager::theme().drawBackgroundArea(rectangle(), m_opacity);
+					GUIManager::theme().drawBackgroundArea(rectangle(), m_opacity, m_color);
 
 				// Draw all contained children of the group
 				Group::draw();

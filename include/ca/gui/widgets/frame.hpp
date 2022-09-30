@@ -32,6 +32,8 @@ namespace ca { namespace gui {
 		// TODO: recursive transparency?
 		void setBackgroundOpacity(float _opacity);
 		float getBackgroundOpacity() const { return m_opacity; }
+		void setBackgroundColor(const ei::Vec4& _color) { m_color = ei::Vec3{_color}; m_opacity = _color.a; }
+		ei::Vec4 getBackgroundColor() const { return ei::Vec4{m_color, m_opacity}; }
 
 		// A passive frame lets inputs to widgets below the frame through. It behaves similar to
 		// a disabled frame, except that widgets inside the frame receive their inputs as usual.
@@ -42,6 +44,7 @@ namespace ca { namespace gui {
 		bool m_tiling;
 		bool m_passive;
 		uint64 m_texture;
+		ei::Vec3 m_color;
 	};
 
 	typedef pa::RefPtr<Frame> FramePtr;
