@@ -132,6 +132,14 @@ namespace ca { namespace gui {
 	}
 
 
+	void Widget::onExtentChanged()
+	{
+		RefFrame::onExtentChanged();
+		for(auto& it : m_onExtentChangedFuncs)
+			it->receiveExtentChange(this);
+	}
+
+
 	const IRegion * Widget::getRegion() const
 	{
 		if(m_region)

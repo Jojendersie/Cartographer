@@ -103,6 +103,7 @@ namespace ca { namespace gui {
 		/// Callback function to get notified if something changed the widget extent.
 		void addOnExtentChangeFunc(IExtentChangedReceiver* _receiver);
 		void removeOnExtentChangeFunc(IExtentChangedReceiver* _receiver);
+		void onExtentChanged() override;
 
 		/// True if the mouse is on the interaction region and the element is focused by
 		/// the GUIManager. I.e. there is no other element in front of this one.
