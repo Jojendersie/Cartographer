@@ -7,8 +7,9 @@
 namespace ca { namespace gui {
 
 	Group::Group() :
-		m_autoResize(true)
+		m_autoResize{false}
 	{
+		setSize(Coord2{10000.0f});
 	}
 
 	Group::Group(bool _autoResize) :
@@ -127,7 +128,7 @@ namespace ca { namespace gui {
 						if(num_children != (int)m_children.size()) return true;
 						// If a group took the input change the order
 						const bool isGroup = dynamic_cast<Group*>(e) != nullptr;
-						if(isGroup && _mouseState.anyButtonDown)
+						if(isGroup && _mouseState.anyButtonDown && i != (num_children-1))
 							moveToFront(i);
 						return true;
 					}
@@ -137,6 +138,19 @@ namespace ca { namespace gui {
 			}
 		}
 		return false;
+	}
+
+
+	void Group::onExtentChanged()
+	{
+		const bool ar = m_autoResize;
+		m_autoResize = false;
+		Widget::onExtentChanged();
+		if(ar)
+		{
+			m_autoResize = ar;
+			//receiveExtentChange(m_children[0].widget.get());
+		}
 	}
 
 
@@ -156,9 +170,11 @@ namespace ca { namespace gui {
 
 	void Group::receiveExtentChange(const Widget* _origin)
 	{
+		if(!m_autoResize) return;
 		if(m_children.size() == 1)
 			silentSetFrame(_origin->left(), _origin->bottom(), _origin->right(), _origin->top());
 		else
+		// TODO: proper reaction to downsize
 			silentSetFrame(ei::min(left(), _origin->left()),
 				ei::min(bottom(), _origin->bottom()),
 				ei::max(right(), _origin->right()),

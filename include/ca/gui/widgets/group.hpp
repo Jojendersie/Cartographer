@@ -67,6 +67,8 @@ namespace ca { namespace gui {
 		/// Forward input to subelements and to properties
 		virtual bool processInput(const struct MouseState& _mouseState) override;
 
+		void onExtentChanged() override;
+
 		typedef IteratorT<Group, Widget> Iterator;
 		typedef IteratorT<const Group, const Widget> ConstIterator;
 		/// Returns the first element or an invalid handle, if there is no children.
