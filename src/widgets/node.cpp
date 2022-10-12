@@ -157,14 +157,43 @@ namespace ca { namespace gui {
 		NodeList::s_snapRadiusSq = _radius * _radius;
 	}
 
-	void NodeHandle::removeEdge(const NodeConnector* e)
+	void NodeHandle::setConnectorController(ConnectorControllerPtr _controller)
+	{
+		m_controller = _controller;
+	}
+
+	void NodeHandle::removeEdge(NodeConnector* e)
 	{
 		for(auto it = m_edges.begin(); it != m_edges.end(); ++it)
 		if(it->get() == e)
 		{
+			NodeHandle* other = e->getOther(this);
+			if(other)
+			{
+				if(m_controller)
+					m_controller->onDisconnect(other);
+				if(other->m_controller)
+					other->m_controller->onDisconnect(this);
+			}
 			m_edges.erase(it);
 			return;
 		}
+	}
+
+	bool NodeHandle::addEdge(NodeConnectorPtr e)
+	{
+		NodeHandle* other = e->getOther(this);
+		bool valid = true;
+		if(other)
+		{
+			if(m_controller)
+				valid &= m_controller->onConnect(other);
+			if(other->m_controller)
+				valid &= other->m_controller->onConnect(this);
+		}
+		if(valid)
+			m_edges.push_back(e);
+		return valid;
 	}
 
 
@@ -364,9 +393,12 @@ namespace ca { namespace gui {
 		{
 			if(m_sourceNode)
 				m_sourceNode->removeEdge(this);
-			m_sourceNode = _node;
-			if(m_sourceNode)
-				m_sourceNode->m_edges.push_back(NodeConnectorPtr{this});
+			if(_node)
+			{
+				if(_node->addEdge(NodeConnectorPtr{this}))
+					m_sourceNode = _node;
+			}
+			else m_sourceNode = nullptr;
 			onExtentChanged();
 		}
 	}
@@ -377,9 +409,12 @@ namespace ca { namespace gui {
 		{
 			if(m_destNode)
 				m_destNode->removeEdge(this);
-			m_destNode = _node;
-			if(m_destNode)
-				m_destNode->m_edges.push_back(NodeConnectorPtr{this});
+			if(_node)
+			{
+				if(_node->addEdge(NodeConnectorPtr{this}))
+					m_destNode = _node;
+			}
+			else m_destNode = nullptr;
 			onExtentChanged();
 		}
 	}
@@ -397,6 +432,18 @@ namespace ca { namespace gui {
 			// Get exclusive focus
 			GUIManager::setMouseFocus(this, true);
 		}
+	}
+
+	const NodeHandle* NodeConnector::getOther(const NodeHandle* _this) const
+	{
+		if(m_sourceNode.get() == _this) return m_destNode.get();
+		return m_sourceNode.get();
+	}
+
+	NodeHandle* NodeConnector::getOther(const NodeHandle* _this)
+	{
+		if(m_sourceNode.get() == _this) return m_destNode.get();
+		return m_sourceNode.get();
 	}
 
 

@@ -5,6 +5,28 @@
 namespace ca { namespace gui {
 
 	typedef pa::RefPtr<class NodeConnector> NodeConnectorPtr;
+	class NodeHandle;
+
+
+	/// Interface to react to node connection changes
+	class IConnectorController : public pa::ReferenceCountable
+	{
+	public:
+		virtual ~IConnectorController() = default;
+
+		/// Called if a connector is connected to a node handle to react
+		// or reject to the connection.
+		/// \param [in] _hdl The node handle on the other end of the connector.
+		/// \return false if the connection should not be accepted.
+		virtual bool onConnect(NodeHandle* _hdl) = 0;
+
+		/// Called if a connector is broken up.
+		/// \param [in] _hdl The node handle on the other end of the connector (that gets disconnected).
+		virtual void onDisconnect(NodeHandle* _hdl) = 0;
+	};
+
+	typedef pa::RefPtr<class IConnectorController> ConnectorControllerPtr;
+
 
 	/// A small handle for node based editors which can connect to other nodes
 	/// usin spline connectors.
@@ -40,15 +62,27 @@ namespace ca { namespace gui {
 		/// Set the radius in which a connector can snap to the node.
 		static void setConnectorSnapRadius(Coord _radius);
 
+		/// Sets the controller to react on connection changes.
+		/// Note that it is sufficient to set a controller on one side of each
+		/// desired connection. Otherwise there will be two calls for each of the
+		/// ends if both involved nodes have a controller.
+		/// \param [in] _controller A controller instance that will be owned by the
+		///		node handle.
+		void setConnectorController(ConnectorControllerPtr _controller);
+		//IConnectorController* getController() { return m_controller.get(); }
+
 	private:
 		std::vector<NodeConnectorPtr> m_edges;
+		ConnectorControllerPtr m_controller;
 		ei::Vec3 m_color;
 		float m_angle;
 
-		void removeEdge(const NodeConnector* e);
+		void removeEdge(NodeConnector* e);
+		bool addEdge(NodeConnectorPtr e);
 	};
 
 	typedef pa::RefPtr<NodeHandle> NodeHandlePtr;
+
 
 	/// Spline connector as edges of the node graph.
 	class NodeConnector : public Widget, public Clickable
@@ -78,6 +112,11 @@ namespace ca { namespace gui {
 		/// The stiffness effectivly determines the relative distance of the
 		/// Bezier-control points. The default is 1.0/3.0
 		void setStiffness(float _stiffness) { m_stiffness = _stiffness; }
+
+		/// Regardless of source and dest get the other one compared to
+		/// the current one.
+		const NodeHandle* getOther(const NodeHandle* _this) const;
+		NodeHandle* getOther(const NodeHandle* _this);
 
 	protected:
 		NodeHandlePtr m_sourceNode;
