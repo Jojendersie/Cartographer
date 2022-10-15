@@ -78,7 +78,7 @@ namespace ca { namespace gui {
 		float m_angle;
 
 		void removeEdge(NodeConnector* e);
-		bool addEdge(NodeConnectorPtr e);
+		bool addEdge(NodeConnectorPtr e, NodeHandle* other);
 	};
 
 	typedef pa::RefPtr<NodeHandle> NodeHandlePtr;

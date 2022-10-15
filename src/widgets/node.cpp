@@ -180,9 +180,8 @@ namespace ca { namespace gui {
 		}
 	}
 
-	bool NodeHandle::addEdge(NodeConnectorPtr e)
+	bool NodeHandle::addEdge(NodeConnectorPtr e, NodeHandle* other)
 	{
-		NodeHandle* other = e->getOther(this);
 		bool valid = true;
 		if(other)
 		{
@@ -395,7 +394,7 @@ namespace ca { namespace gui {
 				m_sourceNode->removeEdge(this);
 			if(_node)
 			{
-				if(_node->addEdge(NodeConnectorPtr{this}))
+				if(_node->addEdge(NodeConnectorPtr{this}, m_destNode.get()))
 					m_sourceNode = _node;
 			}
 			else m_sourceNode = nullptr;
@@ -411,7 +410,7 @@ namespace ca { namespace gui {
 				m_destNode->removeEdge(this);
 			if(_node)
 			{
-				if(_node->addEdge(NodeConnectorPtr{this}))
+				if(_node->addEdge(NodeConnectorPtr{this}, m_sourceNode.get()))
 					m_destNode = _node;
 			}
 			else m_destNode = nullptr;
