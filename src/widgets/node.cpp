@@ -127,6 +127,7 @@ namespace ca { namespace gui {
 	{
 		const bool cursorOnWidget = getRegion()->isMouseOver(_mouseState.position);
 		if(!cursorOnWidget) return false;
+		GUIManager::setMouseFocus(this);
 
 		if(_mouseState.btnDown(0))
 		{
@@ -235,7 +236,8 @@ namespace ca { namespace gui {
 
 	void NodeConnector::draw() const
 	{
-		bool mouseOver = isMouseOver(GUIManager::getMouseState().position);
+		bool mouseOver = GUIManager::hasMouseFocus(this)
+			&& isMouseOver(GUIManager::getMouseState().position);
 		Vec3 sourceColor = m_sourceNode ? m_sourceNode->color() : Vec3{0.5f};
 		Vec3 destColor = m_destNode ? m_destNode->color() : Vec3{0.5f};
 		if(mouseOver)
@@ -292,6 +294,8 @@ namespace ca { namespace gui {
 	bool NodeConnector::processInput(const MouseState& _mouseState)
 	{
 		const HandleState oldState = m_tmpHandleState;
+		if (m_isMouseOver)
+			GUIManager::setMouseFocus(this);
 
 		if(m_isMouseOver && _mouseState.btnDown(0))
 		{
@@ -325,10 +329,10 @@ namespace ca { namespace gui {
 				setDest(NodeHandlePtr{handle});
 		}
 
-		if(oldState != m_tmpHandleState || _mouseState.deltaPos() != Vec2{0.0f})
+		if((oldState != m_tmpHandleState) || ((m_tmpHandleState != HandleState::ATTACHED) && (_mouseState.deltaPos() != Vec2{0.0f})))
 			onExtentChanged();
 
-		return m_tmpHandleState != HandleState::ATTACHED;
+		return true;
 	}
 
 
