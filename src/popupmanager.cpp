@@ -63,12 +63,11 @@ namespace ca { namespace gui {
 		if(_popup->parent())
 			maxW = _popup->parent()->right();
 		_position.x += min(0.0f, maxW - (_position.x + _popup->size().x));
-		// If it does not fit verticaly toggle it upward.
+		// If it does not fit vertically toggle it upward.
 		float minH = 0.0f;
 		if(_popup->parent())
 			minH = _popup->parent()->bottom();
-		if(_position.y - _popup->size().y < minH)
-			_position.y += _popup->size().y + 14.0f;
+		_position.y = max(_position.y, minH);
 
 		_popup->setPosition(_position);
 		showPopup(_popup, _originator, _closeOn, _receiveInputs, _closeThreshold);
