@@ -54,6 +54,9 @@ namespace ca { namespace gui {
 	{
 		m_snapFunction = move(_restrictionFunction);
 		m_useRestriction = true;
+		RefFrame* thisWidget = dynamic_cast<RefFrame*>(this);
+		const Coord2 newPos = m_snapFunction(thisWidget->position());
+		thisWidget->setFrame(newPos.x, newPos.y, newPos.x + thisWidget->width(), newPos.y + thisWidget->height());
 	}
 
 }} // namespace ca::gui
