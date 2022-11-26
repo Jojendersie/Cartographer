@@ -16,13 +16,14 @@ namespace ca { namespace gui {
 
 		/// Called if a connector is connected to a node handle to react
 		// or reject to the connection.
-		/// \param [in] _hdl The node handle on the other end of the connector.
+		/// \param [in] _hdlThis The node handle on the controller sided end of the connector.
+		/// \param [in] _hdlOther The node handle on the other end of the connector.
 		/// \return false if the connection should not be accepted.
-		virtual bool onConnect(NodeHandle* _hdl) = 0;
+		virtual bool onConnect(NodeHandle* _hdlThis, NodeHandle* _hdlOther) = 0;
 
 		/// Called if a connector is broken up.
 		/// \param [in] _hdl The node handle on the other end of the connector (that gets disconnected).
-		virtual void onDisconnect(NodeHandle* _hdl) = 0;
+		virtual void onDisconnect(NodeHandle* _hdlThis, NodeHandle* _hdlOther) = 0;
 	};
 
 	typedef pa::RefPtr<class IConnectorController> ConnectorControllerPtr;
@@ -69,7 +70,10 @@ namespace ca { namespace gui {
 		/// \param [in] _controller A controller instance that will be owned by the
 		///		node handle.
 		void setConnectorController(ConnectorControllerPtr _controller);
-		//IConnectorController* getController() { return m_controller.get(); }
+		const IConnectorController* getController() const { return m_controller.get(); }
+
+		/// Detach all connections
+		void disconnectAll();
 
 	private:
 		std::vector<NodeConnectorPtr> m_edges;
@@ -77,6 +81,8 @@ namespace ca { namespace gui {
 		ei::Vec3 m_color;
 		float m_angle;
 
+		// Remove a connector from the edge list on this side!
+		// This will not change the node on the other end of the connection.
 		void removeEdge(NodeConnector* e);
 		bool addEdge(NodeConnectorPtr e, NodeHandle* other);
 	};
@@ -87,6 +93,7 @@ namespace ca { namespace gui {
 	/// Spline connector as edges of the node graph.
 	class NodeConnector : public Widget, public Clickable
 	{
+		friend class NodeHandle;
 	public:
 		NodeConnector();
 		~NodeConnector();

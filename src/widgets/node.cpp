@@ -163,19 +163,21 @@ namespace ca { namespace gui {
 		m_controller = _controller;
 	}
 
+	/// Detach all connections
+	void NodeHandle::disconnectAll()
+	{
+		while(!m_edges.empty())
+			m_edges.back()->removeThis();
+	}
+
 	void NodeHandle::removeEdge(NodeConnector* e)
 	{
 		for(auto it = m_edges.begin(); it != m_edges.end(); ++it)
 		if(it->get() == e)
 		{
 			NodeHandle* other = e->getOther(this);
-			if(other)
-			{
-				if(m_controller)
-					m_controller->onDisconnect(other);
-				if(other->m_controller)
-					other->m_controller->onDisconnect(this);
-			}
+			if(other && m_controller)
+				m_controller->onDisconnect(this, other);
 			m_edges.erase(it);
 			return;
 		}
@@ -187,9 +189,9 @@ namespace ca { namespace gui {
 		if(other)
 		{
 			if(m_controller)
-				valid &= m_controller->onConnect(other);
+				valid &= m_controller->onConnect(this, other);
 			if(other->m_controller)
-				valid &= other->m_controller->onConnect(this);
+				valid &= other->m_controller->onConnect(other, this);
 		}
 		if(valid)
 			m_edges.push_back(e);
@@ -280,15 +282,11 @@ namespace ca { namespace gui {
 		if(p)
 			p->remove(thisPinned);
 		if(m_sourceNode)
-		{
 			m_sourceNode->removeEdge(this);
-			m_sourceNode = nullptr;
-		}
 		if(m_destNode)
-		{
 			m_destNode->removeEdge(this);
-			m_destNode = nullptr;
-		}
+		m_sourceNode = nullptr;
+		m_destNode = nullptr;
 	}
 
 	bool NodeConnector::processInput(const MouseState& _mouseState)
@@ -395,7 +393,11 @@ namespace ca { namespace gui {
 		if(m_sourceNode != _node && m_destNode != _node)
 		{
 			if(m_sourceNode)
+			{
 				m_sourceNode->removeEdge(this);
+				if(m_destNode && m_destNode->m_controller)
+					m_destNode->m_controller->onDisconnect(m_destNode.get(), m_sourceNode.get());
+			}
 			if(_node)
 			{
 				if(_node->addEdge(NodeConnectorPtr{this}, m_destNode.get()))
@@ -411,7 +413,11 @@ namespace ca { namespace gui {
 		if(m_destNode != _node && m_sourceNode != _node)
 		{
 			if(m_destNode)
+			{
 				m_destNode->removeEdge(this);
+				if(m_sourceNode && m_sourceNode->m_controller)
+					m_sourceNode->m_controller->onDisconnect(m_sourceNode.get(), m_destNode.get());
+			}
 			if(_node)
 			{
 				if(_node->addEdge(NodeConnectorPtr{this}, m_sourceNode.get()))
