@@ -67,7 +67,7 @@ namespace ca { namespace gui {
 		/// Process mouse input if desired.
 		/// \details The Widget implementation forwards input to click-, resize- and move-
 		///		components (in this order). It should be called from any inheriting class.
-		/// \return True if this component absorbed the input. If any compontent returns true
+		/// \return True if this component absorbed the input. If any component returns true
 		///		no other component will be checked afterwards.
 		virtual bool processInput(const struct MouseState& _mouseState);
 

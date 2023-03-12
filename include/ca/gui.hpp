@@ -16,6 +16,7 @@
 #include "gui/widgets/node.hpp"
 #include "gui/widgets/progressbar.hpp"
 #include "gui/widgets/scrollbar.hpp"
+#include "gui/widgets/curveedit.hpp"
 #include "ca/gui/properties/regionshapes.hpp"
 
 #include "gui/backend/charcoal.hpp"

@@ -36,7 +36,7 @@ namespace ca { namespace gui {
 		typedef std::function<void(class Widget* _thisBox, const bool _newValue)> OnChange;
 		
 		/// Replace the onChange function. The function will be called whenever the value of
-		/// the slider changed.
+		/// the check box changed.
 		void setOnChange(OnChange _callback);
 	private:
 		std::string m_text;				///< Descriptive text beside the checkmark
