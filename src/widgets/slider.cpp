@@ -1,5 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-
 #include "ca/gui/widgets/slider.hpp"
 #include "ca/gui/guimanager.hpp"
 #include "ca/gui/rendering/theme.hpp"

@@ -91,7 +91,7 @@ namespace ca { namespace gui {
 			std::string newText = m_text.substr(0, m_cursorPosition)
 				+ _keyboardState.characterInput
 				+ m_text.substr(m_cursorPosition);
-			m_cursorPosition += _keyboardState.characterInput.length();
+			m_cursorPosition += (int)_keyboardState.characterInput.length();
 			m_cursorPosition = repairText(newText);
 			if(m_onTextChange) m_onTextChange(this, newText);
 			m_text = newText;
@@ -106,13 +106,13 @@ namespace ca { namespace gui {
 			if(_keyboardState.isControlPressed())
 				m_cursorPosition = findPrevControlStop(m_text, m_cursorPosition);
 			else
-				m_cursorPosition = pa::utf8::prev( m_text.c_str(), m_cursorPosition );
+				m_cursorPosition = (int)pa::utf8::prev( m_text.c_str(), m_cursorPosition );
 		}
 		if(_keyboardState.isKeyDown(KeyboardState::Key::ARROW_RIGHT)) {
 			if(_keyboardState.isControlPressed())
 				m_cursorPosition = findNextControlStop(m_text, m_cursorPosition);
 			else
-				m_cursorPosition = pa::utf8::next( m_text.c_str(), m_cursorPosition );
+				m_cursorPosition = (int)pa::utf8::next( m_text.c_str(), m_cursorPosition );
 		}
 		if(_keyboardState.isKeyDown(KeyboardState::Key::END)
 			|| (_keyboardState.isKeyDown(KeyboardState::Key::NUMPAD_1) ))//&& _keyboardState.isNumLock()))
@@ -128,7 +128,7 @@ namespace ca { namespace gui {
 			uint num = 0;
 			if(_keyboardState.isControlPressed())
 				num = m_cursorPosition - findPrevControlStop(m_text, m_cursorPosition);
-			else num = m_cursorPosition - pa::utf8::prev(m_text.c_str(), m_cursorPosition);
+			else num = m_cursorPosition - (int)pa::utf8::prev(m_text.c_str(), m_cursorPosition);
 			m_cursorPosition -= num;
 			m_text.erase(m_cursorPosition, num);
 			if(m_onTextChange) m_onTextChange(this, m_text);
@@ -140,7 +140,7 @@ namespace ca { namespace gui {
 			if(_keyboardState.isControlPressed())
 				num = findNextControlStop(m_text, m_cursorPosition) - m_cursorPosition;
 			else
-				num = pa::utf8::next(m_text.c_str(), m_cursorPosition) - m_cursorPosition;
+				num = (int)pa::utf8::next(m_text.c_str(), m_cursorPosition) - m_cursorPosition;
 			m_text.erase(m_cursorPosition, num);
 			if(m_onTextChange) m_onTextChange(this, m_text);
 			// Does not change the cursor -> not handled automatically.

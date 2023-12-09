@@ -127,8 +127,9 @@ namespace ca { namespace gui {
 
 	void Widget::removeOnExtentChangeFunc(IExtentChangedReceiver* _receiver)
 	{
-		std::remove_if(m_onExtentChangedFuncs.begin(), m_onExtentChangedFuncs.end(),
+		auto it = std::remove_if(m_onExtentChangedFuncs.begin(), m_onExtentChangedFuncs.end(),
 			[_receiver](IExtentChangedReceiver* _elem){ return _elem == _receiver; });
+		m_onExtentChangedFuncs.erase(it, m_onExtentChangedFuncs.end());
 	}
 
 

@@ -51,8 +51,8 @@ namespace ca { namespace gui {
 
 		if(m_gridColor.a > 0.0f && m_gridSpace.x > 0.0f)
 		{
-			const int firstTick = ceil(m_xRange.x / m_gridSpace.x);
-			const int lastTick = floor(m_xRange.y / m_gridSpace.x);
+			const int firstTick = ei::ceil(m_xRange.x / m_gridSpace.x);
+			const int lastTick = ei::floor(m_xRange.y / m_gridSpace.x);
 			const float firstTickScreen = left() + (firstTick * m_gridSpace.x - m_xRange.x) * m_domainToScreen.x;
 			const float tickSpaceScreen = m_gridSpace.x * m_domainToScreen.x;
 			for(int x = 0; x <= (lastTick - firstTick); ++x)
@@ -68,8 +68,8 @@ namespace ca { namespace gui {
 
 		if(m_gridColor.a > 0.0f && m_gridSpace.y > 0.0f)
 		{
-			const int firstTick = ceil(m_yRange.x / m_gridSpace.y);
-			const int lastTick = floor(m_yRange.y / m_gridSpace.y);
+			const int firstTick = ei::ceil(m_yRange.x / m_gridSpace.y);
+			const int lastTick = ei::floor(m_yRange.y / m_gridSpace.y);
 			const float firstTickScreen = bottom() + (firstTick * m_gridSpace.y - m_yRange.x) * m_domainToScreen.y;
 			const float tickSpaceScreen = m_gridSpace.y * m_domainToScreen.y;
 			for(int y = 0; y <= (lastTick - firstTick); ++y)
@@ -187,7 +187,7 @@ namespace ca { namespace gui {
 		{
 			m_handles[i].domainPos.x = ei::min(ei::max(m_handles[i].domainPos.x, m_xDomain.x), m_xDomain.y);
 			m_handles[i].domainPos.y = ei::min(ei::max(m_handles[i].domainPos.y, m_yDomain.x), m_yDomain.y);
-			recomputeScreenPos(i);
+			recomputeScreenPos((int)i);
 		}
 	}
 
@@ -206,7 +206,7 @@ namespace ca { namespace gui {
 		if(_mode==Mode::BEZIER) // Make sure the handles are all correct
 		{
 			for(size_t i = 0; i < m_handles.size(); ++i)
-				limitHdl(i, true, true);
+				limitHdl((int)i, true, true);
 		}
 		m_mode = _mode;
 	}
@@ -398,7 +398,7 @@ namespace ca { namespace gui {
 	{
 		if(m_onDeleteHandle)
 			for(size_t i = 0; i < m_handles.size(); ++i)
-				m_onDeleteHandle(i);
+				m_onDeleteHandle((int)i);
 		m_handles.clear();
 	}
 
@@ -407,7 +407,7 @@ namespace ca { namespace gui {
 	{
 		recomputeSpaceConversions();
 		for(size_t i = 0; i < m_handles.size(); ++i)
-			recomputeScreenPos(i);
+			recomputeScreenPos((int)i);
 	}
 
 	void CurveEdit::recomputeSpaceConversions()
