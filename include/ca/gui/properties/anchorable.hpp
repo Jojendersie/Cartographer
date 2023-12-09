@@ -113,29 +113,27 @@ namespace ca { namespace gui {
 
 	class IAnchorable : public IPositionable
 	{
-		static uint32 s_globalGeomVersion;	///< A continiously increased number to manage the update process.
-		uint32 m_geomVersion = 0;			///< Current version used to manage updates (to avoid cyclic updates).
-
+		bool m_resizeInProgress;			///< A lock to avoid recursive update if there are cyclic dependencies between elements. This must be used by derived refitToAnchors() methods!
 		bool m_anchoringEnabled;			///< If disabled this will ignore notifications of anchor changes.
 
 	public:
 		IAnchorable();
 
+		/// Check and set the resize flag. Returns true if refitting may take
+		/// place. False is returned when anchoring is disabled or a recursive
+		/// resize is detected.
+		bool startRefit();
+
+		/// Unlock component for next resizing event
+		void endRefit();
+
 		/// Recompute own positioning, because one of the anchors has changed.
-		/// \details matches current geometry version.
-		virtual void refitToAnchors();
+		/// \details Must call startRefit() at the beginning and terminate on false.
+		///	At the end endRefit() is necessary as well.
+		virtual void refitToAnchors() = 0;
 
 		/// Recompute the anchors without changing the own position.
-		/// \details matches current geometry version.
-		virtual void resetAnchors();
-
-		/// Return the version number of global changes
-		static uint32 getGlobalGeomVersion() { return s_globalGeomVersion; }
-		uint32 getGeomVersion() const { return m_geomVersion; }
-		/// Increase global version and assign to this object (use for primary updates).
-		void increaseGeomVersion() { m_geomVersion = ++s_globalGeomVersion; }
-		/// Set object version to the global one (used in reactions to refitting).
-		void matchGeomVersion() { m_geomVersion = s_globalGeomVersion; }
+		virtual void resetAnchors() = 0;
 
 		bool isAnchoringEnabled() const { return m_anchoringEnabled; }
 		void setAnchorable(bool _enable);

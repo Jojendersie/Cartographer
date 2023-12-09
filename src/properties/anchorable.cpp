@@ -70,20 +70,12 @@ namespace ca { namespace gui {
 
 	void IAnchorProvider::onExtentChanged()
 	{
-		// Do a level order update of all dependent content.
+		// Do a depth first update of all dependent content.
 		Anchor* next = m_anchorListStart.m_next;
 		while(next)
 		{
 			// This will silently update the size
 			next->self()->refitToAnchors();
-			next = next->m_next;
-		}
-
-		// Now trigger the true updates including the recursion
-		next = m_anchorListStart.m_next;
-		while(next)
-		{
-			next->self()->onExtentChanged();
 			next = next->m_next;
 		}
 	}
@@ -92,18 +84,21 @@ namespace ca { namespace gui {
 
 	IAnchorable::IAnchorable()
 	{
-		m_geomVersion = s_globalGeomVersion;
+		m_resizeInProgress = false;
 		m_anchoringEnabled = true;
 	}
 
-	void IAnchorable::refitToAnchors()
+	bool IAnchorable::startRefit()
 	{
-		matchGeomVersion();
+		if (!m_anchoringEnabled || m_resizeInProgress)
+			return false;
+		m_resizeInProgress = true;
+		return true;
 	}
 
-	void IAnchorable::resetAnchors()
+	void IAnchorable::endRefit()
 	{
-		matchGeomVersion();
+		m_resizeInProgress = false;
 	}
 
 	void IAnchorable::setAnchorable(bool _enable)

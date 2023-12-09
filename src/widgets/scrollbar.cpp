@@ -212,7 +212,6 @@ namespace ca { namespace gui {
 		m_parent{_parent},
 		m_anchor{this}
 	{
-		matchGeomVersion();
 	}
 
 	void ScrollBar::SliderAnchor::attach(const IAnchorProvider* _target)
@@ -231,7 +230,6 @@ namespace ca { namespace gui {
 			return;
 		// Update and set a new geom version for this primary event
 		m_anchor.absoluteDistance = _offset;
-		increaseGeomVersion();
 		IAnchorProvider::onExtentChanged(); // Then trigger updates of others
 	}
 
@@ -248,6 +246,14 @@ namespace ca { namespace gui {
 	float ScrollBar::SliderAnchor::getRelativePosition(int _dimension, Coord _position) const
 	{
 		return 0.0f; // Only absolute position meaningful
+	}
+
+	void ScrollBar::SliderAnchor::refitToAnchors()
+	{
+		// Check for update cycles and for general anchoring ability.
+		if(!IAnchorable::startRefit()) return;
+		IAnchorProvider::onExtentChanged();
+		IAnchorable::endRefit();
 	}
 
 }} // namespace ca::gui

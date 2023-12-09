@@ -83,6 +83,8 @@ namespace ca { namespace gui {
 			void onExtentChanged() override;
 			Coord getPosition(int _dimension, float _relativePos) const override;
 			float getRelativePosition(int _dimension, Coord _position) const override;
+			void refitToAnchors() override;
+			void resetAnchors() override {}
 		};
 
 		mutable SliderAnchor m_sliderAnchor;		//< Special area that moves around on slide

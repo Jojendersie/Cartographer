@@ -2,8 +2,6 @@
 
 namespace ca { namespace gui {
 
-	uint32 IAnchorable::s_globalGeomVersion;	///< A continiously increased number to manage the update process.
-
 	RefFrame::RefFrame(float _l, float _r, float _b, float _t) :
 		m_anchor{{this}, {this}, {this}, {this}}
 	{
@@ -11,7 +9,6 @@ namespace ca { namespace gui {
 		m_sides[SIDE::RIGHT] = ei::max(_l+1, _r);
 		m_sides[SIDE::BOTTOM] = _b;
 		m_sides[SIDE::TOP] = ei::max(_b+1, _t);
-		matchGeomVersion();
 	}
 
 	bool RefFrame::isMouseOver(const Coord2& _mousePos) const
@@ -72,7 +69,6 @@ namespace ca { namespace gui {
 			m_sides[SIDE::RIGHT] = r;
 			m_sides[SIDE::TOP] = t;
 			resetAnchors();
-			increaseGeomVersion();
 			onExtentChanged();
 		}
 		return change;
@@ -174,16 +170,13 @@ namespace ca { namespace gui {
 				}
 			}
 		}
-		// Count anchors as up to date.
-		IAnchorable::resetAnchors();
 	}
 
 
 	void RefFrame::refitToAnchors()
 	{
-		if(!isAnchoringEnabled()) return;
-		// Check for update cycles.
-		if(getGeomVersion() == IAnchorable::getGlobalGeomVersion()) return;
+		// Check for update cycles and for general anchoring ability.
+		if(!IAnchorable::startRefit()) return;
 		// Early out if no anchor is set.
 		bool hasReference = false;
 		for(int i = 0; i < 4; ++i)
@@ -217,8 +210,15 @@ namespace ca { namespace gui {
 			}
 		}
 
-		silentSetFrame(newFrame[0], newFrame[1], newFrame[2], newFrame[3]);
-		IAnchorable::refitToAnchors();
+		const bool change = (m_sides[SIDE::LEFT] != newFrame[SIDE::LEFT]) || (m_sides[SIDE::RIGHT] != newFrame[SIDE::RIGHT])
+			|| (m_sides[SIDE::BOTTOM] != newFrame[SIDE::BOTTOM]) || (m_sides[SIDE::TOP] != newFrame[SIDE::TOP]);
+		if (change)
+		{
+			// Uses silent set to avoid unnecessary resetAnchors() call
+			silentSetFrame(newFrame[0], newFrame[1], newFrame[2], newFrame[3]);
+			onExtentChanged();
+		}
+		IAnchorable::endRefit();
 	}
 
 }} // namespace ca::gui
