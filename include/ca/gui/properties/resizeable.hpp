@@ -20,7 +20,7 @@ namespace ca { namespace gui {
 		virtual bool processInput(class Widget & _thisWidget, const struct MouseState & _mouseState, bool _cursorOnWidget, bool & _ensureNextInput) override;
 
 		bool isResizeingEnabled() const { return m_resizingEnabled; }
-		void setResizeable(bool _enable) { m_resizingEnabled = _enable; }
+		void setResizeable(SIDE_FLAGS::Val _enable) { m_resizingEnabled = _enable; }
 
 		/// Register a callback function that is called when a resize is finished.
 		/// Also see onExtentChanged for a continuous callback.
@@ -28,7 +28,7 @@ namespace ca { namespace gui {
 		void setOnResizeEndedFunc(OnResizeEnded _callback) { m_onResizeEnded = _callback; }
 	private:
 		OnResizeEnded m_onResizeEnded;
-		bool m_resizingEnabled;
+		SIDE_FLAGS::Val m_resizingEnabled;
 		bool m_active;			/// Currently actively resizing
 		bool m_resizing[4];		/// Flag for each resizing direction L,R,B,T
 	};

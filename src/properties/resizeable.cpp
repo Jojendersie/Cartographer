@@ -7,7 +7,9 @@
 namespace ca { namespace gui {
 
 	Resizeable::Resizeable(Widget* _thisWidget) :
-		m_resizingEnabled(true)
+		m_resizingEnabled(SIDE_FLAGS::ALL),
+		m_active(false),
+		m_resizing{false, false, false, false}
 	{
 		_thisWidget->registerMouseInputComponent(this);
 	}
@@ -55,10 +57,14 @@ namespace ca { namespace gui {
 				&& _mouseState.position.y <= _thisWidget.top()+2.0f)
 			{
 				// Is the mouse cursor within a margin around the reference frame?
-				m_resizing[SIDE::LEFT] = abs(_thisWidget.left() - _mouseState.position.x) <= 2.0f;
-				m_resizing[SIDE::RIGHT] = abs(_thisWidget.right() - _mouseState.position.x) <= 2.0f;
-				m_resizing[SIDE::BOTTOM] = abs(_thisWidget.bottom() - _mouseState.position.y) <= 2.0f;
-				m_resizing[SIDE::TOP] = abs(_thisWidget.top() - _mouseState.position.y) <= 2.0f;
+				m_resizing[SIDE::LEFT] = ((m_resizingEnabled & SIDE_FLAGS::LEFT) != 0)
+					&& (abs(_thisWidget.left() - _mouseState.position.x) <= 2.0f);
+				m_resizing[SIDE::RIGHT] = ((m_resizingEnabled & SIDE_FLAGS::RIGHT) != 0)
+					&& (abs(_thisWidget.right() - _mouseState.position.x) <= 2.0f);
+				m_resizing[SIDE::BOTTOM] = ((m_resizingEnabled & SIDE_FLAGS::BOTTOM) != 0)
+					&& (abs(_thisWidget.bottom() - _mouseState.position.y) <= 2.0f);
+				m_resizing[SIDE::TOP] = ((m_resizingEnabled & SIDE_FLAGS::TOP) != 0)
+					&& (abs(_thisWidget.top() - _mouseState.position.y) <= 2.0f);
 				bool anyFlag = (m_resizing[0] || m_resizing[1] || m_resizing[2] || m_resizing[3]);
 
 				// Set a cursor if in margin
