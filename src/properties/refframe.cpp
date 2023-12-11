@@ -84,72 +84,86 @@ namespace ca { namespace gui {
 	}
 
 
-	void RefFrame::setAnchor(const IAnchorProvider* _target, SIDE::Val _which, Coord _targetPosition)
+	void RefFrame::setAutoAnchors(const RefFrame* _targetFrame, ANCHOR::Val _mask)
 	{
-		if(!_target)
-			m_anchor[_which].detach();
-		else {
-			const int dim = _which & 1;
-			m_anchor[_which].attach(_target, _targetPosition, side(_which), dim);
+		// Detach case first
+		if (!_targetFrame)
+		{
+			if (_mask & ANCHOR::LEFT) m_anchor[SIDE::LEFT].detach();
+			if (_mask & ANCHOR::BOTTOM) m_anchor[SIDE::BOTTOM].detach();
+			if (_mask & ANCHOR::RIGHT) m_anchor[SIDE::RIGHT].detach();
+			if (_mask & ANCHOR::TOP) m_anchor[SIDE::TOP].detach();
+			return;
+		}
+
+		// Go find the closest side for each of the selected sides
+		if (_mask & ANCHOR::LEFT)
+		{
+			const float d0 = ei::abs(left() - _targetFrame->left());
+			const float d1 = ei::abs(left() - _targetFrame->right());
+			if (d0 <= d1)
+				m_anchor[SIDE::LEFT].attach(_targetFrame, _targetFrame->left(), left(), 0);
+			else
+				m_anchor[SIDE::LEFT].attach(_targetFrame, _targetFrame->right(), left(), 0);
+		}
+		if (_mask & ANCHOR::BOTTOM)
+		{
+			const float d0 = ei::abs(bottom() - _targetFrame->bottom());
+			const float d1 = ei::abs(bottom() - _targetFrame->top());
+			if (d0 <= d1)
+				m_anchor[SIDE::BOTTOM].attach(_targetFrame, _targetFrame->bottom(), bottom(), 1);
+			else
+				m_anchor[SIDE::BOTTOM].attach(_targetFrame, _targetFrame->top(), bottom(), 1);
+		}
+		if (_mask & ANCHOR::RIGHT)
+		{
+			const float d0 = ei::abs(right() - _targetFrame->left());
+			const float d1 = ei::abs(right() - _targetFrame->right());
+			if (d0 <= d1)
+				m_anchor[SIDE::RIGHT].attach(_targetFrame, _targetFrame->left(), right(), 0);
+			else
+				m_anchor[SIDE::RIGHT].attach(_targetFrame, _targetFrame->right(), right(), 0);
+		}
+		if (_mask & ANCHOR::TOP)
+		{
+			const float d0 = ei::abs(top() - _targetFrame->bottom());
+			const float d1 = ei::abs(top() - _targetFrame->top());
+			if (d0 <= d1)
+				m_anchor[SIDE::TOP].attach(_targetFrame, _targetFrame->bottom(), top(), 1);
+			else
+				m_anchor[SIDE::TOP].attach(_targetFrame, _targetFrame->top(), top(), 1);
 		}
 	}
 
 
-	void RefFrame::setAnchors(const IAnchorProvider* _target, Coord _leftTarget, Coord _bottomTarget, Coord _rightTarget, Coord _topTarget)
+	RefFrame::AnchorPoint RefFrame::getAnchorPoint(float _relativePosX, float _relativePosY) const
 	{
-		// Now construct the new one
-		for(int i = 0; i < 4; ++i)
-		{
-			// Get the two horizontal or two vertical indices
-			const int dim = i & 1;
-			// Determine relative position of the target point towards the target frame
-			const float targetPoint = i == 0 ? _leftTarget : (i == 1 ? _bottomTarget : (i == 2 ? _rightTarget : _topTarget));
-			if(targetPoint == ANCHOR::CLEAR) {
-				m_anchor[i].detach();
-			} else if(targetPoint != ANCHOR::IGNORE && _target) {
-				m_anchor[i].attach(_target, targetPoint, side(i), dim);
-			}
-		}
+		return AnchorPoint {
+			this,
+			{ getPosition(0, _relativePosX), getPosition(1, _relativePosY) }
+		};
 	}
 
 
-	void RefFrame::setAnchors(const RefFrame* _targetFrame, AutoAnchorMode _mode, ANCHOR::Val _mask)
+	RefFrame::AnchorPoint RefFrame::getAnchorPoint(const Coord2& _coord) const
 	{
-		switch(_mode)
-		{
-		case AutoAnchorMode::ABSOLUTE:
-			setAnchors(_targetFrame,
-				(_mask & ANCHOR::LEFT) ? _targetFrame->left() : ANCHOR::IGNORE,
-				(_mask & ANCHOR::BOTTOM) ? _targetFrame->bottom() : ANCHOR::IGNORE,
-				(_mask & ANCHOR::RIGHT) ? _targetFrame->right() : ANCHOR::IGNORE,
-				(_mask & ANCHOR::TOP) ? _targetFrame->top() : ANCHOR::IGNORE
-			);
-			break;
-		case AutoAnchorMode::RELATIVE:
-			setAnchors(_targetFrame,
-				(_mask & ANCHOR::LEFT) ? left() : ANCHOR::IGNORE,
-				(_mask & ANCHOR::BOTTOM) ? bottom() : ANCHOR::IGNORE,
-				(_mask & ANCHOR::RIGHT) ? right() : ANCHOR::IGNORE,
-				(_mask & ANCHOR::TOP) ? top() : ANCHOR::IGNORE
-			);
-			break;
-		case AutoAnchorMode::SRC_CENTER:
-			setAnchors(_targetFrame,
-				(_mask & ANCHOR::LEFT) ? horizontalCenter() : ANCHOR::IGNORE,
-				(_mask & ANCHOR::BOTTOM) ? verticalCenter() : ANCHOR::IGNORE,
-				(_mask & ANCHOR::RIGHT) ? ANCHOR::CLEAR : ANCHOR::IGNORE,
-				(_mask & ANCHOR::TOP) ? ANCHOR::CLEAR : ANCHOR::IGNORE
-			);
-			break;
-		case AutoAnchorMode::DST_CENTER:
-			setAnchors(_targetFrame,
-				(_mask & ANCHOR::LEFT) ? _targetFrame->horizontalCenter() : ANCHOR::IGNORE,
-				(_mask & ANCHOR::BOTTOM) ? _targetFrame->verticalCenter() : ANCHOR::IGNORE,
-				(_mask & ANCHOR::RIGHT) ? ANCHOR::CLEAR : ANCHOR::IGNORE,
-				(_mask & ANCHOR::TOP) ? ANCHOR::CLEAR : ANCHOR::IGNORE
-			);
-			break;
-		}
+		return AnchorPoint {
+			this,
+			_coord
+		};
+	}
+
+
+	void RefFrame::setAnchors(ANCHOR::Val _mask, const AnchorPoint& _anchorPoint)
+	{
+		if (_mask & ANCHOR::LEFT)
+			m_anchor[SIDE::LEFT].attach(_anchorPoint.target, _anchorPoint.position.x, side(SIDE::LEFT), 0);
+		if (_mask & ANCHOR::RIGHT)
+			m_anchor[SIDE::RIGHT].attach(_anchorPoint.target, _anchorPoint.position.x, side(SIDE::RIGHT), 0);
+		if (_mask & ANCHOR::BOTTOM)
+			m_anchor[SIDE::BOTTOM].attach(_anchorPoint.target, _anchorPoint.position.y, side(SIDE::BOTTOM), 1);
+		if (_mask & ANCHOR::TOP)
+			m_anchor[SIDE::TOP].attach(_anchorPoint.target, _anchorPoint.position.y, side(SIDE::TOP), 1);
 	}
 
 

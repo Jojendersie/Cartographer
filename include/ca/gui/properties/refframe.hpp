@@ -75,54 +75,36 @@ namespace ca { namespace gui {
 		/// Set all the sizes of the references frame. Returns a true to indicate changes.
 		virtual bool setFrame(const float _l, const float _b, const float _r, const float _t);
 
-		/// Set a single anchor, ignore the others.
-		/// \param [in] _which only LEFT, RIGHT, BOTTOM, TOP allowed.
-		/// \param [in] _targetPosition An absolute coordinate to which the respective
-		///		side should be anchored.
-		void setAnchor(
-			const IAnchorProvider* _target,
-			SIDE::Val _which,
-			Coord _targetPosition
-		);
-
-		/// Set all anchors at once.
-		/// \details For each of the four sides an absolute reference point within
-		///		the respective dimension can be specified. These references are
-		///		linked relative to the target frame. Using IGNORE_ANCHOR single
-		///		anchors can be ignored (will keep their current anchoring).
-		///
-		///		By using the current frame's sides directly, a fully relative
-		///		anchoring is achieved (points will stay proportionally at the same
-		///		position to the _targetFrame).
-		///		By using the target frame's sides directly, a fully absolute
-		///		anchoring is achived (points will keep constant distance to the
-		///		boundaries of the _targetFrame).
-		///		Anything in between is (or outside the target and source frame
-		///		is valid as well.
+		/// Set anchors such that each flagged side inside _mask is fixed to
+		/// the closest edge of the _targetFrame,
+		/// 
 		/// \param [in] _targetFrame New reference or nullptr to release all anchors
 		///		that do not have a value of IGNORE_ANCHOR.
-		/// \param [in] _<dim>target IGNORE_ANCHOR or an absolute coordinate
-		///		for each of the four edges of the current frame. The absolute distance
-		///		between the current boundary position and the target points will be
-		///		kept. Also see details.
-		void setAnchors(
-			const IAnchorProvider* _target,
-			Coord _leftTarget,
-			Coord _bottomTarget,
-			Coord _rightTarget,
-			Coord _topTarget
-		);
-
-		/// Calls setAnchors() with some default arguments based on mode.
-		/// \param [in] _targetFrame New reference or nullptr to release all anchors
-		///		that do not have a value of IGNORE_ANCHOR.
-		/// /// \param [in] _mode Select between absolute, relative and center position anchoring.
 		/// \param [in] _mask Only change those anchors in mask, ignore the others
-		void setAnchors(
+		void setAutoAnchors(
 			const RefFrame* _targetFrame,
-			AutoAnchorMode _mode,
 			ANCHOR::Val _mask = ANCHOR::ALL
 		);
+
+		/// Get a reference point against which an anchor can be set.
+		/// \param[in] _relativePosition A position in- or outside the frame.
+		///		left/bottom == 0 and right/top == 1 (depending on which dimension
+		///		this point belongs to.
+		struct AnchorPoint {
+			const IAnchorProvider* target;
+			Coord2 position;
+		};
+		AnchorPoint getAnchorPoint(float _relativePosX, float _relativePosY) const;
+
+		/// Get a reference point against which an anchor can be set from an absolute position.
+		/// \param[in] _coord Absolute global position at which we want to anchor.
+		///		Note that any change will be relative to this components as common.
+		///		The only difference is in how we select the actual reference point.
+		AnchorPoint getAnchorPoint(const Coord2& _coord) const;
+
+		/// Connect one or multiple anchor of this widget to an
+		///	anchor point from a different element.
+		void setAnchors(ANCHOR::Val _mask, const AnchorPoint& _anchorPoint);
 
 		/// Recompute relative positioning. E.g. if a component was moved manually.
 		void resetAnchors() override;

@@ -46,15 +46,6 @@ namespace ca { namespace gui {
 	};
 
 
-	enum class AutoAnchorMode
-	{
-		ABSOLUTE,		///< Take the four borders of the reference frame as anchor targets
-		RELATIVE,		///< Take the four borders of the current element as anchor targets
-		SRC_CENTER,		///< Set the bottom left anchors to the current element center (that will move relative to the reference frame)
-		DST_CENTER,		///< Set the bottom left anchors to the target element center (that will move relative to the reference frame)
-	};
-
-
 	/// A mask value for auto anchoring
 	struct ANCHOR
 	{
