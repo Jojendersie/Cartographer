@@ -46,25 +46,6 @@ namespace ca { namespace gui {
 	};
 
 
-	/// A mask value for auto anchoring
-	struct ANCHOR
-	{
-		using Val = uint32;
-		static constexpr uint32 LEFT = 1 << SIDE::LEFT;
-		static constexpr uint32 RIGHT = 1 << SIDE::RIGHT;
-		static constexpr uint32 BOTTOM = 1 << SIDE::BOTTOM;
-		static constexpr uint32 TOP = 1 << SIDE::TOP;
-		static constexpr uint32 HORIZONTAL = LEFT | RIGHT;
-		static constexpr uint32 VERTICAL = BOTTOM | TOP;
-		static constexpr uint32 ALL = HORIZONTAL | VERTICAL;
-		static constexpr uint32 POSITION = BOTTOM | LEFT;
-
-		/// Special valuen to stear setAnchors()
-		static constexpr Coord IGNORE = ei::INF;		///< Keep the respective anchor as is
-		static constexpr Coord CLEAR = -ei::INF;		///< Detach the respective anchor if it is attached
-	};
-
-
 	/// Anything that has to do with positions can trigger updates when it is changed.
 	class IPositionable
 	{

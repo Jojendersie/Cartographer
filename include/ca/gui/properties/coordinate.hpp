@@ -39,21 +39,36 @@ namespace ca { namespace gui {
 	///		index.
 	struct SIDE
 	{
-		enum Val
-		{
-			LEFT = 0,
-			RIGHT = 2,
-			BOTTOM = 1,
-			TOP = 3,
-			CENTER = 4,
+		struct Val {
+			uint32 v;
+			constexpr operator uint32() const { return v; }
 		};
+		static constexpr Val LEFT { 0 };
+		static constexpr Val BOTTOM { 1 };
+		static constexpr Val RIGHT { 2 };
+		static constexpr Val TOP { 3 };
+		static constexpr Val CENTER { 4 };
 
 		static constexpr char const * STR_NAMES[] = {
 			"LEFT",
-			"RIGHT",
 			"BOTTOM",
+			"RIGHT",
 			"TOP",
 			"CENTER"
 		};
+	};
+
+	/// A set of flags to express combinations of sides
+	struct SIDE_FLAGS
+	{
+		using Val = uint32;
+		static constexpr uint32 LEFT = 1u << SIDE::LEFT;
+		static constexpr uint32 RIGHT = 1u << SIDE::RIGHT;
+		static constexpr uint32 BOTTOM = 1u << SIDE::BOTTOM;
+		static constexpr uint32 TOP = 1u << SIDE::TOP;
+		static constexpr uint32 HORIZONTAL = LEFT | RIGHT;
+		static constexpr uint32 VERTICAL = BOTTOM | TOP;
+		static constexpr uint32 ALL = HORIZONTAL | VERTICAL;
+		static constexpr uint32 POSITION = BOTTOM | LEFT;
 	};
 }} // namespace ca::gui

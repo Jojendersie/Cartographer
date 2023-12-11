@@ -83,7 +83,7 @@ namespace ca { namespace gui {
 		/// \param [in] _mask Only change those anchors in mask, ignore the others
 		void setAutoAnchors(
 			const RefFrame* _targetFrame,
-			ANCHOR::Val _mask = ANCHOR::ALL
+			SIDE_FLAGS::Val _mask = SIDE_FLAGS::ALL
 		);
 
 		/// Get a reference point against which an anchor can be set.
@@ -104,7 +104,7 @@ namespace ca { namespace gui {
 
 		/// Connect one or multiple anchor of this widget to an
 		///	anchor point from a different element.
-		void setAnchors(ANCHOR::Val _mask, const AnchorPoint& _anchorPoint);
+		void setAnchors(SIDE_FLAGS::Val _mask, const AnchorPoint& _anchorPoint);
 
 		/// Recompute relative positioning. E.g. if a component was moved manually.
 		void resetAnchors() override;

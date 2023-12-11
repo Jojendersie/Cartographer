@@ -127,9 +127,9 @@ namespace ca { namespace gui {
 	void ScrollBar::setContentSize(const float _contentSize, SIDE::Val _side)
 	{
 		if(m_horizontal && (_side != SIDE::LEFT && _side != SIDE::RIGHT))
-			ca::pa::logWarning("[ca::gui::ScrollBar] Scroll bar is in horizontal mode, but change is said to be on side ", SIDE::STR_NAMES[(int)_side]);
+			ca::pa::logWarning("[ca::gui::ScrollBar] Scroll bar is in horizontal mode, but change is said to be on side ", SIDE::STR_NAMES[_side]);
 		if(!m_horizontal && (_side != SIDE::BOTTOM && _side != SIDE::TOP))
-			ca::pa::logWarning("[ca::gui::ScrollBar] Scroll bar is in vertical mode, but change is said to be on side ", SIDE::STR_NAMES[(int)_side]);
+			ca::pa::logWarning("[ca::gui::ScrollBar] Scroll bar is in vertical mode, but change is said to be on side ", SIDE::STR_NAMES[_side]);
 		if(_side == SIDE::LEFT || _side == SIDE::BOTTOM)
 		{
 			const float delta = ei::max(0.0f, m_totalSize - m_availableSize) - ei::max(0.0f, _contentSize - m_availableSize);

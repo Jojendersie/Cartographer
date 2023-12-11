@@ -84,20 +84,20 @@ namespace ca { namespace gui {
 	}
 
 
-	void RefFrame::setAutoAnchors(const RefFrame* _targetFrame, ANCHOR::Val _mask)
+	void RefFrame::setAutoAnchors(const RefFrame* _targetFrame, SIDE_FLAGS::Val _mask)
 	{
 		// Detach case first
 		if (!_targetFrame)
 		{
-			if (_mask & ANCHOR::LEFT) m_anchor[SIDE::LEFT].detach();
-			if (_mask & ANCHOR::BOTTOM) m_anchor[SIDE::BOTTOM].detach();
-			if (_mask & ANCHOR::RIGHT) m_anchor[SIDE::RIGHT].detach();
-			if (_mask & ANCHOR::TOP) m_anchor[SIDE::TOP].detach();
+			if (_mask & SIDE_FLAGS::LEFT) m_anchor[SIDE::LEFT].detach();
+			if (_mask & SIDE_FLAGS::BOTTOM) m_anchor[SIDE::BOTTOM].detach();
+			if (_mask & SIDE_FLAGS::RIGHT) m_anchor[SIDE::RIGHT].detach();
+			if (_mask & SIDE_FLAGS::TOP) m_anchor[SIDE::TOP].detach();
 			return;
 		}
 
 		// Go find the closest side for each of the selected sides
-		if (_mask & ANCHOR::LEFT)
+		if (_mask & SIDE_FLAGS::LEFT)
 		{
 			const float d0 = ei::abs(left() - _targetFrame->left());
 			const float d1 = ei::abs(left() - _targetFrame->right());
@@ -106,7 +106,7 @@ namespace ca { namespace gui {
 			else
 				m_anchor[SIDE::LEFT].attach(_targetFrame, _targetFrame->right(), left(), 0);
 		}
-		if (_mask & ANCHOR::BOTTOM)
+		if (_mask & SIDE_FLAGS::BOTTOM)
 		{
 			const float d0 = ei::abs(bottom() - _targetFrame->bottom());
 			const float d1 = ei::abs(bottom() - _targetFrame->top());
@@ -115,7 +115,7 @@ namespace ca { namespace gui {
 			else
 				m_anchor[SIDE::BOTTOM].attach(_targetFrame, _targetFrame->top(), bottom(), 1);
 		}
-		if (_mask & ANCHOR::RIGHT)
+		if (_mask & SIDE_FLAGS::RIGHT)
 		{
 			const float d0 = ei::abs(right() - _targetFrame->left());
 			const float d1 = ei::abs(right() - _targetFrame->right());
@@ -124,7 +124,7 @@ namespace ca { namespace gui {
 			else
 				m_anchor[SIDE::RIGHT].attach(_targetFrame, _targetFrame->right(), right(), 0);
 		}
-		if (_mask & ANCHOR::TOP)
+		if (_mask & SIDE_FLAGS::TOP)
 		{
 			const float d0 = ei::abs(top() - _targetFrame->bottom());
 			const float d1 = ei::abs(top() - _targetFrame->top());
@@ -154,15 +154,15 @@ namespace ca { namespace gui {
 	}
 
 
-	void RefFrame::setAnchors(ANCHOR::Val _mask, const AnchorPoint& _anchorPoint)
+	void RefFrame::setAnchors(SIDE_FLAGS::Val _mask, const AnchorPoint& _anchorPoint)
 	{
-		if (_mask & ANCHOR::LEFT)
+		if (_mask & SIDE_FLAGS::LEFT)
 			m_anchor[SIDE::LEFT].attach(_anchorPoint.target, _anchorPoint.position.x, side(SIDE::LEFT), 0);
-		if (_mask & ANCHOR::RIGHT)
+		if (_mask & SIDE_FLAGS::RIGHT)
 			m_anchor[SIDE::RIGHT].attach(_anchorPoint.target, _anchorPoint.position.x, side(SIDE::RIGHT), 0);
-		if (_mask & ANCHOR::BOTTOM)
+		if (_mask & SIDE_FLAGS::BOTTOM)
 			m_anchor[SIDE::BOTTOM].attach(_anchorPoint.target, _anchorPoint.position.y, side(SIDE::BOTTOM), 1);
-		if (_mask & ANCHOR::TOP)
+		if (_mask & SIDE_FLAGS::TOP)
 			m_anchor[SIDE::TOP].attach(_anchorPoint.target, _anchorPoint.position.y, side(SIDE::TOP), 1);
 	}
 
@@ -200,10 +200,10 @@ namespace ca { namespace gui {
 		float newFrame[4];
 
 		// Fit horizontal and vertical independent in two passes
-		for(int i = 0; i < 2; ++i)
+		for(uint32 i = 0; i < 2; ++i)
 		{
-			SIDE::Val sa = SIDE::Val(i);
-			SIDE::Val sb = SIDE::Val(i + 2);
+			SIDE::Val sa = SIDE::Val{i};
+			SIDE::Val sb = SIDE::Val{i + 2};
 			if(m_anchor[sa].reference() && m_anchor[sb].reference())
 			{
 				// Both borders are set so resize is necessary
