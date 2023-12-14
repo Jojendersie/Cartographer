@@ -7,6 +7,9 @@
 #include <iostream>
 #include <codecvt>
 
+#include <regex>
+#include <algorithm>
+
 #include "stdwindow.hpp"
 
 using namespace ei;
@@ -186,7 +189,7 @@ void createGUI(GLFWwindow* _window)
 	GUIManager::add(f0group);
 	FramePtr f0(new Frame);
 	f0->setMoveable(true);
-	f0->setResizeable(true);
+	f0->setResizeable(SIDE_FLAGS::ALL);
 	f0->setExtent(Vec2(5.0f), Vec2(100.0f, 105.0f));
 	f0group->add(f0);
 
@@ -207,14 +210,14 @@ void createGUI(GLFWwindow* _window)
 	h00->setColor(Vec3(themeProps2.basicHoverColor));
 	Coord2 handleCenter(f0->horizontalCenter(), f0->top() + 2.0f);
 	h00->setExtent(handleCenter - 6.0f, Coord2(12.0f));
-	h00->setAnchors(f0.get(), handleCenter.x, f0->top(), ANCHOR::IGNORE, ANCHOR::IGNORE);
+	h00->setAnchors(f0.get(), handleCenter.x, f0->top(), -1.0f, -1.0f);
 	h00->setRotation(PI / 2.0f);
 	f0group->add(h00, 1);
 
 	// Second frame with image buttons
 	FramePtr f1(new Frame);
 	f1->setMoveable(true);
-	f1->setResizeable(true);
+	f1->setResizeable(SIDE_FLAGS::ALL);
 	f1->setExtent(Vec2(5.0f, 120.0f), Vec2(100.0f, 230.0f));
 	GUIManager::add(f1);
 
@@ -260,7 +263,7 @@ void createGUI(GLFWwindow* _window)
 	// Third frame with checkboxes and sliders
 	FramePtr f2(new Frame);
 	f2->setMoveable(true);
-	f2->setResizeable(true);
+	f2->setResizeable(SIDE_FLAGS::ALL);
 	f2->setExtent(Vec2(5.0f, 360.0f), Vec2(100.0f, 255.0f));
 	GUIManager::add(f2);
 
@@ -287,7 +290,7 @@ void createGUI(GLFWwindow* _window)
 	GUIManager::add(f3group);
 	FramePtr f3(new Frame);
 	f3->setMoveable(true);
-	f3->setResizeable(true);
+	f3->setResizeable(SIDE_FLAGS::ALL);
 	f3->setExtent(Vec2(115.0f, 120.0f), Vec2(200.0f, 230.0f));
 	f3group->add(f3);
 
@@ -296,65 +299,61 @@ void createGUI(GLFWwindow* _window)
 	h30->setColor(Vec3(themeProps2.basicHoverColor));
 	handleCenter = Coord2(f3->horizontalCenter(), f3->bottom() - 2.0f);
 	h30->setExtent(handleCenter - 6.0f, Coord2(12.0f));
-	h30->setAnchors(f3.get(), handleCenter.x, f3->bottom(), ANCHOR::IGNORE, ANCHOR::IGNORE);
+	h30->setAnchors(f3.get(), handleCenter.x, f3->bottom(), -1.0f, -1.0f);
 	h30->setRotation(-PI / 2.0f);
 	f3group->add(h30, 1);
 	NodeHandlePtr h31(new NodeHandle);
 	h31->setColor(Vec3(0.0f, 0.5f, 0.0f));
 	handleCenter = Coord2(f3->left() - 2.0f, f3->verticalCenter());
 	h31->setExtent(handleCenter - 6.0f, Coord2(12.0f));
-	h31->setAnchors(f3.get(), f3->left(), handleCenter.y, ANCHOR::IGNORE, ANCHOR::IGNORE);
+	h31->setAnchors(f3.get(), f3->left(), handleCenter.y, -1.0f, -1.0f);
 	h31->setRotation(-PI);
 	f3group->add(h31, 1);
 
 	LabelPtr l0(new Label);
 	l0->setExtent(f3->position() + Coord2(0.0f, f3->height() - 20.0f) + 2.0f, Coord2(f3->width(), 16.0f));
 	l0->setText(" Usually useless titelbar");
-	l0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::HORIZONTAL | ANCHOR::TOP);
+	l0->setAnchors(f3.get(), SIDE_FLAGS::HORIZONTAL | SIDE_FLAGS::TOP);
 	f3->add(l0);
 
 	ButtonPtr b0(new Button);
 	b0->setExtent(f3->position() + f3->size() - 20.0f, Coord2(16.0f));
 	b0->setText(" X");//TODO: why is centering wrong here?
-	b0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::RIGHT | ANCHOR::TOP);
+	b0->setAnchors(f3.get(), SIDE_FLAGS::TOPRIGHT);
 	f3->add(b0);
 
 	l0 = LabelPtr(new Label);
 	l0->setExtent(f3->position() + 2.0f, f3->size() - Coord2(4.0f, 24.0f));
 	l0->setText("LEFT");
-	l0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::LEFT);
-	l0->setAnchors(f3.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::VERTICAL);
+	l0->setAnchors(f3.get(), f3->left(), l0->verticalCenter(), -1.0f, -1.0f);
 	f3->add(l0);
 
 	l0 = LabelPtr(new Label);
 	l0->setExtent(f3->position() + 2.0f, f3->size() - Coord2(4.0f, 24.0f));
 	l0->setText("RIGHT");
 	l0->setAlignment(SIDE::RIGHT);
-	l0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::RIGHT);
-	l0->setAnchors(f3.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::VERTICAL);
+	l0->setAnchors(f3.get(), -1.0f, l0->verticalCenter() , f3->right(), -1.0f);
 	f3->add(l0);
 
 	l0 = LabelPtr(new Label);
 	l0->setExtent(f3->position() + 2.0f, f3->size() - Coord2(4.0f, 24.0f));
 	l0->setText("BOTTOM");
 	l0->setAlignment(SIDE::BOTTOM);
-	l0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::BOTTOM);
-	l0->setAnchors(f3.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::HORIZONTAL);
+	l0->setAnchors(f3.get(), l0->horizontalCenter(), f3->bottom(), -1.0f, -1.0f);
 	f3->add(l0);
 
 	l0 = LabelPtr(new Label);
 	l0->setExtent(f3->position() + 2.0f, f3->size() - Coord2(4.0f, 24.0f));
 	l0->setText("TOP");
 	l0->setAlignment(SIDE::TOP);
-	l0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::TOP);
-	l0->setAnchors(f3.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::HORIZONTAL);
+	l0->setAnchors(f3.get(), l0->horizontalCenter(), -1.0f, -1.0f, f3->top());
 	f3->add(l0);
 
 	l0 = LabelPtr(new Label);
 	l0->setExtent(f3->position() + 2.0f, f3->size() - Coord2(4.0f, 24.0f));
 	l0->setText("Reopen the window\nby clicking one of\nthe icon-buttons.");
 	l0->setAlignment(SIDE::CENTER);
-	l0->setAnchors(f3.get(), AutoAnchorMode::ABSOLUTE);
+	l0->setAnchors(f3.get(), l0->horizontalCenter(), l0->verticalCenter(), -1.0f, -1.0f);
 	f3->add(l0);
 
 	// Add some connectors between node handles
@@ -371,31 +370,31 @@ void createGUI(GLFWwindow* _window)
 	ImagePtr i0(new Image);
 	i0->setExtent(f4->position() + Vec2(20.0f, 10.0f), Vec2(32.0f));
 	i0->setTexture("textures/ca_icon32.png");
-	i0->setAnchors(f4.get(), AutoAnchorMode::SRC_CENTER);
+	i0->setAnchors(f4.get(), i0->horizontalCenter(), i0->verticalCenter(), -1.0f, -1.0f);
 	i0->setRegion(std::make_unique<EllipseRegion>(i0.get()));
 	f4->add(i0);
 	ImagePtr i1(new Image);
 	i1->setExtent(f4->position() + Vec2(10.0f, 70.0f), Vec2(32.0f));
 	i1->setTexture("textures/ca_icon32.png");
-	i1->setAnchors(f4.get(), AutoAnchorMode::SRC_CENTER);
+	i1->setAnchors(f4.get(), i0->horizontalCenter(), i0->verticalCenter(), -1.0f, -1.0f);
 	i1->setRegion(std::make_unique<EllipseRegion>(i1.get()));
 	f4->add(i1);
 	ImagePtr i2(new Image);
 	i2->setExtent(f4->position() + Vec2(100.0f, 100.0f), Vec2(32.0f));
 	i2->setTexture("textures/ca_icon32.png");
-	i2->setAnchors(f4.get(), AutoAnchorMode::SRC_CENTER);
+	i2->setAnchors(f4.get(), i0->horizontalCenter(), i0->verticalCenter(), -1.0f, -1.0f);
 	i2->setRegion(std::make_unique<EllipseRegion>(i2.get()));
 	f4->add(i2);
 	ImagePtr i3(new Image);
 	i3->setExtent(f4->position() + Vec2(20.0f, 140.0f), Vec2(32.0f));
 	i3->setTexture("textures/ca_icon32.png");
-	i3->setAnchors(f4.get(), AutoAnchorMode::SRC_CENTER);
+	i3->setAnchors(f4.get(), i0->horizontalCenter(), i0->verticalCenter(), -1.0f, -1.0f);
 	i3->setRegion(std::make_unique<EllipseRegion>(i3.get()));
 	f4->add(i3);
 	ImagePtr i4(new Image);
 	i4->setExtent(f4->position() + Vec2(140.0f, 190.0f), Vec2(32.0f));
 	i4->setTexture("textures/ca_icon32.png");
-	i4->setAnchors(f4.get(), AutoAnchorMode::SRC_CENTER);
+	i4->setAnchors(f4.get(), i0->horizontalCenter(), i0->verticalCenter(), -1.0f, -1.0f);
 	i4->setRegion(std::make_unique<EllipseRegion>(i4.get()));
 	f4->add(i4);
 	WidgetConnectorPtr con0(new WidgetConnector);
@@ -418,7 +417,7 @@ void createGUI(GLFWwindow* _window)
 	// A frame which triggers a popup
 	FramePtr f5(new Frame);
 	f5->setMoveable(true);
-	f5->setResizeable(true);
+	f5->setResizeable(SIDE_FLAGS::ALL);
 	f5->setExtent(f0->position() + Coord2(f0->width() + 10.0f, 0.0f), Coord2(f4->width(), f0->height()));
 	GUIManager::add(f5);
 
@@ -426,7 +425,7 @@ void createGUI(GLFWwindow* _window)
 	l0->setExtent(f5->position() + 2.0f, f5->size() - Coord2(4.0f, 4.0f));
 	l0->setText("This area triggers a popup.");
 	l0->setAlignment(SIDE::CENTER);
-	l0->setAnchors(f5.get(), AutoAnchorMode::ABSOLUTE);
+	l0->setAnchors(f5.get());
 	f5->add(l0);
 
 	LabelPtr l1(new Label);
@@ -438,22 +437,20 @@ void createGUI(GLFWwindow* _window)
 	// A frame with edits
 	FramePtr f6(new Frame);
 	f6->setMoveable(true);
-	f6->setResizeable(true);
+	f6->setResizeable(SIDE_FLAGS::ALL);
 	f6->setExtent(f5->position() + Coord2(f5->width() + 10.0f, 0.0f), f5->size());
 	GUIManager::add(f6);
 
 	EditPtr e0( new Edit );
 	e0->setExtent(f6->position() + Coord2(5.0f), Coord2(f6->width() - 10.0f, 20.0f));
 	e0->setText("Type text here");
-	e0->setAnchors(f6.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::HORIZONTAL);
-	e0->setAnchors(f6.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::VERTICAL);
+	e0->setAnchors(f6.get(), f6->left(), e0->verticalCenter(), f6->right(), -1.0f);
 	f6->add(e0);
 
 	EditPtr e1( new Edit );
 	e1->setExtent(f6->position() + Coord2(5.0f, 30.0f), Coord2(f6->width() - 10.0f, 20.0f));
 	e1->setDescriptorText("Type text here");
-	e1->setAnchors(f6.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::HORIZONTAL);
-	e1->setAnchors(f6.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::VERTICAL);
+	e1->setAnchors(f6.get(), f6->left(), e1->verticalCenter(), f6->right(), -1.0f);
 	e1->setMargin(2.0f);
 	f6->add(e1);
 
@@ -461,16 +458,38 @@ void createGUI(GLFWwindow* _window)
 	e2->setExtent(f6->position() + Coord2(5.0f, 55.0f), Coord2(f6->width() - 10.0f, 20.0f));
 	e2->setAlignment(SIDE::CENTER);
 	e2->setDescriptorText("centered text");
-	e2->setAnchors(f6.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::HORIZONTAL);
-	e2->setAnchors(f6.get(), AutoAnchorMode::SRC_CENTER, ANCHOR::VERTICAL);
+	e2->setAnchors(f6.get(), f6->left(), e2->verticalCenter(), f6->right(), -1.0f);
 	e2->setMargin(2.0f);
 	f6->add(e2);
+
+	EditPtr e3( new Edit );
+	e3->setExtent(f6->position() + Coord2(5.0f, 80.0f), Coord2(f6->width() - 10.0f, 20.0f));
+	e3->setDescriptorText("decimal number");
+	e3->setAnchors(f6.get(), f6->left(), e3->verticalCenter(), f6->right(), -1.0f);
+	e3->setMargin(2.0f);
+	e3->setOnTextChangeFunc([](Widget* _this, std::string &_text){
+		bool hadPoint = false;
+		_text.erase(
+			std::remove_if(_text.begin(), _text.end(), [&hadPoint](const char c){
+				if(c >= '0' && c <= '9') return false;
+				if(hadPoint == true) return true;
+				if(c == '.') { hadPoint = true; return false; }
+				return true;
+			}), _text.end());
+		//std::regex r(R"([-+]?([0-9]*[.])?[0-9]+([eE][-+]?[0-9]+)?)");
+		//std::sregex_iterator i = std::sregex_iterator(_text.begin(), _text.end(), r);
+		//if(i == std::sregex_iterator())
+		//	_text = "0";
+		//else
+		//	_text = i->str();
+	});
+	f6->add(e3);
 
 	// *********************************************
 	// A frame with scrollbars
 	FramePtr f7(new Frame);
 	f7->setMoveable(true);
-	f7->setResizeable(true);
+	f7->setResizeable(SIDE_FLAGS::ALL);
 	f7->setExtent(f6->position() + Coord2(0.0f, f6->height() + 10.0f), f6->size());
 	GUIManager::add(f7);
 
@@ -483,24 +502,24 @@ void createGUI(GLFWwindow* _window)
 	sbh->setHorizontalMode(true);
 	sbh->setViewArea(f7, 12.0f + 2.0f);
 	sbh->setContent(l0);
-	sbh->setAnchors(f7.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::HORIZONTAL | ANCHOR::BOTTOM);
+	sbh->setAnchors(f7.get(), SIDE_FLAGS::HORIZONTAL | SIDE_FLAGS::BOTTOM);
 	f7->add(sbh, 1u);
 
 	ScrollBarPtr sbv(new ScrollBar);
 	sbv->setExtent(f7->position() + Coord2(f7->width() - 12.0f, 12.0f), Coord2(12.0f, f7->height() - 12.0f));
 	sbv->setViewArea(f7, 12.0f + 2.0f);
 	sbv->setContent(l0);
-	sbv->setAnchors(f7.get(), AutoAnchorMode::ABSOLUTE, ANCHOR::VERTICAL | ANCHOR::RIGHT);
+	sbv->setAnchors(f7.get(), SIDE_FLAGS::VERTICAL | SIDE_FLAGS::RIGHT);
 	f7->add(sbv, 1u);
 
-	l0->setAnchor(sbh->getAnchor(), SIDE::LEFT, l0->left());
-	l0->setAnchor(sbv->getAnchor(), SIDE::BOTTOM, l0->bottom());
+	l0->setAnchors(sbh->getAnchor(), l0->left(), -1.0f, -1.0f, -1.0f);
+	l0->setAnchors(sbv->getAnchor(), -1.0f, l0->bottom(), -1.0f, -1.0f);
 	sbv->setScrollOffset(10000.0f); // Just skip to the top
 
 	// A frame for clipping
 	FramePtr f7s(new Frame);
 	f7s->setExtent(f7->position() + Coord2(2.0f, 14.0f), f7->size() - 16.0f);
-	f7s->setAnchors(f7.get(), AutoAnchorMode::ABSOLUTE);
+	f7s->setAnchors(f7.get());
 	f7s->add(l0);
 	f7->add(f7s, 0u);
 
@@ -508,13 +527,13 @@ void createGUI(GLFWwindow* _window)
 	// Frame with drop down menus
 	FramePtr f8(new Frame);
 	f8->setMoveable(true);
-	f8->setResizeable(true);
+	f8->setResizeable(SIDE_FLAGS::ALL);
 	f8->setExtent(f7->position() + Coord2(0.0f, f7->height() + 10.0f), f7->size());
 	GUIManager::add(f8);
 
 	DropDownMenuPtr dm0(new DropDownMenu);
 	dm0->setExtent(f8->position() + coord::pixel(2, 24), Coord2(f8->width() - 4, 20));
-	dm0->setAnchors(f8.get(), AutoAnchorMode::SRC_CENTER);
+	dm0->setAnchors(f8.get(), dm0->horizontalCenter(), dm0->verticalCenter(), -1.0f, -1.0f);
 	f8->add(dm0);
 	dm0->addItem("Alpha");
 	dm0->addItem("Beta");

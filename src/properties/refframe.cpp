@@ -84,7 +84,7 @@ namespace ca { namespace gui {
 	}
 
 
-	void RefFrame::setAutoAnchors(const RefFrame* _targetFrame, SIDE_FLAGS::Val _mask)
+	void RefFrame::setAnchors(const RefFrame* _targetFrame, SIDE_FLAGS::Val _mask)
 	{
 		// Detach case first
 		if (!_targetFrame)
@@ -136,20 +136,30 @@ namespace ca { namespace gui {
 	}
 
 
-	RefFrame::AnchorPoint RefFrame::getAnchorPoint(float _relativePosX, float _relativePosY) const
+	/*RefFrame::AnchorPoint RefFrame::getAnchorPoint(SIDE_FLAGS::Val _mask) const
 	{
-		return AnchorPoint {
-			this,
-			{ getPosition(0, _relativePosX), getPosition(1, _relativePosY) }
-		};
+		Coord h, v;
+		if (_mask & SIDE_FLAGS::RIGHT)
+			h = right();
+		else if (_mask & SIDE_FLAGS::HCENTER)
+			h = horizontalCenter();
+		else
+			h = left();
+		if (_mask & SIDE_FLAGS::TOP)
+			v = top();
+		else if (_mask & SIDE_FLAGS::VCENTER)
+			v = verticalCenter();
+		else
+			v = right();
+		return getAnchorPoint(h, v);
 	}
 
 
-	RefFrame::AnchorPoint RefFrame::getAnchorPoint(const Coord2& _coord) const
+	RefFrame::AnchorPoint RefFrame::getAnchorPoint(Coord _horizontal, Coord _vertical) const
 	{
 		return AnchorPoint {
 			this,
-			_coord
+			{ _horizontal, _vertical }
 		};
 	}
 
@@ -164,6 +174,24 @@ namespace ca { namespace gui {
 			m_anchor[SIDE::BOTTOM].attach(_anchorPoint.target, _anchorPoint.position.y, side(SIDE::BOTTOM), 1);
 		if (_mask & SIDE_FLAGS::TOP)
 			m_anchor[SIDE::TOP].attach(_anchorPoint.target, _anchorPoint.position.y, side(SIDE::TOP), 1);
+	}*/
+
+
+	void RefFrame::setAnchors(const IAnchorProvider* _target, Coord _leftTarget, Coord _bottomTarget, Coord _rightTarget, Coord _topTarget)
+	{
+		// Now construct the new one
+		for(int i = 0; i < 4; ++i)
+		{
+			// Get the two horizontal or two vertical indices
+			const int dim = i & 1;
+			// Determine relative position of the target point towards the target frame
+			const Coord targetPoint = i == 0 ? _leftTarget : (i == 1 ? _bottomTarget : (i == 2 ? _rightTarget : _topTarget));
+			if (targetPoint >= 0.0f)
+			{
+				if (!_target) m_anchor[i].detach();
+				else m_anchor[i].attach(_target, targetPoint, side(i), dim);
+			}
+		}
 	}
 
 

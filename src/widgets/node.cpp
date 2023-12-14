@@ -503,13 +503,13 @@ namespace ca { namespace gui {
 			const Vec2 c0 = m_destNode->center();
 			const Vec2 c1 = m_sourceNode->center();
 			// We don't really care where we are anchored, we only need the resize events for recomputations.
-			setAnchors((c0.x <= c1.x ? SIDE_FLAGS::LEFT : SIDE_FLAGS::RIGHT)
-					 | (c0.y <= c1.y ? SIDE_FLAGS::BOTTOM : SIDE_FLAGS::TOP),
-				{m_destNode.get(), c0}
+			setAnchors(m_destNode.get(),
+				(c0.x <= c1.x ? SIDE_FLAGS::LEFT : SIDE_FLAGS::RIGHT)
+				| (c0.y <= c1.y ? SIDE_FLAGS::BOTTOM : SIDE_FLAGS::TOP)
 			);
-			setAnchors((c0.x < c1.x ? SIDE_FLAGS::RIGHT : SIDE_FLAGS::LEFT)
-					 | (c0.y < c1.y ? SIDE_FLAGS::TOP : SIDE_FLAGS::BOTTOM),
-				{m_sourceNode.get(), c1}
+			setAnchors(m_sourceNode.get(),
+				(c0.x < c1.x ? SIDE_FLAGS::RIGHT : SIDE_FLAGS::LEFT)
+				| (c0.y < c1.y ? SIDE_FLAGS::TOP : SIDE_FLAGS::BOTTOM)
 			);
 			setFrame(ei::min(c0.x, c1.x), ei::min(c0.y, c1.y), ei::max(c0.x, c1.x), ei::max(c0.y, c1.y));
 		}

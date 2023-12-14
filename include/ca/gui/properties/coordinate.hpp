@@ -66,9 +66,13 @@ namespace ca { namespace gui {
 		static constexpr uint32 RIGHT = 1u << SIDE::RIGHT;
 		static constexpr uint32 BOTTOM = 1u << SIDE::BOTTOM;
 		static constexpr uint32 TOP = 1u << SIDE::TOP;
+		static constexpr uint32 HCENTER = TOP << 1u;
+		static constexpr uint32 VCENTER = TOP << 2u;
+
 		static constexpr uint32 HORIZONTAL = LEFT | RIGHT;
 		static constexpr uint32 VERTICAL = BOTTOM | TOP;
 		static constexpr uint32 ALL = HORIZONTAL | VERTICAL;
 		static constexpr uint32 POSITION = BOTTOM | LEFT;
+		static constexpr uint32 TOPRIGHT = TOP | RIGHT;
 	};
 }} // namespace ca::gui

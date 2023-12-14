@@ -81,30 +81,63 @@ namespace ca { namespace gui {
 		/// \param [in] _targetFrame New reference or nullptr to release all anchors
 		///		that do not have a value of IGNORE_ANCHOR.
 		/// \param [in] _mask Only change those anchors in mask, ignore the others
-		void setAutoAnchors(
+		void setAnchors(
 			const RefFrame* _targetFrame,
 			SIDE_FLAGS::Val _mask = SIDE_FLAGS::ALL
 		);
 
 		/// Get a reference point against which an anchor can be set.
-		/// \param[in] _relativePosition A position in- or outside the frame.
-		///		left/bottom == 0 and right/top == 1 (depending on which dimension
-		///		this point belongs to.
-		struct AnchorPoint {
+		/// \param[in] _mask One horizontal and one vertical flag to describe
+		///		which side to use as anchor. Center coordinates are allowed as well.
+		///		If no flag for a dimension is given bottom/left will be used.
+		///		If two or three flags for a dimension are given top/right will be used
+		///		over center over left/bottom.
+		/*struct AnchorPoint {
 			const IAnchorProvider* target;
 			Coord2 position;
 		};
-		AnchorPoint getAnchorPoint(float _relativePosX, float _relativePosY) const;
+		AnchorPoint getAnchorPoint(SIDE_FLAGS::Val _mask) const;
 
 		/// Get a reference point against which an anchor can be set from an absolute position.
 		/// \param[in] _coord Absolute global position at which we want to anchor.
 		///		Note that any change will be relative to this components as common.
 		///		The only difference is in how we select the actual reference point.
-		AnchorPoint getAnchorPoint(const Coord2& _coord) const;
+		AnchorPoint getAnchorPoint(Coord _horizontal, Coord _vertical) const;
 
 		/// Connect one or multiple anchor of this widget to an
 		///	anchor point from a different element.
-		void setAnchors(SIDE_FLAGS::Val _mask, const AnchorPoint& _anchorPoint);
+		void setAnchors(SIDE_FLAGS::Val _mask, const AnchorPoint& _anchorPoint);*/
+
+		/// Set all anchors at once.
+		/// \details For each of the four sides an absolute reference point
+		///		can be specified or the dimension can be ignored by using a negative
+		///		value. Equivalent to calling
+		///		setAnhors(X_SIDE | Y_SIDE, _target->getAnchorPoint(CoordX, CoordY))
+		///		twice to cover all four sides.
+		///
+		///		By using the current frame's sides directly, a fully relative
+		///		anchoring is achieved (points will stay proportionally at the same
+		///		position to the _targetFrame).
+		///		By using the target frame's sides directly, a fully absolute
+		///		anchoring is achived (points will keep constant distance to the
+		///		boundaries of the _targetFrame).
+		///		Anything in between is (or outside the target and source frame
+		///		is valid as well.
+		/// 
+		///		If target is nullptr, all anchors with positive values will be detached.
+		/// \param [in] _targetFrame New reference or nullptr to release all anchors
+		///		that do not have a negative value.
+		/// \param [in] _<dim>target An absolute coordinate for each coordinate.
+		///		A side which should not be linked can be signaled by any negative number.
+		///		The absolute distance between the current boundary position and the target
+		///		points will be kept.
+		void setAnchors(
+			const IAnchorProvider* _target,
+			Coord _leftTarget,
+			Coord _bottomTarget,
+			Coord _rightTarget,
+			Coord _topTarget
+		);
 
 		/// Recompute relative positioning. E.g. if a component was moved manually.
 		void resetAnchors() override;
