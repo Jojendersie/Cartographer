@@ -24,25 +24,42 @@ namespace ca { namespace cc {
 		R32F = 0x822E,			// GL_R32F
 		R32I = 0x8235,			// GL_R32I
 		R32U = 0x8236,			// GL_R32UI
+
+		RGBA16 = 0x805B,		// GL_RGBA16
+		RGBA16S = 0x8F9B,		// GL_RGBA16_SNORM
 		RGBA16F = 0x881A,		// GL_RGBA16F
 		RGBA16I = 0x8D88,		// GL_RGBA16I
 		RGBA16U = 0x8D76,		// GL_RGBA16UI
-		RG16I = 0x8239,			// GL_RG16I
+
+		RG16 = 0x822C,			// GL_RG16
+		RG16S = 0x8F99,			// GL_RG16_SNORM
 		RG16F = 0x822F,			// GL_RG16F
+		RG16I = 0x8239,			// GL_RG16I
 		RG16U = 0x823A,			// GL_RG16UI
+
+		R16 = 0x822A,			// GL_R16
+		R16S = 0x8F98,			// GL_R16_SNORM
 		R16F = 0x822D,			// GL_R16F
 		R16I = 0x8233,			// GL_R16I
 		R16U = 0x8234,			// GL_R16UI
+
 		R8 = 0x8229,			// GL_R8
+		R8S = 0x8F94,			// GL_R8_SNORM
 		R8U = 0x8232,			// GL_R8UI
 		R8I = 0x8231,			// GL_R8I
+
 		RG8 = 0x822B,			// GL_RG8
+		RG8S = 0x8F95,			// GL_RG8_SNORM
 		RG8U = 0x8238,			// GL_RG8UI
 		RG8I = 0x8237,			// GL_RG8I
+
 		RGB8 = 0x8051,			// GL_RGB8
+		RGB8S = 0x8F96,			// GL_RGB8_SNORM
 		RGB8U = 0x8D7D,			// GL_RGB8UI
 		RGB8I = 0x8D8F,			// GL_RGB8I
+
 		RGBA8 = 0x8058,			// GL_RGBA8
+		RGBA8S = 0x8F97,		// GL_RGBA8_SNORM
 		RGBA8U = 0x8D7C,		// GL_RGBA8UI
 		RGBA8I = 0x8D8E,		// GL_RGBA8I
 
@@ -55,6 +72,24 @@ namespace ca { namespace cc {
 		C_BC5_sRGBA = 0x8C4F,	// GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT
 		C_BC5_RGBA = 0x83F3,	// GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
 	};
+
+
+	enum class TexType
+	{
+		U_8,
+		I_8,
+		U_16,
+		I_16,
+		U_32,
+		I_32,
+		F_32
+	};
+
+
+	/// Get a normalized texture format (not integer texture) from
+	/// number of components and base type.
+	TexFormat getFormat(TexType _type, int _numComponents);
+
 
 	/// Base class for different (2D, 3D, cube) textures.
 	class Texture
@@ -79,13 +114,19 @@ namespace ca { namespace cc {
 
 		/// Create a new empty texture.
 		/// \details There is a support for LDR (8-bit) textures only.
-		static Texture2D* create(int _width, int _height, int _numComponents, const Sampler& _sampler);
+		static Texture2D* create(int _width, int _height, int _numComponents, const Sampler& _sampler, bool _allocMipMap = true);
 		/// More advanced creation function with arbitrary formats
-		static Texture2D* create(int _width, int _height, TexFormat _format, const Sampler& _sampler);
-		/// Upload information for a single texture layer
+		static Texture2D* create(int _width, int _height, TexFormat _format, const Sampler& _sampler, bool _allocMipMap = true);
+		/// Upload information for a single texture layer.
 		/// \param [in] _level Mip-map level starting with 0 for the higest resolution.
 		/// \param [in] _data Pixel data with 8-bit per component and N components per pixel.
-		void fillMipMap(int _level, const byte* _data, bool _srgb = false);
+		void fillMipMap(int _level, const byte* _data);
+		/// Upload data for a single texture layer of a format that is not 8-bit or does
+		/// not have the same number of components as the texture
+		/// \param [in] _data Pixel data with the specified type and channel count.
+		///		The resolution must match the mip level.
+		/// \param [in] _type The actual type of channel in `_data`.
+		void fillMipMap(int _level, const byte* _data, int _numComponents, TexType _type);
 		/// Makes the texture resident and may compute mip-maps.
 		Handle finalize(bool _createMipMaps = false, bool _makeResident = true);
 
@@ -105,7 +146,7 @@ namespace ca { namespace cc {
 		void setSampler(const Sampler& _sampler);
 	private:
 		/// Create a 2D texture without data
-		Texture2D(int _width, int _height, TexFormat _format, const Sampler& _sampler);
+		Texture2D(int _width, int _height, TexFormat _format, const Sampler& _sampler, bool _allocMipMap);
 
 		/// Load a 2D texture from file.
 		/// \details Allowed file formats are JPG, PNG, TGA, BMP, PSD, GIF, (HDR), PIC.
@@ -113,7 +154,7 @@ namespace ca { namespace cc {
 		///		The texture will be always resident and available for bindless access.
 		/// \param [in] _textureFileName The file to load.
 		/// \param [in] _sampler A sampler which will be used with this texture.
-		Texture2D(const char* _textureFileName, const Sampler& _sampler, bool _srgb);
+		Texture2D(const char* _textureFileName, const Sampler& _sampler, bool _srgb, bool _allocMipMap);
 
 		~Texture2D();
 

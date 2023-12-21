@@ -18,22 +18,27 @@ namespace ca { namespace cc {
 		{
 		case TexFormat::D32F:
 		case TexFormat::D32:
+			return GL_DEPTH_COMPONENT;
 		case TexFormat::D24S8:
 		case TexFormat::D32FS8:
-			return 0;
+			return GL_DEPTH_STENCIL;
 		case TexFormat::RGBA32F:
 		case TexFormat::RGBA32I:
 		case TexFormat::RGBA32U:
+		case TexFormat::RGBA16:
+		case TexFormat::RGBA16S:
 		case TexFormat::RGBA16F:
 		case TexFormat::RGBA16I:
 		case TexFormat::RGBA16U:
 		case TexFormat::RGBA8:
+		case TexFormat::RGBA8S:
 		case TexFormat::RGBA8U:
 		case TexFormat::RGBA8I:
 		case TexFormat::C_BC5_sRGBA:
 		case TexFormat::C_BC5_RGBA:
 			return GL_RGBA;
 		case TexFormat::RGB8:
+		case TexFormat::RGB8S:
 		case TexFormat::RGB8U:
 		case TexFormat::RGB8I:
 		case TexFormat::R11G11B10F:
@@ -44,10 +49,13 @@ namespace ca { namespace cc {
 		case TexFormat::RG32F:
 		case TexFormat::RG32I:
 		case TexFormat::RG32U:
+		case TexFormat::RG16:
+		case TexFormat::RG16S:
 		case TexFormat::RG16I:
 		case TexFormat::RG16F:
 		case TexFormat::RG16U:
 		case TexFormat::RG8:
+		case TexFormat::RG8S:
 		case TexFormat::RG8U:
 		case TexFormat::RG8I:
 		case TexFormat::C_RGTC2_RGU:
@@ -56,10 +64,13 @@ namespace ca { namespace cc {
 		case TexFormat::R32F:
 		case TexFormat::R32I:
 		case TexFormat::R32U:
+		case TexFormat::R16:
+		case TexFormat::R16S:
 		case TexFormat::R16F:
 		case TexFormat::R16I:
 		case TexFormat::R16U:
 		case TexFormat::R8:
+		case TexFormat::R8S:
 		case TexFormat::R8U:
 		case TexFormat::R8I:
 			return GL_RED;
@@ -67,7 +78,25 @@ namespace ca { namespace cc {
 		return 0;
 	}
 
-	Texture2D::Texture2D(int _width, int _height, TexFormat _format, const Sampler& _sampler) :
+
+	TexFormat getFormat(TexType _type, int _numComponents)
+	{
+		constexpr TexFormat FF_1[] = { TexFormat::R8, TexFormat::R8S, TexFormat::R16, TexFormat::R16S, TexFormat{0}, TexFormat{0}, TexFormat::R32F };
+		constexpr TexFormat FF_2[] = { TexFormat::RG8, TexFormat::RG8S, TexFormat::RG16, TexFormat::RG16S, TexFormat{0}, TexFormat{0}, TexFormat::RG32F };
+		constexpr TexFormat FF_3[] = { TexFormat::RGB8, TexFormat::RGB8S, TexFormat::RGBA16, TexFormat::RGBA16S, TexFormat{0}, TexFormat{0}, TexFormat::RGBA32F };
+		constexpr TexFormat FF_4[] = { TexFormat::RGBA8, TexFormat::RGBA8S, TexFormat::RGBA16, TexFormat::RGBA16S, TexFormat{0}, TexFormat{0}, TexFormat::RGBA32F };
+		switch(_numComponents)
+		{
+		case 1: return FF_1[(int)_type];
+		case 2: return FF_2[(int)_type];
+		case 3: return FF_3[(int)_type];
+		case 4: return FF_4[(int)_type];
+		default: return TexFormat{0};
+		}
+	}
+
+
+	Texture2D::Texture2D(int _width, int _height, TexFormat _format, const Sampler& _sampler, bool _allocMipMap) :
 		m_width(_width),
 		m_height(_height),
 		m_format(_format),
@@ -76,14 +105,14 @@ namespace ca { namespace cc {
 		// Create openGL - resource
 		glGenTextures(1, &m_textureID);
 		glCall(glBindTexture, GL_TEXTURE_2D, m_textureID);
-		int numLevels = int(floor(log2(ei::max(_width, _height)))) + 1;
+		int numLevels = _allocMipMap ? int(floor(log2(ei::max(_width, _height)))) + 1 : 1;
 		//glTextureStorage2D(m_textureID, 1, GLenum(_format), _width, _height);
 		glCall(glTexStorage2D, GL_TEXTURE_2D, numLevels, GLenum(_format), _width, _height);
 
 		pa::logInfo("[ca::cc] Created raw texture ", m_textureID, " .");
 	}
 
-	Texture2D::Texture2D(const char* _textureFileName, const Sampler& _sampler, bool _srgb) :
+	Texture2D::Texture2D(const char* _textureFileName, const Sampler& _sampler, bool _srgb, bool _allocMipMap) :
 		m_width(0),
 		m_height(0),
 		m_sampler(&_sampler),
@@ -117,7 +146,8 @@ namespace ca { namespace cc {
 		glCall(glBindTexture, GL_TEXTURE_2D, m_textureID);
 		m_format = TexFormat((_srgb && numComponents >= 3) ? NUM_COMPS_TO_INTERNAL_FORMAT_SRGB[numComponents-3] : NUM_COMPS_TO_INTERNAL_FORMAT[numComponents-1]);
 		glCall(glTexImage2D, GL_TEXTURE_2D, 0, uint(m_format), m_width, m_height, 0, NUM_COMPS_TO_PIXEL_FORMAT[numComponents-1], GL_UNSIGNED_BYTE, textureData);
-		glCall(glGenerateMipmap, GL_TEXTURE_2D);
+		if (_allocMipMap)
+			glCall(glGenerateMipmap, GL_TEXTURE_2D);
 
 		stbi_image_free(textureData);
 
@@ -138,7 +168,7 @@ namespace ca { namespace cc {
 
 	Texture2D::Handle Texture2D::load(const char* _fileName, const Sampler& _sampler, bool _srgb)
 	{
-		return new Texture2D(_fileName, _sampler, _srgb);
+		return new Texture2D(_fileName, _sampler, _srgb, true);
 	}
 
 	void Texture2D::unload(Handle _texture)
@@ -148,23 +178,36 @@ namespace ca { namespace cc {
 		delete const_cast<Texture2D*>(_texture);
 	}
 
-	Texture2D* Texture2D::create(int _width, int _height, int _numComponents, const Sampler& _sampler)
+	Texture2D* Texture2D::create(int _width, int _height, int _numComponents, const Sampler& _sampler, bool _allocMipMap)
 	{
-		return new Texture2D(_width, _height, TexFormat(NUM_COMPS_TO_INTERNAL_FORMAT[_numComponents - 1]), _sampler);
+		return new Texture2D(_width, _height, TexFormat(NUM_COMPS_TO_INTERNAL_FORMAT[_numComponents - 1]), _sampler, _allocMipMap);
 	}
 
-	Texture2D * Texture2D::create(int _width, int _height, TexFormat _format, const Sampler & _sampler)
+	Texture2D * Texture2D::create(int _width, int _height, TexFormat _format, const Sampler & _sampler, bool _allocMipMap)
 	{
-		return new Texture2D(_width, _height, _format, _sampler);
+		return new Texture2D(_width, _height, _format, _sampler, _allocMipMap);
 	}
 
-	void Texture2D::fillMipMap(int _level, const byte* _data, bool _srgb)
+	void Texture2D::fillMipMap(int _level, const byte* _data)
 	{
 		glCall(glBindTexture, GL_TEXTURE_2D, m_textureID);
 		int divider = 1 << _level;
 		int levelWidth = ei::max(1, m_width / divider);
 		int levelHeight = ei::max(1, m_height / divider);
 		glCall(glTexSubImage2D, GL_TEXTURE_2D, _level, 0, 0, levelWidth, levelHeight, formatToDataFormat(m_format), GL_UNSIGNED_BYTE, _data);
+	}
+
+	void Texture2D::fillMipMap(int _level, const byte* _data, int _numComponents, TexType _type)
+	{
+		glCall(glBindTexture, GL_TEXTURE_2D, m_textureID);
+		int divider = 1 << _level;
+		int levelWidth = ei::max(1, m_width / divider);
+		int levelHeight = ei::max(1, m_height / divider);
+		constexpr GLenum TOGL_COMP[] = { GL_RED, GL_RG, GL_RGB, GL_RGBA };
+		constexpr GLenum TOGL_TYPE[] = { GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_FLOAT };
+		const GLenum format = TOGL_COMP[_numComponents-1];
+		const GLenum type = TOGL_TYPE[(int)_type];
+		glCall(glTexSubImage2D, GL_TEXTURE_2D, _level, 0, 0, levelWidth, levelHeight, format, type, _data);
 	}
 
 	Texture2D::Handle Texture2D::finalize(bool _createMipMaps, bool _makeResident)
