@@ -73,7 +73,6 @@ namespace ca { namespace gui {
 
 		// Starting to move, or already moving
 		GUIManager::setCursorType(m_horizontal ? CursorType::RESIZE_H : CursorType::RESIZE_V);
-		GUIManager::setMouseFocus(&_thisWidget, true);
 		_ensureNextInput = true;
 
 		// Pick the right values of some reused quantities

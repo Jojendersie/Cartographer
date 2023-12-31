@@ -77,7 +77,8 @@ namespace ca { namespace gui {
 			top() + _deltaTop);
 	}
 
-	bool Widget::processInput(const struct MouseState& _mouseState)
+	
+	bool Widget::checkFocus(const struct MouseState& _mouseState)
 	{
 		bool cursorOnWidget = getRegion()->isMouseOver(_mouseState.position);
 
@@ -85,14 +86,24 @@ namespace ca { namespace gui {
 		if(cursorOnWidget && _mouseState.anyButtonDown && GUIManager::getKeyboardFocussed() != this)
 			GUIManager::setKeyboardFocus(nullptr);
 
-		// Sticky focus remains untouched if enabled.
-		if(GUIManager::getStickyMouseFocussed() == nullptr) {
-			if(cursorOnWidget)
-				GUIManager::setMouseFocus(this);
-			// The current element has the focus but no reason to keep it.
-			else if(GUIManager::hasMouseFocus(this))
-				GUIManager::setMouseFocus(nullptr);
+		// Take the mouse focus if cursor above widget. If this widget
+		// has children (e.g. group or frame) they will claim the focus on their own
+		// until we are at the leaf of the hierarchy.
+		if(cursorOnWidget)
+		{
+			GUIManager::setMouseFocus(this);
+			// Might look redundant, but other than the mouse over, the focus
+			// can be reclaimed by the parent element (see frame)
+			GUIManager::setMouseOver(this);
 		}
+
+		return cursorOnWidget;
+	}
+
+
+	bool Widget::processInput(const struct MouseState& _mouseState)
+	{
+		bool cursorOnWidget = getRegion()->isMouseOver(_mouseState.position);
 
 		if(m_activeComponent)
 		{
@@ -113,9 +124,7 @@ namespace ca { namespace gui {
 			}
 		}
 
-		if(GUIManager::getStickyMouseFocussed() == this)
-			return true;
-		return cursorOnWidget;
+		return true;
 	}
 
 

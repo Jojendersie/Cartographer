@@ -29,7 +29,6 @@ namespace ca { namespace gui {
 		g_manager->m_mouseFocus = nullptr;
 		g_manager->m_mouseOver = nullptr;
 		g_manager->m_stickyMouseFocus = false;
-		g_manager->m_keepSticky = false;
 		g_manager->m_lastMouseMoveTime = 0.0f;
 		g_manager->m_cursorType = CursorType::ARROW;
 		logInfo("[ca::gui] Initialized GUIManager.");
@@ -170,10 +169,6 @@ namespace ca { namespace gui {
 		// Check for click and dbl-click events.
 		g_manager->m_clickHandler.handleUpEvents(g_manager->m_mouseState);
 
-		// Reset sticky-state. The component must actively regain this.
-		// Otherwise some component may keep the state forever.
-		g_manager->m_keepSticky = false;
-
 		// If the focussed element is invisible release its focus.
 		if(g_manager->m_mouseFocus && !g_manager->m_mouseFocus->isVisible())
 			g_manager->m_mouseFocus = nullptr;
@@ -181,16 +176,21 @@ namespace ca { namespace gui {
 		bool ret;
 		if(g_manager->m_stickyMouseFocus && g_manager->m_mouseFocus)
 		{
+			// As long as any button is pressed, the focus stays sticky.
+			if(!g_manager->m_mouseState.anyButtonPressed)
+				g_manager->m_stickyMouseFocus = false;
 			ret = g_manager->m_mouseFocus->processInput( g_manager->m_mouseState );
 		} else {
+			g_manager->m_mouseFocus = nullptr; // The state will be actively reclaimed.
 			// First process popups (they overlay the rest)
 			if(g_manager->m_popups.processInput( g_manager->m_mouseState ))
 				ret = true;
 			else
 				ret = g_manager->m_topFrame->processInput( g_manager->m_mouseState );
+			// Any mouse down event fixes the next mouse event to the same component.
+			if (g_manager->m_mouseFocus && g_manager->m_mouseState.anyButtonDown)
+				g_manager->m_stickyMouseFocus = true;
 		}
-		if(!g_manager->m_keepSticky)
-			g_manager->m_stickyMouseFocus = false;
 
 		// Handle button down events for click detection (must be after processing
 		// to have the correct m_mouseOver element).
@@ -248,6 +248,16 @@ namespace ca { namespace gui {
 		return g_manager && g_manager->m_mouseFocus == _widget;
 	}
 
+	bool GUIManager::hasStickyMouseFocus(const WidgetPtr& _widget)
+	{
+		return g_manager && g_manager->m_stickyMouseFocus && g_manager->m_mouseFocus == _widget.get();
+	}
+
+	bool GUIManager::hasStickyMouseFocus(const Widget* _widget)
+	{
+		return g_manager && g_manager->m_stickyMouseFocus && g_manager->m_mouseFocus == _widget;
+	}
+
 	Widget* GUIManager::getKeyboardFocussed()
 	{
 		return g_manager->m_keyboardFocus;
@@ -285,7 +295,6 @@ namespace ca { namespace gui {
 	{
 		g_manager->m_mouseFocus = _widget;
 		g_manager->m_stickyMouseFocus = _sticky;
-		g_manager->m_keepSticky = _sticky;
 	}
 
 	void GUIManager::setMouseOver(Widget* _widget)

@@ -125,10 +125,6 @@ namespace ca { namespace gui {
 
 	bool NodeHandle::processInput(const struct MouseState& _mouseState)
 	{
-		const bool cursorOnWidget = getRegion()->isMouseOver(_mouseState.position);
-		if(!cursorOnWidget) return false;
-		GUIManager::setMouseFocus(this);
-
 		if(_mouseState.btnDown(0))
 		{
 			NodeConnectorPtr con ( new NodeConnector );
@@ -220,8 +216,7 @@ namespace ca { namespace gui {
 	NodeConnector::NodeConnector() :
 		Clickable(this),
 		m_stiffness(1.0f/3.0f),
-		m_tmpHandleState(HandleState::ATTACHED),
-		m_isMouseOver(false)
+		m_tmpHandleState(HandleState::ATTACHED)
 	{
 		m_region = this;
 		setAnchorable(false);
@@ -252,7 +247,6 @@ namespace ca { namespace gui {
 
 	bool NodeConnector::isMouseOver(const Coord2& _mousePos) const
 	{
-		m_isMouseOver = false;
 		if(!RefFrame::isMouseOver(_mousePos))
 			return false;
 
@@ -265,7 +259,6 @@ namespace ca { namespace gui {
 			line.b = m_curve[i];
 			// Test if the _mousePos is close to the line segment l0-l1
 			if(distanceSq(line, _mousePos) <= 9.0f) {
-				m_isMouseOver = true;
 				m_mouseT = i / (CONNECTOR_NUM_POINTS - 1.0f);
 				return true;
 			}
@@ -292,10 +285,8 @@ namespace ca { namespace gui {
 	bool NodeConnector::processInput(const MouseState& _mouseState)
 	{
 		const HandleState oldState = m_tmpHandleState;
-		if (m_isMouseOver)
-			GUIManager::setMouseFocus(this);
 
-		if(m_isMouseOver && _mouseState.btnDown(0))
+		if(_mouseState.btnDown(0))
 		{
 			// Tear off now
 			if(m_mouseT < 0.5)
@@ -317,8 +308,6 @@ namespace ca { namespace gui {
 		if(m_tmpHandleState != HandleState::ATTACHED)
 		{
 			s_tmpMouseNode->setPosition(_mouseState.position);
-			// Get exclusive focus
-			GUIManager::setMouseFocus(this, true);
 			// Look if there is a close node.
 			NodeHandle* handle = NodeList::findClosest(_mouseState.position);
 			if(m_tmpHandleState == HandleState::TMP_SRC)
@@ -466,8 +455,7 @@ namespace ca { namespace gui {
 		m_sourceAngle(0.0f),
 		m_destAngle(0.0f),
 		m_stiffness(1.0f/3.0f),
-		m_changed(false),
-		m_isMouseOver(false)
+		m_changed(false)
 	{
 		m_region = this;
 	}
@@ -568,7 +556,6 @@ namespace ca { namespace gui {
 	bool WidgetConnector::isMouseOver(const Coord2 & _mousePos) const
 	{
 		// Early exit if not on the frame
-		m_isMouseOver = false;
 		if(!RefFrame::isMouseOver(_mousePos))
 			return false;
 
@@ -579,7 +566,6 @@ namespace ca { namespace gui {
 			line.b = Vec2(m_curve[i+1]);
 			// Test if the _mousePos is close to the line segment l0-l1
 			if(distanceSq(line, _mousePos) <= 9.0f) {
-				m_isMouseOver = true;
 				return true;
 			}
 		}

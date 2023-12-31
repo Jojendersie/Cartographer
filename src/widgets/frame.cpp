@@ -50,6 +50,8 @@ namespace ca { namespace gui {
 		// Component disabled?
 		if(!isEnabled() || !isVisible()) return false;
 		if(Group::processInput(_mouseState)) return true;
+		// Reclaim the focus when the child did not consume the input.
+		GUIManager::setMouseFocus(this);
 		// Input was not consumed by an element.
 		// If there are properties try them. Since move and resize require input handling outside
 		// the reference frame this is not inside the isMouseOver-block.

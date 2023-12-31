@@ -26,7 +26,7 @@ namespace ca { namespace gui {
 		{
 			RELEASED = 0,		///< Button is not pressed
 			DOWN = 1,			///< Button was clicked in the current frame
-			PRESSED = 4,		///< Button is still pressed (was clicked in the past)
+			PRESSED = 4,		///< Button is still pressed (had DOWN event in the past)
 			UP = 2,				///< Button was released in the current frame
 			// The following meta events are handled by the gui itself.
 			// There is no need for a backend to set these values.

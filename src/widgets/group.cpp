@@ -117,9 +117,7 @@ namespace ca { namespace gui {
 				Widget* e = m_children[i].widget.get();
 				if(e->isVisible())
 				{
-					const bool mouseOnWidget = e->isMouseOver(GUIManager::getMouseState().position);
-					if(mouseOnWidget)
-						GUIManager::setMouseOver(e);
+					const bool mouseOnWidget = e->checkFocus(_mouseState);
 					if(e->isEnabled()
 						&& mouseOnWidget
 						&& e->processInput(_mouseState))

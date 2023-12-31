@@ -10,8 +10,7 @@ namespace ca { namespace gui {
 		m_min(0.0),
 		m_range(1.0),
 		m_stepSize(0.01),
-		m_labelPos(0.5f),
-		m_isMoving(false)
+		m_labelPos(0.5f)
 	{
 		Widget::setKeyboardFocusable(true);
 		enable();
@@ -38,28 +37,15 @@ namespace ca { namespace gui {
 
 	bool Slider::processInput(const MouseState& _mouseState)
 	{
-		// While the left mouse button is down move the mark
-		if(_mouseState.buttons[0] == MouseState::DOWN)
+		if(GUIManager::hasStickyMouseFocus(this))
 		{
-			if(isMouseOver(_mouseState.position))
-			{
-				m_isMoving = true;
-				GUIManager::setMouseFocus(this, true);
-				return true;
-			}
-		} else if(_mouseState.buttons[0] == MouseState::RELEASED || _mouseState.buttons[0] == MouseState::UP)
-		{
-			m_isMoving = false;
-		} else if(m_isMoving) {
 			double relativeVal = (GUIManager::getMouseState().position.x - left()) / (width()-2.0f);
 			relativeVal = ei::clamp(relativeVal, 0.0, 1.0);
 			double newVal = m_min + relativeVal * m_range;
 			// Round to step size
 			newVal = round(newVal / m_stepSize) * m_stepSize;
 			setValue(newVal);
-
-			// Keep sticky focus until mouse is released (above)
-			GUIManager::setMouseFocus(this, true);
+			return true;
 		}
 
 		return Widget::processInput(_mouseState);

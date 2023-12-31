@@ -144,7 +144,6 @@ namespace ca { namespace gui {
 
 		void removeThis();
 
-		mutable bool m_isMouseOver;		///< Store the result of the last test (because it is expensive)
 		mutable float m_mouseT;			///< Store curve parameter 't' of last isMouseOver test. This is undefined if m_isMouseOver is false.
 	};
 
@@ -204,9 +203,6 @@ namespace ca { namespace gui {
 		bool isMouseOver(const Coord2& _mousePos) const override;
 
 		void onExtentChanged() override;
-
-		mutable bool m_isMouseOver;		///< Store the result of the last test
-	//	mutable float m_mouseT;			///< Store curve parameter 't' of last isMouseOver test. This is undefined if m_isMouseOver is false.
 	};
 
 	typedef pa::RefPtr<WidgetConnector> WidgetConnectorPtr;

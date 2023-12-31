@@ -41,7 +41,6 @@ namespace ca { namespace gui {
 		double m_min, m_range;
 		double m_stepSize;
 		float m_labelPos;
-		bool m_isMoving;	///< Mouse is currently attached
 		OnChange m_onChange;
 	};
 

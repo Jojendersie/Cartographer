@@ -64,6 +64,14 @@ namespace ca { namespace gui {
 		/// Draw the element now
 		virtual void draw() const = 0;
 
+		/// Method called prior to processInput() to check mouse over and
+		/// handle the mouse focus.
+		/// Note, this will also reset keyboard focus if any mouse button action
+		/// is executed on this component (and this is not the keyboard focus widget).
+		/// \return True when processInput should be called on this component.
+		///		This is identical to isMouseOver().
+		bool checkFocus(const struct MouseState& _mouseState);
+
 		/// Process mouse input if desired.
 		/// \details The Widget implementation forwards input to click-, resize- and move-
 		///		components (in this order). It should be called from any inheriting class.
