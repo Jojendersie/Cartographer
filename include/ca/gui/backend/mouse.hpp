@@ -86,7 +86,8 @@ namespace ca { namespace gui {
 				|| buttons[4] != _other.buttons[4]
 				|| buttons[5] != _other.buttons[5]
 				|| buttons[6] != _other.buttons[6]
-				|| buttons[7] != _other.buttons[7];
+				|| buttons[7] != _other.buttons[7]
+				|| lastPosition != _other.lastPosition;
 		}
 	private:
 		Coord2 lastPosition;
