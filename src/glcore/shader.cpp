@@ -40,7 +40,10 @@ namespace ca { namespace cc {
 	{
 		if(_isFileName) {
 			FILE* file = fopen(_source, "rb");
-			if(!file) logError(("Cannot open shader file: " + std::string(_source)).c_str());
+			if(!file) {
+				logError(("Cannot open shader file: " + std::string(_source)).c_str());
+				return 0;
+			}
 			// Get file size and allocate memory
 			fseek(file, 0, SEEK_END);
 			unsigned fileLength = ftell(file);
@@ -79,6 +82,7 @@ namespace ca { namespace cc {
 	
 	void Program::attach(const Shader* _shader)
 	{
+		if(!_shader) return;
 		if(!m_programID)
 			m_programID = glCall(glCreateProgram);
 		if(m_numShaders < 5)
