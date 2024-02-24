@@ -107,16 +107,16 @@ namespace ca { namespace cc {
 	class Texture2D: public Texture
 	{
 	public:
-		typedef const Texture2D* Handle;
+		typedef Texture2D* Handle;
 
 		static Handle load(const char* _fileName, const Sampler& _sampler, bool _srgb = true);
 		static void unload(Handle _texture);
 
 		/// Create a new empty texture.
 		/// \details There is a support for LDR (8-bit) textures only.
-		static Texture2D* create(int _width, int _height, int _numComponents, const Sampler& _sampler, bool _allocMipMap = true);
+		static Handle create(int _width, int _height, int _numComponents, const Sampler& _sampler, bool _allocMipMap = true);
 		/// More advanced creation function with arbitrary formats
-		static Texture2D* create(int _width, int _height, TexFormat _format, const Sampler& _sampler, bool _allocMipMap = true);
+		static Handle create(int _width, int _height, TexFormat _format, const Sampler& _sampler, bool _allocMipMap = true);
 		/// Upload information for a single texture layer.
 		/// \param [in] _level Mip-map level starting with 0 for the higest resolution.
 		/// \param [in] _data Pixel data with 8-bit per component and N components per pixel.
@@ -132,6 +132,9 @@ namespace ca { namespace cc {
 
 		/// Bind 2D texture to given location
 		void bind(unsigned _slot) const;
+
+		// Bind as gl image for read/write access
+		void bindImage(unsigned _slot, bool _read, bool _write);
 
 		int getWidth() const { return m_width; }
 		int getHeight() const { return m_height; } 

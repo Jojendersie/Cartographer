@@ -231,6 +231,16 @@ namespace ca { namespace cc {
 		m_sampler->bind(_slot);
 	}
 
+	void Texture2D::bindImage(unsigned _slot, bool _read, bool _write)
+	{
+		if (!(_read || _write))
+			pa::logError("[ca::cc] bindImage with neither read nor write access.");
+		glCall(glBindImageTexture, _slot,
+			m_textureID, 0, false, 0,
+			_read && _write ? GL_READ_WRITE : (_read ? GL_READ_ONLY : GL_WRITE_ONLY),
+			(GLenum)m_format);
+	}
+
 	/*TextureAtlas::TextureAtlas(int _maxWidth, int _maxHeight) :
 		m_width(_maxWidth),
 		m_height(_maxHeight),
