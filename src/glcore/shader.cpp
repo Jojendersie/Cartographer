@@ -121,6 +121,16 @@ namespace ca { namespace cc {
 			glCall(glDeleteProgram, m_programID);
 			m_programID = 0;
 		}
+
+		glCall(glGetProgramiv, m_programID, GL_COMPUTE_WORK_GROUP_SIZE, (int*)&m_group_size);
+	}
+
+	void Program::dispatch(int _x, int _y, int _z)
+	{
+		ca::cc::glCall(glDispatchCompute,
+			(_x + m_group_size.x-1) / m_group_size.x,
+			(_y + m_group_size.y-1) / m_group_size.y,
+			(_z + m_group_size.z-1) / m_group_size.z);
 	}
 
 	int Program::getUniformLoc(const char* _uniformName)

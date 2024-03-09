@@ -58,6 +58,10 @@ namespace ca { namespace cc {
 		
 		/// Build program from the attached files.
 		void link();
+
+		/// Dispatch as compute shader (if it is one!). The group size
+		/// is inferred from the shader itself and a sufficient thread count is scheduled.
+		void dispatch(int _x, int _y, int _z);
 		
 		/// TODO: reflection and uniform stuff.
 
@@ -84,6 +88,7 @@ namespace ca { namespace cc {
 		const Shader* m_shaders[5]; 	///< List of attached shaders
 		int m_numShaders;
 		uint m_programID;		///< OpenGL program ID
+		ei::IVec3 m_group_size;
 	};
 
 }} // namespace ca::cc
