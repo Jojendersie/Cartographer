@@ -24,7 +24,7 @@ namespace ca { namespace gui {
 
 
 	void PopupManager::showPopup(
-		WidgetPtr & _popup,
+		WidgetPtr _popup,
 		const Widget * _originator,
 		PopupClosingCondition _closeOn,
 		bool _receiveInputs,
@@ -40,7 +40,7 @@ namespace ca { namespace gui {
 		// Push a new entry
 		_popup->showAsPopup(_originator);
 		m_popupStack.push_back(PopupInfo{
-			_popup,
+			std::move(_popup),
 			_closeOn,
 			_closeThreshold,
 			_receiveInputs

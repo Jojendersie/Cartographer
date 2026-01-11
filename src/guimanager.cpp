@@ -74,7 +74,7 @@ namespace ca { namespace gui {
 			logError("Uninitialized GUIManager! Cannot find components!");
 			return WidgetPtr();
 		}
-		return std::move(g_manager->m_topFrame->find(_name));
+		return g_manager->m_topFrame->find(_name);
 	}
 
 	void GUIManager::clear()

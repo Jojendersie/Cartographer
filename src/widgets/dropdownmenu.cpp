@@ -364,7 +364,7 @@ namespace ca { namespace gui {
 			if(m_list->isVisible())
 				GUIManager::popups().closePopup(m_list.get());
 			else
-				GUIManager::popups().showPopup((WidgetPtr&)m_list, this, PopupClosingCondition::OTHER_INTERACTION, true);
+				GUIManager::popups().showPopup(m_list, this, PopupClosingCondition::OTHER_INTERACTION, true);
 		}
 		return true;
 

@@ -30,7 +30,7 @@ namespace ca { namespace gui {
 		/// \param [in] _receiveInputs Apply inputs to the popup widget. Most popups are only of
 		///		visual nature and do not need inputs. In this case input handling is optimized away.
 		void showPopup(
-			WidgetPtr & _popup,
+			WidgetPtr _popup,
 			const Widget * _originator,
 			PopupClosingCondition _closeOn,
 			bool _receiveInputs = false,

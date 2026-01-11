@@ -1,6 +1,7 @@
 #include "ca/gui/widgets/widget.hpp"
 #include "ca/gui/guimanager.hpp"
 #include <ca/pa/log.hpp>
+#include <algorithm>
 
 namespace ca { namespace gui {
 
