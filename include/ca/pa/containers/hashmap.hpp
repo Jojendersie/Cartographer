@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <cstring>
 #include <functional>
+#include <cstdlib>
 
 namespace ca { namespace pa {
 
