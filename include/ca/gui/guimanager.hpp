@@ -34,7 +34,7 @@ namespace ca { namespace gui { // namespace ca::gui { will maybe possible in C++
 		static void remove(WidgetPtr _widget);
 
 		/// Find a named element.
-		WidgetPtr find(uint _name);
+		static WidgetPtr find(uint _name);
 
 		/// Remove all current widgets.
 		/// \details This can be usefull to switch between different GUIs. As long as you
