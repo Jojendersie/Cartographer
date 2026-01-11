@@ -13,7 +13,8 @@ namespace ca { namespace gui {
 		m_textPosition(0.0f),
 		m_backgroundTexture(0),
 		m_focusTexture(0),
-		m_cursorPosition(0)
+		m_cursorPosition(0),
+		m_filter(TextFilterMode::NONE)
 	{
 	}
 
@@ -248,7 +249,7 @@ namespace ca { namespace gui {
 		int newCursor = 0;
 		switch (m_filter)
 		{
-			case TextFilterMode::NONE: break;
+			case TextFilterMode::NONE: newCursor = m_cursorPosition; break;
 			case TextFilterMode::INTEGER_POS: {
 				std::string filtered;
 				for(size_t i = 0; i < _newText.length() && ((int)filtered.length() < m_filterPrecision); ++i)
