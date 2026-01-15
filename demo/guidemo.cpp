@@ -110,8 +110,20 @@ static void keyFunc(GLFWwindow*, int _key, int _scancode, int _action, int _mods
 
 void charFunc(GLFWwindow*, unsigned int _char)
 {
-	std::wstring_convert<std::codecvt_utf8<int32_t>,int32_t> convert;
-	g_keyboardState.characterInput += convert.to_bytes(_char);
+	if (_char >= 0x10000) {
+		g_keyboardState.characterInput += char(0xf0 | ((_char >> 18) & 0x7));
+		g_keyboardState.characterInput += char(0x80 | ((_char >> 12) & 0x3f));
+		g_keyboardState.characterInput += char(0x80 | ((_char >> 6) & 0x3f));
+		g_keyboardState.characterInput += char(0x80 | (_char & 0x3f));
+	} else if (_char >= 0x800) {
+		g_keyboardState.characterInput += char(0xe0 | ((_char >> 12) & 0xf));
+		g_keyboardState.characterInput += char(0x80 | ((_char >> 6) & 0x3f));
+		g_keyboardState.characterInput += char(0x80 | (_char & 0x3f));
+	} else if (_char >= 0x80) {
+		g_keyboardState.characterInput += char(0xc0 | ((_char >> 6) & 0x1f));
+		g_keyboardState.characterInput += char(0x80 | (_char & 0x3f));
+	} else
+		g_keyboardState.characterInput += char(_char & 0x7f);
 }
 
 
