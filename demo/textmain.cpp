@@ -1,4 +1,4 @@
-#include <ca/charcoal.hpp>
+﻿#include <ca/charcoal.hpp>
 #include <ca/paper.hpp>
 #include <thread>
 #include <GLFW/glfw3.h>
@@ -11,10 +11,12 @@ using namespace ei;
 static FontRenderer* s_fontRenderer;
 static Program s_shader;
 
+const char* SUPPORTED_ALPHABET = (const char*)u8" 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzäöüß#´`'\"^_@%&|,.:!?~+-*/\\§°$€„“”—¹²³(){}[]<>ξλχωκψγφϕςἰαεοσνρτδυϵηπζβµϱϑθΞΛΩΨΓΦΣ∂Δ∇ΠΘ\U0000262F\U00002713";
+
 void prepareFont()
 {
 	s_fontRenderer = new FontRenderer;
-	s_fontRenderer->createFont("calibri.ttf", u8" 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz����#�`'\"^_@%&|,.:!?~+-*/\\(){}[]<>\U000003B5\U000003A9\U0000262F\U00002713");
+	s_fontRenderer->createFont("calibri.ttf", SUPPORTED_ALPHABET);
 	s_fontRenderer->storeCaf("calibri.caf");
 	s_fontRenderer->loadCaf("calibri.caf");
 }
@@ -47,12 +49,13 @@ void runMainLoop(GLFWwindow* _window)
 
 		s_shader.use();
 		s_fontRenderer->clearText();
+		s_fontRenderer->draw(Vec3{1.0, 1500.0f, 0.0f}, SUPPORTED_ALPHABET, 50.0f, Vec4(1.0), 0.0f, 0.0f, 0.0f, false);
 		Vec3 pos(1.0f + (float)sin(clock.now()/1000.0), 1.0f + (float)cos(clock.now()/1000.0), 0.0f);
 		//Vec3 pos(1.0f, 1.0f, 0.0f);
 		float size = 68.5f;
 		for(int i=0; i<25; ++i)
 		{
-			s_fontRenderer->draw(pos, u8"The quick onyx goblin jumps over the lazy dwarf. [Hq](AV){}<>;?!\U000003B5\U000003A9\U0000262F", size, Vec4(1.0), 0.0f, 0.0f, 0.0f, false);
+			s_fontRenderer->draw(pos, (const char*)u8"The quick onyx goblin jumps over the lazy dwarf. [Hq](AV){}<>;?!\U000003B5\U000003A9\U0000262F", size, Vec4(1.0), 0.0f, 0.0f, 0.0f, false);
 			pos.y += 4.0f + size;
 			size -= 2.5f;
 		}
@@ -60,20 +63,20 @@ void runMainLoop(GLFWwindow* _window)
 		pos = Vec3(1880.0f + (float)sin(clock.now()/1000.0), 1120.0f + (float)cos(clock.now()/1000.0), 0.0f);
 		for(int i=0; i<23; ++i)
 		{
-			s_fontRenderer->draw(pos, u8"0123456789", size, Vec4(0.5f, 0.5f, 0.4f, 1.0f), 0.0f, 1.0f, 1.0f);
+			s_fontRenderer->draw(pos, (const char*)u8"0123456789", size, Vec4(0.5f, 0.5f, 0.4f, 1.0f), 0.0f, 1.0f, 1.0f);
 			pos.y -= 4.0f + size;
 			size -= 3.0f;
 		}
-		s_fontRenderer->draw(Vec3(1400.0f, 550.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 1.0f));
-		s_fontRenderer->draw(Vec3(1430.0f, 520.0f, 0.0f), u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 0.5f + 0.5f*(float)sin(clock.now()/1000.0)));
-		s_fontRenderer->draw(Vec3(1270.0f, 900.0f, 0.0f), u8"(-O-)", 200.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.46f, 0.45f);
-		s_fontRenderer->draw(Vec3(1270.0f, 900.0f, 0.0f), u8"(-O-)", 8.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.46f, 0.45f);
-		s_fontRenderer->draw(Vec3(1170.0f, 900.0f, 0.0f), u8"���?", 12.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), 0.3f, 0.46f, 0.45f);
+		s_fontRenderer->draw(Vec3(1400.0f, 550.0f, 0.0f), (const char*)u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 1.0f));
+		s_fontRenderer->draw(Vec3(1430.0f, 520.0f, 0.0f), (const char*)u8"\U00002713", 200.0f, Vec4(0.0f, 0.5f, 0.0f, 0.5f + 0.5f*(float)sin(clock.now()/1000.0)));
+		s_fontRenderer->draw(Vec3(1270.0f, 900.0f, 0.0f), (const char*)u8"(-O-)", 200.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.46f, 0.45f);
+		s_fontRenderer->draw(Vec3(1270.0f, 900.0f, 0.0f), (const char*)u8"(-O-)", 8.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), float(clock.now()/1000.0), 0.46f, 0.45f);
+		s_fontRenderer->draw(Vec3(1170.0f, 900.0f, 0.0f), (const char*)u8"äöü?", 12.0f, Vec4(0.0f, 0.0f, 0.5f, 1.0f), 0.3f, 0.46f, 0.45f);
 
-		s_fontRenderer->draw(Vec3(870.0f, 1000.0f, 0.0f), u8"Multiline\nexample 1", 16.0f, Vec4(0.5f, 0.5f, 0.8f, 1.0f), 0.0f, 0.0f, 0.0f, true);
-		s_fontRenderer->draw(Vec3(870.0f, 1000.0f, 0.0f), u8"Multiline\nexample 2", 16.0f, Vec4(0.5f, 0.5f, 0.8f, 1.0f), 0.0f, 1.0f, 0.0f, true);
-		s_fontRenderer->draw(Vec3(870.0f, 1000.0f, 0.0f), u8"Multiline\nexample 3\nextra\nlong", 16.0f, Vec4(0.5f, 0.5f, 0.8f, 1.0f), 0.0f, 0.0f, 1.0f, true);
-		s_fontRenderer->draw(Vec3(870.0f, 1000.0f, 0.0f), u8"Multiline\nexample 4", 16.0f, Vec4(0.5f, 0.5f, 0.8f, 1.0f), PI*0.5f, 1.0f, 0.0f, true);
+		s_fontRenderer->draw(Vec3(870.0f, 1000.0f, 0.0f), (const char*)u8"Multiline\nexample 1", 16.0f, Vec4(0.5f, 0.5f, 0.8f, 1.0f), 0.0f, 0.0f, 0.0f, true);
+		s_fontRenderer->draw(Vec3(870.0f, 1000.0f, 0.0f), (const char*)u8"Multiline\nexample 2", 16.0f, Vec4(0.5f, 0.5f, 0.8f, 1.0f), 0.0f, 1.0f, 0.0f, true);
+		s_fontRenderer->draw(Vec3(870.0f, 1000.0f, 0.0f), (const char*)u8"Multiline\nexample 3\nextra\nlong", 16.0f, Vec4(0.5f, 0.5f, 0.8f, 1.0f), 0.0f, 0.0f, 1.0f, true);
+		s_fontRenderer->draw(Vec3(870.0f, 1000.0f, 0.0f), (const char*)u8"Multiline\nexample 4", 16.0f, Vec4(0.5f, 0.5f, 0.8f, 1.0f), PI*0.5f, 1.0f, 0.0f, true);
 		s_fontRenderer->present();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
