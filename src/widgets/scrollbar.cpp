@@ -100,8 +100,10 @@ namespace ca { namespace gui {
 		const float scrollSpacePos = widgetSpacePos * m_totalSize;
 		const float old = m_intervalStart;
 		m_intervalStart = ei::clamp(scrollSpacePos, 0.0f, ei::max(0.0f, m_totalSize - m_availableSize));
-		if(old != m_intervalStart)
+		if(old != m_intervalStart) {
+			if (m_onChange) m_onChange(this, m_intervalStart - old);
 			recomputeAnchorFrame();
+		}
 		return true;
 	}
 
@@ -161,8 +163,11 @@ namespace ca { namespace gui {
 
 	void ScrollBar::setScrollOffset(const float _amount)
 	{
+		const float old = m_intervalStart;
 		m_intervalStart = _amount;
 		checkInterval();
+		if (old != m_intervalStart && m_onChange)
+			m_onChange(this, m_intervalStart - old);
 	}
 
 	void ScrollBar::setScrollOffsetTop(const float _amount)

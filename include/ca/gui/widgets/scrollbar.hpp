@@ -70,6 +70,12 @@ namespace ca { namespace gui {
 		float getAvailableSize() const;
 		float getContentSize() const;
 
+		/// Set a function to react to changes of the scroll interval.
+		/// \param [in] _this This widget (the scrollbar).
+		/// \param [in] _amount Positive or negative delta of the change. Guaranteed to be not zero.
+		typedef std::function<void(Widget* _this, const float _amount)> OnChange;
+		void setOnChangeFunc(OnChange _callback) { m_onChange = _callback; }
+
 	private:
 		class SliderAnchor : public IAnchorable, public IAnchorProvider
 		{
@@ -92,6 +98,7 @@ namespace ca { namespace gui {
 		WidgetPtr m_contentWidget;
 		Anchor m_presentationAnchor;	///< Dummy to trigger onExtentChanged() events, if the presentation widget changed.
 		Anchor m_contentAnchor;			///< Dummy to trigger onExtentChanged() events, if the content widget changed.
+		OnChange m_onChange;	///< Gets called if m_intervalStart changes
 		bool m_horizontal;		///< Horizontal or vertical mode?
 		float m_totalSize;		///< Size of the area that is scrolled
 		float m_availableSize;	///< Size of the view that contains the scrolled content
