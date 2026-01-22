@@ -79,6 +79,13 @@ namespace ca { namespace gui {
 		Iterator end() { return Iterator(this, (uint)m_children.size()); }
 		ConstIterator end() const { return ConstIterator(this, (uint)m_children.size()); }
 	protected:
+		/// A function to react to add or remove events (after the change took place).
+		/// \param [in] _this This widget (the parent one).
+		/// \param [in] _child The element that is added or removed.
+		/// \param [in] _add This is an add event.
+		typedef std::function<void(Widget* _this, Widget* _child, bool _add)> OnChildrenChanged;
+		void setOnChildrenChangedFunc(OnChildrenChanged _callback) { m_onChildrenChanged = _callback; }
+
 		struct WEntry {
 			WidgetPtr widget;
 			unsigned innerLayer;
@@ -86,6 +93,7 @@ namespace ca { namespace gui {
 		std::vector<WEntry> m_children;			///< List of subelements. The list is sorted after layers and last focus time (last element inside a layer has the focus).
 		pa::HashMap<uint, WidgetPtr> m_nameMap;	///< A mapping to find elements with a constant integer or enum.
 		bool m_autoResize;						///< Adapt current size to contained elements
+		OnChildrenChanged m_onChildrenChanged;	///< Callback to inform derivatives of the group that something is added/removed
 
 	private:
 		/// Resort the children list to bring focused element to the front.

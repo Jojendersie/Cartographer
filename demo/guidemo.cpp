@@ -535,6 +535,20 @@ void createGUI(GLFWwindow* _window)
 	f7s->add(l0);
 	f7->add(f7s, 0u);
 
+	// frame with scrollbars 2
+	FramePtr f7_2(new Frame);
+	f7_2->setMoveable(true);
+	f7_2->setResizeable(SIDE_FLAGS::ALL);
+	f7_2->setExtent(f7->position() + Coord2(f7->width() + 10.0f, 0.0f), f6->size());
+	f7_2->setScrolling(true, true, 2.0f, 12.0f);
+	GUIManager::add(f7_2);
+
+	l1 = LabelPtr(new Label);
+	l1->setText("A long text with multiple lines that is here to stay.\nCompletely boring stuff.\n\nIt talks about cookies.\nBut only seldomly.\nWhere is my personal cookie?\nChocolate!\n\nFor the spoon!", 2.0f);
+	l1->setPosition(f7_2->position() + coord::pixel(2,14));
+	l1->setAnchors(f7_2.get(), SIDE_FLAGS::POSITION);
+	f7_2->add(l1);
+
 	// *********************************************
 	// Frame with drop down menus
 	FramePtr f8(new Frame);

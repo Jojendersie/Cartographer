@@ -19,6 +19,8 @@ namespace ca { namespace gui {
 		/// Forward input to subelements and to properties
 		virtual bool processInput(const struct MouseState& _mouseState) override;
 
+		void onExtentChanged() override;
+
 		/// Check if the given child is the first one
 //		virtual bool isChildFocused(const Widget* _child) const override;
 
@@ -39,12 +41,33 @@ namespace ca { namespace gui {
 		// a disabled frame, except that widgets inside the frame receive their inputs as usual.
 		void setPassive(bool _passive) { m_passive = _passive; }
 		bool isPassive() const { return m_passive; }
+
+		/// Enable automatic scrolling of the content.
+		/// _horizontal: Enables horizontal scrolling, adding a scrollbar at the bottom.
+		/// _vertical: Enables vertical scrolling, adding a scrollbar at the right.
+		/// _margin: Additional space around all child compents the extends the total visible area.
+		/// _scrollbarWidth: Width of the scrollbars in pixels.
+		void setScrolling(const bool _horizontal, const bool _vertical, const float _margin, const Coord _scrollbarWidth);
+		bool isScrollingEnabled() const;
 	private:
 		float m_opacity;
 		bool m_tiling;
 		bool m_passive;
 		uint64 m_texture;
 		ei::Vec3 m_color;
+
+		// Scrolling related properties
+		Coord2 m_contentBbMin;	// Bounding box of all child widgets
+		Coord2 m_contentBbMax;	// Bounding box of all child widgets
+		class ScrollBar* m_horizontalScrollbar;
+		class ScrollBar* m_verticalScrollbar;
+		float m_scrollMargin;
+
+		// Computes the content bounding box if scrolling is enabled.
+		void recomputeContentSize();
+		void resetScrollbarContentSize();
+		friend void childChangedCallback(Widget* _this, Widget* _child, bool _add);
+		friend void onScrollChangedCallback(Widget* _this, const float _amount);
 	};
 
 	typedef pa::RefPtr<Frame> FramePtr;

@@ -59,6 +59,8 @@ namespace ca { namespace gui {
 			receiveExtentChange(_widget.get());
 			_widget->addOnExtentChangeFunc(this);
 		}
+		if (m_onChildrenChanged)
+			m_onChildrenChanged(this, _widget.get(), true);
 	}
 
 	void Group::add(uint _name, WidgetPtr _widget, unsigned _innerLayer)
@@ -85,6 +87,9 @@ namespace ca { namespace gui {
 				m_children.erase(it);
 				return;
 			}
+
+		if (m_onChildrenChanged)
+			m_onChildrenChanged(this, _widget.get(), false);
 	}
 
 	WidgetPtr Group::find(uint _name)
