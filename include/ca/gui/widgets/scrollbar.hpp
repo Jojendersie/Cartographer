@@ -45,7 +45,6 @@ namespace ca { namespace gui {
 		///		are not handled by the scrollbar. The margin only gives space
 		///		and extends the scrolling distance.
 		void setViewArea(WidgetPtr _presentationWidget, const float _margin);
-		void setContent(WidgetPtr _contentWidget);
 
 		/// Set or get the offset, which is number in [0, totalSize-availableSize]
 		/// that can be used to move the content of totalSize extent such that
@@ -95,9 +94,7 @@ namespace ca { namespace gui {
 
 		mutable SliderAnchor m_sliderAnchor;		//< Special area that moves around on slide
 		WidgetPtr m_presentationWidget;
-		WidgetPtr m_contentWidget;
 		Anchor m_presentationAnchor;	///< Dummy to trigger onExtentChanged() events, if the presentation widget changed.
-		Anchor m_contentAnchor;			///< Dummy to trigger onExtentChanged() events, if the content widget changed.
 		OnChange m_onChange;	///< Gets called if m_intervalStart changes
 		bool m_horizontal;		///< Horizontal or vertical mode?
 		float m_totalSize;		///< Size of the area that is scrolled

@@ -9,7 +9,6 @@ namespace ca { namespace gui {
 	ScrollBar::ScrollBar() :
 		m_sliderAnchor{this},
 		m_presentationAnchor{this},
-		m_contentAnchor{this},
 		m_horizontal(false),
 		m_totalSize{100.0f},
 		m_availableSize{10.0f},
@@ -137,8 +136,6 @@ namespace ca { namespace gui {
 			m_rangeOffset -= delta;
 			//m_intervalStart += delta;
 		}
-		m_contentWidget = nullptr;
-		m_contentAnchor.detach();
 		m_totalSize = _contentSize;
 		checkInterval(true);
 	}
@@ -151,14 +148,6 @@ namespace ca { namespace gui {
 		m_margin = ei::max(0.0f, _margin);
 		m_availableSize = getAvailableSize();
 		checkInterval(true);
-	}
-
-	void ScrollBar::setContent(WidgetPtr _contentWidget)
-	{
-		m_contentWidget = std::move(_contentWidget);
-		m_contentAnchor.attach(m_contentWidget.get(), 0.0f, 0.0f, 0);
-		m_totalSize = m_horizontal ? m_contentWidget->width() : m_contentWidget->height();
-		checkInterval();
 	}
 
 	void ScrollBar::setScrollOffset(const float _amount)
@@ -189,10 +178,6 @@ namespace ca { namespace gui {
 
 	float ScrollBar::getContentSize() const
 	{
-		if(m_contentWidget)
-		{
-			return m_horizontal ? m_contentWidget->width() : m_contentWidget->height();
-		}
 		return m_totalSize;
 	}
 

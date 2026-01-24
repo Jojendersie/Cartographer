@@ -502,52 +502,15 @@ void createGUI(GLFWwindow* _window)
 	FramePtr f7(new Frame);
 	f7->setMoveable(true);
 	f7->setResizeable(SIDE_FLAGS::ALL);
-	f7->setExtent(f6->position() + Coord2(0.0f, f6->height() + 10.0f), f6->size());
+	f7->setExtent(f6->position() + Coord2(f6->width() + 10.0f, 0.0f), f6->size());
+	f7->setScrolling(true, true, 2.0f, 12.0f);
 	GUIManager::add(f7);
-
-	l0 = LabelPtr(new Label);
-	l0->setText("A long text with multiple lines that is here to stay.\nCompletely boring stuff.\n\nIt talks about cookies.\nBut only seldomly.\nWhere is my personal cookie?\nChocolate!\n\nFor the spoon!", 2.0f);
-	l0->setPosition(f7->position() + coord::pixel(2,14));
-
-	ScrollBarPtr sbh(new ScrollBar);
-	sbh->setExtent(f7->position(), Coord2(f7->width()-12.0f, 12.0f));
-	sbh->setHorizontalMode(true);
-	sbh->setViewArea(f7, 12.0f + 2.0f);
-	sbh->setContent(l0);
-	sbh->setAnchors(f7.get(), SIDE_FLAGS::HORIZONTAL | SIDE_FLAGS::BOTTOM);
-	f7->add(sbh, 1u);
-
-	ScrollBarPtr sbv(new ScrollBar);
-	sbv->setExtent(f7->position() + Coord2(f7->width() - 12.0f, 12.0f), Coord2(12.0f, f7->height() - 12.0f));
-	sbv->setViewArea(f7, 12.0f + 2.0f);
-	sbv->setContent(l0);
-	sbv->setAnchors(f7.get(), SIDE_FLAGS::VERTICAL | SIDE_FLAGS::RIGHT);
-	f7->add(sbv, 1u);
-
-	l0->setAnchors(sbh->getAnchor(), l0->left(), -1.0f, -1.0f, -1.0f);
-	l0->setAnchors(sbv->getAnchor(), -1.0f, l0->bottom(), -1.0f, -1.0f);
-	sbv->setScrollOffset(10000.0f); // Just skip to the top
-
-	// A frame for clipping
-	FramePtr f7s(new Frame);
-	f7s->setExtent(f7->position() + Coord2(2.0f, 14.0f), f7->size() - 16.0f);
-	f7s->setAnchors(f7.get());
-	f7s->add(l0);
-	f7->add(f7s, 0u);
-
-	// frame with scrollbars 2
-	FramePtr f7_2(new Frame);
-	f7_2->setMoveable(true);
-	f7_2->setResizeable(SIDE_FLAGS::ALL);
-	f7_2->setExtent(f7->position() + Coord2(f7->width() + 10.0f, 0.0f), f6->size());
-	f7_2->setScrolling(true, true, 2.0f, 12.0f);
-	GUIManager::add(f7_2);
 
 	l1 = LabelPtr(new Label);
 	l1->setText("A long text with multiple lines that is here to stay.\nCompletely boring stuff.\n\nIt talks about cookies.\nBut only seldomly.\nWhere is my personal cookie?\nChocolate!\n\nFor the spoon!", 2.0f);
-	l1->setPosition(f7_2->position() + coord::pixel(2,14));
-	l1->setAnchors(f7_2.get(), SIDE_FLAGS::POSITION);
-	f7_2->add(l1);
+	l1->setPosition(f7->position() + coord::pixel(2,14));
+	l1->setAnchors(f7.get(), SIDE_FLAGS::POSITION);
+	f7->add(l1);
 
 	// *********************************************
 	// Frame with drop down menus
