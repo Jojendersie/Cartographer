@@ -27,37 +27,24 @@ namespace ca { namespace gui {
 		void setHorizontalMode(const bool _horizontal);
 		bool isHorizontal() const { return m_horizontal; }
 
-		/// Set arbitrary size limits. The available size corresponds to the visible
-		/// area. Alternatively to setting constants, it is possible to assign reference
-		/// widgets for both sizes (eg. a frame and a group/single content element)
-		void setAvailableSize(const float _availableSize);
-		/// Set the size of the scrollable content. If a content widget was attached
-		/// it will be removed.
-		/// \param [in] _side Info on which side of the interval, the size change
-		///		happened. In horizontal mode only LEFT/RIGHT are valid and in vertical
-		///		mode BOTTOM/TOP. This is used to recompute the proper scroll section
-		///		position.
-		void setContentSize(const float _contentSize, SIDE::Val _side);
+		/// Set two reference points that will automatically adjust with the provided anchor reference.
+		/// Those points will change with the area where the actual content is shown.
+		void setAvailableArea(IAnchorProvider* _area, Coord _minPos, Coord _maxPos);
 
-		/// Set a widget that is used to infer the available area.
-		/// _margin: The margin reduces the absolute size of the available
-		///		area. Only positive values are allowed. Clipping or placement
-		///		are not handled by the scrollbar. The margin only gives space
-		///		and extends the scrolling distance.
-		void setViewArea(WidgetPtr _presentationWidget, const float _margin);
+		/// When setting the content size, it is assumed that the given interval includes current
+		/// translations through active scrolling offset.
+		void setContentInterval(const Coord _min, const Coord _max);
 
-		/// Set or get the offset, which is number in [0, totalSize-availableSize]
-		/// that can be used to move the content of totalSize extent such that
-		/// either the beginning or the end (or both) still fit into availableSize.
-		/// The offset is measured from the bottom, see setScrollOffsetTop() for
-		/// the reverse.
-		/// Note that the recommended usage is to use the provided anchors.
-		void setScrollOffset(const float _amount);
-		float getScrollOffset() const { return m_intervalStart; }
+		/// Get the offset how much the content extends below the available interval start.
+		/// If the content is outside the number is negative, if it is moved towards the end
+		/// of the available area, the number is positive.
+		//void setScrollOffset(const float _amount);
+		float getScrollOffset() const { return m_contentInterval.x; }
 
-		/// Like setScrollOffset() but measures distance beginning at top.
-		void setScrollOffsetTop(const float _amount);
-		float getScrollOffsetTop() const { return ei::max(0.0f, (m_totalSize - m_availableSize) - m_intervalStart); }
+		/// Like setScrollOffset() but measures distance beginning at end of the
+		/// available interval.
+		//void setScrollOffsetTop(const float _amount);
+		float getScrollOffsetTop() const { return m_contentInterval.y + m_availableInterval.x - m_availableInterval.y; }
 
 		/// Returns a special anchor provider of a frame that moves around.
 		/// \details This anchor frame has to be used for things that should move
@@ -67,7 +54,9 @@ namespace ca { namespace gui {
 		/// Get the available size either from the presentation widget or from
 		/// absolute setting (whatever is used).
 		float getAvailableSize() const;
-		float getContentSize() const;
+		/// Get the content interval in absolute coordinates.
+		/// This reflects the current position including scrolling translation.
+		Coord2 getContentInterval() const;
 
 		/// Set a function to react to changes of the scroll interval.
 		/// \param [in] _this This widget (the scrollbar).
@@ -85,6 +74,7 @@ namespace ca { namespace gui {
 			SliderAnchor(ScrollBar* _parent);
 			void attach(const IAnchorProvider* _target); ///< Absolute anchoring against a new reference
 			void setAnchor(float _offset);
+			void moveAnchor(float _offset);
 			void onExtentChanged() override;
 			Coord getPosition(int _dimension, float _relativePos) const override;
 			float getRelativePosition(int _dimension, Coord _position) const override;
@@ -92,20 +82,16 @@ namespace ca { namespace gui {
 			void resetAnchors() override {}
 		};
 
-		mutable SliderAnchor m_sliderAnchor;		//< Special area that moves around on slide
-		WidgetPtr m_presentationWidget;
-		Anchor m_presentationAnchor;	///< Dummy to trigger onExtentChanged() events, if the presentation widget changed.
+		mutable SliderAnchor m_sliderAnchor;		///< Special area that moves around on slide
+		Anchor m_availableStart;	///< An anchor that is linked to some component on which the content is shown. Marks the lower end of the interval.
+		Anchor m_availableEnd;		///< An anchor that is linked to some component on which the content is shown. Marks the upper end of the interval.
 		OnChange m_onChange;	///< Gets called if m_intervalStart changes
 		bool m_horizontal;		///< Horizontal or vertical mode?
-		float m_totalSize;		///< Size of the area that is scrolled
-		float m_availableSize;	///< Size of the view that contains the scrolled content
-		float m_intervalStart;	///< Position of scrolling.
-		float m_rangeOffset;	///< Can move intervalStart into the negative range if things are added left/bottom
-		float m_margin;			///< Positive distances to all sides.
 		float m_movingPos;		///< Relative position within the content section bar that is moved. (Or -1 if not moving)
 
-		void checkInterval(const bool _forceAnchorReset = false);
-		void recomputeAnchorFrame();
+		// The total range, represented by the scrollbar, is the union of the following interval and [0, m_availableSize].
+		Coord2 m_availableInterval;		///< Last known available interval infered from the anchors
+		Coord2 m_contentInterval;		///< Bounding interval of the content relative to m_availableInterval.x
 	};
 
 	typedef pa::RefPtr<ScrollBar> ScrollBarPtr;

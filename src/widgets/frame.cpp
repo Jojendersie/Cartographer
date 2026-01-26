@@ -10,23 +10,8 @@ namespace ca { namespace gui {
 	void childChangedCallback(Widget* _this, Widget* _child, bool _add)
 	{
 		Frame* f = (Frame*)_this;
-		if (f->isScrollingEnabled() && _child != f->m_horizontalScrollbar && _child != f->m_verticalScrollbar)
-		{
-			if (_add)
-			{
-				// Incremental update of the BB possible
-				const Coord2 bbmin = _child->position();
-				const Coord2 bbmax = bbmin + _child->size();
-				f->m_contentBbMin = min(f->m_contentBbMin, bbmin);
-				f->m_contentBbMax = max(f->m_contentBbMax, bbmax);
-			}
-			else
-			{
-				// On remove events, the bounding box must be recomputed from scratch
-				f->recomputeContentSize();
-			}
-			f->resetScrollbarContentSize();
-		}
+		if (f->isScrollingEnabled())
+			f->m_scrollbarContentSizeDirty = true;
 	}
 
 
@@ -38,8 +23,6 @@ namespace ca { namespace gui {
 		m_passive(false),
 		m_texture(0),
 		m_color{-1.0f},
-		m_contentBbMin{1e38f},
-		m_contentBbMax{-1e38f},
 		m_horizontalScrollbar{nullptr},
 		m_verticalScrollbar{nullptr},
 		m_scrollMargin{0.0f}
@@ -58,8 +41,11 @@ namespace ca { namespace gui {
 	{
 		if(m_visible)
 		{
+			if (m_scrollbarContentSizeDirty)
+				const_cast<Frame*>(this)->resetScrollbarContentSize();
+
 			// Draw the frame background
-				if(m_texture)
+			if(m_texture)
 				GUIManager::theme().drawImage(rectangle(), m_texture, m_opacity, m_tiling);
 			else
 				GUIManager::theme().drawBackgroundArea(rectangle(), m_opacity, m_color);
@@ -91,6 +77,8 @@ namespace ca { namespace gui {
 	{
 		// Component disabled?
 		if(!isEnabled() || !isVisible()) return false;
+		if (m_scrollbarContentSizeDirty)
+			resetScrollbarContentSize();
 		if(Group::processInput(_mouseState)) return true;
 		// Input was not consumed by an element.
 		// Reclaim the focus (a child might have got it, but didn't use it).
@@ -105,10 +93,8 @@ namespace ca { namespace gui {
 	{
 		Widget::onExtentChanged();
 		// Anchoring has resized the scroll bars appropriately
-		if (m_horizontalScrollbar)
-			m_horizontalScrollbar->setAvailableSize(m_horizontalScrollbar->width());
-		if (m_verticalScrollbar)
-			m_verticalScrollbar->setAvailableSize(m_verticalScrollbar->height());
+		if (isScrollingEnabled())
+			m_scrollbarContentSizeDirty = true;
 	}
 
 
@@ -139,14 +125,13 @@ namespace ca { namespace gui {
 
 	void Frame::setScrolling(const bool _horizontal, const bool _vertical, const float _margin, const Coord _scrollbarWidth)
 	{
-		const bool newlyEnabled = (_horizontal || _vertical) && !isScrollingEnabled();
 		m_scrollMargin = _margin;
 		if (_horizontal && !m_horizontalScrollbar)
 		{
 			ScrollBarPtr sb(new ScrollBar);
 			sb->setExtent(position(), Coord2(width()-(_vertical?_scrollbarWidth:0.0f), _scrollbarWidth));
 			sb->setHorizontalMode(true);
-			sb->setAvailableSize(sb->width());
+			sb->setAvailableArea(this, sb->left() + m_scrollMargin, sb->top() - m_scrollMargin);
 			sb->setAnchors(this, SIDE_FLAGS::HORIZONTAL | SIDE_FLAGS::BOTTOM);
 			sb->setOnChangeFunc(&onScrollChangedCallback);
 			m_horizontalScrollbar = sb.get(); // Set before add() to filter out.
@@ -163,7 +148,7 @@ namespace ca { namespace gui {
 			sb->setExtent(position()+Coord2(width() - _scrollbarWidth, _horizontal?_scrollbarWidth:0.0f),
 				Coord2(_scrollbarWidth, height()-(_horizontal?_scrollbarWidth:0.0f)));
 			sb->setHorizontalMode(false);
-			sb->setAvailableSize(sb->height());
+			sb->setAvailableArea(this, sb->bottom() + m_scrollMargin, sb->top() - m_scrollMargin);
 			sb->setAnchors(this, SIDE_FLAGS::VERTICAL | SIDE_FLAGS::RIGHT);
 			sb->setOnChangeFunc(&onScrollChangedCallback);
 			m_verticalScrollbar = sb.get(); // Set before add() to filter out.
@@ -174,11 +159,7 @@ namespace ca { namespace gui {
 			m_verticalScrollbar = nullptr;
 		}
 
-		if (newlyEnabled)
-			recomputeContentSize();
-
-		// Content size computed in the past or above but needs to be set in the scroll bars.
-		resetScrollbarContentSize();
+		m_scrollbarContentSizeDirty = true;
 	}
 
 	
@@ -188,32 +169,22 @@ namespace ca { namespace gui {
 	}
 
 
-	void Frame::recomputeContentSize()
-	{
-		if (isScrollingEnabled() && !m_children.empty())
-		{
-			m_contentBbMin = Coord2{1e38f};
-			m_contentBbMax = Coord2{-1e38f};
-			for (auto& child : m_children) if (child.widget != m_horizontalScrollbar && child.widget != m_verticalScrollbar)
-			{
-				const Coord2 bbmin = child.widget->position();
-				const Coord2 bbmax = bbmin + child.widget->size();
-				m_contentBbMin = min(m_contentBbMin, bbmin);
-				m_contentBbMax = max(m_contentBbMax, bbmax);
-			}
-		}
-	}
-
-
 	void Frame::resetScrollbarContentSize()
 	{
-		Coord2 contentSize {1.0f};
-		if (m_contentBbMin.x != 1e38f)
-			contentSize = m_contentBbMax - m_contentBbMin + 2.0f * m_scrollMargin;
+		Coord2 contentBbMin {1e38f};
+		Coord2 contentBbMax {-1e38f};
+		for (auto& child : m_children) if (child.widget != m_horizontalScrollbar && child.widget != m_verticalScrollbar)
+		{
+			const Coord2 bbmin = child.widget->position();
+			const Coord2 bbmax = bbmin + child.widget->size();
+			contentBbMin = min(contentBbMin, bbmin);
+			contentBbMax = max(contentBbMax, bbmax);
+		}
 		if (m_horizontalScrollbar)
-			m_horizontalScrollbar->setContentSize(contentSize.x, SIDE::CENTER);
+			m_horizontalScrollbar->setContentInterval(contentBbMin.x, contentBbMax.x);
 		if (m_verticalScrollbar)
-			m_verticalScrollbar->setContentSize(contentSize.y, SIDE::CENTER);
+			m_verticalScrollbar->setContentInterval(contentBbMin.y, contentBbMax.y);
+		m_scrollbarContentSizeDirty = false;
 	}
 
 }} // namespace ca::gui

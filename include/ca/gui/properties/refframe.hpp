@@ -121,7 +121,7 @@ namespace ca { namespace gui {
 		///		By using the target frame's sides directly, a fully absolute
 		///		anchoring is achived (points will keep constant distance to the
 		///		boundaries of the _targetFrame).
-		///		Anything in between is (or outside the target and source frame
+		///		Anything in between (or outside the target and source frame)
 		///		is valid as well.
 		/// 
 		///		If target is nullptr, all anchors with positive values will be detached.

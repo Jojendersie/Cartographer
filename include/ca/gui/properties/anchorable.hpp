@@ -8,7 +8,7 @@ namespace ca { namespace gui {
 	class IAnchorable;
 
 
-	/// Describes of a boundary is positioned relative to another reference frame.
+	/// Describes how a boundary is positioned relative to another reference frame.
 	class Anchor
 	{
 	private:

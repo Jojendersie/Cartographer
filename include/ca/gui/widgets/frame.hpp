@@ -57,14 +57,14 @@ namespace ca { namespace gui {
 		ei::Vec3 m_color;
 
 		// Scrolling related properties
-		Coord2 m_contentBbMin;	// Bounding box of all child widgets
-		Coord2 m_contentBbMax;	// Bounding box of all child widgets
 		class ScrollBar* m_horizontalScrollbar;
 		class ScrollBar* m_verticalScrollbar;
 		float m_scrollMargin;
+		// Before any interaction happens we should make sure the automatic scrollbars are up to date.
+		// Using an update flag avoid quadratic overhead when many elements are added in a row.
+		bool m_scrollbarContentSizeDirty = false;
 
 		// Computes the content bounding box if scrolling is enabled.
-		void recomputeContentSize();
 		void resetScrollbarContentSize();
 		friend void childChangedCallback(Widget* _this, Widget* _child, bool _add);
 		friend void onScrollChangedCallback(Widget* _this, const float _amount);

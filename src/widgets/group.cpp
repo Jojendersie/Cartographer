@@ -42,6 +42,8 @@ namespace ca { namespace gui {
 
 	void Group::add(WidgetPtr _widget, unsigned _innerLayer)
 	{
+		if (_widget == this) return; // Yup, this error happened once
+
 		_widget->setParent(this);
 		m_children.push_back({_widget, _innerLayer});
 		// Move to the front of the vector as long as there are elements

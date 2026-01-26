@@ -8,14 +8,12 @@ namespace ca { namespace gui {
 
 	ScrollBar::ScrollBar() :
 		m_sliderAnchor{this},
-		m_presentationAnchor{this},
+		m_availableStart{this},
+		m_availableEnd{this},
 		m_horizontal(false),
-		m_totalSize{100.0f},
-		m_availableSize{10.0f},
-		m_intervalStart{0.0f},
-		m_rangeOffset{0.0f},
-		m_margin{0.0f},
-		m_movingPos{-1.0f}
+		m_movingPos{-1.0f},
+		m_availableInterval{0.0f, 1.0f},
+		m_contentInterval{0.0f, 0.0f}
 	{
 		registerMouseInputComponent(this);
 		linkAnchor(m_sliderAnchor.m_anchor);
@@ -30,8 +28,14 @@ namespace ca { namespace gui {
 		GUIManager::theme().drawBackgroundArea(rectangle());
 		// Compute percentage of available area to total area and create a smaller frame
 		// with the same relation to m_refFrame (in the selected dimension)
-		const float relSize = ei::min(1.0f, m_availableSize / m_totalSize);
-		const float relStart = m_intervalStart / m_totalSize;
+		Coord2 unionInterval {
+			ei::min(m_contentInterval.x, 0.0f),
+			ei::max(m_contentInterval.y, m_availableInterval.y - m_availableInterval.x)
+		};
+		const float unionLen = unionInterval.y - unionInterval.x;
+		const float relSize = ei::min(1.0f, (m_availableInterval.y - m_availableInterval.x) / unionLen);
+		const float relStart = -unionInterval.x / unionLen;
+
 		ei::Rect2D subFrame;
 		if(m_horizontal)
 		{
@@ -55,9 +59,14 @@ namespace ca { namespace gui {
 		// The resize of the slider is a likely point where reference widgets where
 		// changed as well. To make sure we don't miss events, we also have the notification anchors.
 		Widget::onExtentChanged();
-		m_availableSize = getAvailableSize();
-		m_totalSize = getContentSize();
-		checkInterval();
+
+		const float newStart = m_availableStart.getPosition(m_horizontal?0:1);
+		const float newEnd = m_availableEnd.getPosition(m_horizontal?0:1);
+		const bool isResize = (newEnd - newStart) != (m_availableInterval.y - m_availableInterval.x);
+		if (m_availableInterval.x != newStart && isResize && m_contentInterval.x != m_contentInterval.y)
+			m_contentInterval += m_availableInterval.x - newStart;
+		m_availableInterval.x = newStart;
+		m_availableInterval.y = newEnd;
 	}
 
 	bool ScrollBar::processInput(Widget & _thisWidget, const MouseState & _mouseState, bool _cursorOnWidget, bool & _ensureNextInput)
@@ -80,8 +89,16 @@ namespace ca { namespace gui {
 		const float mousePos = m_horizontal ? _mouseState.position.x : _mouseState.position.y;
 
 		// Compute world space parameters of the moveable interval
-		const float relSize = ei::min(1.0f, m_availableSize / m_totalSize);	// TODO: precompute?
-		const float relStart = m_intervalStart / m_totalSize;	// TODO: precompute?
+		const float availableSize = m_availableInterval.y - m_availableInterval.x;
+		Coord2 unionInterval {
+			ei::min(m_contentInterval.x, 0.0f),
+			ei::max(m_contentInterval.y, availableSize)
+		};
+		const float unionLen = unionInterval.y - unionInterval.x;
+		const float relSize = ei::min(1.0f, availableSize / unionLen);
+		const float relStart = -unionInterval.x / unionLen;
+		//const float relSize = m_relativeSize;
+		//const float relStart = m_relativeStart;
 		const float intervalBegin = widgetBegin + relStart * widgetSize;	// TODO: precompute?
 		const float intervalSize = ei::max(3.0f, relSize * widgetSize);	// TODO: precompute?
 		if(_mouseState.buttons[0] == MouseState::DOWN && _cursorOnWidget)
@@ -96,12 +113,17 @@ namespace ca { namespace gui {
 		// Recompute a new interval start position by matching m_movingPos to mousePos.
 		const float offsetPos = mousePos - intervalSize * m_movingPos;			// Move to left boundary
 		const float widgetSpacePos = (offsetPos - widgetBegin) / widgetSize;	// Pos of left boundary within widget
-		const float scrollSpacePos = widgetSpacePos * m_totalSize;
-		const float old = m_intervalStart;
-		m_intervalStart = ei::clamp(scrollSpacePos, 0.0f, ei::max(0.0f, m_totalSize - m_availableSize));
-		if(old != m_intervalStart) {
-			if (m_onChange) m_onChange(this, m_intervalStart - old);
-			recomputeAnchorFrame();
+		// Inverse of relSize computation:
+		float newOffset = -widgetSpacePos * unionLen - unionInterval.x;
+		// Compute the valid range for m_offset and restrict it if necessary
+		const float offsetRangeMin = ei::min(0.0f, availableSize - m_contentInterval.y); // Move towards the right by shifting components left
+		const float offsetRangeMax = ei::max(0.0f, - m_contentInterval.x);
+		newOffset = ei::clamp(roundf(newOffset), offsetRangeMin, offsetRangeMax);
+		if (newOffset != 0.0f)
+		{
+			m_contentInterval += newOffset;
+			if (m_onChange) m_onChange(this, -newOffset);
+			m_sliderAnchor.moveAnchor(newOffset);
 		}
 		return true;
 	}
@@ -109,48 +131,28 @@ namespace ca { namespace gui {
 	void ScrollBar::setHorizontalMode(const bool _horizontal)
 	{
 		m_horizontal = _horizontal;
-		m_intervalStart = ei::clamp(m_intervalStart, 0.0f, ei::max(0.0f, m_totalSize - m_availableSize));
-		recomputeAnchorFrame();
 	}
 
-	void ScrollBar::setAvailableSize(const float _availableSize)
+
+	void ScrollBar::setAvailableArea(IAnchorProvider* _area, Coord _minPos, Coord _maxPos)
 	{
-		if(m_presentationWidget) {
-			m_presentationWidget = nullptr;
-			m_sliderAnchor.attach(this);
-			m_presentationAnchor.detach(); // No need for further notifications
-		}
-		m_availableSize = _availableSize;
-		checkInterval();
+		// If the content interval is non-empty, move it such that it stays where it is
+		if (m_contentInterval.x != m_contentInterval.y)
+			m_contentInterval += _minPos - m_availableInterval.x;
+		const int dim = m_horizontal?0:1;
+		m_availableStart.attach(_area, _area->getPosition(dim, 0.0f), _minPos, dim);
+		m_availableEnd.attach(_area, _area->getPosition(dim, 1.0f), _maxPos, dim);
+		m_availableInterval = Coord2{_minPos, _maxPos};
 	}
 
-	void ScrollBar::setContentSize(const float _contentSize, SIDE::Val _side)
+
+	void ScrollBar::setContentInterval(const Coord _min, const Coord _max)
 	{
-		if(m_horizontal && (_side != SIDE::LEFT && _side != SIDE::RIGHT))
-			ca::pa::logWarning("[ca::gui::ScrollBar] Scroll bar is in horizontal mode, but change is said to be on side ", SIDE::STR_NAMES[_side]);
-		if(!m_horizontal && (_side != SIDE::BOTTOM && _side != SIDE::TOP))
-			ca::pa::logWarning("[ca::gui::ScrollBar] Scroll bar is in vertical mode, but change is said to be on side ", SIDE::STR_NAMES[_side]);
-		if(_side == SIDE::LEFT || _side == SIDE::BOTTOM)
-		{
-			const float delta = ei::max(0.0f, m_totalSize - m_availableSize) - ei::max(0.0f, _contentSize - m_availableSize);
-			m_rangeOffset -= delta;
-			//m_intervalStart += delta;
-		}
-		m_totalSize = _contentSize;
-		checkInterval(true);
+		m_contentInterval = Coord2{_min, _max} - m_availableInterval.x;
 	}
 
-	void ScrollBar::setViewArea(WidgetPtr _presentationWidget, const float _margin)
-	{
-		m_presentationWidget = std::move(_presentationWidget);
-		m_sliderAnchor.attach(m_presentationWidget.get());
-		m_presentationAnchor.attach(m_presentationWidget.get(), 0.0f, 0.0f, 0);
-		m_margin = ei::max(0.0f, _margin);
-		m_availableSize = getAvailableSize();
-		checkInterval(true);
-	}
 
-	void ScrollBar::setScrollOffset(const float _amount)
+	/*void ScrollBar::setScrollOffset(const float _amount)
 	{
 		const float old = m_intervalStart;
 		m_intervalStart = _amount;
@@ -162,39 +164,19 @@ namespace ca { namespace gui {
 	void ScrollBar::setScrollOffsetTop(const float _amount)
 	{
 		setScrollOffset((m_totalSize - m_availableSize) - _amount);
-	}
+	}*/
 
 
 	float ScrollBar::getAvailableSize() const
 	{
-		if(m_presentationWidget)
-		{
-			const float fullSize = m_horizontal ?
-				m_presentationWidget->width() : m_presentationWidget->height();
-			return ei::max(0.0f, fullSize - m_margin);
-		}
-		return m_availableSize;
+		return m_availableInterval.y - m_availableInterval.x;
 	}
 
-	float ScrollBar::getContentSize() const
+
+	Coord2 ScrollBar::getContentInterval() const
 	{
-		return m_totalSize;
+		return m_contentInterval + m_availableInterval.x;
 	}
-
-	void ScrollBar::checkInterval(const bool _forceAnchorReset)
-	{
-		const float old = m_intervalStart;
-		m_intervalStart = ei::clamp(m_intervalStart, 0.0f, ei::max(0.0f, m_totalSize - m_availableSize));
-		if(_forceAnchorReset || old != m_intervalStart)
-			recomputeAnchorFrame();
-	}
-
-
-	void ScrollBar::recomputeAnchorFrame()
-	{
-		m_sliderAnchor.setAnchor(m_rangeOffset - m_intervalStart);
-	}
-
 
 
 	ScrollBar::SliderAnchor::SliderAnchor(ScrollBar* _parent) :
@@ -221,6 +203,16 @@ namespace ca { namespace gui {
 		m_anchor.absoluteDistance = _offset;
 		IAnchorProvider::onExtentChanged(); // Then trigger updates of others
 	}
+
+
+	void ScrollBar::SliderAnchor::moveAnchor(float _offset)
+	{
+		if (_offset == 0.0f)
+			return;
+		m_anchor.absoluteDistance += _offset;
+		IAnchorProvider::onExtentChanged(); // Then trigger updates of others
+	}
+
 
 	void ScrollBar::SliderAnchor::onExtentChanged()
 	{
