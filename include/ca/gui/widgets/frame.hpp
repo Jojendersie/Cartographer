@@ -16,6 +16,8 @@ namespace ca { namespace gui {
 		/// Implement the draw method
 		void draw() const override;
 
+		void clear() override;
+
 		/// Forward input to subelements and to properties
 		virtual bool processInput(const struct MouseState& _mouseState) override;
 

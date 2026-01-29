@@ -62,7 +62,7 @@ namespace ca { namespace gui {
 		WidgetPtr find(uint _name);
 
 		/// Remove all widgets from this group.
-		void clear();
+		virtual void clear();
 
 		/// Forward input to subelements and to properties
 		virtual bool processInput(const struct MouseState& _mouseState) override;

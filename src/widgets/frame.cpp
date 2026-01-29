@@ -73,6 +73,15 @@ namespace ca { namespace gui {
 		}
 	}
 
+	void Frame::clear()
+	{
+		ScrollBarPtr pinH { m_horizontalScrollbar };
+		ScrollBarPtr pinV { m_verticalScrollbar };
+		Group::clear();
+		if (pinH) this->add(pinH, 99999);
+		if (pinV) this->add(pinV, 99999);
+	}
+
 	bool Frame::processInput(const MouseState& _mouseState)
 	{
 		// Component disabled?
