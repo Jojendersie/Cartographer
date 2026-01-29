@@ -23,7 +23,7 @@ namespace ca { namespace gui {
 		/// \param [in] _fitSize Change the label size to the size of the text plus boundary. Negtive
 		///		values disable fitting (previous size is kept).
 		void setText(const char* _text, float _fitSize = -1.0f);
-		const char* getText() { return m_text.c_str(); }
+		const char* getText() const { return m_text.c_str(); }
 
 		/// Set on which side including the center the text should be aligned.
 		/// \details The default alignment is LEFT.
