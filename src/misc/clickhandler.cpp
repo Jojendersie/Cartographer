@@ -12,6 +12,7 @@ namespace ca { namespace gui {
 			m_buttonDownReceived[i] = false;
 			m_lastClick[i] = -10000.0f;
 		}
+		m_lastClickedPosition = Coord2(-1.0f, -1.0f);
 	}
 
 	void ClickHandler::handleUpEvents(struct MouseState& _mouseState)
@@ -27,9 +28,10 @@ namespace ca { namespace gui {
 					if( _mouseState.btnUp(b) && (m_buttonDownReceived[b] || _mouseState.btnDown(b)) )
 					{
 						_mouseState.buttons[b] = MouseState::ButtonState(_mouseState.buttons[b] | MouseState::CLICKED);
-						if(now - m_lastClick[b] <= 0.5f)// TODO: threshold parameter
+						if((now - m_lastClick[b] <= 0.5f) && (m_lastClickedPosition == _mouseState.position))// TODO: threshold parameter
 							_mouseState.buttons[b] = MouseState::ButtonState(_mouseState.buttons[b] | MouseState::DBL_CLICKED);
 						m_lastClick[b] = now;
+						m_lastClickedPosition = _mouseState.position;
 					}
 				}
 			}

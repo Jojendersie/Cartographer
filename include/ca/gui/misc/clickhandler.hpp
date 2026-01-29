@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../properties/coordinate.hpp"
+
 namespace ca { namespace gui {
 
 	/// Helper class to detect click and double click events.
@@ -19,5 +21,6 @@ namespace ca { namespace gui {
 		const class Widget* m_mouseDown;	///< The widget that received the last button down event (if there was any)
 		bool m_buttonDownReceived[8];		///< Detect for each button, if it was pressed on the m_mouseDown element (for CLICK events)
 		float m_lastClick[8];				///< Time stamp for the last click to detect DBL_CLICK events
+		Coord2 m_lastClickedPosition;
 	};
 }} // namespace ca::gui
