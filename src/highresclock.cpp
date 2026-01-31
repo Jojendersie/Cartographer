@@ -2,9 +2,12 @@
 
 #if defined(_WIN32) || defined(WIN32)
 #include <windows.h>
+#else
+#include <chrono>
 #endif
 
-namespace ca { namespace pa {
+
+namespace ca::pa {
 
 HRClock::HRClock() : m_timeStamp(now())
 {
@@ -42,8 +45,6 @@ double HRClock::now()
 
 #else
 
-#include <chrono>
-
 const std::chrono::high_resolution_clock::time_point START_TIMEPOINT = []()
 {
 	return std::chrono::high_resolution_clock::now();
@@ -58,4 +59,4 @@ double HRClock::now()
 
 #endif
 
-}} // namespace ca::pa
+} // namespace ca::pa
