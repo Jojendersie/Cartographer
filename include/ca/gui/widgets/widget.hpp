@@ -92,8 +92,8 @@ namespace ca { namespace gui {
 
 		/// Is the current element visible/hidden?
 		bool isVisible() const { return m_visible; }
-		void show() { if(!m_visible) { m_visible = true; if(onVisibilityChanged) onVisibilityChanged(this); } }
-		void hide() { if(m_visible) { m_visible = false; if(onVisibilityChanged) onVisibilityChanged(this); } }
+		virtual void show() { if(!m_visible) { m_visible = true; if(onVisibilityChanged) onVisibilityChanged(this); } }
+		virtual void hide() { if(m_visible) { m_visible = false; if(onVisibilityChanged) onVisibilityChanged(this); } }
 		void setVisible(bool _state) { if(m_visible != _state) { m_visible = _state; if(onVisibilityChanged) onVisibilityChanged(this); } }
 
 		/// Some functions which are triggered on visiblity events.
