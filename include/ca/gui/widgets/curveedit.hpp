@@ -61,6 +61,9 @@ namespace ca { namespace gui {
 		/// Change the rendering and input mode
 		void setMode(Mode _mode);
 
+		/// Set the rendering tangent length in pixels (only applies to Mode::CUBIC_HERMITE)
+		void setTangentLength(float _length) { m_tangentLength = _length; }
+
 		/// Move handles etc.
 		bool processInput(
 			class Widget& _thisWidget,
@@ -104,6 +107,7 @@ namespace ca { namespace gui {
 		ei::Vec2 m_xDomain, m_yDomain;
 		ei::Vec2 m_xRange, m_yRange;	// Domain + marigin
 		Mode m_mode;
+		float m_tangentLength;			// Length of a tangent vector in hermite mode
 
 		// Temporary input handling
 		int m_selectedHdl;

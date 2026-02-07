@@ -20,6 +20,7 @@ namespace ca { namespace gui {
 		m_xRange {-0.1f, 1.1f },
 		m_yRange {-0.1f, 1.1f },
 		m_mode { Mode::BEZIER },
+		m_tangentLength { 16.0f },
 		m_selectedHdl {-1},
 		m_selectedSubHdl {-1}
 	{
@@ -96,7 +97,7 @@ namespace ca { namespace gui {
 		}
 		else if(m_mode == Mode::CUBIC_HERMITE)
 		{
-			constexpr int RES = 12;
+			constexpr int RES = 24;
 			Vec2 buf[RES];
 			static constexpr Vec4 HERMITE[RES-2] = {
 				hemite_spline_coeffs(1.0f / (RES-1)),
@@ -108,14 +109,28 @@ namespace ca { namespace gui {
 				hemite_spline_coeffs(7.0f / (RES-1)),
 				hemite_spline_coeffs(8.0f / (RES-1)),
 				hemite_spline_coeffs(9.0f / (RES-1)),
-				hemite_spline_coeffs(10.0f / (RES-1))
+				hemite_spline_coeffs(10.0f / (RES-1)),
+				hemite_spline_coeffs(11.0f / (RES-1)),
+				hemite_spline_coeffs(12.0f / (RES-1)),
+				hemite_spline_coeffs(13.0f / (RES-1)),
+				hemite_spline_coeffs(14.0f / (RES-1)),
+				hemite_spline_coeffs(15.0f / (RES-1)),
+				hemite_spline_coeffs(16.0f / (RES-1)),
+				hemite_spline_coeffs(17.0f / (RES-1)),
+				hemite_spline_coeffs(18.0f / (RES-1)),
+				hemite_spline_coeffs(19.0f / (RES-1)),
+				hemite_spline_coeffs(20.0f / (RES-1)),
+				hemite_spline_coeffs(21.0f / (RES-1)),
+				hemite_spline_coeffs(22.0f / (RES-1))
 			};
 			for(size_t i = 0; i < m_handles.size(); ++i)
 			{
 				buf[0] = Vec2 { round(m_handles[i].screenHdlLeft) }; // TODO: move rounding into handle computation?
 				buf[1] = Vec2 { round(m_handles[i].screenPos) };
 				buf[2] = Vec2 { round(m_handles[i].screenHdlRight) };
+				// Draw the two tangent vectors in one go. On either end we only need one tangent.
 				GUIManager::theme().drawLine(buf + (i == 0 ? 1 : 0), 3 - (i == 0 || i == m_handles.size()-1 ? 1 : 0), m_curveColor, m_curveColor);
+				// Draw the actual curve back to the previous node.
 				if(i > 0)
 				{
 					const float lSlopeR = 0.5f * m_handles[i-1].tangentRight.y / m_handles[i-1].tangentRight.x * m_domainToScreen.y;
@@ -133,14 +148,16 @@ namespace ca { namespace gui {
 		}
 		else if(m_mode == Mode::BEZIER)
 		{
-			constexpr int RES = 12;
+			constexpr int RES = 24;
 			Vec2 buf[RES];
 			for(size_t i = 0; i < m_handles.size(); ++i)
 			{
 				buf[0] = m_handles[i].screenHdlLeft;
 				buf[1] = m_handles[i].screenPos;
 				buf[2] = m_handles[i].screenHdlRight;
+				// Draw the two tangent vectors in one go. On either end we only need one tangent.
 				GUIManager::theme().drawLine(buf + (i == 0 ? 1 : 0), 3 - (i == 0 || i == m_handles.size()-1 ? 1 : 0), m_curveColor, m_curveColor);
+				// Draw the actual curve back to the previous node.
 				if(i > 0)
 				{
 					buf[0] = m_handles[i-1].screenPos;
@@ -266,7 +283,7 @@ namespace ca { namespace gui {
 				const bool selectedRight = m_selectedSubHdl & 1;
 				if(m_mode == Mode::CUBIC_HERMITE)
 				{
-					const Vec2 tangent = normalize(domainPos - m_handles[idx].domainPos) * 0.1f; // TODO: parameter for rendering tangent length
+					const Vec2 tangent = domainPos - m_handles[idx].domainPos;
 					if(selectedRight)
 						m_handles[idx].tangentRight = Vec2{ei::abs(tangent.x), tangent.y};
 					else
@@ -366,11 +383,9 @@ namespace ca { namespace gui {
 		// While the following forces the endpoints to the correct places it makes problems with sequential additions
 		//if(idx == 0) posClamped.x = m_xDomain.x;
 		//else if(idx == (int)m_handles.size()) posClamped.x = m_xDomain.y;
-		const Vec2 posScreen = posClamped * m_domainToScreen + m_screenOffset;
-		const Vec2 tL = (posClamped + _tangentLeft) * m_domainToScreen + m_screenOffset;
-		const Vec2 tR = (posClamped + _tangentRight) * m_domainToScreen + m_screenOffset;
 		const bool locked = ei::abs(cross(_tangentLeft, _tangentRight)) < 1e-5f;
-		m_handles.emplace(m_handles.begin() + idx, Handle{posClamped, posScreen, _tangentLeft, _tangentRight, tL, tR, locked});
+		m_handles.emplace(m_handles.begin() + idx, Handle{posClamped, Vec2{}, _tangentLeft, _tangentRight, Vec2{}, Vec2{}, locked});
+		recomputeScreenPos(idx, true, true, true);
 		if(idx > 0)
 			limitHdl(idx-1, false, true);
 		limitHdl(idx, true, true);
@@ -421,12 +436,22 @@ namespace ca { namespace gui {
 	void CurveEdit::recomputeScreenPos(int hdl, bool pos, bool left, bool right)
 	{
 		if(pos) m_handles[hdl].screenPos = m_handles[hdl].domainPos * m_domainToScreen + m_screenOffset;
-		if(left) m_handles[hdl].screenHdlLeft = (m_handles[hdl].domainPos + m_handles[hdl].tangentLeft) * m_domainToScreen + m_screenOffset;
-		if(right) m_handles[hdl].screenHdlRight = (m_handles[hdl].domainPos + m_handles[hdl].tangentRight) * m_domainToScreen + m_screenOffset;
+		if(m_mode == Mode::BEZIER)
+		{
+			if(left) m_handles[hdl].screenHdlLeft = (m_handles[hdl].domainPos + m_handles[hdl].tangentLeft) * m_domainToScreen + m_screenOffset;
+			if(right) m_handles[hdl].screenHdlRight = (m_handles[hdl].domainPos + m_handles[hdl].tangentRight) * m_domainToScreen + m_screenOffset;
+		}
+		else
+		{
+			if(left) m_handles[hdl].screenHdlLeft = m_handles[hdl].screenPos + normalize(m_handles[hdl].tangentLeft * m_domainToScreen) * m_tangentLength;
+			if(right) m_handles[hdl].screenHdlRight = m_handles[hdl].screenPos + normalize(m_handles[hdl].tangentRight * m_domainToScreen) * m_tangentLength;
+		}
 	}
 
 	void CurveEdit::limitHdl(int hdl, bool left, bool right)
 	{
+		if(m_mode != Mode::BEZIER)
+			return;
 		if(left && (hdl > 0))
 		{
 			const float maxX = m_handles[hdl-1].domainPos.x - m_handles[hdl].domainPos.x;
