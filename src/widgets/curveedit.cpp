@@ -2,15 +2,19 @@
 #include "ca/gui/guimanager.hpp"
 #include "ca/gui/rendering/theme.hpp"
 #include "ca/gui/backend/renderbackend.hpp"
+#include <ca/pa/log.hpp>
 
 using namespace ei;
 
 namespace ca { namespace gui {
 
 	CurveEdit::CurveEdit() :
-		m_onHandleChanged { nullptr },
 		m_onNewHandle { nullptr },
 		m_onDeleteHandle { nullptr },
+		m_getTangent { nullptr },
+		m_getPosition { nullptr },
+		m_onPositionChanged { nullptr},
+		m_onTangentChanged { nullptr },
 		m_backgroundColor { 0.0f },
 		m_gridColor { 0.1f },
 		m_curveColor { 0.1f, 0.7f, 0.1f, 1.0f },
@@ -20,6 +24,7 @@ namespace ca { namespace gui {
 		m_xRange {-0.1f, 1.1f },
 		m_yRange {-0.1f, 1.1f },
 		m_mode { Mode::BEZIER },
+		m_periodic { false },
 		m_tangentLength { 16.0f },
 		m_selectedHdl {-1},
 		m_selectedSubHdl {-1}
@@ -34,7 +39,7 @@ namespace ca { namespace gui {
 		return Vec4{ (1+2*t)*(1-t)*(1-t),
 			t*(1-t)*(1-t),
 			t*t*(3-2*t),
-			-t*t*(1-t) };
+			t*t*(t-1) };
 	}
 
 	void CurveEdit::draw() const
@@ -95,7 +100,7 @@ namespace ca { namespace gui {
 				GUIManager::theme().drawLine(buf, 2, m_curveColor, m_curveColor);
 			}
 		}
-		else if(m_mode == Mode::CUBIC_HERMITE)
+		else if(m_mode == Mode::SMOOTH || m_mode == Mode::CUBIC_HERMITE)
 		{
 			constexpr int RES = 24;
 			Vec2 buf[RES];
@@ -125,17 +130,20 @@ namespace ca { namespace gui {
 			};
 			for(size_t i = 0; i < m_handles.size(); ++i)
 			{
-				buf[0] = Vec2 { round(m_handles[i].screenHdlLeft) }; // TODO: move rounding into handle computation?
-				buf[1] = Vec2 { round(m_handles[i].screenPos) };
-				buf[2] = Vec2 { round(m_handles[i].screenHdlRight) };
+				buf[1] = m_handles[i].screenPos;
 				// Draw the two tangent vectors in one go. On either end we only need one tangent.
-				GUIManager::theme().drawLine(buf + (i == 0 ? 1 : 0), 3 - (i == 0 || i == m_handles.size()-1 ? 1 : 0), m_curveColor, m_curveColor);
+				if (m_mode == Mode::CUBIC_HERMITE)
+				{
+					buf[0] = m_handles[i].screenHdlLeft;
+					buf[2] = m_handles[i].screenHdlRight;
+					GUIManager::theme().drawLine(buf + (i == 0 ? 1 : 0), 3 - (i == 0 || i == m_handles.size()-1 ? 1 : 0), m_curveColor, m_curveColor);
+				}
 				// Draw the actual curve back to the previous node.
 				if(i > 0)
 				{
-					const float lSlopeR = 0.5f * m_handles[i-1].tangentRight.y / m_handles[i-1].tangentRight.x * m_domainToScreen.y;
-					const float rSlopeL = 0.5f * m_handles[i].tangentLeft.y / m_handles[i].tangentLeft.x * m_domainToScreen.y;
-					buf[0] = Vec2 { round(m_handles[i-1].screenPos) };
+					const float lSlopeR = m_handles[i-1].screenTangentRight.y / m_handles[i-1].screenTangentRight.x * (m_handles[i].screenPos.x - m_handles[i-1].screenPos.x);
+					const float rSlopeL = m_handles[i].screenTangentLeft.y / m_handles[i].screenTangentLeft.x * (m_handles[i].screenPos.x - m_handles[i-1].screenPos.x);
+					buf[0] = m_handles[i-1].screenPos;
 					buf[RES-1] = buf[1];
 					for(int j = 0; j < RES-2; ++j)
 					{
@@ -184,7 +192,7 @@ namespace ca { namespace gui {
 			{
 				GUIManager::theme().drawArrowButton(Rect2D{m_handles[i].screenPos-3.5f, m_handles[i].screenPos+3.5f}, SIDE::TOP, false); // TODO: color
 			}
-			if(m_mode != Mode::LINEAR)
+			if(m_mode != Mode::LINEAR && m_mode != Mode::SMOOTH)
 			{
 				if(i > 0)
 					GUIManager::theme().drawNodeHandle(m_handles[i].screenHdlLeft, 2.5f, Vec3{m_curveColor});
@@ -198,13 +206,21 @@ namespace ca { namespace gui {
 
 	void CurveEdit::setDomain(const ei::Vec2& _xRange, const ei::Vec2& _yRange)
 	{
+		// Compute a screenspace -> screenspace transform for the existing nodes.
+		ei::Vec2 translation = -m_screenOffset;
+		ei::Vec2 scale = m_screenToDomain;
 		m_xDomain = _xRange;
 		m_yDomain = _yRange;
+		recomputeSpaceConversions();
+		scale *= m_domainToScreen;
+		translation += m_screenOffset;
 		for(size_t i = 0; i < m_handles.size(); ++i)
 		{
-			m_handles[i].domainPos.x = ei::min(ei::max(m_handles[i].domainPos.x, m_xDomain.x), m_xDomain.y);
-			m_handles[i].domainPos.y = ei::min(ei::max(m_handles[i].domainPos.y, m_yDomain.x), m_yDomain.y);
-			recomputeScreenPos((int)i);
+			m_handles[i].screenPos = m_handles[i].screenPos * scale + translation;
+			m_handles[i].screenTangentLeft *= scale;
+			m_handles[i].screenTangentRight *= scale;
+			m_handles[i].screenHdlLeft = m_handles[i].screenPos + m_handles[i].screenTangentLeft;
+			m_handles[i].screenHdlRight = m_handles[i].screenPos + m_handles[i].screenTangentRight;
 		}
 	}
 
@@ -217,14 +233,9 @@ namespace ca { namespace gui {
 	}
 
 
-	void CurveEdit::setMode(Mode _mode)
+	void CurveEdit::setMode(Mode _mode, bool _periodic)
 	{
-		if(m_mode == _mode) return;
-		if(_mode==Mode::BEZIER) // Make sure the handles are all correct
-		{
-			for(size_t i = 0; i < m_handles.size(); ++i)
-				limitHdl((int)i, true, true);
-		}
+		m_periodic = _periodic;
 		m_mode = _mode;
 	}
 
@@ -242,72 +253,30 @@ namespace ca { namespace gui {
 			// Drop the selection if mouse button is released.
 			if(_mouseState.btnUp(0) || _mouseState.btnReleased(0))
 			{
-				const int idx = m_selectedHdl != -1 ? m_selectedHdl : m_selectedSubHdl/2;
-				limitHdl(idx, true, true);
-
-				// Notify changes if there where any
-				bool changed = m_selectedCopy.domainPos != m_handles[idx].domainPos;
-				if(m_mode != Mode::LINEAR)
-				{
-					changed |= m_selectedCopy.tangentLeft != m_handles[idx].tangentLeft;
-					changed |= m_selectedCopy.tangentRight != m_handles[idx].tangentRight;
-				}
-				if(changed && m_onHandleChanged)
-					m_onHandleChanged(idx, m_handles[idx].domainPos, m_handles[idx].tangentLeft, m_handles[idx].tangentRight);
-
-				// If a main handle was selected, the neighbors tangents might violate the bounds
-				if(m_selectedHdl != -1)
-				{
-					if(m_selectedHdl > 0)
-						limitHdl(m_selectedHdl-1, false, true);
-					if(m_selectedHdl+1 < (int)m_handles.size())
-						limitHdl(m_selectedHdl+1, true, false);
-				}
 				m_selectedSubHdl = m_selectedHdl = -1;
 			}
 			// Hdl and SubHdl are exclusive, so if one is defined, the other is not.
 			else if(m_selectedHdl != -1)
 			{
-				m_handles[m_selectedHdl].domainPos = domainPos;
-				// Limit movements to neighbors
-				if(m_selectedHdl > 0) m_handles[m_selectedHdl].domainPos.x = max(m_handles[m_selectedHdl].domainPos.x, m_handles[m_selectedHdl-1].domainPos.x);
-				else m_handles[m_selectedHdl].domainPos.x = m_xDomain.x;
-				if(m_selectedHdl+1 < (int)m_handles.size()) m_handles[m_selectedHdl].domainPos.x = min(m_handles[m_selectedHdl].domainPos.x, m_handles[m_selectedHdl+1].domainPos.x);
-				else m_handles[m_selectedHdl].domainPos.x = m_xDomain.y;
-				m_handles[m_selectedHdl].domainPos.y = clamp(m_handles[m_selectedHdl].domainPos.y, m_yDomain.x, m_yDomain.y);
-				recomputeScreenPos(m_selectedHdl);
+				if (_mouseState.position != m_handles[m_selectedHdl].screenPos) // Changed?
+				{
+					if (m_onPositionChanged) {
+						const ei::IVec2 interval = m_onPositionChanged(m_selectedHdl, domainPos);
+						updateHandles(interval);
+					}
+					else ca::pa::logError("[CurveEdit::processInput] Cannot set position.");
+				}
 			}
 			else // A handle is selected
 			{
 				const int idx = m_selectedSubHdl / 2;
 				const bool selectedRight = m_selectedSubHdl & 1;
-				if(m_mode == Mode::CUBIC_HERMITE)
+				if (m_onTangentChanged)
 				{
-					const Vec2 tangent = domainPos - m_handles[idx].domainPos;
-					if(selectedRight)
-						m_handles[idx].tangentRight = Vec2{ei::abs(tangent.x), tangent.y};
-					else
-						m_handles[idx].tangentLeft = Vec2{-ei::abs(tangent.x), tangent.y};
-				} else {
-					if(selectedRight)
-					{
-						const Vec2 domainHdl = Vec2{clamp(domainPos.x, m_handles[idx].domainPos.x, m_handles[idx+1].domainPos.x), clamp(domainPos.y, m_yDomain.x, m_yDomain.y)};
-						m_handles[idx].tangentRight = domainHdl - m_handles[idx].domainPos;
-					}
-					else
-					{
-						const Vec2 domainHdl = Vec2{clamp(domainPos.x, m_handles[idx-1].domainPos.x, m_handles[idx].domainPos.x), clamp(domainPos.y, m_yDomain.x, m_yDomain.y)};
-						m_handles[idx].tangentLeft = domainHdl - m_handles[idx].domainPos;
-					}
+					const Vec2 tangent = (_mouseState.position - m_handles[idx].screenPos) * m_screenToDomain;
+					const ei::IVec2 interval = m_onTangentChanged(idx, tangent, !selectedRight);
+					updateHandles(interval);
 				}
-				if(m_handles[idx].tangentsLocked)
-				{
-					if(selectedRight) // Right was the original -> mirror to left
-						m_handles[idx].tangentLeft = -m_handles[idx].tangentRight * sqrtf(lensq(m_handles[idx].tangentLeft) / (1e-10f +lensq(m_handles[idx].tangentRight)));
-					else
-						m_handles[idx].tangentRight = -m_handles[idx].tangentLeft * sqrtf(lensq(m_handles[idx].tangentRight) / (1e-10f + lensq(m_handles[idx].tangentLeft)));
-				}
-				recomputeScreenPos(idx, false, m_handles[idx].tangentsLocked || !selectedRight, m_handles[idx].tangentsLocked || selectedRight);
 			}
 		}
 
@@ -318,7 +287,7 @@ namespace ca { namespace gui {
 		{
 			if(lensq(m_handles[i].screenPos - _mouseState.position) < 15.0f)
 				clickedHdl = i;
-			if(m_mode != Mode::LINEAR)
+			if(m_mode != Mode::LINEAR && m_mode != Mode::SMOOTH)
 			{
 				if(i > 0 && lensq(m_handles[i].screenHdlLeft - _mouseState.position) < 15.0f)
 					clickedSubHdl = i*2;
@@ -333,14 +302,15 @@ namespace ca { namespace gui {
 		if(_mouseState.btnDblClicked(0) && clickedHdl != -1)
 		{
 			m_handles[clickedHdl].tangentsLocked = !m_handles[clickedHdl].tangentsLocked;
-			if(m_handles[clickedHdl].tangentsLocked)
+			/*if(m_handles[clickedHdl].tangentsLocked)
 			{
-				const Vec2 newDir = m_handles[clickedHdl].tangentRight - m_handles[clickedHdl].tangentLeft;
+				const Vec2 newDir = m_handles[clickedHdl].screenTangentRight - m_handles[clickedHdl].screenTangentLeft;
 				const float newDirLenSq = 1e-10f + lensq(newDir);
-				m_handles[clickedHdl].tangentLeft = -newDir * sqrtf(lensq(m_handles[clickedHdl].tangentLeft) / newDirLenSq);
-				m_handles[clickedHdl].tangentRight = newDir * sqrtf(lensq(m_handles[clickedHdl].tangentRight) / newDirLenSq);
-				recomputeScreenPos(clickedHdl, false, true, true);
-			}
+				m_handles[clickedHdl].screenTangentLeft = -newDir * sqrtf(lensq(m_handles[clickedHdl].screenTangentLeft) / newDirLenSq);
+				m_handles[clickedHdl].screenTangentRight = newDir * sqrtf(lensq(m_handles[clickedHdl].screenTangentRight) / newDirLenSq);
+				// TODO: notify the model or ditch the functionality of handle types
+				//recomputeScreenPos(clickedHdl, false, true, true);
+			}*/
 		}
 		// Add a new handle on double click
 		else if(_mouseState.btnDblClicked(0))
@@ -348,9 +318,13 @@ namespace ca { namespace gui {
 			if(domainPos.x >= m_xDomain.x && domainPos.x <= m_xDomain.y
 				&& domainPos.y >= m_yDomain.x && domainPos.y <= m_yDomain.y)
 			{
-				const Vec2 tangentLeft {-0.1f, 0.0f}; // TODO: infer from neighbors?
-				const Vec2 tangentRight {0.1f, 0.0f}; // TODO: infer from neighbors?
-				addHandle(domainPos, tangentLeft, tangentRight);
+				int idx = 0;
+				while(idx < (int)m_handles.size() && m_handles[idx].screenPos.x < _mouseState.position.x) ++idx;
+				m_handles.emplace(m_handles.begin() + idx, Handle{_mouseState.position, {}, {}, {}, {}, true});
+				IVec2 updateInterval {idx, idx+1};
+				if (m_onNewHandle)
+					updateInterval = m_onNewHandle(idx, domainPos);
+				updateHandles(updateInterval);
 			}
 		}
 		else if(_mouseState.btnDblClicked(1) && clickedHdl != -1)
@@ -375,25 +349,11 @@ namespace ca { namespace gui {
 	}
 
 
-	int CurveEdit::addHandle(const ei::Vec2& _pos, const ei::Vec2& _tangentLeft, const ei::Vec2& _tangentRight)
+	void CurveEdit::addHandles(int _idx, int _num)
 	{
-		int idx = 0;
-		while(idx < (int)m_handles.size() && m_handles[idx].domainPos.x < _pos.x) ++idx;
-		Vec2 posClamped = min(max(_pos, Vec2{m_xDomain.x, m_yDomain.x}), Vec2{m_xDomain.y, m_yDomain.y});
-		// While the following forces the endpoints to the correct places it makes problems with sequential additions
-		//if(idx == 0) posClamped.x = m_xDomain.x;
-		//else if(idx == (int)m_handles.size()) posClamped.x = m_xDomain.y;
-		const bool locked = ei::abs(cross(_tangentLeft, _tangentRight)) < 1e-5f;
-		m_handles.emplace(m_handles.begin() + idx, Handle{posClamped, Vec2{}, _tangentLeft, _tangentRight, Vec2{}, Vec2{}, locked});
-		recomputeScreenPos(idx, true, true, true);
-		if(idx > 0)
-			limitHdl(idx-1, false, true);
-		limitHdl(idx, true, true);
-		if(idx+1 < (int)m_handles.size())
-			limitHdl(idx+1, true, false);
-		if(m_onNewHandle)
-			m_onNewHandle(idx, posClamped, m_handles[idx].tangentLeft, m_handles[idx].tangentRight);
-		return idx;
+		const int start = clamp(_idx, 0, (int)m_handles.size());
+		m_handles.insert(m_handles.begin() + start, _num, Handle{{},{},{},{},{},true});
+		updateHandles({max(0,_idx - 1), min(_idx + _num, (int)m_handles.size())});
 	}
 
 
@@ -421,8 +381,7 @@ namespace ca { namespace gui {
 	void CurveEdit::onExtentChanged()
 	{
 		recomputeSpaceConversions();
-		for(size_t i = 0; i < m_handles.size(); ++i)
-			recomputeScreenPos((int)i);
+		updateHandles({0, (int)m_handles.size()});
 	}
 
 	void CurveEdit::recomputeSpaceConversions()
@@ -433,48 +392,26 @@ namespace ca { namespace gui {
 		m_domainOffset = Vec2{m_xRange.x, m_yRange.x} - position() * m_screenToDomain;
 	}
 
-	void CurveEdit::recomputeScreenPos(int hdl, bool pos, bool left, bool right)
-	{
-		if(pos) m_handles[hdl].screenPos = m_handles[hdl].domainPos * m_domainToScreen + m_screenOffset;
-		if(m_mode == Mode::BEZIER)
-		{
-			if(left) m_handles[hdl].screenHdlLeft = (m_handles[hdl].domainPos + m_handles[hdl].tangentLeft) * m_domainToScreen + m_screenOffset;
-			if(right) m_handles[hdl].screenHdlRight = (m_handles[hdl].domainPos + m_handles[hdl].tangentRight) * m_domainToScreen + m_screenOffset;
-		}
-		else
-		{
-			if(left) m_handles[hdl].screenHdlLeft = m_handles[hdl].screenPos + normalize(m_handles[hdl].tangentLeft * m_domainToScreen) * m_tangentLength;
-			if(right) m_handles[hdl].screenHdlRight = m_handles[hdl].screenPos + normalize(m_handles[hdl].tangentRight * m_domainToScreen) * m_tangentLength;
-		}
-	}
 
-	void CurveEdit::limitHdl(int hdl, bool left, bool right)
+	void CurveEdit::updateHandles(const ei::IVec2& interval)
 	{
-		if(m_mode != Mode::BEZIER)
-			return;
-		if(left && (hdl > 0))
+		int start = max(interval.x, 0);
+		int end = clamp(interval.y, 0, (int)m_handles.size());
+		if (start > end)
+			end += m_handles.size();
+		for(int i = start; i < end; ++i)
 		{
-			const float maxX = m_handles[hdl-1].domainPos.x - m_handles[hdl].domainPos.x;
-			const float maxY = m_handles[hdl].tangentLeft.y > 0.0f ? m_yDomain.y - m_handles[hdl].domainPos.y : m_yDomain.x - m_handles[hdl].domainPos.y;
-			const float scale = ei::min(m_handles[hdl].tangentLeft.x == 0.0f ? 1.0f : maxX / m_handles[hdl].tangentLeft.x,
-										m_handles[hdl].tangentLeft.y == 0.0f ? 1.0f : maxY / m_handles[hdl].tangentLeft.y);
-			if(scale < 1.0f)
+			const int idx = i % m_handles.size();
+			m_handles[idx].screenPos = Vec2 { round(m_getPosition(idx) * m_domainToScreen + m_screenOffset) };
+			m_handles[idx].screenTangentLeft = Vec2 { round(m_getTangent(idx, true) * m_domainToScreen) };
+			m_handles[idx].screenTangentRight = Vec2 { round(m_getTangent(idx, false) * m_domainToScreen) };
+			if(m_mode == Mode::CUBIC_HERMITE)
 			{
-				m_handles[hdl].tangentLeft *= scale;
-				recomputeScreenPos(hdl, false, true, false);
+				m_handles[idx].screenTangentLeft = normalize(m_handles[idx].screenTangentLeft) * m_tangentLength;
+				m_handles[idx].screenTangentRight = normalize(m_handles[idx].screenTangentRight) * m_tangentLength;
 			}
-		}
-		if(right && ((hdl+1) < (int)m_handles.size()))
-		{
-			const float maxX = m_handles[hdl+1].domainPos.x - m_handles[hdl].domainPos.x;
-			const float maxY = m_handles[hdl].tangentRight.y > 0.0f ? m_yDomain.y - m_handles[hdl].domainPos.y : m_yDomain.x - m_handles[hdl].domainPos.y;
-			const float scale = ei::min(m_handles[hdl].tangentRight.x == 0.0f ? 1.0f : maxX / m_handles[hdl].tangentRight.x,
-										m_handles[hdl].tangentRight.y == 0.0f ? 1.0f : maxY / m_handles[hdl].tangentRight.y);
-			if(scale < 1.0f)
-			{
-				m_handles[hdl].tangentRight *= scale;
-				recomputeScreenPos(hdl, false, false, true);
-			}
+			m_handles[idx].screenHdlLeft = m_handles[idx].screenPos + m_handles[idx].screenTangentLeft;
+			m_handles[idx].screenHdlRight = m_handles[idx].screenPos + m_handles[idx].screenTangentRight;
 		}
 	}
 
