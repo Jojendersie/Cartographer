@@ -395,13 +395,14 @@ namespace ca { namespace gui {
 
 	void CurveEdit::updateHandles(const ei::IVec2& interval)
 	{
-		int start = max(interval.x, 0);
-		int end = clamp(interval.y, 0, (int)m_handles.size());
-		if (start > end)
+		const int n = m_handles.size();
+		int start = m_periodic ? interval.x : max(interval.x, 0);
+		int end = m_periodic ? interval.y : clamp(interval.y, 0, n);
+		if (start > end && m_periodic)
 			end += m_handles.size();
 		for(int i = start; i < end; ++i)
 		{
-			const int idx = i % m_handles.size();
+			const int idx = (i + n) % n;
 			m_handles[idx].screenPos = Vec2 { round(m_getPosition(idx) * m_domainToScreen + m_screenOffset) };
 			m_handles[idx].screenTangentLeft = Vec2 { round(m_getTangent(idx, true) * m_domainToScreen) };
 			m_handles[idx].screenTangentRight = Vec2 { round(m_getTangent(idx, false) * m_domainToScreen) };
