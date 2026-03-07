@@ -72,7 +72,11 @@ namespace ca { namespace gui {
 			bool& _ensureNextInput
 		) override;
 
-		/// Functions to fetch tangent vectors and positions from the model
+		/// Functions to fetch tangent vectors/slopes and positions from the model.
+		/// If the GetTangent method is used depends on the selected model:
+		///		LINEAR will not call it
+		///		SMOOTH / CUBIC_HERMITE will call GetTangent once (always the right tangent, i.e. _left=false)
+		/// 	BEZIER will call GetTangent twice, because they may be independent
 		typedef std::function<ei::Vec2(int _idx)> GetPosition;
 		typedef std::function<ei::Vec2(int _idx, bool _left)> GetTangent;
 		void setGetPositionFunc(GetPosition _callback) { m_getPosition = _callback; }

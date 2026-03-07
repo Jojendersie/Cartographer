@@ -141,14 +141,17 @@ namespace ca { namespace gui {
 				// Draw the actual curve back to the previous node.
 				if(i > 0)
 				{
-					const float lSlopeR = m_handles[i-1].screenTangentRight.y / m_handles[i-1].screenTangentRight.x * (m_handles[i].screenPos.x - m_handles[i-1].screenPos.x);
-					const float rSlopeL = m_handles[i].screenTangentLeft.y / m_handles[i].screenTangentLeft.x * (m_handles[i].screenPos.x - m_handles[i-1].screenPos.x);
 					buf[0] = m_handles[i-1].screenPos;
 					buf[RES-1] = buf[1];
+					const float lTangent = m_handles[i-1].screenTangentRight.y;
+					const float rTangent = m_handles[i].screenTangentRight.y;
 					for(int j = 0; j < RES-2; ++j)
 					{
-						buf[j+1] = Vec2 { lerp(m_handles[i-1].screenPos.x, m_handles[i].screenPos.x, (j+1) / float(RES-1)),
-									HERMITE[j].x * m_handles[i-1].screenPos.y + HERMITE[j].y * lSlopeR + HERMITE[j].z * m_handles[i].screenPos.y + HERMITE[j].w * rSlopeL};
+						buf[j+1].x = lerp(m_handles[i-1].screenPos.x, m_handles[i].screenPos.x, (j+1) / float(RES-1));
+						buf[j+1].y = HERMITE[j].x * m_handles[i-1].screenPos.y
+								   + HERMITE[j].y * lTangent
+								   + HERMITE[j].z * m_handles[i].screenPos.y
+								   + HERMITE[j].w * rTangent;
 					}
 					GUIManager::theme().drawLine(buf, RES, m_curveColor, m_curveColor);
 				}
@@ -404,15 +407,24 @@ namespace ca { namespace gui {
 		{
 			const int idx = (i + n) % n;
 			m_handles[idx].screenPos = Vec2 { round(m_getPosition(idx) * m_domainToScreen + m_screenOffset) };
-			m_handles[idx].screenTangentLeft = Vec2 { round(m_getTangent(idx, true) * m_domainToScreen) };
-			m_handles[idx].screenTangentRight = Vec2 { round(m_getTangent(idx, false) * m_domainToScreen) };
-			if(m_mode == Mode::CUBIC_HERMITE)
+			if (m_mode == Mode::BEZIER)
 			{
-				m_handles[idx].screenTangentLeft = normalize(m_handles[idx].screenTangentLeft) * m_tangentLength;
-				m_handles[idx].screenTangentRight = normalize(m_handles[idx].screenTangentRight) * m_tangentLength;
+				m_handles[idx].screenTangentLeft = Vec2 { round(m_getTangent(idx, true) * m_domainToScreen) };
+				m_handles[idx].screenTangentRight = Vec2 { round(m_getTangent(idx, false) * m_domainToScreen) };
+				m_handles[idx].screenHdlLeft = m_handles[idx].screenPos + m_handles[idx].screenTangentLeft;
+				m_handles[idx].screenHdlRight = m_handles[idx].screenPos + m_handles[idx].screenTangentRight;
 			}
-			m_handles[idx].screenHdlLeft = m_handles[idx].screenPos + m_handles[idx].screenTangentLeft;
-			m_handles[idx].screenHdlRight = m_handles[idx].screenPos + m_handles[idx].screenTangentRight;
+			else if (m_mode == Mode::SMOOTH || m_mode == Mode::CUBIC_HERMITE)
+			{
+				m_handles[idx].screenTangentRight = m_getTangent(idx, false) * m_domainToScreen;
+				m_handles[idx].screenTangentLeft = -m_handles[idx].screenTangentRight;
+			}
+
+			if (m_mode == Mode::CUBIC_HERMITE)
+			{
+				m_handles[idx].screenHdlLeft = m_handles[idx].screenPos + normalize(m_handles[idx].screenTangentLeft) * m_tangentLength;
+				m_handles[idx].screenHdlRight = m_handles[idx].screenPos + normalize(m_handles[idx].screenTangentRight) * m_tangentLength;
+			}
 		}
 	}
 
