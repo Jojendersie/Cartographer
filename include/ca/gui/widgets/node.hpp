@@ -60,9 +60,6 @@ namespace ca { namespace gui {
 		/// Get a direction vector in which connectors should start
 		ei::Vec2 getConnectorDirection() const;
 
-		/// Set the radius in which a connector can snap to the node.
-		static void setConnectorSnapRadius(Coord _radius);
-
 		/// Sets the controller to react on connection changes.
 		/// Note that it is sufficient to set a controller on one side of each
 		/// desired connection. Otherwise there will be two calls for each of the

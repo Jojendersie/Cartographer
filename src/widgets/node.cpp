@@ -47,7 +47,6 @@ namespace ca { namespace gui {
 	{
 	public:
 		static std::vector<NodeHandle*> s_nodes;
-		static float s_snapRadiusSq;
 
 		static void addNode(NodeHandle* _node)
 		{
@@ -72,15 +71,16 @@ namespace ca { namespace gui {
 
 		static NodeHandle* findClosest(Coord2 _position)
 		{
-			float minDistSq = s_snapRadiusSq;
+			float minDistSq = 1e38f;
 			NodeHandle* closestNode = nullptr;
 			// Linear search for the closest node.
 			// If nothing is as close as the search radius the method will return
 			// the default nullptr.
 			for(size_t i = 0; i < s_nodes.size(); ++i)
 			{
+				const float allowedDistSq = sq(max(s_nodes[i]->width(), s_nodes[i]->height()));
 				float distSq = lensq(s_nodes[i]->position() - _position);
-				if(distSq <= minDistSq)
+				if(distSq <= allowedDistSq && distSq <= minDistSq)
 				{
 					minDistSq = distSq;
 					closestNode = s_nodes[i];
@@ -89,7 +89,6 @@ namespace ca { namespace gui {
 			return closestNode;
 		}
 	};
-	float NodeList::s_snapRadiusSq = 100.0f;
 	std::vector<NodeHandle*> NodeList::s_nodes;
 
 
@@ -147,11 +146,6 @@ namespace ca { namespace gui {
 	ei::Vec2 NodeHandle::getConnectorDirection() const
 	{
 		return ei::Vec2(cos(m_angle), sin(m_angle));
-	}
-
-	void NodeHandle::setConnectorSnapRadius(Coord _radius)
-	{
-		NodeList::s_snapRadiusSq = _radius * _radius;
 	}
 
 	void NodeHandle::setConnectorController(ConnectorControllerPtr _controller)
@@ -334,10 +328,10 @@ namespace ca { namespace gui {
 		// As support vectors take the direction given by the node handles
 		// with a lenght of 1/3 from the distance between the two nodes.
 		bool mouseFarAwayFromSrc = m_sourceNode
-			? (lensq(srcPos - s_tmpMouseNode->position()) > NodeList::s_snapRadiusSq)
+			? (lensq(srcPos - s_tmpMouseNode->position()) > sq(max(m_sourceNode->width(), m_sourceNode->height())))
 			: true;
 		bool mouseFarAwayFromDst = m_destNode
-			? (lensq(dstPos - s_tmpMouseNode->position()) > NodeList::s_snapRadiusSq)
+			? (lensq(dstPos - s_tmpMouseNode->position()) > sq(max(m_destNode->width(), m_destNode->height())))
 			: true;
 		const bool srcUseMouse = !m_sourceNode || (m_tmpHandleState == HandleState::TMP_SRC && mouseFarAwayFromSrc);
 		const bool dstUseMouse = !m_destNode || (m_tmpHandleState == HandleState::TMP_DST && mouseFarAwayFromDst);
