@@ -76,7 +76,7 @@ namespace ca { namespace gui {
 		virtual bool setFrame(const float _l, const float _b, const float _r, const float _t);
 
 		/// Set anchors such that each flagged side inside _mask is fixed to
-		/// the closest edge of the _targetFrame,
+		/// the respective edge of the _targetFrame,
 		/// 
 		/// \param [in] _targetFrame New reference or nullptr to release all anchors
 		///		that do not have a value of IGNORE_ANCHOR.

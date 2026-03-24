@@ -96,43 +96,23 @@ namespace ca { namespace gui {
 			return;
 		}
 
-		// Go find the closest side for each of the selected sides
+		// Attach the selected edges
 		if (_mask & SIDE_FLAGS::LEFT)
-		{
-			const float d0 = ei::abs(left() - _targetFrame->left());
-			const float d1 = ei::abs(left() - _targetFrame->right());
-			if (d0 <= d1)
-				m_anchor[SIDE::LEFT].attach(_targetFrame, _targetFrame->left(), left(), 0);
-			else
-				m_anchor[SIDE::LEFT].attach(_targetFrame, _targetFrame->right(), left(), 0);
-		}
+			m_anchor[SIDE::LEFT].attach(_targetFrame, _targetFrame->left(), left(), 0);
+		else
+			m_anchor[SIDE::LEFT].detach();
 		if (_mask & SIDE_FLAGS::BOTTOM)
-		{
-			const float d0 = ei::abs(bottom() - _targetFrame->bottom());
-			const float d1 = ei::abs(bottom() - _targetFrame->top());
-			if (d0 <= d1)
-				m_anchor[SIDE::BOTTOM].attach(_targetFrame, _targetFrame->bottom(), bottom(), 1);
-			else
-				m_anchor[SIDE::BOTTOM].attach(_targetFrame, _targetFrame->top(), bottom(), 1);
-		}
+			m_anchor[SIDE::BOTTOM].attach(_targetFrame, _targetFrame->bottom(), bottom(), 1);
+		else
+			m_anchor[SIDE::BOTTOM].detach();
 		if (_mask & SIDE_FLAGS::RIGHT)
-		{
-			const float d0 = ei::abs(right() - _targetFrame->left());
-			const float d1 = ei::abs(right() - _targetFrame->right());
-			if (d0 <= d1)
-				m_anchor[SIDE::RIGHT].attach(_targetFrame, _targetFrame->left(), right(), 0);
-			else
-				m_anchor[SIDE::RIGHT].attach(_targetFrame, _targetFrame->right(), right(), 0);
-		}
+			m_anchor[SIDE::RIGHT].attach(_targetFrame, _targetFrame->right(), right(), 0);
+		else
+			m_anchor[SIDE::RIGHT].detach();
 		if (_mask & SIDE_FLAGS::TOP)
-		{
-			const float d0 = ei::abs(top() - _targetFrame->bottom());
-			const float d1 = ei::abs(top() - _targetFrame->top());
-			if (d0 <= d1)
-				m_anchor[SIDE::TOP].attach(_targetFrame, _targetFrame->bottom(), top(), 1);
-			else
-				m_anchor[SIDE::TOP].attach(_targetFrame, _targetFrame->top(), top(), 1);
-		}
+			m_anchor[SIDE::TOP].attach(_targetFrame, _targetFrame->top(), top(), 1);
+		else
+			m_anchor[SIDE::TOP].detach();
 	}
 
 
