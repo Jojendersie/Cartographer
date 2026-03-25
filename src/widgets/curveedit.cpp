@@ -212,8 +212,12 @@ namespace ca { namespace gui {
 		// Compute a screenspace -> screenspace transform for the existing nodes.
 		ei::Vec2 translation = -m_screenOffset;
 		ei::Vec2 scale = m_screenToDomain;
+		const ei::Vec2 oldMarginX = m_xRange - m_xDomain;
+		const ei::Vec2 oldMarginY = m_yRange - m_yDomain;
 		m_xDomain = _xRange;
 		m_yDomain = _yRange;
+		m_xRange = m_xDomain + oldMarginX;
+		m_yRange = m_yDomain + oldMarginY;
 		recomputeSpaceConversions();
 		scale *= m_domainToScreen;
 		translation += m_screenOffset;

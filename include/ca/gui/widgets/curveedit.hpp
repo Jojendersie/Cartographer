@@ -131,7 +131,7 @@ namespace ca { namespace gui {
 		std::vector<Handle> m_handles;
 		ei::Vec2 m_gridSpace;
 		ei::Vec2 m_xDomain, m_yDomain;
-		ei::Vec2 m_xRange, m_yRange;	// Domain + marigin
+		ei::Vec2 m_xRange, m_yRange;	// Domain + margin
 		Mode m_mode;
 		bool m_periodic;				// Match endpoints
 		float m_tangentLength;			// Length of a tangent vector in hermite mode
