@@ -44,48 +44,56 @@ namespace ca { namespace gui {
 
 	void CurveEdit::draw() const
 	{
+		Rect2D domainFrame {
+			position() + Vec2{round((m_xDomain.x - m_xRange.x) * m_domainToScreen.x), round((m_yDomain.x - m_yRange.x) * m_domainToScreen.y)},
+			position() + Vec2{round((m_xDomain.y - m_xRange.x) * m_domainToScreen.x), round((m_yDomain.y - m_yRange.x) * m_domainToScreen.y)}+1.0f
+		};
 		if(m_backgroundColor.a > 0.0f)
 		{
 			GUIManager::theme().drawBackgroundArea(rectangle(), m_backgroundColor.a, Vec3(m_backgroundColor));
 			// Make the domain background different
-			Rect2D domainFrame {
-				position() + Vec2{round((m_xDomain.x - m_xRange.x) * m_domainToScreen.x), round((m_yDomain.x - m_yRange.x) * m_domainToScreen.y)},
-				position() + Vec2{round((m_xDomain.y - m_xRange.x) * m_domainToScreen.x), round((m_yDomain.y - m_yRange.x) * m_domainToScreen.y)}+1.0f
-			};
 			GUIManager::theme().drawBackgroundArea(domainFrame, m_backgroundColor.a, Vec3(m_backgroundColor) * 0.5f);
 		}
 
 		if(m_gridColor.a > 0.0f && m_gridSpace.x > 0.0f)
 		{
-			const int firstTick = ei::ceil(m_xRange.x / m_gridSpace.x);
-			const int lastTick = ei::floor(m_xRange.y / m_gridSpace.x);
-			const float firstTickScreen = left() + (firstTick * m_gridSpace.x - m_xRange.x) * m_domainToScreen.x;
+			const int numTicks = ei::floor((m_xDomain.y - m_xDomain.x) / m_gridSpace.x);
 			const float tickSpaceScreen = m_gridSpace.x * m_domainToScreen.x;
-			for(int x = 0; x <= (lastTick - firstTick); ++x)
+			for (int x = 0; x <= numTicks; ++x)
 			{
-				const float screenX = round(firstTickScreen + x * tickSpaceScreen)+0.5f;
+				const float screenX = round(domainFrame.min.x + x * tickSpaceScreen)+0.5f;
 				Vec2 pos[2] = {
-					Vec2{screenX, bottom()},
-					Vec2{screenX, top()}
+					Vec2{screenX, domainFrame.min.y},
+					Vec2{screenX, domainFrame.max.y}
 				};
 				GUIManager::theme().drawLine(pos, 2, m_gridColor, m_gridColor);
+
+				// Draw label
+				char buf[16];
+				const float value = x * m_gridSpace.x + m_xDomain.x;
+				sprintf_s(buf, "%.*f", m_labelPrecision.x, value);
+				GUIManager::theme().drawText(Vec2{screenX, domainFrame.min.y}, buf, 1.0f, false, ei::Vec4{-1.0f}, 0.5f, 1.0f);
 			}
 		}
 
 		if(m_gridColor.a > 0.0f && m_gridSpace.y > 0.0f)
 		{
-			const int firstTick = ei::ceil(m_yRange.x / m_gridSpace.y);
-			const int lastTick = ei::floor(m_yRange.y / m_gridSpace.y);
-			const float firstTickScreen = bottom() + (firstTick * m_gridSpace.y - m_yRange.x) * m_domainToScreen.y;
+			const int numTicks = ei::floor((m_yDomain.y - m_yDomain.x) / m_gridSpace.y);
 			const float tickSpaceScreen = m_gridSpace.y * m_domainToScreen.y;
-			for(int y = 0; y <= (lastTick - firstTick); ++y)
+			for (int y = 0; y <= numTicks; ++y)
 			{
-				const float screenY = round(firstTickScreen + y * tickSpaceScreen)+0.5f;
+				const float screenY = round(domainFrame.min.y + y * tickSpaceScreen)+0.5f;
 				Vec2 pos[2] = {
-					Vec2{left(), screenY},
-					Vec2{right(), screenY}
+					Vec2{domainFrame.min.x, screenY},
+					Vec2{domainFrame.max.x, screenY}
 				};
 				GUIManager::theme().drawLine(pos, 2, m_gridColor, m_gridColor);
+
+				// Draw label
+				char buf[16];
+				const float value = y * m_gridSpace.y + m_yDomain.x;
+				sprintf_s(buf, "%.*f", m_labelPrecision.y, value);
+				GUIManager::theme().drawText(Vec2{domainFrame.min.x, screenY}, buf, 1.0f, false, ei::Vec4{-1.0f}, 1.0f, 0.5f);
 			}
 		}
 

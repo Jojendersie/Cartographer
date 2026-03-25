@@ -47,7 +47,7 @@ namespace ca { namespace gui {
 
 		/// Set the space between grid lines (in domain space).
 		/// 0 deactivates rendering of the grid in that dimension.
-		void setGridSpace(ei::Vec2 _size) { m_gridSpace = _size; }
+		void setGridSpace(ei::Vec2 _size) { m_gridSpace = _size; m_labelPrecision = ei::IVec2{ei::max(0, -ei::floor(log10f(m_gridSpace.x))), ei::max(0, -ei::floor(log10f(m_gridSpace.y)))}; }
 
 		/// Set the value domain for the curve handle positions.
 		/// The entire domain plus margins will be stretched to the rendering area.
@@ -129,7 +129,8 @@ namespace ca { namespace gui {
 		ei::Vec4 m_gridColor;
 		ei::Vec4 m_curveColor;
 		std::vector<Handle> m_handles;
-		ei::Vec2 m_gridSpace;
+		ei::Vec2 m_gridSpace;			// Domain sided distance between two lines
+		ei::IVec2 m_labelPrecision;		// Number of decimal places for labels. Computed from grid space to distinguish the values.
 		ei::Vec2 m_xDomain, m_yDomain;
 		ei::Vec2 m_xRange, m_yRange;	// Domain + margin
 		Mode m_mode;
