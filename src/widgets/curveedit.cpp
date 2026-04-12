@@ -71,7 +71,7 @@ namespace ca { namespace gui {
 				// Draw label
 				char buf[16];
 				const float value = x * m_gridSpace.x + m_xDomain.x;
-				sprintf_s(buf, "%.*f", m_labelPrecision.x, value);
+				std::snprintf(buf, 16, "%.*f", m_labelPrecision.x, value);
 				GUIManager::theme().drawText(Vec2{screenX, domainFrame.min.y}, buf, 1.0f, false, ei::Vec4{-1.0f}, 0.5f, 1.0f);
 			}
 		}
@@ -92,7 +92,7 @@ namespace ca { namespace gui {
 				// Draw label
 				char buf[16];
 				const float value = y * m_gridSpace.y + m_yDomain.x;
-				sprintf_s(buf, "%.*f", m_labelPrecision.y, value);
+				std::snprintf(buf, 16, "%.*f", m_labelPrecision.y, value);
 				GUIManager::theme().drawText(Vec2{domainFrame.min.x, screenY}, buf, 1.0f, false, ei::Vec4{-1.0f}, 1.0f, 0.5f);
 			}
 		}
