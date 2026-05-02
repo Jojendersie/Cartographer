@@ -9,12 +9,8 @@ using namespace ei;
 namespace ca { namespace gui {
 
 	CurveEdit::CurveEdit() :
-		m_onNewHandle { nullptr },
-		m_onDeleteHandle { nullptr },
-		m_getTangent { nullptr },
-		m_getPosition { nullptr },
-		m_onPositionChanged { nullptr},
-		m_onTangentChanged { nullptr },
+		m_flags {},
+		m_curve { nullptr },
 		m_backgroundColor { 0.0f },
 		m_gridColor { 0.1f },
 		m_curveColor { 0.1f, 0.7f, 0.1f, 1.0f },
@@ -23,9 +19,6 @@ namespace ca { namespace gui {
 		m_yDomain {0.0f, 1.0f },
 		m_xRange {-0.1f, 1.1f },
 		m_yRange {-0.1f, 1.1f },
-		m_mode { Mode::BEZIER },
-		m_periodic { false },
-		m_tangentLength { 16.0f },
 		m_selectedHdl {-1},
 		m_selectedSubHdl {-1}
 	{
@@ -97,99 +90,30 @@ namespace ca { namespace gui {
 			}
 		}
 
-		// Draw the lines of the plot
-		if(m_mode == Mode::LINEAR)
+		// Plot the curve
+		constexpr int RES = 24;
+		Vec2 buf[RES];
+		for(size_t i = 0; i < m_handles.size()-1; ++i)
 		{
-			Vec2 buf[2];
-			for(size_t i = 0; i < m_handles.size()-1; ++i)
+			// Draw the curve from the current to the next vertex.
+			buf[0] = m_handles[i].screenPos;
+			buf[RES-1] = m_handles[i+1].screenPos;
+			for(int j = 1; j < RES-1; ++j)
 			{
-				buf[0] = Vec2 { round(m_handles[i].screenPos) };
-				buf[1] = Vec2 { round(m_handles[i+1].screenPos) };
-				GUIManager::theme().drawLine(buf, 2, m_curveColor, m_curveColor);
+				buf[j].x = lerp(buf[0].x, buf[RES-1].x, j / float(RES-1));
+				const float domainX = buf[j].x * m_screenToDomain.x + m_domainOffset.x;
+				buf[j].y = m_curve->getValue(i, domainX) * m_domainToScreen.y + m_screenOffset.y;
 			}
-		}
-		else if(m_mode == Mode::SMOOTH || m_mode == Mode::CUBIC_HERMITE)
-		{
-			constexpr int RES = 24;
-			Vec2 buf[RES];
-			static constexpr Vec4 HERMITE[RES-2] = {
-				hemite_spline_coeffs(1.0f / (RES-1)),
-				hemite_spline_coeffs(2.0f / (RES-1)),
-				hemite_spline_coeffs(3.0f / (RES-1)),
-				hemite_spline_coeffs(4.0f / (RES-1)),
-				hemite_spline_coeffs(5.0f / (RES-1)),
-				hemite_spline_coeffs(6.0f / (RES-1)),
-				hemite_spline_coeffs(7.0f / (RES-1)),
-				hemite_spline_coeffs(8.0f / (RES-1)),
-				hemite_spline_coeffs(9.0f / (RES-1)),
-				hemite_spline_coeffs(10.0f / (RES-1)),
-				hemite_spline_coeffs(11.0f / (RES-1)),
-				hemite_spline_coeffs(12.0f / (RES-1)),
-				hemite_spline_coeffs(13.0f / (RES-1)),
-				hemite_spline_coeffs(14.0f / (RES-1)),
-				hemite_spline_coeffs(15.0f / (RES-1)),
-				hemite_spline_coeffs(16.0f / (RES-1)),
-				hemite_spline_coeffs(17.0f / (RES-1)),
-				hemite_spline_coeffs(18.0f / (RES-1)),
-				hemite_spline_coeffs(19.0f / (RES-1)),
-				hemite_spline_coeffs(20.0f / (RES-1)),
-				hemite_spline_coeffs(21.0f / (RES-1)),
-				hemite_spline_coeffs(22.0f / (RES-1))
-			};
-			for(size_t i = 0; i < m_handles.size(); ++i)
-			{
-				buf[1] = m_handles[i].screenPos;
-				// Draw the two tangent vectors in one go. On either end we only need one tangent.
-				if (m_mode == Mode::CUBIC_HERMITE)
-				{
-					buf[0] = m_handles[i].screenHdlLeft;
-					buf[2] = m_handles[i].screenHdlRight;
-					GUIManager::theme().drawLine(buf + (i == 0 ? 1 : 0), 3 - (i == 0 || i == m_handles.size()-1 ? 1 : 0), m_curveColor, m_curveColor);
-				}
-				// Draw the actual curve back to the previous node.
-				if(i > 0)
-				{
-					buf[0] = m_handles[i-1].screenPos;
-					buf[RES-1] = buf[1];
-					const float lTangent = m_handles[i-1].screenTangentRight.y;
-					const float rTangent = m_handles[i].screenTangentRight.y;
-					for(int j = 0; j < RES-2; ++j)
-					{
-						buf[j+1].x = lerp(m_handles[i-1].screenPos.x, m_handles[i].screenPos.x, (j+1) / float(RES-1));
-						buf[j+1].y = HERMITE[j].x * m_handles[i-1].screenPos.y
-								   + HERMITE[j].y * lTangent
-								   + HERMITE[j].z * m_handles[i].screenPos.y
-								   + HERMITE[j].w * rTangent;
-					}
-					GUIManager::theme().drawLine(buf, RES, m_curveColor, m_curveColor);
-				}
-			}
-		}
-		else if(m_mode == Mode::BEZIER)
-		{
-			constexpr int RES = 24;
-			Vec2 buf[RES];
-			for(size_t i = 0; i < m_handles.size(); ++i)
+			GUIManager::theme().drawLine(buf, RES, m_curveColor, m_curveColor);
+
+			if (m_flags & SHOW_TANGENTS) 
 			{
 				buf[0] = m_handles[i].screenHdlLeft;
 				buf[1] = m_handles[i].screenPos;
 				buf[2] = m_handles[i].screenHdlRight;
 				// Draw the two tangent vectors in one go. On either end we only need one tangent.
-				GUIManager::theme().drawLine(buf + (i == 0 ? 1 : 0), 3 - (i == 0 || i == m_handles.size()-1 ? 1 : 0), m_curveColor, m_curveColor);
-				// Draw the actual curve back to the previous node.
-				if(i > 0)
-				{
-					buf[0] = m_handles[i-1].screenPos;
-					buf[RES-1] = buf[1];
-					for(int j = 0; j < RES-2; ++j)
-					{
-						const float t = float(j+1)/(RES-2);
-						const float it = 1.0f - t;
-						buf[j+1] = m_handles[i-1].screenPos * (it * it * it) + m_handles[i-1].screenHdlRight * (it * it * t * 3.0f)
-								 + m_handles[i].screenHdlLeft * (it * t * t * 3.0f) + m_handles[i].screenPos * (t * t * t);
-					}
-					GUIManager::theme().drawLine(buf, RES, m_curveColor, m_curveColor);
-				}
+				const bool boundaryVertex = i == 0 || i == m_handles.size()-1;
+				GUIManager::theme().drawLine(buf + (i == 0 ? 1 : 0), boundaryVertex ? 2 : 3, m_curveColor, m_curveColor);
 			}
 		}
 
@@ -197,13 +121,13 @@ namespace ca { namespace gui {
 		GUIManager::pushClipRegion(rectangle());
 		for(size_t i = 0; i < m_handles.size(); ++i)
 		{
-			if(m_mode == Mode::LINEAR || m_handles[i].tangentsLocked)
+			if(m_handles[i].tangentsLocked)
 				GUIManager::theme().drawNodeHandle(m_handles[i].screenPos, 3.5f, Vec3{m_curveColor});
 			else
 			{
 				GUIManager::theme().drawArrowButton(Rect2D{m_handles[i].screenPos-3.5f, m_handles[i].screenPos+3.5f}, SIDE::TOP, false); // TODO: color
 			}
-			if(m_mode != Mode::LINEAR && m_mode != Mode::SMOOTH)
+			if (m_flags & SHOW_TANGENTS)
 			{
 				if(i > 0)
 					GUIManager::theme().drawNodeHandle(m_handles[i].screenHdlLeft, 2.5f, Vec3{m_curveColor});
@@ -232,10 +156,8 @@ namespace ca { namespace gui {
 		for(size_t i = 0; i < m_handles.size(); ++i)
 		{
 			m_handles[i].screenPos = m_handles[i].screenPos * scale + translation;
-			m_handles[i].screenTangentLeft *= scale;
-			m_handles[i].screenTangentRight *= scale;
-			m_handles[i].screenHdlLeft = m_handles[i].screenPos + m_handles[i].screenTangentLeft;
-			m_handles[i].screenHdlRight = m_handles[i].screenPos + m_handles[i].screenTangentRight;
+			m_handles[i].screenHdlLeft = m_handles[i].screenHdlLeft * scale + translation;
+			m_handles[i].screenHdlRight = m_handles[i].screenHdlRight * scale + translation;
 		}
 	}
 
@@ -245,13 +167,6 @@ namespace ca { namespace gui {
 		m_xRange = m_xDomain + Vec2{-max(0.0f,_xNeg), max(0.0f,_xPos)};
 		m_yRange = m_yDomain + Vec2{-max(0.0f,_yNeg), max(0.0f,_yPos)};
 		recomputeSpaceConversions();
-	}
-
-
-	void CurveEdit::setMode(Mode _mode, bool _periodic)
-	{
-		m_periodic = _periodic;
-		m_mode = _mode;
 	}
 
 
@@ -275,9 +190,9 @@ namespace ca { namespace gui {
 			{
 				if (_mouseState.position != m_handles[m_selectedHdl].screenPos) // Changed?
 				{
-					if (m_onPositionChanged) {
-						const ei::IVec2 interval = m_onPositionChanged(m_selectedHdl, domainPos);
-						updateHandles(interval);
+					if (m_curve) {
+						m_curve->onPositionChanged(m_selectedHdl, domainPos);
+						updateHandles();
 					}
 					else ca::pa::logError("[CurveEdit::processInput] Cannot set position.");
 				}
@@ -286,11 +201,11 @@ namespace ca { namespace gui {
 			{
 				const int idx = m_selectedSubHdl / 2;
 				const bool selectedRight = m_selectedSubHdl & 1;
-				if (m_onTangentChanged)
+				if (m_curve)
 				{
 					const Vec2 tangent = (_mouseState.position - m_handles[idx].screenPos) * m_screenToDomain;
-					const ei::IVec2 interval = m_onTangentChanged(idx, tangent, !selectedRight);
-					updateHandles(interval);
+					m_curve->onTangentChanged(idx, tangent, !selectedRight);
+					updateHandles();
 				}
 			}
 		}
@@ -302,7 +217,7 @@ namespace ca { namespace gui {
 		{
 			if(lensq(m_handles[i].screenPos - _mouseState.position) < 15.0f)
 				clickedHdl = i;
-			if(m_mode != Mode::LINEAR && m_mode != Mode::SMOOTH)
+			if ((m_flags & TANGENT_EDITING) == TANGENT_EDITING)
 			{
 				if(i > 0 && lensq(m_handles[i].screenHdlLeft - _mouseState.position) < 15.0f)
 					clickedSubHdl = i*2;
@@ -314,7 +229,7 @@ namespace ca { namespace gui {
 		if(clickedHdl != -1 || clickedSubHdl != -1) GUIManager::setCursorType(CursorType::CROSSHAIR);
 		else GUIManager::setCursorType(CursorType::ARROW);
 		// Change the type of a handle on double click
-		if(_mouseState.btnDblClicked(0) && clickedHdl != -1)
+		if((m_flags & TOGGLE_NODE_TYPE) && _mouseState.btnDblClicked(0) && clickedHdl != -1)
 		{
 			m_handles[clickedHdl].tangentsLocked = !m_handles[clickedHdl].tangentsLocked;
 			/*if(m_handles[clickedHdl].tangentsLocked)
@@ -328,21 +243,25 @@ namespace ca { namespace gui {
 			}*/
 		}
 		// Add a new handle on double click
-		else if(_mouseState.btnDblClicked(0))
+		else if((m_flags & ADD_NODES) && _mouseState.btnDblClicked(0))
 		{
 			if(domainPos.x >= m_xDomain.x && domainPos.x <= m_xDomain.y
 				&& domainPos.y >= m_yDomain.x && domainPos.y <= m_yDomain.y)
 			{
 				int idx = 0;
 				while(idx < (int)m_handles.size() && m_handles[idx].screenPos.x < _mouseState.position.x) ++idx;
-				m_handles.emplace(m_handles.begin() + idx, Handle{_mouseState.position, {}, {}, {}, {}, true});
-				IVec2 updateInterval {idx, idx+1};
-				if (m_onNewHandle)
-					updateInterval = m_onNewHandle(idx, domainPos);
-				updateHandles(updateInterval);
+				bool added = false;
+				if (m_curve)
+					added = m_curve->onNewHandle(idx);
+				if (added)
+				{
+					m_curve->onPositionChanged(idx, domainPos);
+					m_handles.emplace(m_handles.begin() + idx, Handle{_mouseState.position, {}, {}, true});
+				}
+				updateHandles();
 			}
 		}
-		else if(_mouseState.btnDblClicked(1) && clickedHdl != -1)
+		else if((m_flags & REMOVE_NODES) && _mouseState.btnDblClicked(1) && clickedHdl != -1)
 		{
 			deleteHandle(clickedHdl);
 		}
@@ -367,8 +286,8 @@ namespace ca { namespace gui {
 	void CurveEdit::addHandles(int _idx, int _num)
 	{
 		const int start = clamp(_idx, 0, (int)m_handles.size());
-		m_handles.insert(m_handles.begin() + start, _num, Handle{{},{},{},{},{},true});
-		updateHandles({max(0,_idx - 1), min(_idx + _num, (int)m_handles.size())});
+		m_handles.insert(m_handles.begin() + start, _num, Handle{{},{},{},true});
+		updateHandles();
 	}
 
 
@@ -378,17 +297,17 @@ namespace ca { namespace gui {
 		if(_idx >= 0 && _idx < (int)m_handles.size())
 		{
 			m_handles.erase(m_handles.begin() + _idx);
-			if(m_onDeleteHandle)
-				m_onDeleteHandle(_idx);
+			if(m_curve)
+				m_curve->onDeleteHandle(_idx);
 		}
 	}
 
 
 	void CurveEdit::clear()
 	{
-		if(m_onDeleteHandle)
+		if(m_flags & REMOVE_NODES && m_curve)
 			for(size_t i = 0; i < m_handles.size(); ++i)
-				m_onDeleteHandle((int)i);
+				m_curve->onDeleteHandle((int)i);
 		m_handles.clear();
 	}
 
@@ -396,7 +315,7 @@ namespace ca { namespace gui {
 	void CurveEdit::onExtentChanged()
 	{
 		recomputeSpaceConversions();
-		updateHandles({0, (int)m_handles.size()});
+		updateHandles();
 	}
 
 	void CurveEdit::recomputeSpaceConversions()
@@ -408,34 +327,17 @@ namespace ca { namespace gui {
 	}
 
 
-	void CurveEdit::updateHandles(const ei::IVec2& interval)
+	void CurveEdit::updateHandles()
 	{
-		const int n = m_handles.size();
-		int start = m_periodic ? interval.x : max(interval.x, 0);
-		int end = m_periodic ? interval.y : clamp(interval.y, 0, n);
-		if (start > end && m_periodic)
-			end += m_handles.size();
-		for(int i = start; i < end; ++i)
+		if (!m_curve)
+			return;
+		for (size_t i = 0; i < m_handles.size(); ++i)
 		{
-			const int idx = (i + n) % n;
-			m_handles[idx].screenPos = Vec2 { round(m_getPosition(idx) * m_domainToScreen + m_screenOffset) };
-			if (m_mode == Mode::BEZIER)
+			m_handles[i].screenPos = Vec2 { round(m_curve->getPosition(i) * m_domainToScreen + m_screenOffset) };
+			if (m_flags & SHOW_TANGENTS)
 			{
-				m_handles[idx].screenTangentLeft = Vec2 { round(m_getTangent(idx, true) * m_domainToScreen) };
-				m_handles[idx].screenTangentRight = Vec2 { round(m_getTangent(idx, false) * m_domainToScreen) };
-				m_handles[idx].screenHdlLeft = m_handles[idx].screenPos + m_handles[idx].screenTangentLeft;
-				m_handles[idx].screenHdlRight = m_handles[idx].screenPos + m_handles[idx].screenTangentRight;
-			}
-			else if (m_mode == Mode::SMOOTH || m_mode == Mode::CUBIC_HERMITE)
-			{
-				m_handles[idx].screenTangentRight = m_getTangent(idx, false) * m_domainToScreen;
-				m_handles[idx].screenTangentLeft = -m_handles[idx].screenTangentRight;
-			}
-
-			if (m_mode == Mode::CUBIC_HERMITE)
-			{
-				m_handles[idx].screenHdlLeft = m_handles[idx].screenPos + normalize(m_handles[idx].screenTangentLeft) * m_tangentLength;
-				m_handles[idx].screenHdlRight = m_handles[idx].screenPos + normalize(m_handles[idx].screenTangentRight) * m_tangentLength;
+				m_handles[i].screenHdlLeft = m_handles[i].screenPos +  Vec2 { round(m_curve->getTangent(i, true) * m_domainToScreen) };
+				m_handles[i].screenHdlRight = m_handles[i].screenPos + Vec2 { round(m_curve->getTangent(i, false) * m_domainToScreen) };
 			}
 		}
 	}

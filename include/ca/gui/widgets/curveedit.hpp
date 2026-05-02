@@ -9,23 +9,29 @@ namespace ca { namespace gui {
 	{
 		struct Handle {
 			ei::Vec2 screenPos;
-			ei::Vec2 screenTangentLeft;
-			ei::Vec2 screenTangentRight;
 			ei::Vec2 screenHdlLeft;		// Screen space
 			ei::Vec2 screenHdlRight;	// Screen space
 			bool tangentsLocked;
 		};
 
 	public:
-		// In any mode the curve will always be a function (one y for each x).
-		enum class Mode {
-			LINEAR,			// Linear segments between the vertices
-			SMOOTH,			// Cubic spline with automatic tangents (don't show the tangents/handles)
-			CUBIC_HERMITE,	// Smooth curve where tangents define directions, but not stiffness
-			BEZIER			// Full control with handles.
+		enum Flags {
+			// Render tangents, but do not interact with them.
+			SHOW_TANGENTS = 1,
+			// If set, tangents will be rendered and can be edited. (Implies SHOW_TANGENT)
+			TANGENT_EDITING = 3,
+			// If set, double clicking a node will toggle its type (e.g. between smooth and cusp).
+			TOGGLE_NODE_TYPE = 4,
+			// New nodes can be added by double clicking in empty space.
+			ADD_NODES = 8,
+			// Nodes can be removed by double right clicking on them.
+			REMOVE_NODES = 16,
 		};
 
 		CurveEdit();
+
+		/// Set what the editor will render and which edit options are available.
+		void setMode(Flags _modeFlags) { m_flags = _modeFlags; }
 
 		/// Implement the draw method
 		void draw() const override;
@@ -58,12 +64,6 @@ namespace ca { namespace gui {
 		/// All values must be positive (additonal space) or 0
 		void setDomainMargin(float _xNeg, float _xPos, float _yNeg, float _yPos);
 
-		/// Change the rendering and input mode
-		void setMode(Mode _mode, bool _periodic);
-
-		/// Set the rendering tangent length in pixels (only applies to Mode::CUBIC_HERMITE)
-		void setTangentLength(float _length) { m_tangentLength = _length; }
-
 		/// Move handles etc.
 		bool processInput(
 			class Widget& _thisWidget,
@@ -72,35 +72,43 @@ namespace ca { namespace gui {
 			bool& _ensureNextInput
 		) override;
 
-		/// Functions to fetch tangent vectors/slopes and positions from the model.
-		/// If the GetTangent method is used depends on the selected model:
-		///		LINEAR will not call it
-		///		SMOOTH / CUBIC_HERMITE will call GetTangent once (always the right tangent, i.e. _left=false)
-		/// 	BEZIER will call GetTangent twice, because they may be independent
-		typedef std::function<ei::Vec2(int _idx)> GetPosition;
-		typedef std::function<ei::Vec2(int _idx, bool _left)> GetTangent;
-		void setGetPositionFunc(GetPosition _callback) { m_getPosition = _callback; }
-		void setGetTangentFunc(GetTangent _callback) { m_getTangent = _callback; }
 
-		/// Send changes of the position to the model.
-		/// The callback must return which handles are hanged by this setting. An interval where x > y
-		/// is allowed and wraps around on the right side. This allows the model to restore its invariants
-		/// for tangents and positions.
-		/// After the call, this editor will refetch the positions and tangents of the changed nodes.
-		typedef std::function<ei::IVec2(int _idx, const ei::Vec2& _newPos)> OnHandleChanged;
-		void setOnPositionChangedFunc(OnHandleChanged _callback) { m_onPositionChanged = _callback; }
+		/// Interface to be implemented by the user to map the real model to the UI.
+		/// All coordinates read and written into the curve handler are always in curve domain
+		/// (never screen domain).
+		class ICurveDataHandler : public ReferenceCountable
+		{
+		public:
+			/// Fetch the position of a vertex.
+			virtual ei::Vec2 getPosition(int _idx) const = 0;
 
-		/// Send changes of a tangent to the model.
-		/// These are not used for the linear and smooth models.
-		/// Both functions should be set even if the model only allows coupled tangents.
-		typedef std::function<ei::IVec2(int _idx, const ei::Vec2& _vec, bool _left)> OnTangentChanged;
-		void setOnTangentChanged(OnTangentChanged _callback) { m_onTangentChanged = _callback; }
+			/// [Optional] Fetch a tangent vector on one side of a vertex.
+			/// This method is only called if TANGENT_EDITING is enabled.
+			virtual ei::Vec2 getTangent(int _idx, bool _left) const { return {_left?-1.0f:1.0f, 0.0f}; }
 
-		/// Functions to signal if handles are added or removed.
-		/// Must return the interval of changed nodes (without the one being removed).
-		typedef std::function<ei::IVec2(int _idx)> OnHandleDeleted;
-		void setOnNewHandleFunc(OnHandleChanged _callback) { m_onNewHandle = _callback; }
-		void setOnDeleteHandle(OnHandleDeleted _callback) { m_onDeleteHandle = _callback; }
+			/// Function to evaluate the represented curve at an specific x coordinate.
+			///  _idx: The index of the vertex with the largest x coordinate smaller or equal _x.
+			///  _x: Domain x coordinate. May be equal or larger than the given vertex's position.
+			virtual float getValue(int _idx, float _x) const = 0;
+
+			/// Send changes of the position to the model.
+			/// After the call, this editor will refetch the positions and tangents, such that the model
+			/// may restore arbitrary invariants.
+			virtual void onPositionChanged(int _idx, const ei::Vec2& _newPos) = 0;
+
+			/// [Optional] Send changes of a tangent to the model.
+			virtual void onTangentChanged(int _idx, const ei::Vec2& _newPos, bool _left) {};
+
+			/// Functions to signal if handles are added or removed.
+			/// When a new handle is added, the onPositionChanged / onTangentChanged methods will be
+			/// called directly after the creation of a handle, except onNewHandleFunc returned false
+			/// in which case the addition of the handle will be aborted.
+			virtual bool onNewHandle(int _idx) = 0;
+			virtual void onDeleteHandle(int _idx) = 0;
+		};
+
+		/// Set an implementation that maps the curve model and the ui.
+		void setCurveDataHandler(pa::RefPtr<ICurveDataHandler> _curveHandler) { m_curve = _curveHandler; }
 
 		/// Add one or multiple handles. The given index will be clamped to the valid
 		/// possible range. The function will call getPosition and getTangent for the new points
@@ -119,12 +127,8 @@ namespace ca { namespace gui {
 
 		void onExtentChanged() override;
 	private:
-		OnHandleChanged m_onNewHandle;
-		OnHandleDeleted m_onDeleteHandle;
-		GetTangent m_getTangent;
-		GetPosition m_getPosition;
-		OnHandleChanged m_onPositionChanged;
-		OnTangentChanged m_onTangentChanged;
+		Flags m_flags;
+		pa::RefPtr<ICurveDataHandler> m_curve;
 		ei::Vec4 m_backgroundColor;
 		ei::Vec4 m_gridColor;
 		ei::Vec4 m_curveColor;
@@ -133,9 +137,6 @@ namespace ca { namespace gui {
 		ei::IVec2 m_labelPrecision;		// Number of decimal places for labels. Computed from grid space to distinguish the values.
 		ei::Vec2 m_xDomain, m_yDomain;
 		ei::Vec2 m_xRange, m_yRange;	// Domain + margin
-		Mode m_mode;
-		bool m_periodic;				// Match endpoints
-		float m_tangentLength;			// Length of a tangent vector in hermite mode
 
 		// Temporary input handling
 		int m_selectedHdl;
@@ -148,7 +149,7 @@ namespace ca { namespace gui {
 
 		void recomputeSpaceConversions();
 		// Fetch tangents and positions for the respective interval of handles (right boundary exclusive)
-		void updateHandles(const ei::IVec2& interval);
+		void updateHandles();
 	};
 
 	typedef pa::RefPtr<CurveEdit> CurveEditPtr;
