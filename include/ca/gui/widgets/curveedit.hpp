@@ -100,10 +100,8 @@ namespace ca { namespace gui {
 			virtual void onTangentChanged(int _idx, const ei::Vec2& _newPos, bool _left) {};
 
 			/// Functions to signal if handles are added or removed.
-			/// When a new handle is added, the onPositionChanged / onTangentChanged methods will be
-			/// called directly after the creation of a handle, except onNewHandleFunc returned false
-			/// in which case the addition of the handle will be aborted.
-			virtual bool onNewHandle(int _idx) = 0;
+			/// onNewHandle may return false if no handle was added.
+			virtual bool onNewHandle(int _idx, const ei::Vec2& _newPos) = 0;
 			virtual void onDeleteHandle(int _idx) = 0;
 		};
 

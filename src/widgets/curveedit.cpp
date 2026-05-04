@@ -252,12 +252,9 @@ namespace ca { namespace gui {
 				while(idx < (int)m_handles.size() && m_handles[idx].screenPos.x < _mouseState.position.x) ++idx;
 				bool added = false;
 				if (m_curve)
-					added = m_curve->onNewHandle(idx);
+					added = m_curve->onNewHandle(idx, domainPos);
 				if (added)
-				{
-					m_curve->onPositionChanged(idx, domainPos);
 					m_handles.emplace(m_handles.begin() + idx, Handle{_mouseState.position, {}, {}, true});
-				}
 				updateHandles();
 			}
 		}
