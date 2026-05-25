@@ -37,6 +37,9 @@ namespace ca { namespace gui {
 
 	void CurveEdit::draw() const
 	{
+		if (m_handles.size() < 2)
+			return;
+
 		Rect2D domainFrame {
 			position() + Vec2{round((m_xDomain.x - m_xRange.x) * m_domainToScreen.x), round((m_yDomain.x - m_yRange.x) * m_domainToScreen.y)},
 			position() + Vec2{round((m_xDomain.y - m_xRange.x) * m_domainToScreen.x), round((m_yDomain.y - m_yRange.x) * m_domainToScreen.y)}+1.0f

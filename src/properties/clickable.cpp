@@ -22,6 +22,8 @@ namespace ca { namespace gui {
 		bool usedInput = false;
 		if(_cursorOnWidget)
 		{
+			// Pin if some action deletes this widget
+			const WidgetPtr pinThis { &_thisWidget };
 			// Handle each button
 			for(int b = 0; b < 8; ++b)
 			{
